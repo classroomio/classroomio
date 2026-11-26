@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="mobile-menu.css?v=4">
 <link rel="stylesheet" href="site-footer.css?v=5">
 <link rel="stylesheet" href="sections.css?v=3">
-<link rel="stylesheet" href="about.css?v=57">
+<link rel="stylesheet" href="about.css?v=97">
 <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
@@ -92,7 +92,7 @@
     <p class="ph-lede">Where you live or what you can afford should never decide who gets a good education. With ClassroomIO, you build a course once and it teaches everyone, wherever they are and whenever they are ready to learn.</p>
     <div class="ph-cta">
       <a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Start for free</a>
-      <a class="btn btn-line btn-lg" href="#new">See what&rsquo;s new</a>
+      <a class="btn btn-line btn-lg" href="https://classroomio.com/changelog">See what&rsquo;s new</a>
     </div>
   </div>
 
@@ -172,8 +172,8 @@
     </article>
 
     <article class="bn-card bn-vision" data-in style="--d:.1s">
-      <span class="bn-media bn-duo"><img src="images/team-outdoor.jpg" alt="A ClassroomIO team member talking through an idea with the team outside the office"></span>
-      <span class="bn-media bn-lens" aria-hidden="true"><img src="images/team-outdoor.jpg" alt=""></span>
+      <span class="bn-media bn-duo"><img src="images/team-vision-smile.jpg" alt="A ClassroomIO team member laughing at his laptop during a team session"></span>
+      <span class="bn-media bn-lens" aria-hidden="true"><img src="images/team-vision-smile.jpg" alt=""></span>
       <span class="bn-label bn-label-top">Our vision</span>
       <div class="bn-prompt" aria-hidden="true">
         <div class="bn-ask">
@@ -210,17 +210,29 @@
 </section>
 
 <section class="ab-sec" id="who-we-are" aria-labelledby="who-title">
-  <div class="wwa">
+  <div class="wwa" id="wwa" data-in>
+    <i class="wwa-glow" aria-hidden="true"></i>
     <div class="wwa-grid" aria-hidden="true">
-      <i class="wwa-c"></i><i class="wwa-c wwa-p"><img src="images/team-founder.jpg" alt=""></i><span class="wwa-pill">B2B</span>
-      <i class="wwa-c a"></i><i class="wwa-c"></i><i class="wwa-c a"></i><i class="wwa-c"></i>
-      <i class="wwa-c wwa-p"><img src="images/team-laptops.jpg" alt=""></i><span class="wwa-pill">Customer education</span><i class="wwa-c a"></i>
-      <i class="wwa-c"></i><i class="wwa-c wwa-p"><img src="images/analytics.jpg" alt=""></i><span class="wwa-pill">Business growth</span>
+      <i class="wwa-c wwa-ic a" data-ic="play"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path class="wwa-anim" d="M10 8.5v7l5.5-3.5z"/></svg><small>Video lessons</small></i><i class="wwa-c wwa-p" data-k="0"><img src="images/team-founder.jpg" alt=""></i><span class="wwa-pill" data-k="0"><b>B2B</b><i class="wwa-arrow"><svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg></i></span>
+      <i class="wwa-c wwa-ic" data-ic="book"><svg viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/><path class="wwa-anim" d="M13 4h5.5A1.5 1.5 0 0 1 20 5.5V19"/></svg><small>Courses</small></i><i class="wwa-c wwa-ic a" data-ic="award"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5 7 21l5-2.5 5 2.5-1.5-7.5"/><path class="wwa-anim" d="m10 9 1.5 1.5L14.5 7.5"/></svg><small>Certificates</small></i><i class="wwa-c wwa-ic" data-ic="chart"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path class="wwa-bar1" d="M7 17v-5"/><path class="wwa-bar2" d="M12 17V7"/><path class="wwa-bar3" d="M17 17v-8"/></svg><small>Analytics</small></i><i class="wwa-c wwa-ic" data-ic="spark"><svg viewBox="0 0 24 24"><path class="wwa-anim" d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15.5l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6z"/></svg><small>AI Tutor</small></i>
+      <i class="wwa-c wwa-p" data-k="1"><img src="images/team-laptops.jpg" alt=""></i><span class="wwa-pill" data-k="1"><b>Customer education</b><i class="wwa-arrow"><svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg></i></span><i class="wwa-c wwa-ic" data-ic="globe"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path class="wwa-anim" d="M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z"/></svg><small>Your domain</small></i>
+      <i class="wwa-c wwa-ic" data-ic="chat"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5z"/><circle class="wwa-dot1" cx="8.5" cy="10" r="1"/><circle class="wwa-dot2" cx="12" cy="10" r="1"/><circle class="wwa-dot3" cx="15.5" cy="10" r="1"/></svg><small>Community</small></i><i class="wwa-c wwa-p" data-k="2"><img src="images/analytics.jpg" alt=""></i><span class="wwa-pill" data-k="2"><b>Business growth</b><i class="wwa-arrow"><svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg></i></span>
     </div>
     <div class="wwa-txt">
-      <span class="wwa-eyebrow">Who we are</span>
+      <span class="wwa-eyebrow"><i></i>About ClassroomIO</span>
       <h2 class="h2" id="who-title" data-split>Who we are</h2>
-      <p data-in>ClassroomIO is a B2B customer education platform that helps companies use education to grow their business.</p>
+      <p class="wwa-lead">ClassroomIO is a B2B customer education platform that helps companies use education to grow their business.</p>
+      <p class="wwa-more">We build open-source software that turns what your team knows into courses, academies and learning paths your customers actually finish, so they adopt faster, need less support and stay longer.</p>
+      <ul class="wwa-list">
+        <li><button class="wwa-row on" type="button" data-k="0" aria-expanded="true"><span class="wwa-num">01</span><span class="wwa-body"><b>Built for companies</b><span class="wwa-desc"><span>Teams, roles, cohorts and a branded academy on your own domain, not a classroom tool stretched to fit.</span></span></span><i class="wwa-bar"></i></button></li>
+        <li><button class="wwa-row" type="button" data-k="1" aria-expanded="false"><span class="wwa-num">02</span><span class="wwa-body"><b>Teach customers your product</b><span class="wwa-desc"><span>Onboard, train and certify customers so they reach value faster and open fewer support tickets.</span></span></span><i class="wwa-bar"></i></button></li>
+        <li><button class="wwa-row" type="button" data-k="2" aria-expanded="false"><span class="wwa-num">03</span><span class="wwa-body"><b>Tie learning to growth</b><span class="wwa-desc"><span>See who learns, who is stuck and who finishes, and connect it to retention and expansion.</span></span></span><i class="wwa-bar"></i></button></li>
+      </ul>
+      <dl class="wwa-facts">
+        <div><dt>Open source</dt><dd>Code you can read</dd></div>
+        <div><dt>Cloud or self-hosted</dt><dd>Run it your way</dd></div>
+        <div><dt>AI built in</dt><dd>Drafts and tutoring</dd></div>
+      </dl>
     </div>
   </div>
 </section>
@@ -240,6 +252,51 @@
       <li><b>Next</b><span>Schools and universities</span></li>
       <li><b>In 10 years</b><span>Every school, university and company in the world</span></li>
     </ul>
+  </div>
+</section>
+
+<section class="ab-sec" id="what-we-do" aria-labelledby="does-title">
+  <div class="ab-head">
+    <h2 class="h2 ab-h" id="does-title" data-split>What value does ClassroomIO provide?</h2>
+    <p class="sub" data-in>Education can play a role at every stage of the customer journey. It can help attract and educate potential customers, support the sales process, get new customers to value faster, help customers understand more of the product, and keep customers engaged over time.</p>
+  </div>
+  <div class="vx" id="vx" data-in>
+    <article class="vx-card vx-dark vx-create" style="--n:0">
+      <i class="vx-glare" aria-hidden="true"></i>
+      <span class="vx-dots" aria-hidden="true"></span>
+      <header class="vx-bar"><span class="vx-mark"><svg viewBox="0 0 33 24" aria-hidden="true"><path d="M26.15 12.57a6.09 6.09 0 1 0 0-12.17 6.09 6.09 0 0 0 0 12.17ZM32.3 14.98v8.83H18.93V20.6c0-3.08 2.47-5.62 5.62-5.62h7.75ZM16.72.4v23.41H11.7c-3.21 0-6.15-1.34-8.29-3.41A11.7 11.7 0 0 1 11.7.4h5.02Z"/></svg></span><span class="vx-url">learn.yourcompany.com</span></header>
+      <h3 class="vx-title"><span class="vx-w">Turn</span> <span class="vx-w">what</span> <span class="vx-w">you</span> <span class="vx-w">know</span> <span class="vx-w vx-hi">into</span> <span class="vx-w vx-hi">courses</span> <span class="vx-w vx-hi">people</span> <span class="vx-w vx-hi">finish</span></h3>
+      <span class="vx-orb" aria-hidden="true">
+        <i class="vx-ring"></i><i class="vx-ring vx-ring-2"></i>
+        <svg class="vx-logo3d" viewBox="0 0 33 24"><defs><linearGradient id="vx-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#f3f6ff"/><stop offset="1" stop-color="#cdd9f7"/></linearGradient><linearGradient id="vx-gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path fill="url(#vx-g)" d="M26.15 12.57a6.09 6.09 0 1 0 0-12.17 6.09 6.09 0 0 0 0 12.17ZM32.3 14.98v8.83H18.93V20.6c0-3.08 2.47-5.62 5.62-5.62h7.75ZM16.72.4v23.41H11.7c-3.21 0-6.15-1.34-8.29-3.41A11.7 11.7 0 0 1 11.7.4h5.02Z"/><path fill="url(#vx-gs)" d="M26.15 12.57a6.09 6.09 0 1 0 0-12.17 6.09 6.09 0 0 0 0 12.17ZM32.3 14.98v8.83H18.93V20.6c0-3.08 2.47-5.62 5.62-5.62h7.75ZM16.72.4v23.41H11.7c-3.21 0-6.15-1.34-8.29-3.41A11.7 11.7 0 0 1 11.7.4h5.02Z"/></svg>
+      </span>
+      <a class="vx-cta" href="https://classroomio.com/signup"><span><small>ClassroomIO for teams</small><b>Start for free</b></span><i class="vx-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></i></a>
+    </article>
+
+    <article class="vx-card vx-light vx-ask" style="--n:1">
+      <i class="vx-glare" aria-hidden="true"></i>
+      <header class="vx-bar"><span class="vx-mark vx-mark-solid"><svg viewBox="0 0 33 24" aria-hidden="true"><path d="M26.15 12.57a6.09 6.09 0 1 0 0-12.17 6.09 6.09 0 0 0 0 12.17ZM32.3 14.98v8.83H18.93V20.6c0-3.08 2.47-5.62 5.62-5.62h7.75ZM16.72.4v23.41H11.7c-3.21 0-6.15-1.34-8.29-3.41A11.7 11.7 0 0 1 11.7.4h5.02Z"/></svg></span><span class="vx-url">classroomio.com</span></header>
+      <figure class="vx-photo"><img src="images/team-value-2.jpg" alt="A ClassroomIO team member explaining a point during a team meeting"></figure>
+      <div class="vx-prompt">
+        <i class="vx-spark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6z"/></svg></i>
+        <span class="vx-q"><small>Ask AI Tutor</small><b><span class="vx-typed">Summarise lesson 3 in two lines</span><i class="vx-caret" aria-hidden="true"></i></b></span>
+        <span class="vx-reply" aria-hidden="true"><i></i><span>3 key points ready</span></span>
+        <button class="vx-send" type="button" aria-label="Send prompt"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4"/></svg></button>
+      </div>
+      <p class="vx-copy"><span>Ask ClassroomIO anything —</span> answers straight from your course.</p>
+    </article>
+
+    <article class="vx-card vx-dark vx-stats" style="--n:2">
+      <i class="vx-glare" aria-hidden="true"></i>
+      <svg class="vx-giant" viewBox="0 0 33 24" aria-hidden="true"><path d="M26.15 12.57a6.09 6.09 0 1 0 0-12.17 6.09 6.09 0 0 0 0 12.17ZM32.3 14.98v8.83H18.93V20.6c0-3.08 2.47-5.62 5.62-5.62h7.75ZM16.72.4v23.41H11.7c-3.21 0-6.15-1.34-8.29-3.41A11.7 11.7 0 0 1 11.7.4h5.02Z"/></svg>
+      <header class="vx-bar"><span class="vx-mark"><svg viewBox="0 0 33 24" aria-hidden="true"><path d="M26.15 12.57a6.09 6.09 0 1 0 0-12.17 6.09 6.09 0 0 0 0 12.17ZM32.3 14.98v8.83H18.93V20.6c0-3.08 2.47-5.62 5.62-5.62h7.75ZM16.72.4v23.41H11.7c-3.21 0-6.15-1.34-8.29-3.41A11.7 11.7 0 0 1 11.7.4h5.02Z"/></svg></span><span class="vx-url">Analytics</span></header>
+      <div class="vx-stat" aria-live="polite">
+        <button class="vx-arrow" type="button" data-step="-1" aria-label="Previous metric"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button>
+        <span class="vx-metric"><small class="vx-label">Course completion</small><b class="vx-val">68%</b></span>
+        <button class="vx-arrow" type="button" data-step="1" aria-label="Next metric"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4"/></svg></button>
+      </div>
+      <span class="vx-word" aria-label="ClassroomIO"><i>C</i><i>l</i><i>a</i><i>s</i><i>s</i><i>r</i><i>o</i><i>o</i><i>m</i><i>I</i><i>O</i></span>
+    </article>
   </div>
 </section>
 
@@ -287,194 +344,65 @@
   </div>
 </section>
 
-<section class="ab-sec" id="what-we-do" aria-labelledby="does-title">
-  <div class="ab-head">
-    <h2 class="h2 ab-h" id="does-title" data-split>What value does ClassroomIO provide?</h2>
-    <p class="sub" data-in>Education can play a role at every stage of the customer journey. It can help attract and educate potential customers, support the sales process, get new customers to value faster, help customers understand more of the product, and keep customers engaged over time.</p>
-  </div>
-  <div class="dz">
-    <article class="ab-c dz-card" data-in style="--d:0s">
-      <span class="dz-top"><i class="dz-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></i><span class="dz-num">01 · Create</span></span>
-      <h3>Turn what you know into courses</h3>
-      <p>Your team already knows the product. Turn that into courses, lessons and learning paths without the usual complexity.</p>
-      <ul class="dz-tags"><li>Courses</li><li>Lessons</li><li>Learning paths</li></ul>
-    </article>
-    <article class="ab-c dz-card" data-in style="--d:.08s">
-      <span class="dz-top"><i class="dz-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.9 7.6-3.8M8.2 13.1l7.6 3.8"/></svg></i><span class="dz-num">02 · Distribute</span></span>
-      <h3>Get it to every customer</h3>
-      <p>Put the training in front of every customer through a branded academy on your domain, cohorts and courses you can share with a link.</p>
-      <ul class="dz-tags"><li>Academies</li><li>Custom domains</li><li>Cohorts</li></ul>
-    </article>
-    <figure class="dz-photo" data-in style="--d:.16s">
-      <img src="images/team-value-2.jpg" alt="A ClassroomIO team member explaining a point during a team meeting">
-      <figcaption class="dz-chip"><i><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/><path d="M5.5 7V5.5a2.5 2.5 0 0 1 5 0V7"/></svg></i><span><b>learn.yourcompany.com</b><small>Your academy, your domain</small></span></figcaption>
-    </figure>
-    <article class="ab-c dz-card" data-in style="--d:.24s">
-      <span class="dz-top"><i class="dz-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg></i><span class="dz-num">03 · Native AI</span></span>
-      <h3>Let AI do the heavy lifting</h3>
-      <p>AI drafts your courses, generates content and helps each customer while they learn, so the training stays interactive without someone running it.</p>
-      <ul class="dz-tags"><li>Course drafts</li><li>AI Tutor</li><li>Content</li></ul>
-    </article>
-    <article class="ab-c dz-card" data-in style="--d:.32s">
-      <span class="dz-top"><i class="dz-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></svg></i><span class="dz-num">04 · Intelligence</span></span>
-      <h3>See who is learning and who is stuck</h3>
-      <p>Know who started, who stopped and who finished, with progress, engagement and completion rates you can act on.</p>
-      <ul class="dz-tags"><li>Progress</li><li>Engagement</li><li>Completion</li></ul>
-    </article>
-  </div>
-</section>
-
-<section class="ab-sec" id="new" aria-labelledby="new-title">
-  <div class="ab-head">
-    <span class="ab-pill" data-in>New in ClassroomIO</span>
-    <h2 class="h2 ab-h" id="new-title" data-split>Less training by hand, every release</h2>
-    <p class="sub" data-in>The latest tools for setting training up once and letting it run.</p>
-  </div>
-  <div class="nx">
-    <article class="ab-c nx-card" data-in style="--d:0s"><span class="nx-tag now">New</span><h3>Verifiable certificates</h3><p>Anyone can check a certificate online, so a credential earned in your academy means something outside it.</p></article>
-    <article class="ab-c nx-card" data-in style="--d:.06s"><span class="nx-tag now">New</span><h3>AI onboarding</h3><p>Paste your website when you sign up and get starter courses about your product, with your branding applied.</p></article>
-    <article class="ab-c nx-card" data-in style="--d:.12s"><span class="nx-tag now">New</span><h3>Plugins</h3><p>Add your own widgets and tools to the platform.</p></article>
-    <article class="ab-c nx-card" data-in style="--d:.18s"><span class="nx-tag now">New</span><h3>Learning paths</h3><p>Give each customer a clear path from signup to success, based on their role.</p></article>
-    <article class="ab-c nx-card" data-in style="--d:.24s"><span class="nx-tag now">New</span><h3>Your academy inside your app</h3><p>Bring courses into your own product, so customers learn without leaving it.</p></article>
-    <a class="ab-c nx-card nx-more" href="https://classroomio.com/changelog" data-in style="--d:.3s"><span class="ab-c-top"><span></span><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span><h3>See every release</h3><p>Follow what we ship each week in the changelog.</p></a>
-  </div>
-</section>
 <section class="ab-sec" id="different" aria-labelledby="diff-title">
   <div class="ab-head">
     <span class="ab-pill" data-in>Why ClassroomIO</span>
     <h2 class="h2 ab-h" id="diff-title" data-split>What makes ClassroomIO different</h2>
   </div>
-  <div class="wy">
-    <a class="ab-c wy-card wy-brand" href="index.html#bx-academy" data-in style="--d:0s">
-      <span class="wy-text">
-        <span class="ab-pill">Customisable</span>
-        <h3 class="wy-h">It looks like you, not like us</h3>
-        <p>Your <b>domain</b>, your <b>logo</b>, your <b>colours</b> and your <b>certificates</b>. Embed courses in your site or product.</p>
-      </span>
-      <span class="wy-photo">
-        <img src="images/team-customisable.jpg" alt="Two ClassroomIO team members listening in a meeting">
-        <span class="wy-chips" aria-hidden="true"><span class="wy-track"><i>Your domain</i><i>Your logo</i><i class="wy-chip-go"><svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg></i><i>Your colours</i><i>Certificates</i><i>Embeds</i><i>Your domain</i><i>Your logo</i><i class="wy-chip-go"><svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg></i><i>Your colours</i><i>Certificates</i><i>Embeds</i></span></span>
+  <div class="df">
+    <a class="ab-c df-card df-open" href="index.html#bx-academy" data-in style="--d:0s">
+      <img class="df-bg" src="images/team-customisable.jpg" alt="Two ClassroomIO team members listening in a meeting">
+      <span class="ab-c-top"><span class="ab-pill on-dark">Customisable</span><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
+      <span class="df-foot">
+        <h3>It looks like you, not like us</h3>
+        <p>Your domain, your logo, your colours and your certificates. Embed courses in your site or product.</p>
       </span>
     </a>
-
-    <article class="ab-c wy-card wy-team" data-in style="--d:.08s">
-      <span class="wy-text">
-        <span class="ab-pill">Focus</span>
-        <h3 class="wy-h">Built to end manual training</h3>
-        <p>Set the training up <b>once</b>, put every new customer through it, and <b>certify</b> them. Your experts only show up for the parts that need them.</p>
-      </span>
-      <span class="wy-net" aria-hidden="true">
-        <svg viewBox="0 0 300 170" preserveAspectRatio="none">
-          <g class="wy-net-faint">
-            <path d="M150 34C90 40 30 52 -10 74"/><path d="M150 34C210 40 270 52 310 74"/>
-            <path d="M150 34C110 50 70 80 50 170"/><path d="M150 34C190 50 230 80 250 170"/>
-          </g>
-          <g class="wy-net-live">
-            <path d="M150 34C110 44 60 70 38 112"/><path d="M150 34C138 70 112 110 100 148"/>
-            <path d="M150 34C162 70 188 110 200 148"/><path d="M150 34C190 44 240 70 262 112"/>
-          </g>
-        </svg>
-        <span class="wy-av wy-av-main" style="--x:50%;--y:20%"><img src="images/av-expert.jpg" alt=""></span>
-        <span class="wy-av" style="--x:12.7%;--y:66%;--n:0"><img src="images/av-a.jpg" alt=""><i class="wy-badge ok"><svg viewBox="0 0 12 12"><path d="m3 6.2 2 2 4-4.4"/></svg></i></span>
-        <span class="wy-av" style="--x:33.3%;--y:87%;--n:1"><img src="images/av-c.jpg" alt=""><i class="wy-badge cert"><svg viewBox="0 0 12 12"><circle cx="6" cy="5" r="2.6"/><path d="m4.4 7.3-.7 3 2.3-1.2 2.3 1.2-.7-3"/></svg></i></span>
-        <span class="wy-av" style="--x:66.7%;--y:87%;--n:2"><img src="images/av-d.jpg" alt=""><i class="wy-badge ok"><svg viewBox="0 0 12 12"><path d="m3 6.2 2 2 4-4.4"/></svg></i></span>
-        <span class="wy-av" style="--x:87.3%;--y:66%;--n:3"><img src="images/av-b.jpg" alt=""><i class="wy-badge play"><svg viewBox="0 0 12 12"><path d="M6 3.4V6l1.8 1.2"/></svg></i></span>
-      </span>
-    </article>
-
-    <article class="ab-c df-card wy-card wy-dev" data-in style="--d:.16s">
-      <span class="wy-text">
-        <span class="ab-pill">Developer friendly</span>
-        <h3 class="wy-h">A real API, not a checkbox</h3>
-        <p>A public <b>API</b>, signed <b>webhooks</b> and <b>Zapier</b>, so completions and certificates land in your CRM and support desk.</p>
-      </span>
-      <span class="df-pic df-dev"><img src="images/team-dev.jpg" alt="A ClassroomIO engineer laughing at his laptop during a team session"><span class="df-stack" aria-hidden="true"><i>API</i><i>Webhooks</i><i>Zapier</i></span></span>
-    </article>
-
-    <a class="ab-c wy-card wy-agent" href="https://classroomio.com/developers" data-in style="--d:.24s">
-      <span class="wy-bar" aria-hidden="true"><img src="images/logo.svg" alt=""><b>ClassroomIO</b><i><svg viewBox="0 0 16 16"><path d="M3 5h10M3 8h10M3 11h6"/></svg></i></span>
-      <span class="wy-agent-in">
-        <span class="ab-pill">Agent friendly</span>
-        <h3 class="wy-h">Built for agents as well as people</h3>
-        <p>Draft courses with AI, answer learners with the <b>AI Tutor</b>, and let agents in Claude, Cursor or any <b>MCP client</b> do the admin.</p>
-        <span class="wy-ask" aria-hidden="true"><span class="wy-typed">Draft a course from our help docs</span><i class="wy-caret"></i><span class="wy-send"><svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
-      </span>
-      <canvas class="wy-waves" aria-hidden="true"></canvas>
-      <span class="wy-logos" aria-hidden="true"><span class="wy-track"><i>Claude</i><i>Cursor</i><i>Any MCP client</i><i>AI Tutor</i><i>Claude</i><i>Cursor</i><i>Any MCP client</i><i>AI Tutor</i></span></span>
+    <a class="ab-c df-card df-blue" href="pricing.html" data-in style="--d:.08s">
+      <span class="ab-c-top"><span class="ab-pill on-dark">Free to start</span><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
+      <h3>Start free, stay in control</h3>
+      <p>There is a free plan, and the code is open source, so you are never locked in. Paid plans start at $39 a month.</p>
+      <span class="df-pic df-group"><img src="images/team-group.jpg?v=2" alt="Five members of the ClassroomIO team standing together with arms crossed"></span>
     </a>
-
-    <article class="ab-c wy-card wy-free" data-in style="--d:.32s">
-      <span class="wy-free-in">
-        <span class="ab-pill on-dark">Free to start</span>
-        <h3 class="wy-h">Start free, stay in control</h3>
-        <p>There is a <b>free plan</b>, and the code is <b>open source</b>, so you are never locked in. Paid plans start at $39 a month.</p>
-        <span class="wy-btns"><a class="wy-btn wy-btn-light" href="https://classroomio.com/signup">Start for free</a><a class="wy-btn wy-btn-ghost" href="pricing.html">See pricing</a></span>
-      </span>
-      <span class="wy-stack" aria-hidden="true">
-        <span class="wy-doc">
-          <span class="wy-doc-k">Your plan</span>
-          <b>Free plan</b>
-          <span class="wy-doc-row"><i></i>Open source code</span>
-          <span class="wy-doc-row"><i></i>Never locked in</span>
-          <span class="wy-doc-row"><i></i>Paid from $39 a month</span>
-          <span class="wy-doc-lines"><i></i><i></i><i></i></span>
+    <article class="ab-c df-card" data-in style="--d:.16s">
+      <span class="ab-c-top"><span class="ab-pill">Developer friendly</span></span>
+      <h3>A real API, not a checkbox</h3>
+      <p>A public API, signed webhooks and Zapier, so completions and certificates land in your CRM and support desk.</p>
+      <span class="df-pic df-dev"><img src="images/team-laptop-talk.jpg" alt="A ClassroomIO team member explaining something to colleagues across a meeting table"><span class="df-stack" aria-hidden="true"><i>API</i><i>Webhooks</i><i>Zapier</i></span></span>
+    </article>
+    <article class="ab-c df-card" data-in style="--d:.24s">
+      <span class="ab-c-top"><span class="ab-pill">Focus</span></span>
+      <h3>Built to end manual training</h3>
+      <p>Set the training up once, put every new customer through it, and certify them. Your experts only show up for the parts that need them.</p>
+      <span class="df-pic tl" aria-hidden="true">
+        <span class="tl-rail">
+          <span class="tl-col"><span class="tl-run">
+            <span class="tl-tile tl-blue tl-a"><i></i><i></i><i></i><b>Set it up once.</b><small>ClassroomIO / customer training</small></span>
+            <span class="tl-tile tl-mint tl-b"><i></i><i></i><i></i><b>Certify every customer.</b><small>ClassroomIO / customer training</small></span>
+            <span class="tl-tile tl-navy tl-c"><i></i><i></i><i></i><b>Less hand-holding.</b><small>ClassroomIO / customer training</small></span>
+          </span></span>
+          <span class="tl-col"><span class="tl-run">
+            <span class="tl-tile tl-lilac tl-c"><i></i><i></i><i></i><b>Onboard without calls.</b><small>ClassroomIO / customer training</small></span>
+            <span class="tl-tile tl-lime tl-a"><i></i><i></i><i></i><b>Train at scale.</b><small>ClassroomIO / customer training</small></span>
+            <span class="tl-tile tl-blue tl-b"><i></i><i></i><i></i><b>Every customer, certified.</b><small>ClassroomIO / customer training</small></span>
+          </span></span>
+          <span class="tl-col"><span class="tl-run">
+            <span class="tl-tile tl-navy tl-b"><i></i><i></i><i></i><b>Experts, only when needed.</b><small>ClassroomIO / customer training</small></span>
+            <span class="tl-tile tl-lilac tl-a"><i></i><i></i><i></i><b>No more demo calls.</b><small>ClassroomIO / customer training</small></span>
+            <span class="tl-tile tl-mint tl-c"><i></i><i></i><i></i><b>Ship it once.</b><small>ClassroomIO / customer training</small></span>
+          </span></span>
         </span>
-        <span class="wy-snap"><img src="images/team-group.jpg?v=2" alt=""></span>
-        <span class="wy-bubble"><img src="images/av-f.jpg" alt=""></span>
       </span>
     </article>
+    <a class="ab-c df-card df-navy" href="https://classroomio.com/developers" data-in style="--d:.32s">
+      <span class="ab-c-top"><span class="ab-pill on-dark">Agent friendly</span><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
+      <h3>Built for agents as well as people</h3>
+      <p>Draft courses with AI, answer learners with the AI Tutor, and let agents in Claude, Cursor or any MCP client do the admin.</p>
+      <span class="df-pic df-trio"><img src="images/team-trio.jpg" alt="Three ClassroomIO team members smiling together"></span>
+    </a>
   </div>
 </section>
 
-<section class="ab-sec" id="industries" aria-labelledby="ind-title">
-  <div class="ab-head">
-    <span class="ab-pill" data-in>Industries</span>
-    <h2 class="h2 ab-h" id="ind-title" data-split>Wherever training is done by hand</h2>
-    <p class="sub" data-in>If your team trains customers, partners or staff, ClassroomIO fits.</p>
-  </div>
-  <div class="wz wz-inds">
-    <a class="ab-c wz-card wz-ind" href="https://classroomio.com/solutions" data-in style="--d:0.00s">
-      <span class="wz-top"><i class="wz-ic" aria-hidden="true">‹›</i><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
-      <h3>Software</h3>
-      <p>Teach customers your product and certify your partners.</p>
-    </a>
-    <a class="ab-c wz-card wz-ind" href="https://classroomio.com/solutions" data-in style="--d:0.05s">
-      <span class="wz-top"><i class="wz-ic" aria-hidden="true">⚙</i><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
-      <h3>Manufacturing</h3>
-      <p>Train customers and field teams on your equipment.</p>
-    </a>
-    <a class="ab-c wz-card wz-ind" href="https://classroomio.com/solutions" data-in style="--d:0.10s">
-      <span class="wz-top"><i class="wz-ic" aria-hidden="true">⌂</i><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
-      <h3>Public Sector</h3>
-      <p>Train staff on services, policies and processes.</p>
-    </a>
-    <a class="ab-c wz-card wz-ind" href="https://classroomio.com/solutions" data-in style="--d:0.15s">
-      <span class="wz-top"><i class="wz-ic" aria-hidden="true">◫</i><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
-      <h3>Retail</h3>
-      <p>Onboard store teams and train partners on your products.</p>
-    </a>
-    <a class="ab-c wz-card wz-ind" href="https://classroomio.com/solutions" data-in style="--d:0.20s">
-      <span class="wz-top"><i class="wz-ic" aria-hidden="true">▤</i><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
-      <h3>IT and Tech Services</h3>
-      <p>Certify clients and partners on the tools you support.</p>
-    </a>
-    <a class="ab-c wz-card wz-ind" href="https://classroomio.com/solutions" data-in style="--d:0.25s">
-      <span class="wz-top"><i class="wz-ic" aria-hidden="true">$</i><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
-      <h3>Financial Services</h3>
-      <p>Run compliance training and teach customers your products.</p>
-    </a>
-    <a class="ab-c wz-card wz-ind" href="https://classroomio.com/solutions" data-in style="--d:0.30s">
-      <span class="wz-top"><i class="wz-ic" aria-hidden="true">✚</i><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
-      <h3>Healthcare</h3>
-      <p>Run compliance and onboarding training for your staff.</p>
-    </a>
-    <a class="ab-c wz-card wz-ind" href="https://classroomio.com/solutions" data-in style="--d:0.35s">
-      <span class="wz-top"><i class="wz-ic" aria-hidden="true">✎</i><span class="ab-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></span>
-      <h3>Education</h3>
-      <p>Run courses and programmes for your students.</p>
-    </a>
-  </div>
-</section>
 
 <section class="cu-faq-sec" id="faq" aria-labelledby="faq-title">
   <div class="cu-wrap">
@@ -597,7 +525,7 @@
 
 <footer class="ft rails" data-site-footer></footer>
 
-<script src="about.js?v=25"></script>
+<script src="about.js?v=32"></script>
 <script src="stories.js?v=2"></script>
 <script src="mobile-menu.js?v=4"></script>
 <script src="site-footer.js?v=3"></script>

@@ -816,6 +816,326 @@
     window.setTimeout(step, 3200);
   }
 
+  function setupFocusTiles(stage) {
+    if (!stage) return;
+
+    const tones = ['tl-blue', 'tl-mint', 'tl-navy', 'tl-lilac', 'tl-lime'];
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    stage.querySelectorAll('.tl-run').forEach((run) => {
+      Array.from(run.children).forEach((tile) => run.appendChild(tile.cloneNode(true)));
+    });
+    stage.querySelectorAll('.tl-tile').forEach((tile, index) => {
+      tile.style.transitionDelay = `${(index % 3) * 90 + Math.floor(index / 6) * 60}ms`;
+      tile.addEventListener('transitionend', () => (tile.style.transitionDelay = ''), { once: true });
+    });
+
+    if (!reduceMotion) stage.classList.add('tl-ready');
+
+    stage.addEventListener('pointermove', (event) => {
+      const bounds = stage.getBoundingClientRect();
+      const offsetX = (event.clientX - bounds.left) / bounds.width - 0.5;
+      const offsetY = (event.clientY - bounds.top) / bounds.height - 0.5;
+      stage.style.setProperty('--px', `${(-offsetX * 28).toFixed(1)}px`);
+      stage.style.setProperty('--py', `${(-offsetY * 20).toFixed(1)}px`);
+    });
+    stage.addEventListener('pointerleave', () => {
+      stage.style.setProperty('--px', '0px');
+      stage.style.setProperty('--py', '0px');
+    });
+
+    stage.addEventListener('click', (event) => {
+      const tile = event.target.closest('.tl-tile');
+      if (!tile) return;
+
+      const currentTone = tones.find((tone) => tile.classList.contains(tone));
+      const nextTone = tones[(tones.indexOf(currentTone) + 1) % tones.length];
+      tile.classList.replace(currentTone, nextTone);
+      tile.classList.remove('tl-pop');
+      void tile.offsetWidth;
+      tile.classList.add('tl-pop');
+    });
+  }
+
+  /**
+   * Wires the value cards: pointer tilt, glare and layer parallax on each card, the logo spin,
+   * the typed AI Tutor prompts with their replies, and the metric switcher with count-up.
+   * @param {HTMLElement} grid The `.vx` element holding the three cards.
+   */
+  function setupValueCards(grid) {
+    if (!grid) return;
+
+    const cards = [...grid.querySelectorAll('.vx-card')];
+    grid.querySelectorAll('.vx-title .vx-w').forEach((word, index) => word.style.setProperty('--i', String(index)));
+    grid.querySelectorAll('.vx-word i').forEach((letter, index) => letter.style.setProperty('--i', String(index)));
+
+    const settleDelay = 1300 + cards.length * 140;
+    const startLive = () => window.setTimeout(() => grid.classList.add('vx-live'), settleDelay);
+    if (grid.classList.contains('in')) startLive();
+    else
+      new MutationObserver((records, observer) => {
+        if (!grid.classList.contains('in')) return;
+
+        observer.disconnect();
+        startLive();
+      }).observe(grid, { attributes: true, attributeFilter: ['class'] });
+
+    if (canHover && !reduceMotion) {
+      cards.forEach((card) => {
+        card.addEventListener('pointermove', (event) => {
+          const bounds = card.getBoundingClientRect();
+          const offsetX = (event.clientX - bounds.left) / bounds.width;
+          const offsetY = (event.clientY - bounds.top) / bounds.height;
+          card.classList.add('vx-tilting');
+          card.style.setProperty('--mx', `${(offsetX * 100).toFixed(1)}%`);
+          card.style.setProperty('--my', `${(offsetY * 100).toFixed(1)}%`);
+          card.style.setProperty('--px', (offsetX * 2 - 1).toFixed(3));
+          card.style.setProperty('--py', (offsetY * 2 - 1).toFixed(3));
+          if (!grid.classList.contains('vx-live')) return;
+
+          card.style.setProperty('--ry', `${((offsetX - 0.5) * 12).toFixed(2)}deg`);
+          card.style.setProperty('--rx', `${((0.5 - offsetY) * 10).toFixed(2)}deg`);
+        });
+        card.addEventListener('pointerleave', () => {
+          card.classList.remove('vx-tilting');
+          ['--rx', '--ry'].forEach((name) => card.style.setProperty(name, '0deg'));
+          ['--px', '--py'].forEach((name) => card.style.setProperty(name, '0'));
+        });
+      });
+    }
+
+    const orb = grid.querySelector('.vx-orb');
+    orb.addEventListener('click', () => {
+      orb.classList.remove('vx-spin');
+      void orb.offsetWidth;
+      orb.classList.add('vx-spin');
+    });
+    orb.addEventListener('animationend', () => orb.classList.remove('vx-spin'));
+
+    const prompts = [
+      { ask: 'Summarise lesson 3 in two lines', reply: '3 key points ready' },
+      { ask: 'Quiz me on the onboarding module', reply: '5 questions drafted' },
+      { ask: 'Draft a course from our help docs', reply: '12 lessons outlined' },
+      { ask: 'Who is stuck on module 2?', reply: '4 learners need a nudge' }
+    ];
+    const typed = grid.querySelector('.vx-typed');
+    const send = grid.querySelector('.vx-send');
+    const reply = grid.querySelector('.vx-reply');
+    const replyText = reply.querySelector('span');
+    const typePrompt = createTyper(typed);
+    let promptIndex = 0;
+    let promptTimer = 0;
+
+    const firePrompt = () => {
+      clearTimeout(promptTimer);
+      send.classList.remove('vx-fire');
+      void send.offsetWidth;
+      send.classList.add('vx-fire');
+      replyText.textContent = prompts[promptIndex].reply;
+      reply.classList.add('on');
+      promptTimer = setTimeout(nextPrompt, 2400);
+    };
+    const nextPrompt = () => {
+      reply.classList.remove('on');
+      promptIndex = (promptIndex + 1) % prompts.length;
+      typePrompt(prompts[promptIndex].ask, () => {
+        promptTimer = setTimeout(firePrompt, 700);
+      });
+    };
+    send.addEventListener('click', firePrompt);
+
+    const metrics = [
+      { label: 'Course completion', value: 68, suffix: '%' },
+      { label: 'Active learners this week', value: 1240, suffix: '' },
+      { label: 'Average quiz score', value: 84, suffix: '%' },
+      { label: 'Customers onboarded', value: 312, suffix: '' }
+    ];
+    const metric = grid.querySelector('.vx-metric');
+    const label = grid.querySelector('.vx-label');
+    const valueEl = grid.querySelector('.vx-val');
+    let metricIndex = 0;
+    let metricTimer = 0;
+    let countFrame = 0;
+
+    const countTo = (target, suffix, from) => {
+      cancelAnimationFrame(countFrame);
+      if (reduceMotion) {
+        valueEl.textContent = `${target.toLocaleString('en-US')}${suffix}`;
+        return;
+      }
+
+      const startTime = performance.now();
+      const duration = 1100;
+      const tick = (now) => {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 4);
+        const current = Math.round(from + (target - from) * eased);
+        valueEl.textContent = `${current.toLocaleString('en-US')}${suffix}`;
+        if (progress < 1) countFrame = requestAnimationFrame(tick);
+      };
+      countFrame = requestAnimationFrame(tick);
+    };
+
+    const showMetric = (step) => {
+      clearTimeout(metricTimer);
+      metricIndex = (metricIndex + step + metrics.length) % metrics.length;
+      const next = metrics[metricIndex];
+      const swap = () => {
+        label.textContent = next.label;
+        countTo(next.value, next.suffix, 0);
+      };
+      if (reduceMotion) swap();
+      else {
+        const shift = step > 0 ? -16 : 16;
+        metric
+          .animate(
+            [
+              { transform: 'translateY(0)', opacity: 1, filter: 'blur(0)' },
+              { transform: `translateY(${shift}px)`, opacity: 0, filter: 'blur(4px)' }
+            ],
+            { duration: 200, easing: 'ease-in' }
+          )
+          .finished.then(() => {
+            swap();
+            metric.animate(
+              [
+                { transform: `translateY(${-shift}px)`, opacity: 0, filter: 'blur(4px)' },
+                { transform: 'translateY(0)', opacity: 1, filter: 'blur(0)' }
+              ],
+              { duration: 420, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }
+            );
+          });
+      }
+      metricTimer = setTimeout(() => showMetric(1), 3600);
+    };
+    grid
+      .querySelectorAll('.vx-arrow')
+      .forEach((arrow) => arrow.addEventListener('click', () => showMetric(Number(arrow.dataset.step))));
+
+    if (reduceMotion || !('IntersectionObserver' in window)) return;
+
+    let started = false;
+    new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || started) return;
+
+          started = true;
+          setTimeout(() => countTo(68, '%', 0), 900);
+          promptTimer = setTimeout(firePrompt, 2200);
+          metricTimer = setTimeout(() => showMetric(1), 4600);
+        });
+      },
+      { threshold: 0.35 }
+    ).observe(grid);
+  }
+
+  /**
+   * Wires the Who we are panel: the cursor glow, circles that swell near the pointer and pop on
+   * click, the blue circles that drift around the grid, and the three topics that cycle on their
+   * own while linking each row to its pill and photo.
+   * @param {HTMLElement} panel The `.wwa` element.
+   */
+  function setupWhoWeAre(panel) {
+    if (!panel) return;
+
+    const grid = panel.querySelector('.wwa-grid');
+    [...grid.children].forEach((cell, index) => cell.style.setProperty('--i', String(index)));
+    const circles = [...grid.querySelectorAll('.wwa-c')];
+    const plainCircles = circles.filter((circle) => !circle.classList.contains('wwa-p'));
+    const rows = [...panel.querySelectorAll('.wwa-row')];
+    const linked = [...panel.querySelectorAll('[data-k]')];
+    let activeIndex = 0;
+
+    const setActive = (index) => {
+      activeIndex = index;
+      linked.forEach((element) => element.classList.toggle('on', Number(element.dataset.k) === index));
+      rows.forEach((row) => row.setAttribute('aria-expanded', String(Number(row.dataset.k) === index)));
+      grid.classList.add('has-on');
+    };
+    const restartBar = () => {
+      const bar = rows[activeIndex].querySelector('.wwa-bar');
+      bar.style.animation = 'none';
+      void bar.offsetWidth;
+      bar.style.animation = '';
+    };
+
+    rows.forEach((row) =>
+      row.addEventListener('click', () => {
+        setActive(Number(row.dataset.k));
+        restartBar();
+      })
+    );
+    grid.querySelectorAll('.wwa-pill').forEach((pill) => {
+      const choose = () => {
+        if (Number(pill.dataset.k) === activeIndex) return;
+
+        setActive(Number(pill.dataset.k));
+      };
+      pill.addEventListener('pointerenter', choose);
+      pill.addEventListener('click', choose);
+    });
+    rows.forEach((row) =>
+      row.querySelector('.wwa-bar').addEventListener('animationend', () => setActive((activeIndex + 1) % rows.length))
+    );
+    setActive(0);
+
+    circles.forEach((circle) =>
+      circle.addEventListener('click', () => {
+        if (!circle.classList.contains('wwa-p')) circle.classList.toggle('a');
+        circle.classList.remove('wwa-pop');
+        void circle.offsetWidth;
+        circle.classList.add('wwa-pop');
+      })
+    );
+    circles.forEach((circle) => circle.addEventListener('animationend', () => circle.classList.remove('wwa-pop')));
+
+    panel.addEventListener('pointerenter', () => panel.classList.add('paused'));
+    panel.addEventListener('pointerleave', () => {
+      panel.classList.remove('paused');
+      circles.forEach((circle) => circle.style.setProperty('--s', '1'));
+    });
+
+    if (reduceMotion) return;
+
+    if (canHover) {
+      panel.addEventListener('pointermove', (event) => {
+        const panelBounds = panel.getBoundingClientRect();
+        panel.style.setProperty('--gx', `${event.clientX - panelBounds.left}px`);
+        panel.style.setProperty('--gy', `${event.clientY - panelBounds.top}px`);
+        circles.forEach((circle) => {
+          const bounds = circle.getBoundingClientRect();
+          const distance = Math.hypot(
+            event.clientX - (bounds.left + bounds.width / 2),
+            event.clientY - (bounds.top + bounds.height / 2)
+          );
+          const pull = Math.max(0, 1 - distance / 170);
+          circle.style.setProperty('--s', (1 + pull * 0.16).toFixed(3));
+        });
+      });
+    }
+
+    let inView = false;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        inView = entries[0].isIntersecting;
+      }).observe(panel);
+    }
+    setInterval(() => {
+      if (!inView || panel.classList.contains('paused')) return;
+
+      const lit = plainCircles.filter((circle) => circle.classList.contains('a'));
+      const dark = plainCircles.filter((circle) => !circle.classList.contains('a'));
+      if (!lit.length || !dark.length) return;
+
+      lit[Math.floor(Math.random() * lit.length)].classList.remove('a');
+      dark[Math.floor(Math.random() * dark.length)].classList.add('a');
+    }, 1800);
+  }
+
+  setupFocusTiles(document.querySelector('.tl'));
+  setupWhoWeAre(document.getElementById('wwa'));
+  setupValueCards(document.getElementById('vx'));
   setupAgentWaves(document.querySelector('.wy-waves'));
   setupAgentPrompts(document.querySelector('.wy-typed'));
 
