@@ -427,7 +427,7 @@ function formatScore(review) {
 
 function runOpenCodeProcess(args, { cwd, env, timeoutMs, maxBufferBytes }) {
   return new Promise((resolveProcess, rejectProcess) => {
-    const child = spawn('opencode', args, { cwd, env });
+    const child = spawn('opencode', args, { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
     const output = { stdout: '', stderr: '' };
     let settled = false;
     let timedOut = false;
