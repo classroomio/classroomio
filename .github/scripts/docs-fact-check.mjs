@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { existsSync, lstatSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { posix, resolve, sep } from 'node:path';
@@ -425,7 +425,60 @@ function formatScore(review) {
   return { score, body: `${marker}\n${status} **Documentation fact check: ${score}/5**\n\n${summary}` };
 }
 
-function runOpenCode(worktree, prompt, stepBudget) {
+function runOpenCodeProcess(args, { cwd, env, timeoutMs, maxBufferBytes }) {
+  return new Promise((resolveProcess, rejectProcess) => {
+    const child = spawn('opencode', args, { cwd, env });
+    const output = { stdout: '', stderr: '' };
+    let settled = false;
+    let timedOut = false;
+
+    function settle(onDone) {
+      if (settled) return false;
+
+      settled = true;
+      clearTimeout(timer);
+      onDone();
+      return true;
+    }
+
+    function fail(error) {
+      return settle(() => rejectProcess(error));
+    }
+
+    const timer = setTimeout(() => {
+      timedOut = true;
+      child.kill('SIGTERM');
+    }, timeoutMs);
+
+    child.on('error', fail);
+
+    for (const streamName of ['stdout', 'stderr']) {
+      const stream = child[streamName];
+      stream.setEncoding('utf8');
+      stream.on('data', (chunk) => {
+        if (settled) return;
+
+        output[streamName] += chunk;
+
+        if (Buffer.byteLength(output[streamName]) > maxBufferBytes) {
+          child.kill('SIGTERM');
+          fail(new Error(`OpenCode ${streamName} exceeded ${maxBufferBytes} bytes`));
+        }
+      });
+    }
+
+    child.on('exit', (code, signal) => {
+      if (timedOut) {
+        fail(new Error(`OpenCode timed out after ${Math.round(timeoutMs / 60000)} minutes`));
+        return;
+      }
+
+      settle(() => resolveProcess({ code, signal, ...output }));
+    });
+  });
+}
+
+async function runOpenCode(worktree, prompt, stepBudget) {
   const { GITHUB_TOKEN, GH_TOKEN, ...safeEnvironment } = process.env;
   const configuration = {
     $schema: 'https://opencode.ai/config.json',
@@ -444,8 +497,11 @@ function runOpenCode(worktree, prompt, stepBudget) {
       }
     }
   };
-  const result = spawnSync(
-    'opencode',
+
+  // Async spawn on purpose: spawnSync freezes the event loop for the whole
+  // review, so undici's pooled keep-alive sockets to api.github.com sit idle
+  // past GitHub's server-side close and the next write fails with EPIPE.
+  const result = await runOpenCodeProcess(
     [
       'run',
       '--standalone',
@@ -457,9 +513,8 @@ function runOpenCode(worktree, prompt, stepBudget) {
     ],
     {
       cwd: worktree,
-      encoding: 'utf8',
-      maxBuffer: 12 * 1024 * 1024,
-      timeout: 25 * 60 * 1000,
+      timeoutMs: 25 * 60 * 1000,
+      maxBufferBytes: 12 * 1024 * 1024,
       env: {
         ...safeEnvironment,
         PWD: worktree,
@@ -471,8 +526,8 @@ function runOpenCode(worktree, prompt, stepBudget) {
     }
   );
 
-  if (result.error || result.status !== 0) {
-    throw new Error(`OpenCode failed: ${result.error?.message || result.stderr || result.stdout}`);
+  if (result.code !== 0 || result.signal) {
+    throw new Error(`OpenCode failed: ${result.stderr || result.stdout}`);
   }
 
   return parseReview(result.stdout);
@@ -647,11 +702,11 @@ async function reviewPullRequest(pullRequest, replyContext) {
     let review;
 
     try {
-      review = runOpenCode(worktree, prompt, stepBudget);
+      review = await runOpenCode(worktree, prompt, stepBudget);
     } catch (error) {
       if (!(error instanceof ReviewParseError)) throw error;
 
-      review = runOpenCode(worktree, prompt, stepBudget);
+      review = await runOpenCode(worktree, prompt, stepBudget);
     }
 
     const findings = review.findings.filter(
