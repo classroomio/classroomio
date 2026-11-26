@@ -160,7 +160,7 @@ runs on a half-restored copy; fix the error and run the commands again.
 ```bash title="Terminal"
 set -o pipefail
 docker stop cio-api cio-dashboard cio-jobs cio-storage &&
-  docker exec cio-postgres dropdb -U postgres classroomio &&
+  docker exec cio-postgres dropdb --if-exists -U postgres classroomio &&
   docker exec cio-postgres createdb -U postgres classroomio &&
   gunzip -c backups/db-<timestamp>.sql.gz |
   docker exec -i cio-postgres psql -v ON_ERROR_STOP=1 -U postgres classroomio &&
