@@ -111,6 +111,14 @@ describe('assertStudentHomeDestination', () => {
     ).resolves.toEqual({ path: null, courseId: COURSE_ID });
   });
 
+  it('rejects a private course as the student home', async () => {
+    vi.mocked(getStudentHomeCourseCandidate).mockResolvedValue(openCourse({ isPrivate: true }) as never);
+
+    await expect(
+      assertStudentHomeDestination(ORG_ID, { type: 'course', courseId: COURSE_ID }, null, {} as never)
+    ).rejects.toMatchObject({ statusCode: 400, code: 'STUDENT_HOME_INVALID_COURSE', field: 'studentHome' });
+  });
+
   it('rejects unknown and cross-org courses with the same error', async () => {
     vi.mocked(getStudentHomeCourseCandidate).mockResolvedValue(null);
 

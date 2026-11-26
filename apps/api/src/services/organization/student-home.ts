@@ -93,7 +93,7 @@ export async function assertStudentHomeDestination(
 
   const course = await getStudentHomeCourseCandidate(orgId, destination.courseId, dbClient);
 
-  if (!course || course.status !== 'ACTIVE' || !course.isPublished || course.isTemplate) {
+  if (!course || course.status !== 'ACTIVE' || !course.isPublished || course.isPrivate || course.isTemplate) {
     throw new AppError(
       'This course cannot be used as the student home',
       ErrorCodes.STUDENT_HOME_INVALID_COURSE,

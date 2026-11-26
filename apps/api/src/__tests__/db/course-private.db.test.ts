@@ -7,6 +7,7 @@ import {
   countPublishedCoursesBySiteName,
   getExploreCourses,
   getOrgCourses,
+  getPrivateCourseIds,
   getPublishedCoursesBySiteName
 } from '@cio/db/queries/course';
 import * as schema from '@cio/db/schema';
@@ -83,6 +84,13 @@ describe.skipIf(!shouldRun)('private courses (database)', () => {
 
     expect(all.items.map((course) => course.id)).toContain(privateCourseId);
     expect(onlyPrivate.items.map((course) => course.id)).toEqual([privateCourseId]);
+  });
+
+  it('reports which of the given courses are private', async () => {
+    const privateIds = await getPrivateCourseIds([publicCourseId, privateCourseId, publicTypeCourseId]);
+
+    expect(privateIds).toEqual([privateCourseId]);
+    await expect(getPrivateCourseIds([])).resolves.toEqual([]);
   });
 
   it('rejects self-enrollment into a private course', async () => {

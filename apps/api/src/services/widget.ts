@@ -23,6 +23,7 @@ import {
   ZWidgetPayload,
   getDefaultWidgetConfig,
   normalizeWidgetConfig,
+  removeCoursesFromWidgetPayload,
   type TCreateWidget,
   type TListWidgetsQuery,
   type TRollbackWidget,
@@ -31,6 +32,7 @@ import {
 
 import type { OrgWidgetPagination } from '@api/types/org';
 
+import { getPrivateCourseIds } from '@cio/db/queries/course';
 import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/organization';
 import {
   buildWidgetPayload,
@@ -434,7 +436,10 @@ export async function getPublishedWidgetPayload(publicKey: string) {
       throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
 
-    return ZWidgetPayload.parse(payload);
+    const parsedPayload = ZWidgetPayload.parse(payload);
+    const privateCourseIds = await getPrivateCourseIds(parsedPayload.courses.map((course) => course.id));
+
+    return removeCoursesFromWidgetPayload(parsedPayload, new Set(privateCourseIds));
   } catch (error) {
     if (error instanceof AppError) {
       throw error;

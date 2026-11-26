@@ -164,6 +164,24 @@ export const getPublishedCoursesBySiteName = async (
   }
 };
 
+export async function getPrivateCourseIds(courseIds: string[], dbClient: DbOrTxClient = db): Promise<string[]> {
+  try {
+    if (courseIds.length === 0) {
+      return [];
+    }
+
+    const rows = await dbClient
+      .select({ id: schema.course.id })
+      .from(schema.course)
+      .where(and(inArray(schema.course.id, courseIds), eq(schema.course.isPrivate, true)));
+
+    return rows.map((row) => row.id);
+  } catch (error) {
+    console.error('getPrivateCourseIds error:', error);
+    throw new Error(`Failed to get private course ids: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export const countPublishedCoursesBySiteName = async (
   siteName: string,
   courseIds?: string[],

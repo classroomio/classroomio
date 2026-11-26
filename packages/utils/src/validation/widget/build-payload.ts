@@ -185,6 +185,25 @@ export function buildWidgetPayload(input: BuildWidgetPayloadInput): TWidgetPaylo
   });
 }
 
+export function removeCoursesFromWidgetPayload(payload: TWidgetPayload, hiddenCourseIds: Set<string>): TWidgetPayload {
+  if (hiddenCourseIds.size === 0) {
+    return payload;
+  }
+
+  const courses = payload.courses.filter((course) => !hiddenCourseIds.has(course.id));
+  const remainingTagIds = new Set(courses.flatMap((course) => course.tags.map((tag) => tag.id)));
+
+  return {
+    ...payload,
+    courses,
+    tagPool: payload.tagPool.filter((tag) => remainingTagIds.has(tag.id)),
+    categories: payload.categories.map((category) => ({
+      ...category,
+      courseIds: category.courseIds.filter((courseId) => !hiddenCourseIds.has(courseId))
+    }))
+  };
+}
+
 function buildTagPool(
   layoutType: TWidgetLayoutType,
   config: TWidgetConfig,

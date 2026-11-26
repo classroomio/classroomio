@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildWidgetPayload, type BuildWidgetPayloadCourse } from '@cio/utils/validation/widget/build-payload';
+import {
+  buildWidgetPayload,
+  removeCoursesFromWidgetPayload,
+  type BuildWidgetPayloadCourse
+} from '@cio/utils/validation/widget/build-payload';
 
 const PUBLIC_COURSE_ID = '11111111-1111-4111-8111-111111111111';
 const PRIVATE_COURSE_ID = '22222222-2222-4222-8222-222222222222';
@@ -57,5 +61,27 @@ describe('buildWidgetPayload with private courses', () => {
     const payload = payloadFor('manual', [PRIVATE_COURSE_ID, PUBLIC_COURSE_ID]);
 
     expect(payload.courses.map((entry) => entry.id)).toEqual([PUBLIC_COURSE_ID]);
+  });
+});
+
+describe('removeCoursesFromWidgetPayload', () => {
+  it('drops a course that became private after the payload was saved, with its tag and category entries', () => {
+    const tag = { id: '55555555-5555-4555-8555-555555555555', name: 'Hidden topic', slug: 'hidden', color: '#000000' };
+    const saved = payloadFor('published', []);
+    saved.courses = [
+      { ...saved.courses[0], tags: [tag] },
+      { ...saved.courses[0], id: PRIVATE_COURSE_ID, tags: [] }
+    ];
+    saved.tagPool = [tag];
+    saved.categories = [
+      { tagId: tag.id, name: tag.name, slug: tag.slug, color: tag.color, courseIds: [PRIVATE_COURSE_ID] }
+    ];
+
+    const served = removeCoursesFromWidgetPayload(saved, new Set([PRIVATE_COURSE_ID]));
+
+    expect(served.courses.map((entry) => entry.id)).toEqual([saved.courses[0].id]);
+    expect(served.tagPool).toEqual([tag]);
+    expect(served.categories[0].courseIds).toEqual([]);
+    expect(removeCoursesFromWidgetPayload(saved, new Set())).toBe(saved);
   });
 });
