@@ -84,9 +84,9 @@ only if you use that integration. Leaving an optional one blank never causes a b
 
 :::note[Pin a released version]
 Set `CIO_VERSION=1.0.0` to pin an exact release. `latest` is the freshest `main` build: it moves
-on every merge (rolling; may include unreleased code), while the version tags (`1.0.0`, `1.0`, `1`)
-are immutable, pinned releases. Pinning an exact release makes upgrades deliberate and deploys
-reproducible.
+on every merge (rolling; may include unreleased code). Exact tags like `1.0.0` never change, while
+`1.0` and `1` move to each new patch. Pinning an exact release makes upgrades deliberate and
+deploys reproducible.
 :::
 
 ![Confirming the classroomio image tags on Docker Hub](/docs/coolify-04-image-tag.webp)
@@ -264,7 +264,7 @@ each), e.g. `UPLOAD_MAX_DOCUMENT_MB=50`. See
 
 ## Upgrades & rollback
 
-Bump `CIO_VERSION` to a newer release and redeploy; roll back by setting it to the previous version and redeploying. Because you pin a version, a new release never restarts you onto broken images unattended. See [Configuration → Versions & upgrades](/self-hosted/configuration/versions) for the full upgrade and backup steps.
+Bump `CIO_VERSION` to a newer release and redeploy; roll back by setting it to the previous version and redeploying. Because you pin an exact version, a new release never restarts you onto broken images unattended. See [Configuration → Versions & upgrades](/self-hosted/configuration/versions) for the full upgrade and backup steps.
 
 :::warning[Back up before upgrading]
 Schema migrations run automatically on API startup. Back up your Postgres (and object storage)

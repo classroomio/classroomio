@@ -1,5 +1,13 @@
 # Automated Release Process & Changelog PRD
 
+> **Status: superseded by a weekly cron.** Releases are cut by
+> `.github/workflows/weekly-release.yml`, not release-please. Every Monday at
+> 08:00 UTC, if `main` has new commits, it tags the next patch version
+> (`vX.Y.Z+1`), creates a GitHub Release with auto-generated notes, and runs
+> `docker-publish.yml` on that tag. Minor and major bumps are cut by hand, and
+> `CHANGELOG.md` is not updated; GitHub Releases hold the notes. The decisions
+> below record the original plan.
+
 ## Purpose
 
 Give ClassroomIO a real **release** mechanism — versioned, tagged, changelog'd

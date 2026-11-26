@@ -1,0 +1,50 @@
+name: Weekly Patch Release
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: weekly-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Work out the next patch version
+        id: version
+        run: |
+          last_tag=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          IFS=. read -r major minor patch <<< "${last_tag#v}"
+          echo "last=${last_tag}" >> "$GITHUB_OUTPUT"
+          echo "next=v${major}.${minor}.$((patch + 1))" >> "$GITHUB_OUTPUT"
+          echo "commits=$(git rev-list --count "${last_tag}..HEAD")" >> "$GITHUB_OUTPUT"
+
+      - name: Create the GitHub release
+        if: steps.version.outputs.commits != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.next }}" \
+            --target "$(git rev-parse HEAD)" \
+            --generate-notes \
+            --notes-start-tag "${{ steps.version.outputs.last }}"
+
+      # Tags created with GITHUB_TOKEN do not fire `push` workflows; workflow_dispatch is the documented exception.
+      - name: Publish Docker images for the release
+        if: steps.version.outputs.commits != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run docker-publish.yml --ref "${{ steps.version.outputs.next }}"

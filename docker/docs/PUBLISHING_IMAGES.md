@@ -58,7 +58,7 @@ Check your Docker Hub repository at:
 The workflow will automatically publish images when:
 
 1. **Push to `main`**: Publishes the **`latest`** tag (the freshest `main` build).
-2. **Push a version tag `vX.Y.Z`**: Publishes `X.Y.Z`, `X.Y`, `X` (immutable, pinned releases).
+2. **Push a version tag `vX.Y.Z`**: Publishes `X.Y.Z` (immutable) plus `X.Y` and `X` (moved to each new patch). The weekly release job runs this for you; see [Cutting a release](#cutting-a-release).
 3. **Manual trigger**: Use the Actions tab in GitHub.
 
 #### Create a version tag and push:
@@ -73,7 +73,7 @@ git push origin v0.1.0
 1. Go to Actions tab in your repository
 2. Select "Publish Docker Images" workflow
 3. Click "Run workflow"
-4. Enter optional version tag (or leave default 'latest')
+4. Choose the ref to build: `main` publishes `latest`; a `vX.Y.Z` tag publishes `X.Y.Z`, `X.Y` and `X`. The version input is not used.
 
 ## Method 3: Individual Image Building
 
@@ -119,15 +119,17 @@ pin `CIO_VERSION` (see [SELF_HOST.md](SELF_HOST.md)) and upgrade on their own sc
 
 ### Cutting a release
 
-Versioning is driven by git tags; the CI workflow does the rest (build multi-arch → push
-`X.Y.Z`/`X.Y`/`X`). `latest` is published separately, on every merge to `main`.
+Patch releases are automatic. Every Monday at 08:00 UTC, `.github/workflows/weekly-release.yml`
+checks `main` for commits since the newest `vX.Y.Z` tag. If there are any, it creates the next
+patch release (`v1.0.0` → `v1.0.1`) as a GitHub Release with auto-generated notes, then runs this
+workflow on the new tag to push `X.Y.Z`/`X.Y`/`X`. To release early, run "Weekly Patch Release"
+from the Actions tab.
+
+For a minor or major release, push the tag yourself; the weekly job then patches from it:
 
 ```bash
-# Bump version + create the vX.Y.Z tag from the repo's changelog tooling
-pnpm release            # standard-version: bumps package.json, writes CHANGELOG, creates the git tag
-
-# Push the tag — this triggers the publish
-git push --follow-tags origin main
+git tag v1.1.0 origin/main
+git push origin v1.1.0
 ```
 
 To publish manually from a laptop instead, `./docker/docker-push.sh` builds + pushes all three
