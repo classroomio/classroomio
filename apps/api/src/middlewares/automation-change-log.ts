@@ -71,7 +71,7 @@ export async function automationChangeLogMiddleware(c: Context<AuthSession>, nex
       actorProfileId: c.get('actorId') ?? null,
       method,
       route,
-      action: toolName ?? `${method} ${route}`,
+      action: c.get('automationAction') ?? toolName ?? `${method} ${route}`,
       resourceIds,
       statusCode: c.res.status
     });

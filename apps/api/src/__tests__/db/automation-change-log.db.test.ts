@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { db } from '@cio/db/drizzle';
@@ -103,6 +103,31 @@ describe.skipIf(!shouldRun)('automation change log (database)', () => {
     expect(await readLog(key.organizationId)).toEqual([
       expect.objectContaining({ organizationApiKeyId: null, keyType: 'zapier', channel: 'public_api' })
     ]);
+  });
+
+  it('stamps created_at with the current instant whatever the session time zone is', async () => {
+    const key = await createKey('mcp');
+
+    const row = await db.transaction(async (tx) => {
+      await tx.execute(sql`set local time zone 'Pacific/Kiritimati'`);
+      const [inserted] = await tx
+        .insert(schema.automationChangeLog)
+        .values({
+          organizationId: key.organizationId,
+          organizationApiKeyId: key.id,
+          keyType: key.type,
+          channel: 'mcp',
+          method: 'POST',
+          route: '/public-api/v1/courses',
+          action: 'create_course',
+          statusCode: 201
+        })
+        .returning();
+
+      return inserted;
+    });
+
+    expect(Math.abs(new Date(row!.createdAt).getTime() - Date.now())).toBeLessThan(60_000);
   });
 
   it('removes an organization’s change log with the organization', async () => {

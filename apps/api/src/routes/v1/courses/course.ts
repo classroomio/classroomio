@@ -469,6 +469,7 @@ export const v1CourseRouter = new Hono()
 
         const fields = Object.keys(payload);
         const tagsOnly = fields.length > 0 && fields.every((field) => field === 'tagIds' || field === 'addTagIds');
+        c.set('automationAction', tagsOnly ? 'set_course_tags' : 'update_course');
         const keyScopes = c.get('automationKey')?.scopes ?? [];
         if (!tagsOnly && !organizationApiKeyHasScopes(keyScopes, ['public_api:*'])) {
           return c.json(

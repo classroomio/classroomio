@@ -4,6 +4,8 @@ import type { TOrganizationApiKey } from '@db/types';
 export type AuthSession = {
   Variables: {
     actorId: string | null;
+    /** Label for the automation change log, set by a route that performs more than one kind of change. */
+    automationAction: string | undefined;
     automationKey: TOrganizationApiKey | null;
     /** AI client or integration behind an automation request, for attributing its edits. */
     clientName: string | null;

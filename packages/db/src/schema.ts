@@ -3463,9 +3463,7 @@ export const automationChangeLog = pgTable(
     action: varchar('action', { length: 160 }).notNull(),
     resourceIds: jsonb('resource_ids').default({}).$type<Record<string, string>>().notNull(),
     statusCode: integer('status_code').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
-      .default(sql`timezone('utc'::text, now())`)
-      .notNull()
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
   (table) => [
     index('idx_automation_change_log_org_created_at').on(table.organizationId, table.createdAt),

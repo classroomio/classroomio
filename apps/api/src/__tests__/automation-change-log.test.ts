@@ -41,7 +41,12 @@ function buildApp(key: typeof mcpKey | null) {
     .get('/public-api/v1/courses/:courseId/sections', authAs(key), (c) => c.json({ success: true, data: [] }))
     .put('/course/:courseId/exercise/:exerciseId', authAs(key), (c) =>
       c.json({ success: false, error: 'Forbidden' }, 403)
-    );
+    )
+    .put('/public-api/v1/courses/:courseId', authAs(key), (c) => {
+      if (c.req.query('title')) c.set('automationAction', 'update_course');
+
+      return c.json({ success: true, data: { id: COURSE_ID } });
+    });
 }
 
 describe('automationChangeLogMiddleware', () => {
@@ -112,6 +117,20 @@ describe('automationChangeLogMiddleware', () => {
     expect(response.status).toBe(201);
     expect(await response.json()).toEqual({ success: true, data: { id: SECTION_ID, title: 'Week 1' } });
     consoleError.mockRestore();
+  });
+
+  it('uses the action a route sets when one route performs more than one kind of change', async () => {
+    await buildApp(mcpKey).request(`/public-api/v1/courses/${COURSE_ID}?title=1`, { method: 'PUT' });
+
+    expect(mocks.recordAutomationChange).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'update_course', resourceIds: { courseId: COURSE_ID } })
+    );
+  });
+
+  it('falls back to the mapped tool name when the route sets no action', async () => {
+    await buildApp(mcpKey).request(`/public-api/v1/courses/${COURSE_ID}`, { method: 'PUT' });
+
+    expect(mocks.recordAutomationChange).toHaveBeenCalledWith(expect.objectContaining({ action: 'set_course_tags' }));
   });
 
   it('records the full route pattern for routes mounted on a sub-router', async () => {

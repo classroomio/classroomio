@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "automation_change_log" (
 	"action" varchar(160) NOT NULL,
 	"resource_ids" jsonb DEFAULT '{}'::jsonb NOT NULL,
 	"status_code" integer NOT NULL,
-	"created_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );--> statement-breakpoint
 DO $$ BEGIN
 	ALTER TABLE "automation_change_log" ADD CONSTRAINT "automation_change_log_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;
