@@ -1,7 +1,6 @@
 <script lang="ts">
   import { courseApi } from '$features/course/api';
   import { getCourseContent } from '$features/course/utils/content';
-  import { contentRequirements } from '$features/course/utils/content-requirement-store';
   import { countRequirements } from '$features/course/utils/content-requirement-utils';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
@@ -10,7 +9,7 @@
   const contentItems = $derived(
     contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
   );
-  const counts = $derived(countRequirements(contentItems, $contentRequirements));
+  const counts = $derived(countRequirements(contentItems));
   const summary = $derived(
     $isOrgStudent === true
       ? $t('course.navItem.lessons.requirement.progress_summary', {

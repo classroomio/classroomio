@@ -11,8 +11,7 @@
   import { contentApi, courseApi } from '$features/course/api';
   import { collectLockedContentItems } from '$features/course/utils/content-lock-utils';
   import { getCourseContent } from '$features/course/utils/content';
-  import { setContentRequirements } from '$features/course/utils/content-requirement-store';
-  import { isRequirementTarget } from '$features/course/utils/content-requirement-utils';
+  import { applyRequirement } from './content-requirement-actions';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
 
@@ -29,10 +28,10 @@
   const contentGroupingEnabled = $derived(courseApi.course?.metadata?.isContentGroupingEnabled ?? true);
   const lockedContentItems = $derived(collectLockedContentItems(courseApi.course));
   const contentData = $derived(getCourseContent(courseApi.course));
-  const requirementTargets = $derived(
-    (contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items)
-      .filter(isRequirementTarget)
-      .map((item) => ({ type: item.type, id: item.id }))
+  const requirementItems = $derived(
+    (contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items).map(
+      (item) => ({ type: item.type, contentId: item.id, completionPolicy: item.completionPolicy })
+    )
   );
   const menuDisabled = $derived(disabled || isUnlockingAll || isTogglingGrouping);
 
@@ -61,8 +60,10 @@
     isUnlockingAll = false;
   }
 
-  function handleSetAllRequirements(required: boolean) {
-    setContentRequirements(requirementTargets, required);
+  async function handleSetAllRequirements(required: boolean) {
+    const result = await applyRequirement(courseId, requirementItems, required);
+    if (!result || result.failed > 0) return;
+
     snackbar.success(
       required
         ? 'snackbar.course_settings.success.all_content_required'

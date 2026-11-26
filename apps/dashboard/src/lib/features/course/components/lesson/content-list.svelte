@@ -25,8 +25,9 @@
   import ContentRow from './content-row.svelte';
   import ContentActions from './content-actions.svelte';
   import RequirementToggle from './requirement-toggle.svelte';
-  import { contentRequirements, toggleContentRequirement } from '$features/course/utils/content-requirement-store';
+  import { isUpdatingRequirement } from '$features/course/utils/content-requirement-store';
   import { isContentRequired } from '$features/course/utils/content-requirement-utils';
+  import { applyRequirement } from './content-requirement-actions';
   import { deleteContent, saveContent, toggleLock } from './content-action-helpers';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
 
@@ -314,7 +315,7 @@
   {#each contentItems as item (item.id)}
     {@const isEditingItem = $contentEditingStore === item.contentId}
     {@const itemLocked = isLockedForStudent(item, isStudentView)}
-    {@const itemRequired = isContentRequired($contentRequirements, { type: item.type, id: item.contentId })}
+    {@const itemRequired = isContentRequired(item)}
     {@const lockLabel = item.isUnlocked
       ? $t('course.navItem.lessons.add_lesson.lock')
       : $t('course.navItem.lessons.add_lesson.unlock')}
@@ -436,8 +437,8 @@
         {:else}
           <RequirementToggle
             required={itemRequired}
-            disabled={actionDisabled || isEditingItem}
-            onToggle={() => toggleContentRequirement({ type: item.type, id: item.contentId })}
+            disabled={actionDisabled || isEditingItem || reorder || $isUpdatingRequirement}
+            onToggle={() => applyRequirement(courseId, [item], !itemRequired)}
           />
           <Button
             size="icon-sm"

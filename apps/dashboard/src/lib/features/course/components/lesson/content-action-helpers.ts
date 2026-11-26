@@ -1,4 +1,5 @@
 import { ContentType } from '@cio/utils/constants/content';
+import { getRequirementPolicy, type RequirementContentType } from '$features/course/utils/content-requirement-utils';
 
 export type ContentActionItem = {
   type: ContentType;
@@ -12,7 +13,7 @@ export type ContentActionItem = {
 type CourseApiErrorMap = Record<string, string> | undefined | null;
 
 type LessonApi = {
-  update: (courseId: string, lessonId: string, payload: Record<string, unknown>) => Promise<unknown>;
+  update: (courseId: string, lessonId: string, payload: Record<string, unknown>) => Promise<boolean>;
   delete: (courseId: string, lessonId: string) => Promise<unknown>;
   errors?: CourseApiErrorMap;
   success?: boolean;
@@ -106,4 +107,27 @@ export async function deleteContent({
 
   await lessonApi.delete(courseId, item.contentId);
   return Boolean(lessonApi.success);
+}
+
+export async function setRequirement({
+  item,
+  required,
+  courseId,
+  lessonApi,
+  exerciseApi
+}: {
+  item: ContentActionItem & { type: RequirementContentType };
+  required: boolean;
+  courseId: string;
+  lessonApi: LessonApi;
+  exerciseApi: ExerciseApi;
+}) {
+  const completionPolicy = getRequirementPolicy(item.type, required);
+
+  if (item.type === ContentType.Exercise) {
+    await exerciseApi.update(courseId, item.contentId, { completionPolicy });
+    return Boolean(exerciseApi.success);
+  }
+
+  return lessonApi.update(courseId, item.contentId, { completionPolicy });
 }

@@ -1,31 +1,34 @@
 import { ContentType } from '@cio/utils/constants/content';
 
-export type RequirementMap = Record<string, boolean>;
+export type RequirementContentType = ContentType.Lesson | ContentType.Exercise;
 
-export type RequirementTarget = {
+export type RequirementPolicy = 'manual' | 'submitted' | 'none';
+
+type RequirementItem = {
   type: ContentType;
-  id: string;
-};
-
-type RequirementItem = RequirementTarget & {
+  completionPolicy?: string | null;
   isComplete?: boolean | null;
 };
 
-export function getRequirementKey(target: RequirementTarget) {
-  return `${target.type}:${target.id}`;
-}
-
-export function isContentRequired(requirements: RequirementMap, target: RequirementTarget) {
-  return requirements[getRequirementKey(target)] ?? true;
-}
-
-export function isRequirementTarget(item: RequirementTarget) {
+export function isRequirementTarget<T extends { type: ContentType }>(
+  item: T
+): item is T & { type: RequirementContentType } {
   return item.type === ContentType.Lesson || item.type === ContentType.Exercise;
 }
 
-export function countRequirements(items: RequirementItem[], requirements: RequirementMap) {
+export function isContentRequired(item: { completionPolicy?: string | null }) {
+  return item.completionPolicy !== 'none';
+}
+
+export function getRequirementPolicy(type: RequirementContentType, required: boolean): RequirementPolicy {
+  if (!required) return 'none';
+
+  return type === ContentType.Lesson ? 'manual' : 'submitted';
+}
+
+export function countRequirements(items: RequirementItem[]) {
   const targets = items.filter(isRequirementTarget);
-  const required = targets.filter((item) => isContentRequired(requirements, item));
+  const required = targets.filter(isContentRequired);
   const requiredDone = required.filter((item) => item.isComplete).length;
 
   return {
@@ -36,6 +39,6 @@ export function countRequirements(items: RequirementItem[], requirements: Requir
   };
 }
 
-export function hasOptionalItem(items: RequirementItem[], requirements: RequirementMap) {
-  return items.filter(isRequirementTarget).some((item) => !isContentRequired(requirements, item));
+export function hasOptionalItem(items: RequirementItem[]) {
+  return items.filter(isRequirementTarget).some((item) => !isContentRequired(item));
 }

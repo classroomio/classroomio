@@ -29,7 +29,6 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { courseApi, contentApi, exerciseApi, lessonApi } from '$features/course/api';
   import RequirementMarker from '$features/course/components/lesson/requirement-marker.svelte';
-  import { contentRequirements } from '$features/course/utils/content-requirement-store';
   import { isContentRequired, isRequirementTarget } from '$features/course/utils/content-requirement-utils';
   import { deleteContent } from '$features/course/components/lesson/content-action-helpers';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
@@ -303,9 +302,7 @@
 {#snippet contentItemRow(contentItem: (typeof contentData.items)[number])}
   {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
   {@const isLockedForStudent = $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
-  {@const showRequiredMarker =
-    isRequirementTarget(contentItem) &&
-    isContentRequired($contentRequirements, { type: contentItem.type, id: contentItem.id })}
+  {@const showRequiredMarker = isRequirementTarget(contentItem) && isContentRequired(contentItem)}
   {@const sessionPhase =
     contentItem.type === ContentType.Lesson ? getSessionIndicatorPhase(contentItem, $liveSessionClock) : null}
   <Sidebar.MenuSubButton isActive={isContentItemInPath(contentItem.id, currentPath)}>

@@ -35,22 +35,29 @@ test('teacher marks course content as required or optional', async ({ page }) =>
   await page.waitForTimeout(800);
   await toggles.nth(1).click();
   await expect(markers).toHaveCount(2);
+
+  await page.reload();
+  await expect(page.getByTestId('lessons-requirement-summary')).toBeVisible({ timeout: 30_000 });
+  await expect(markers).toHaveCount(2);
   await page.waitForTimeout(1000);
 
   await page.getByTestId('lessons-content-menu').click();
   await page.getByTestId('lessons-requirement-all-optional').click();
-  await expect(markers).toHaveCount(0);
+  await expect(markers).toHaveCount(0, { timeout: 20_000 });
   await page.waitForTimeout(1000);
 
   await page.getByTestId('lessons-content-menu').click();
   await page.getByTestId('lessons-requirement-all-required').click();
-  await expect(markers).toHaveCount(3);
+  await expect(markers).toHaveCount(3, { timeout: 20_000 });
   await page.waitForTimeout(1000);
 
   await toggles.nth(0).click();
   await expect(markers).toHaveCount(2);
   await expect(page.getByTestId('sidebar-requirement-marker')).toHaveCount(2);
   await page.waitForTimeout(2000);
+
+  await toggles.nth(0).click();
+  await expect(markers).toHaveCount(3);
 });
 
 test('student sees which content is required', async ({ page }) => {

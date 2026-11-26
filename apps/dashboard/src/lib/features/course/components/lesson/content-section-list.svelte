@@ -32,12 +32,9 @@
   import ContentRow from './content-row.svelte';
   import ContentActions from './content-actions.svelte';
   import RequirementToggle from './requirement-toggle.svelte';
-  import {
-    contentRequirements,
-    setContentRequirements,
-    toggleContentRequirement
-  } from '$features/course/utils/content-requirement-store';
+  import { isUpdatingRequirement } from '$features/course/utils/content-requirement-store';
   import { hasOptionalItem, isContentRequired } from '$features/course/utils/content-requirement-utils';
+  import { applyRequirement } from './content-requirement-actions';
   import SectionHeader from './section-header.svelte';
   import { deleteContent, saveContent, toggleLock } from './content-action-helpers';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
@@ -519,8 +516,7 @@
         ? `${$t('course.navItem.lessons.add_lesson.lock')} ${$t('course.navItem.lessons.add_lesson.all')}`
         : `${$t('course.navItem.lessons.add_lesson.unlock')} ${$t('course.navItem.lessons.add_lesson.all')}`
       : undefined}
-    {@const sectionTargets = section.items.map((item) => ({ type: item.type, id: item.contentId }))}
-    {@const sectionMakeRequired = hasOptionalItem(sectionTargets, $contentRequirements)}
+    {@const sectionMakeRequired = hasOptionalItem(section.items)}
     {@const sectionRequirementLabel = hasSectionItems
       ? sectionMakeRequired
         ? $t('course.navItem.lessons.requirement.make_section_required')
@@ -543,7 +539,7 @@
         lockLabel={isUngrouped ? undefined : sectionLockLabel}
         requirementLabel={sectionRequirementLabel}
         onToggleRequirement={hasSectionItems
-          ? () => setContentRequirements(sectionTargets, sectionMakeRequired)
+          ? () => applyRequirement(courseId, section.items, sectionMakeRequired)
           : undefined}
         onEdit={() => onEdit({ sectionId: section.id, sectionTitle: section.title! })}
         onSave={() => onSave({ sectionId: section.id })}
@@ -579,7 +575,7 @@
         {#each section.items as item (item.id)}
           {@const isEditingItem = $contentEditingStore === item.contentId}
           {@const itemLocked = isLockedForStudent(item)}
-          {@const itemRequired = isContentRequired($contentRequirements, { type: item.type, id: item.contentId })}
+          {@const itemRequired = isContentRequired(item)}
           {@const itemLockLabel = item.isUnlocked
             ? $t('course.navItem.lessons.add_lesson.lock')
             : $t('course.navItem.lessons.add_lesson.unlock')}
@@ -699,8 +695,8 @@
               {:else}
                 <RequirementToggle
                   required={itemRequired}
-                  disabled={actionDisabled || isEditingItem}
-                  onToggle={() => toggleContentRequirement({ type: item.type, id: item.contentId })}
+                  disabled={actionDisabled || isEditingItem || reorder || $isUpdatingRequirement}
+                  onToggle={() => applyRequirement(courseId, [item], !itemRequired)}
                 />
                 <Button
                   size="icon-sm"
