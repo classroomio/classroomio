@@ -365,7 +365,9 @@
         "content_grouping_enabled": "Группировка контента включена",
         "content_grouping_disabled": "Группировка контента отключена",
         "link_generated": "Ссылка на курс успешно обновлена",
-        "converted_to_public": "Курс успешно преобразован в общедоступный курс"
+        "converted_to_public": "Курс успешно преобразован в общедоступный курс",
+        "all_content_required": "Весь контент отмечен как обязательный",
+        "all_content_optional": "Весь контент отмечен как необязательный"
       },
       "info": {
         "conversion_blocked": "Исправьте вопросы ниже, чтобы завершить преобразование в публичный доступ."
@@ -2856,7 +2858,19 @@
         "add_content_add_to_section": "Добавить в раздел",
         "expand_content": "Развернуть контент",
         "collapse_content": "Свернуть содержимое",
-        "no_section": "Нет раздела"
+        "no_section": "Нет раздела",
+        "requirement": {
+          "required": "Обязательно",
+          "optional": "Необязательно",
+          "make_required": "Сделать обязательным",
+          "make_optional": "Сделать необязательным",
+          "make_all_required": "Сделать всё обязательным",
+          "make_all_optional": "Сделать всё необязательным",
+          "make_section_required": "Сделать раздел обязательным",
+          "make_section_optional": "Сделать раздел необязательным",
+          "progress_summary": "{done} из {total} обязательных выполнено",
+          "teacher_summary": "обязательных: {required} · необязательных: {optional}"
+        }
       },
       "news_feed": {
         "heading": "Лента новостей",

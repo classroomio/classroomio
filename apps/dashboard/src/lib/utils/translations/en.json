@@ -3818,7 +3818,19 @@
             "image": "image"
           }
         },
-        "no_section": "No section"
+        "no_section": "No section",
+        "requirement": {
+          "required": "Required",
+          "optional": "Optional",
+          "make_required": "Make required",
+          "make_optional": "Make optional",
+          "make_all_required": "Make everything required",
+          "make_all_optional": "Make everything optional",
+          "make_section_required": "Make section required",
+          "make_section_optional": "Make section optional",
+          "progress_summary": "{done} of {total} required done",
+          "teacher_summary": "{required} required · {optional} optional"
+        }
       },
       "attendance": {
         "title": "Attendance",
@@ -6077,7 +6089,9 @@
         "successful_deletion": "Integration deleted",
         "update_successful": "Update successful",
         "link_generated": "Course link updated successfully",
-        "converted_to_public": "Course successfully converted to Public"
+        "converted_to_public": "Course successfully converted to Public",
+        "all_content_required": "All content marked as required",
+        "all_content_optional": "All content marked as optional"
       },
       "error": {
         "not_right": "Something's not right - Please try later",

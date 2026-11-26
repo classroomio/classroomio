@@ -28,6 +28,8 @@
   import * as Collapsible from '@cio/ui/base/collapsible';
   import { ContentType } from '@cio/utils/constants/content';
   import { courseApi, contentApi, exerciseApi, lessonApi } from '$features/course/api';
+  import RequirementMarker from '$features/course/components/lesson/requirement-marker.svelte';
+  import { isContentRequired, isRequirementTarget } from '$features/course/utils/content-requirement-utils';
   import { deleteContent } from '$features/course/components/lesson/content-action-helpers';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -300,6 +302,7 @@
 {#snippet contentItemRow(contentItem: (typeof contentData.items)[number])}
   {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
   {@const isLockedForStudent = $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
+  {@const showRequiredMarker = isRequirementTarget(contentItem) && isContentRequired(contentItem)}
   {@const sessionPhase =
     contentItem.type === ContentType.Lesson ? getSessionIndicatorPhase(contentItem, $liveSessionClock) : null}
   <Sidebar.MenuSubButton isActive={isContentItemInPath(contentItem.id, currentPath)}>
@@ -360,6 +363,9 @@
                 Trash2Icon
               )}
             </div>
+          {/if}
+          {#if showRequiredMarker}
+            <RequirementMarker testId="sidebar-requirement-marker" />
           {/if}
           {#if contentItem.isComplete}
             <span class="shrink-0">

@@ -365,7 +365,9 @@
         "content_grouping_enabled": "Indholdsgruppering aktiveret",
         "content_grouping_disabled": "Indholdsgruppering deaktiveret",
         "link_generated": "Kursuslinket blev opdateret",
-        "converted_to_public": "Kurset blev konverteret til offentligt"
+        "converted_to_public": "Kurset blev konverteret til offentligt",
+        "all_content_required": "Alt indhold er markeret som påkrævet",
+        "all_content_optional": "Alt indhold er markeret som valgfrit"
       },
       "info": {
         "conversion_blocked": "Ret spørgsmålene nedenfor for at fuldføre konverteringen til Offentlig."
@@ -2856,6 +2858,18 @@
           "mode_edit": "Redigere",
           "mode_preview": "Forhåndsvisning",
           "mode_shortcut": "Skift tilstand"
+        },
+        "requirement": {
+          "required": "Påkrævet",
+          "optional": "Valgfri",
+          "make_required": "Gør påkrævet",
+          "make_optional": "Gør valgfri",
+          "make_all_required": "Gør alt påkrævet",
+          "make_all_optional": "Gør alt valgfrit",
+          "make_section_required": "Gør sektionen påkrævet",
+          "make_section_optional": "Gør sektionen valgfri",
+          "progress_summary": "{done} af {total} påkrævede fuldført",
+          "teacher_summary": "{required} påkrævede · {optional} valgfrie"
         }
       },
       "news_feed": {

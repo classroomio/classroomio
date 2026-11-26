@@ -1,5 +1,7 @@
 <script lang="ts">
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import FlagIcon from '@lucide/svelte/icons/flag';
+  import FlagOffIcon from '@lucide/svelte/icons/flag-off';
   import LockOpenIcon from '@lucide/svelte/icons/lock-open';
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
@@ -8,6 +10,8 @@
   import { t } from '$lib/utils/functions/translations';
   import { contentApi, courseApi } from '$features/course/api';
   import { collectLockedContentItems } from '$features/course/utils/content-lock-utils';
+  import { getCourseContent } from '$features/course/utils/content';
+  import { applyRequirement } from './content-requirement-actions';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
 
@@ -23,6 +27,12 @@
 
   const contentGroupingEnabled = $derived(courseApi.course?.metadata?.isContentGroupingEnabled ?? true);
   const lockedContentItems = $derived(collectLockedContentItems(courseApi.course));
+  const contentData = $derived(getCourseContent(courseApi.course));
+  const requirementItems = $derived(
+    (contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items).map(
+      (item) => ({ type: item.type, contentId: item.id, completionPolicy: item.completionPolicy })
+    )
+  );
   const menuDisabled = $derived(disabled || isUnlockingAll || isTogglingGrouping);
 
   async function handleUnlockAllContent() {
@@ -48,6 +58,17 @@
     }
 
     isUnlockingAll = false;
+  }
+
+  async function handleSetAllRequirements(required: boolean) {
+    const result = await applyRequirement(courseId, requirementItems, required);
+    if (!result || result.failed > 0) return;
+
+    snackbar.success(
+      required
+        ? 'snackbar.course_settings.success.all_content_required'
+        : 'snackbar.course_settings.success.all_content_optional'
+    );
   }
 
   async function handleToggleContentGrouping() {
@@ -85,6 +106,7 @@
     <DropdownMenu.Trigger>
       <IconButton
         disabled={menuDisabled}
+        testId="lessons-content-menu"
         tooltip={t.get('course.navItem.lessons.content_menu.label')}
         tooltipSide="bottom"
         aria-label={t.get('course.navItem.lessons.content_menu.label')}
@@ -97,6 +119,26 @@
         <span class="flex items-center gap-2">
           <LockOpenIcon size={14} />
           {$t('course.navItem.lessons.content_menu.unlock_all')}
+        </span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item
+        onclick={() => handleSetAllRequirements(true)}
+        disabled={menuDisabled}
+        data-testid="lessons-requirement-all-required"
+      >
+        <span class="flex items-center gap-2">
+          <FlagIcon size={14} />
+          {$t('course.navItem.lessons.requirement.make_all_required')}
+        </span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item
+        onclick={() => handleSetAllRequirements(false)}
+        disabled={menuDisabled}
+        data-testid="lessons-requirement-all-optional"
+      >
+        <span class="flex items-center gap-2">
+          <FlagOffIcon size={14} />
+          {$t('course.navItem.lessons.requirement.make_all_optional')}
         </span>
       </DropdownMenu.Item>
       <DropdownMenu.Item onclick={handleToggleContentGrouping} disabled={menuDisabled}>

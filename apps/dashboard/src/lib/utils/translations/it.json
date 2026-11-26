@@ -3808,6 +3808,18 @@
           "mode_edit": "Modificare",
           "mode_preview": "Anteprima",
           "mode_shortcut": "Cambia modalità"
+        },
+        "requirement": {
+          "required": "Obbligatorio",
+          "optional": "Facoltativo",
+          "make_required": "Rendi obbligatorio",
+          "make_optional": "Rendi facoltativo",
+          "make_all_required": "Rendi tutto obbligatorio",
+          "make_all_optional": "Rendi tutto facoltativo",
+          "make_section_required": "Rendi la sezione obbligatoria",
+          "make_section_optional": "Rendi la sezione facoltativa",
+          "progress_summary": "{done} di {total} obbligatori completati",
+          "teacher_summary": "{required} obbligatori · {optional} facoltativi"
         }
       },
       "attendance": {
@@ -5991,7 +6003,9 @@
         "successful_deletion": "Integrazione eliminata",
         "update_successful": "Aggiornamento riuscito",
         "link_generated": "Collegamento al corso aggiornato correttamente",
-        "converted_to_public": "Corso convertito con successo in Pubblico"
+        "converted_to_public": "Corso convertito con successo in Pubblico",
+        "all_content_required": "Tutti i contenuti contrassegnati come obbligatori",
+        "all_content_optional": "Tutti i contenuti contrassegnati come facoltativi"
       },
       "error": {
         "not_right": "Qualcosa non va: riprova più tardi",

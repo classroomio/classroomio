@@ -3828,6 +3828,18 @@
           "mode_edit": "Düzenlemek",
           "mode_preview": "Önizleme",
           "mode_shortcut": "Modu değiştir"
+        },
+        "requirement": {
+          "required": "Zorunlu",
+          "optional": "İsteğe bağlı",
+          "make_required": "Zorunlu yap",
+          "make_optional": "İsteğe bağlı yap",
+          "make_all_required": "Her şeyi zorunlu yap",
+          "make_all_optional": "Her şeyi isteğe bağlı yap",
+          "make_section_required": "Bölümü zorunlu yap",
+          "make_section_optional": "Bölümü isteğe bağlı yap",
+          "progress_summary": "{total} zorunlu öğeden {done} tamamlandı",
+          "teacher_summary": "{required} zorunlu · {optional} isteğe bağlı"
         }
       },
       "attendance": {
@@ -6011,7 +6023,9 @@
         "successful_deletion": "Entegrasyon silindi",
         "update_successful": "Güncelleme başarılı",
         "link_generated": "Ders bağlantısı başarıyla güncellendi",
-        "converted_to_public": "Ders başarıyla Herkese Açık hale dönüştürüldü"
+        "converted_to_public": "Ders başarıyla Herkese Açık hale dönüştürüldü",
+        "all_content_required": "Tüm içerik zorunlu olarak işaretlendi",
+        "all_content_optional": "Tüm içerik isteğe bağlı olarak işaretlendi"
       },
       "error": {
         "not_right": "Bir sorun var - Lütfen daha sonra deneyin",

@@ -11,6 +11,7 @@
   import TemplateUpdateAlert from '$features/course/components/template-update-alert.svelte';
   import ContentList from '$features/course/components/lesson/content-list.svelte';
   import ContentSectionList from '$features/course/components/lesson/content-section-list.svelte';
+  import RequirementSummary from '$features/course/components/lesson/requirement-summary.svelte';
   import PastSessionsSection from '$features/course/components/lesson/past-sessions-section.svelte';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import { contentApi, courseApi } from '$features/course/api';
@@ -191,6 +192,8 @@
       {$t('course.navItem.lessons.drag')}
     </p>
   {/if}
+
+  <RequirementSummary />
 
   {#if contentData.grouped}
     <div

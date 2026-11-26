@@ -45,6 +45,14 @@ Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{
 |---|---|
 | `course-settings-people-link` | Self-enrollment description link to the course People page |
 | `customize-lms-student-home` | Customize LMS student-home combobox trigger |
+| `lms-dashboard-hero-action` | Student dashboard hero button (**Continue Learning**, **My Certificate** or **View courses**) |
+| `lessons-content-menu` | Content page `⋮` options menu trigger |
+| `lessons-requirement-toggle` | Icon button on a Content page row that flips required/optional (teacher view) |
+| `lessons-requirement-all-required` | **Make everything required** item in the content options menu |
+| `lessons-requirement-all-optional` | **Make everything optional** item in the content options menu |
+| `lessons-requirement-marker` | Red `*` after a required item's title on the Content page; hover shows **Required** |
+| `lessons-requirement-summary` | One-line required/optional counts (teacher) or required progress (student) above the Content list |
+| `sidebar-requirement-marker` | Red `*` beside a required item in the course sidebar |
 | `lesson-video-edit` | **Edit** item in a lesson video block's options menu |
 | `media-upload` | Media page **Upload files** button |
 | `media-upload-menu` | Media page upload-options menu (**Add a video link**) |

@@ -11,6 +11,8 @@
     isSaving?: boolean;
     lockLabel?: string;
     showLock?: boolean;
+    requirementLabel?: string;
+    onToggleRequirement?: () => void;
     showDelete?: boolean;
     onEdit: () => void;
     onSave: () => void;
@@ -25,6 +27,8 @@
     isSaving = false,
     lockLabel = '',
     showLock = true,
+    requirementLabel = '',
+    onToggleRequirement,
     showDelete = true,
     onEdit,
     onSave,
@@ -55,6 +59,11 @@
           {#if showLock}
             <DropdownMenu.Item onclick={onToggleLock} {disabled}>
               {lockLabel}
+            </DropdownMenu.Item>
+          {/if}
+          {#if requirementLabel && onToggleRequirement}
+            <DropdownMenu.Item onclick={onToggleRequirement} {disabled}>
+              {requirementLabel}
             </DropdownMenu.Item>
           {/if}
           <DropdownMenu.Item onclick={onEdit} {disabled}>

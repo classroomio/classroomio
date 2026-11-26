@@ -365,7 +365,9 @@
         "content_grouping_enabled": "Grupowanie treści włączone",
         "content_grouping_disabled": "Grupowanie treści wyłączone",
         "link_generated": "Link do kursu został pomyślnie zaktualizowany",
-        "converted_to_public": "Kurs pomyślnie przekonwertowany na publiczny"
+        "converted_to_public": "Kurs pomyślnie przekonwertowany na publiczny",
+        "all_content_required": "Wszystkie treści oznaczono jako wymagane",
+        "all_content_optional": "Wszystkie treści oznaczono jako opcjonalne"
       },
       "info": {
         "conversion_blocked": "Popraw poniższe pytania, aby zakończyć konwersję do wersji publicznej."
@@ -2856,6 +2858,18 @@
           "mode_edit": "Redagować",
           "mode_preview": "Zapowiedź",
           "mode_shortcut": "Przełącz tryb"
+        },
+        "requirement": {
+          "required": "Wymagane",
+          "optional": "Opcjonalne",
+          "make_required": "Ustaw jako wymagane",
+          "make_optional": "Ustaw jako opcjonalne",
+          "make_all_required": "Ustaw wszystko jako wymagane",
+          "make_all_optional": "Ustaw wszystko jako opcjonalne",
+          "make_section_required": "Ustaw sekcję jako wymaganą",
+          "make_section_optional": "Ustaw sekcję jako opcjonalną",
+          "progress_summary": "{done} z {total} wymaganych ukończono",
+          "teacher_summary": "{required} wymaganych · {optional} opcjonalnych"
         }
       },
       "news_feed": {

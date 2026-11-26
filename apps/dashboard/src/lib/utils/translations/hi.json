@@ -365,7 +365,9 @@
         "content_grouping_enabled": "सामग्री समूहीकरण सक्षम",
         "content_grouping_disabled": "सामग्री समूहीकरण अक्षम",
         "link_generated": "पाठ्यक्रम लिंक सफलतापूर्वक अपडेट किया गया",
-        "converted_to_public": "पाठ्यक्रम सफलतापूर्वक सार्वजनिक में परिवर्तित हो गया"
+        "converted_to_public": "पाठ्यक्रम सफलतापूर्वक सार्वजनिक में परिवर्तित हो गया",
+        "all_content_required": "सभी सामग्री अनिवार्य के रूप में चिह्नित की गई",
+        "all_content_optional": "सभी सामग्री वैकल्पिक के रूप में चिह्नित की गई"
       },
       "info": {
         "conversion_blocked": "सार्वजनिक करने की प्रक्रिया पूरी करने के लिए नीचे दिए गए प्रश्नों के उत्तर दें।"
@@ -2856,6 +2858,18 @@
           "mode_edit": "संपादन करना",
           "mode_preview": "पूर्व दर्शन",
           "mode_shortcut": "मोड टॉगल करें"
+        },
+        "requirement": {
+          "required": "अनिवार्य",
+          "optional": "वैकल्पिक",
+          "make_required": "अनिवार्य बनाएं",
+          "make_optional": "वैकल्पिक बनाएं",
+          "make_all_required": "सब कुछ अनिवार्य बनाएं",
+          "make_all_optional": "सब कुछ वैकल्पिक बनाएं",
+          "make_section_required": "सेक्शन को अनिवार्य बनाएं",
+          "make_section_optional": "सेक्शन को वैकल्पिक बनाएं",
+          "progress_summary": "{total} अनिवार्य में से {done} पूरे",
+          "teacher_summary": "{required} अनिवार्य · {optional} वैकल्पिक"
         }
       },
       "news_feed": {
