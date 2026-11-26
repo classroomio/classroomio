@@ -1,9 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { dedupe } from '../src/functions/array';
+import { chunk, dedupe } from '../src/functions/array';
 import { extractUniqueLinks } from '../src/functions/links';
 import { toCanonicalVimeoUrl } from '../src/functions/vimeo';
 import { toCanonicalYoutubeUrl } from '../src/functions/youtube';
 import { getVideoMediaType, getVideoType, isGoogleDriveUrl } from '../src/functions/video';
+
+describe('chunk', () => {
+  it('splits into slices of the given size with a shorter last slice', () => {
+    expect(chunk([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]]);
+  });
+
+  it('returns no slices for an empty array', () => {
+    expect(chunk([], 3)).toEqual([]);
+  });
+
+  it('rejects a size below 1', () => {
+    expect(() => chunk([1], 0)).toThrow(RangeError);
+  });
+});
 
 describe('dedupe', () => {
   it('removes duplicate primitive values while preserving order', () => {

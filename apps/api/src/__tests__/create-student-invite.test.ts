@@ -3,8 +3,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('@cio/db/queries/course/invite', () => ({
   createCourseInvite: vi.fn(),
   createCourseInviteAudit: vi.fn(),
+  createCourseInvites: vi.fn(),
+  createCourseInviteAudits: vi.fn(),
   createEnrollmentInviteIfAbsent: vi.fn(),
   revokeCourseInvite: vi.fn()
+}));
+
+const TX = { tx: true };
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
 }));
 
 vi.mock('@cio/db/queries/course', () => ({
@@ -13,7 +20,8 @@ vi.mock('@cio/db/queries/course', () => ({
 }));
 
 vi.mock('@api/services/jobs', () => ({
-  enqueueTransactionalEmail: vi.fn()
+  enqueueTransactionalEmail: vi.fn(),
+  enqueueTransactionalEmails: vi.fn()
 }));
 
 vi.mock('@cio/core/services/webhook/emit', () => ({
@@ -24,11 +32,13 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
 import {
   createCourseInvite,
   createCourseInviteAudit,
+  createCourseInviteAudits,
+  createCourseInvites,
   createEnrollmentInviteIfAbsent,
   revokeCourseInvite
 } from '@cio/db/queries/course/invite';
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { enqueueTransactionalEmail, enqueueTransactionalEmails } from '@api/services/jobs';
 import { createEmailInviteAndSend, createStudentInvite } from '@api/services/course/invite';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
@@ -60,7 +70,16 @@ describe('createStudentInvite (course invite onboarding)', () => {
         createdAt: '2026-01-01T00:00:00.000Z'
       } as never;
     });
+    vi.mocked(createCourseInvites).mockImplementation(async (rows) =>
+      rows.map((values) => {
+        inviteCounter += 1;
+        return { ...values, id: `invite-${inviteCounter}`, createdAt: '2026-01-01T00:00:00.000Z' } as never;
+      })
+    );
     vi.mocked(createCourseInviteAudit).mockResolvedValue(undefined as never);
+    vi.mocked(enqueueTransactionalEmails).mockImplementation(async (_emailId, inputs) =>
+      inputs.map(() => ({ ok: true as const, jobIds: [] }))
+    );
     vi.mocked(enqueueTransactionalEmail).mockResolvedValue({ jobIds: ['job-1'] });
   });
 
@@ -73,7 +92,7 @@ describe('createStudentInvite (course invite onboarding)', () => {
     expect(result.mode).toBe('bulk');
     expect(result.invites).toHaveLength(1);
     expect(result.invites[0]).toMatchObject({ allowedEmails: ['new.person@example.com'], maxUses: 1 });
-    expect(createCourseInvite).toHaveBeenCalledWith(expect.objectContaining({ createdByProfileId: ACTOR_ID }));
+    expect(createCourseInvites).toHaveBeenCalledWith([expect.objectContaining({ createdByProfileId: ACTOR_ID })], TX);
   });
 
   it('skips repeated recipients within one request instead of creating a second invite', async () => {
@@ -85,7 +104,23 @@ describe('createStudentInvite (course invite onboarding)', () => {
 
     expect(result.invites.map((invite) => invite.allowedEmails)).toEqual([['a@example.com'], ['b@example.com']]);
     expect(result.duplicatesSkipped).toEqual(['a@example.com', 'a@example.com']);
-    expect(createCourseInvite).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(createCourseInvites).mock.calls[0][0]).toHaveLength(2);
+  });
+
+  it('writes every invite and its CREATED audit in one transaction', async () => {
+    await createStudentInvite(COURSE_ID, ACTOR_ID, {
+      ...baseInvite,
+      recipientEmails: ['a@example.com', 'b@example.com']
+    });
+
+    expect(createCourseInvites).toHaveBeenCalledTimes(1);
+    expect(createCourseInviteAudits).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({ eventType: 'CREATED', targetEmail: 'a@example.com' }),
+        expect.objectContaining({ eventType: 'CREATED', targetEmail: 'b@example.com' })
+      ],
+      TX
+    );
   });
 
   it('does not send email when sendEmail is false', async () => {
@@ -94,7 +129,7 @@ describe('createStudentInvite (course invite onboarding)', () => {
       recipientEmails: ['a@example.com']
     });
 
-    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalled();
     expect(result.delivery).toMatchObject({ requested: 1, sent: 0, failures: [] });
   });
 
@@ -105,16 +140,34 @@ describe('createStudentInvite (course invite onboarding)', () => {
       recipientEmails: ['a@example.com', 'b@example.com']
     });
 
-    expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(2);
-    expect(enqueueTransactionalEmail).toHaveBeenCalledWith(
-      'studentCourseInvite',
-      expect.objectContaining({ to: 'a@example.com' })
-    );
+    expect(enqueueTransactionalEmails).toHaveBeenCalledTimes(1);
+    expect(enqueueTransactionalEmails).toHaveBeenCalledWith('studentCourseInvite', [
+      expect.objectContaining({ to: 'a@example.com' }),
+      expect.objectContaining({ to: 'b@example.com' })
+    ]);
     expect(result.delivery).toMatchObject({ requested: 2, sent: 2, failed: 0 });
   });
 
+  it('still returns the invites when recording the email outcomes fails', async () => {
+    vi.mocked(createCourseInviteAudits)
+      .mockResolvedValueOnce(undefined as never)
+      .mockRejectedValueOnce(new Error('audit insert failed'));
+
+    const result = await createStudentInvite(COURSE_ID, ACTOR_ID, {
+      ...baseInvite,
+      sendEmail: true,
+      recipientEmails: ['a@example.com']
+    });
+
+    expect(result.invites).toHaveLength(1);
+    expect(result.delivery).toMatchObject({ requested: 1, sent: 1, failed: 0 });
+  });
+
   it('reports a failed send per recipient without failing the whole request', async () => {
-    vi.mocked(enqueueTransactionalEmail).mockRejectedValueOnce(new Error('queue down'));
+    vi.mocked(enqueueTransactionalEmails).mockResolvedValueOnce([
+      { ok: false, error: new Error('queue down') },
+      { ok: true, jobIds: [] }
+    ]);
 
     const result = await createStudentInvite(COURSE_ID, ACTOR_ID, {
       ...baseInvite,
@@ -135,7 +188,7 @@ describe('createStudentInvite (course invite onboarding)', () => {
     await expect(
       createStudentInvite(COURSE_ID, ACTOR_ID, { ...baseInvite, recipientCsv: 'a@example.com, not-an-email' })
     ).rejects.toMatchObject({ statusCode: 400 });
-    expect(createCourseInvite).not.toHaveBeenCalled();
+    expect(createCourseInvites).not.toHaveBeenCalled();
   });
 });
 

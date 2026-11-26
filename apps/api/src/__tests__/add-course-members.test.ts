@@ -1,13 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@api/services/course/compliance', () => ({
-  ensureComplianceEnrollmentRecordsForProfiles: vi.fn()
+  emitComplianceEnrollmentEvents: vi.fn(),
+  ensureComplianceEnrollmentRecordsForProfiles: vi.fn().mockResolvedValue({ createdCount: 0, createdRecords: [] })
 }));
 
 vi.mock('@cio/db/queries/course/people', () => ({
   getCourseMember: vi.fn(),
   getCourseMembers: vi.fn(),
-  addCourseMember: vi.fn(),
+  addCourseMembers: vi.fn(),
   deleteCourseMember: vi.fn(),
   updateCourseMember: vi.fn(),
   getCourseTeachers: vi.fn()
@@ -18,12 +19,17 @@ vi.mock('@cio/db/queries/course', () => ({
   getOrgIdByCourseId: vi.fn().mockResolvedValue('org-1')
 }));
 
+const TX = { tx: true };
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
+}));
+
 vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
   invalidateOrgStats: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/auth', () => ({ getProfileById: vi.fn() }));
-vi.mock('@api/services/jobs', () => ({ enqueueTransactionalEmail: vi.fn() }));
+vi.mock('@cio/db/queries/auth', () => ({ getProfilesByIds: vi.fn() }));
+vi.mock('@api/services/jobs', () => ({ enqueueTransactionalEmails: vi.fn() }));
 vi.mock('@api/services/course/session-invite', () => ({ getWelcomeSessionIcs: vi.fn() }));
 vi.mock('@api/services/product-events', () => ({ captureLearnersEnrolled: vi.fn() }));
 vi.mock('@cio/core/config/dashboard-url', () => ({ getDashboardBaseUrl: vi.fn(() => 'https://acme.classroomio.com') }));
@@ -35,10 +41,11 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
 }));
 
 import { ROLE } from '@cio/utils/constants';
-import { addCourseMember, getCourseMember, updateCourseMember } from '@cio/db/queries/course/people';
+import { addCourseMembers, getCourseMember, updateCourseMember } from '@cio/db/queries/course/people';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
-import { getProfileById } from '@cio/db/queries/auth';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { getProfilesByIds } from '@cio/db/queries/auth';
+import { enqueueTransactionalEmails } from '@api/services/jobs';
+import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { addMembers, updateMember } from '@api/services/course/people';
 
 const uniqueViolation = new Error('Failed to add course member: duplicate key', {
@@ -56,7 +63,9 @@ const mockCourseOrgData = () =>
   } as Awaited<ReturnType<typeof getCourseWithOrgData>>);
 
 const sentEmails = () =>
-  vi.mocked(enqueueTransactionalEmail).mock.calls.map(([emailId, payload]) => ({ emailId, ...payload }));
+  vi
+    .mocked(enqueueTransactionalEmails)
+    .mock.calls.flatMap(([emailId, inputs]) => inputs.map((input) => ({ emailId, ...input })));
 
 describe('changing a member email to one already in the course', () => {
   it('updateMember returns 409 instead of a 500', async () => {
@@ -76,7 +85,7 @@ describe('adding a course member who is already in the course', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCourseOrgData();
-    vi.mocked(addCourseMember).mockRejectedValue(uniqueViolation);
+    vi.mocked(addCourseMembers).mockRejectedValue(uniqueViolation);
   });
 
   it('addMembers returns 409 instead of a 500', async () => {
@@ -84,17 +93,43 @@ describe('adding a course member who is already in the course', () => {
       addMembers('course-1', [{ roleId: ROLE.STUDENT, email: 'student@example.com' }])
     ).rejects.toMatchObject({ statusCode: 409, code: 'CONFLICT' });
   });
+
+  it('sends no welcome email and creates no compliance record when one member in the list is a duplicate', async () => {
+    await expect(
+      addMembers('course-1', [
+        { roleId: ROLE.STUDENT, profileId: 'profile-1' },
+        { roleId: ROLE.STUDENT, email: 'student@example.com' }
+      ])
+    ).rejects.toMatchObject({ statusCode: 409 });
+
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalled();
+    expect(ensureComplianceEnrollmentRecordsForProfiles).not.toHaveBeenCalled();
+  });
 });
 
 describe('welcome emails when adding course members', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCourseOrgData();
-    vi.mocked(addCourseMember).mockImplementation(
-      async (_courseId, member) => ({ id: 'member-1', groupId: 'group-1', ...member }) as never
+    vi.mocked(addCourseMembers).mockImplementation(
+      async (_courseId, members) =>
+        members.map((member, index) => ({ id: `member-${index + 1}`, groupId: 'group-1', ...member })) as never
     );
-    vi.mocked(enqueueTransactionalEmail).mockResolvedValue([] as never);
-    vi.mocked(getProfileById).mockResolvedValue({ email: 'ada@example.com', fullname: 'Ada' } as never);
+    vi.mocked(enqueueTransactionalEmails).mockImplementation(async (_emailId, inputs) =>
+      inputs.map(() => ({ ok: true as const, jobIds: [] }))
+    );
+    vi.mocked(getProfilesByIds).mockResolvedValue([
+      { id: 'profile-1', email: 'ada@example.com', fullname: 'Ada' }
+    ] as never);
+  });
+
+  it('adds the members and their compliance records in one transaction', async () => {
+    const members = [{ roleId: ROLE.STUDENT, profileId: 'profile-1' }];
+
+    await addMembers('course-1', members);
+
+    expect(addCourseMembers).toHaveBeenCalledWith('course-1', members, TX);
+    expect(ensureComplianceEnrollmentRecordsForProfiles).toHaveBeenCalledWith(['course-1'], ['profile-1'], TX);
   });
 
   it('sends a student the course welcome with the same key as Audience → Assign courses', async () => {
@@ -120,7 +155,7 @@ describe('welcome emails when adding course members', () => {
   it('sends to the given email when there is no profile yet', async () => {
     await addMembers('course-1', [{ roleId: ROLE.STUDENT, email: 'pending@example.com' }]);
 
-    expect(getProfileById).not.toHaveBeenCalled();
+    expect(getProfilesByIds).not.toHaveBeenCalled();
     expect(sentEmails()).toEqual([
       expect.objectContaining({
         to: 'pending@example.com',
@@ -141,7 +176,7 @@ describe('welcome emails when adding course members', () => {
       { sendEmail: false }
     );
 
-    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalled();
   });
 
   it('still sends a tutor the teacher welcome and not the student one', async () => {
@@ -153,7 +188,7 @@ describe('welcome emails when adding course members', () => {
   });
 
   it('keeps the member added when the email fails to queue', async () => {
-    vi.mocked(enqueueTransactionalEmail).mockRejectedValue(new Error('queue down'));
+    vi.mocked(enqueueTransactionalEmails).mockRejectedValue(new Error('queue down'));
 
     await expect(addMembers('course-1', [{ roleId: ROLE.STUDENT, profileId: 'profile-1' }])).resolves.toHaveLength(1);
   });

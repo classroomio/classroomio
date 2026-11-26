@@ -3,6 +3,8 @@ import {
   countInviteDistinctPreviewIps,
   createCourseInvite,
   createCourseInviteAudit,
+  createCourseInviteAudits,
+  createCourseInvites,
   createEnrollmentInviteIfAbsent,
   getCourseInviteById,
   getCourseInviteByTokenHash,
@@ -45,7 +47,7 @@ import {
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding, type EmailBranding } from '@cio/email';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { enqueueTransactionalEmail, enqueueTransactionalEmails } from '@api/services/jobs';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
@@ -696,6 +698,133 @@ async function recordFreshInvite(
 }
 
 /**
+ * Creates one single-use invite per recipient with its CREATED audit in one transaction, then queues the invite
+ * emails in one batch and records an EMAIL_SENT or EMAIL_FAILED audit for each. Results are in recipient order.
+ */
+async function createEmailInvitesAndSend(input: {
+  courseId: string;
+  createdByProfileId: string;
+  recipientEmails: string[];
+  policy: { expiresAt: string; maxUses: number };
+  orgName: string;
+  organizationId: string;
+  courseName: string;
+  courseSlug: string;
+  org: OrgUrlInfo;
+  branding: EmailBranding;
+  metadata?: Record<string, unknown>;
+  shouldSend: boolean;
+}) {
+  const pending = input.recipientEmails.map((recipientEmail) => {
+    const token = generateToken();
+
+    return { recipientEmail, token, tokenHash: hashToken(token) };
+  });
+
+  const createdRows = await db.transaction(async (tx) => {
+    const rows = await createCourseInvites(
+      pending.map(({ recipientEmail, tokenHash }) => ({
+        courseId: input.courseId,
+        roleId: ROLE.STUDENT,
+        tokenHash,
+        createdByProfileId: input.createdByProfileId,
+        expiresAt: input.policy.expiresAt,
+        maxUses: 1,
+        usedCount: 0,
+        isRevoked: false,
+        allowedEmails: [recipientEmail],
+        allowedDomains: null,
+        metadata: { ...(input.metadata || {}), source: 'DIRECT_EMAIL_INVITE' }
+      })),
+      tx
+    );
+
+    await createCourseInviteAudits(
+      rows.map((row) => ({
+        inviteId: row.id,
+        courseId: input.courseId,
+        eventType: 'CREATED' as const,
+        actorProfileId: input.createdByProfileId,
+        targetEmail: row.allowedEmails?.[0] ?? null,
+        ipAddress: null,
+        userAgent: null,
+        metadata: { maxUses: row.maxUses, expiresAt: row.expiresAt }
+      })),
+      tx
+    );
+
+    return rows;
+  });
+
+  const rowByTokenHash = new Map(createdRows.map((row) => [row.tokenHash, row]));
+  const invites = pending.map(({ recipientEmail, token, tokenHash }) => {
+    const row = rowByTokenHash.get(tokenHash)!;
+    const inviteLink = buildEnrollLink(input.courseSlug, token, input.org);
+
+    return { recipientEmail, invite: { ...row, inviteLink } };
+  });
+
+  for (const { recipientEmail, invite } of invites) {
+    await emitInviteWebhook(invite.id, input.courseId, 'CREATED', {
+      actorProfileId: input.createdByProfileId,
+      targetEmail: recipientEmail
+    });
+  }
+
+  if (!input.shouldSend) {
+    return invites.map(({ invite }) => ({ invite, sent: false, error: null as string | null }));
+  }
+
+  const outcomes = await enqueueTransactionalEmails(
+    'studentCourseInvite',
+    invites.map(({ recipientEmail, invite }) => ({
+      to: recipientEmail,
+      fields: {
+        orgName: input.orgName,
+        courseName: input.courseName,
+        inviteLink: invite.inviteLink,
+        expiresAt: getExpiryLabel(invite.expiresAt),
+        branding: input.branding
+      },
+      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
+      organizationId: input.organizationId,
+      idempotencyKey: `course-invite-email:${invite.id}`
+    }))
+  );
+
+  const results = invites.map(({ invite }, index) => {
+    const outcome = outcomes[index];
+
+    return {
+      invite,
+      sent: outcome.ok,
+      error: outcome.ok ? (null as string | null) : outcome.error.message || 'Unknown email error'
+    };
+  });
+
+  // Optimistic EMAIL_SENT — see comment in services/organization/invite.ts. The invites and emails already
+  // exist, so a failed audit write is logged rather than failing the request and inviting a retry.
+  const outcomeAudits = results.map(({ invite, sent, error }, index) => ({
+    inviteId: invite.id,
+    courseId: input.courseId,
+    eventType: sent ? ('EMAIL_SENT' as const) : ('EMAIL_FAILED' as const),
+    actorProfileId: input.createdByProfileId,
+    targetEmail: invites[index].recipientEmail,
+    ipAddress: null,
+    userAgent: null,
+    metadata: sent ? {} : { error }
+  }));
+
+  try {
+    await createCourseInviteAudits(outcomeAudits);
+  } catch (auditError) {
+    console.error('Failed to record course invite email outcomes', { courseId: input.courseId, auditError });
+  }
+
+  return results;
+}
+
+/**
  * Creates the single-use invite for one email and sends it, or returns the usable invite that already
  * names that email when `reuseActiveInvite` is set. Only a freshly created invite sends an email.
  */
@@ -820,24 +949,20 @@ export async function createStudentInvite(
     };
   }
 
-  const inviteResults = await Promise.all(
-    recipients.valid.map((recipientEmail) =>
-      createEmailInviteAndSend({
-        courseId,
-        createdByProfileId,
-        recipientEmail,
-        policy,
-        orgName: context.orgName,
-        organizationId: context.organizationId,
-        courseName: context.courseName,
-        courseSlug: context.courseSlug,
-        org: context.org,
-        branding: context.branding,
-        metadata: data.metadata,
-        shouldSend: data.sendEmail
-      })
-    )
-  );
+  const inviteResults = await createEmailInvitesAndSend({
+    courseId,
+    createdByProfileId,
+    recipientEmails: recipients.valid,
+    policy,
+    orgName: context.orgName,
+    organizationId: context.organizationId,
+    courseName: context.courseName,
+    courseSlug: context.courseSlug,
+    org: context.org,
+    branding: context.branding,
+    metadata: data.metadata,
+    shouldSend: data.sendEmail
+  });
 
   const sentCount = inviteResults.filter((result) => result.sent).length;
 
@@ -860,7 +985,7 @@ export async function createStudentInvite(
 
   return {
     mode: 'bulk' as const,
-    invites: inviteResults.flatMap((result) => (result.created ? [toInviteResponse(result.invite)] : [])),
+    invites: inviteResults.map((result) => toInviteResponse(result.invite)),
     inviteLink: inviteResults[0]?.invite?.inviteLink || null,
     duplicatesSkipped: recipients.duplicates,
     delivery: {

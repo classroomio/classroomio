@@ -8,10 +8,14 @@ import {
 import type { PersonalEmailNotificationSettings } from '@cio/utils/notifications';
 import type { TMemberEmailNotificationPreferencesUpdate } from '@cio/utils/validation/notifications';
 
+import { chunk } from '@cio/utils/functions/array';
+
 import { getOrganizationMemberIdByOrgAndProfile } from '../organization/organization';
 import { db } from '@db/drizzle';
 import * as schema from '@db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
+
+const PROFILE_ID_CHUNK_SIZE = 1000;
 
 function rowFromRecord(
   record: typeof schema.organizationmemberEmailNotifications.$inferSelect | undefined
@@ -75,6 +79,52 @@ export async function getPersonalEmailNotificationSettingsForOrg(
   const row = await getOrganizationMemberEmailNotifications(profileId, organizationId);
 
   return memberEmailNotificationRowToPersonalSettings(row);
+}
+
+/**
+ * Bulk form of `getPersonalEmailNotificationSettingsForOrg`. Profiles that are not members of the org are absent
+ * from the map, which callers treat the same as having no saved preferences.
+ */
+export async function getPersonalEmailNotificationSettingsForOrgMembers(
+  organizationId: string,
+  profileIds: string[]
+): Promise<Map<string, PersonalEmailNotificationSettings | undefined>> {
+  const settingsByProfileId = new Map<string, PersonalEmailNotificationSettings | undefined>();
+
+  try {
+    for (const profileIdChunk of chunk(profileIds, PROFILE_ID_CHUNK_SIZE)) {
+      const rows = await db
+        .select({
+          profileId: schema.organizationmember.profileId,
+          notifications: schema.organizationmemberEmailNotifications
+        })
+        .from(schema.organizationmember)
+        .leftJoin(
+          schema.organizationmemberEmailNotifications,
+          eq(schema.organizationmemberEmailNotifications.organizationMemberId, schema.organizationmember.id)
+        )
+        .where(
+          and(
+            eq(schema.organizationmember.organizationId, organizationId),
+            inArray(schema.organizationmember.profileId, profileIdChunk)
+          )
+        );
+
+      for (const row of rows) {
+        if (!row.profileId) continue;
+
+        settingsByProfileId.set(
+          row.profileId,
+          memberEmailNotificationRowToPersonalSettings(rowFromRecord(row.notifications ?? undefined))
+        );
+      }
+    }
+  } catch (error) {
+    console.error('getPersonalEmailNotificationSettingsForOrgMembers error:', error);
+    throw new Error('Failed to get organization member email notification preferences');
+  }
+
+  return settingsByProfileId;
 }
 
 export async function upsertOrganizationMemberEmailNotifications(

@@ -8,6 +8,8 @@ vi.mock('@cio/db/queries/course/compliance', () => ({
   createCourseCertificateIssue: vi.fn(),
   createCourseCompletionNotificationEvent: vi.fn(),
   createCourseCompletionRecord: vi.fn(),
+  createCourseCompletionRecords: vi.fn(),
+  getComplianceSettingsByCourseIds: vi.fn(),
   getCourseComplianceHistoryRows: vi.fn(),
   getCourseCurrentComplianceRows: vi.fn(),
   getLatestComplianceRecordsByProfiles: vi.fn(),
@@ -59,7 +61,8 @@ vi.mock('@api/services/course/certificate-plan', () => ({
 import { db } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
 import {
-  createCourseCompletionRecord,
+  createCourseCompletionRecords,
+  getComplianceSettingsByCourseIds,
   getLatestComplianceRecordsByProfiles,
   getStudentCourseMembersForCompliance,
   updateCourseCompletionRecord
@@ -157,16 +160,61 @@ describe('ensureComplianceEnrollmentRecordsForProfiles', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getCourseById).mockResolvedValue([
+    vi.mocked(getComplianceSettingsByCourseIds).mockResolvedValue([
       { id: COURSE_ID, type: 'COMPLIANCE', compliance: {}, certificate: { deadline: '2026-12-31T00:00:00.000Z' } }
-    ] as unknown as Awaited<ReturnType<typeof getCourseById>>);
+    ] as unknown as Awaited<ReturnType<typeof getComplianceSettingsByCourseIds>>);
     vi.mocked(getStudentCourseMembersForCompliance).mockResolvedValue([
       { member: { id: GROUP_MEMBER_ID, profileId: PROFILE_ID } }
     ] as unknown as Awaited<ReturnType<typeof getStudentCourseMembersForCompliance>>);
     vi.mocked(getLatestComplianceRecordsByProfiles).mockResolvedValue([]);
-    vi.mocked(createCourseCompletionRecord).mockResolvedValue(
-      createdRecord as unknown as Awaited<ReturnType<typeof createCourseCompletionRecord>>
+    vi.mocked(createCourseCompletionRecords).mockResolvedValue([createdRecord] as unknown as Awaited<
+      ReturnType<typeof createCourseCompletionRecords>
+    >);
+  });
+
+  it('creates records in one insert, only for learners with no record yet', async () => {
+    vi.mocked(getStudentCourseMembersForCompliance).mockResolvedValue([
+      { member: { id: 'member-1', profileId: 'profile-1' } },
+      { member: { id: 'member-2', profileId: 'profile-2' } },
+      { member: { id: 'member-3', profileId: 'profile-3' } }
+    ] as unknown as Awaited<ReturnType<typeof getStudentCourseMembersForCompliance>>);
+    vi.mocked(getLatestComplianceRecordsByProfiles).mockResolvedValue([
+      { profileId: 'profile-2' }
+    ] as unknown as Awaited<ReturnType<typeof getLatestComplianceRecordsByProfiles>>);
+
+    await ensureComplianceEnrollmentRecordsForProfiles(
+      [COURSE_ID],
+      ['profile-1', 'profile-2', 'profile-3'],
+      {} as Parameters<typeof ensureComplianceEnrollmentRecordsForProfiles>[2]
     );
+
+    expect(getLatestComplianceRecordsByProfiles).toHaveBeenCalledTimes(1);
+    expect(createCourseCompletionRecords).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(createCourseCompletionRecords).mock.calls[0][0]).toEqual([
+      expect.objectContaining({
+        groupMemberId: 'member-1',
+        profileId: 'profile-1',
+        cycleNumber: 1,
+        status: 'not_started'
+      }),
+      expect.objectContaining({
+        groupMemberId: 'member-3',
+        profileId: 'profile-3',
+        cycleNumber: 1,
+        status: 'not_started'
+      })
+    ]);
+  });
+
+  it('skips a course with no certificate deadline', async () => {
+    vi.mocked(getComplianceSettingsByCourseIds).mockResolvedValue([
+      { id: COURSE_ID, type: 'COMPLIANCE', compliance: {}, certificate: {} }
+    ] as unknown as Awaited<ReturnType<typeof getComplianceSettingsByCourseIds>>);
+
+    const result = await ensureComplianceEnrollmentRecordsForProfiles([COURSE_ID], [PROFILE_ID]);
+
+    expect(createCourseCompletionRecords).not.toHaveBeenCalled();
+    expect(result.createdCount).toBe(0);
   });
 
   it('returns the new records without announcing them when the caller owns a transaction', async () => {

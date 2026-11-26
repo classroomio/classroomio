@@ -14,6 +14,9 @@ import type {
 import { and, asc, desc, eq, inArray, isNotNull, lte, or, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { chunk } from '@cio/utils/functions/array';
+
+const COMPLETION_RECORD_INSERT_CHUNK_SIZE = 500;
 
 type CourseMemberProfile = {
   id: string;
@@ -281,6 +284,63 @@ export async function createCourseCompletionRecord(
     console.error('createCourseCompletionRecord error:', error);
     throw new Error(
       `Failed to create course completion record: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Inserts many records in chunks. A row whose course, profile and cycle already exist is skipped, so the result
+ * holds only the rows this call created.
+ */
+export async function createCourseCompletionRecords(
+  values: TNewCourseCompletionRecord[],
+  dbClient: DbOrTxClient = db
+): Promise<TCourseCompletionRecord[]> {
+  const created: TCourseCompletionRecord[] = [];
+
+  try {
+    for (const valuesChunk of chunk(values, COMPLETION_RECORD_INSERT_CHUNK_SIZE)) {
+      const rows = await dbClient
+        .insert(schema.courseCompletionRecord)
+        .values(valuesChunk)
+        .onConflictDoNothing({
+          target: [
+            schema.courseCompletionRecord.courseId,
+            schema.courseCompletionRecord.profileId,
+            schema.courseCompletionRecord.cycleNumber
+          ]
+        })
+        .returning();
+
+      created.push(...rows);
+    }
+
+    return created;
+  } catch (error) {
+    console.error('createCourseCompletionRecords error:', error);
+    throw new Error(
+      `Failed to create course completion records: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function getComplianceSettingsByCourseIds(courseIds: string[], dbClient: DbOrTxClient = db) {
+  if (courseIds.length === 0) return [];
+
+  try {
+    return await dbClient
+      .select({
+        id: schema.course.id,
+        type: schema.course.type,
+        compliance: schema.course.compliance,
+        certificate: schema.course.certificate
+      })
+      .from(schema.course)
+      .where(inArray(schema.course.id, courseIds));
+  } catch (error) {
+    console.error('getComplianceSettingsByCourseIds error:', error);
+    throw new Error(
+      `Failed to get compliance settings for courses: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
