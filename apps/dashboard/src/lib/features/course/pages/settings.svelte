@@ -210,10 +210,9 @@
     hasUnsavedChanges = true;
   }
 
-  let privacyEdited = false;
+  let privacyBaseline = false;
 
   function onPrivateToggle(checked: boolean) {
-    privacyEdited = true;
     $settings.isPrivate = checked;
     if (checked) {
       $settings.allowSelfEnrollment = false;
@@ -295,7 +294,7 @@
         type: $settings.type,
         bannerImage: bannerImageUrl,
         isPublished: $settings.isPublished,
-        ...(privacyEdited ? { isPrivate: $settings.isPrivate } : {}),
+        ...($settings.isPrivate !== privacyBaseline ? { isPrivate: $settings.isPrivate } : {}),
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
         compliance:
@@ -330,9 +329,10 @@
         const draftUnchanged =
           JSON.stringify({ settings: $settings, tagIds: [...selectedTagIds].sort(), avatar }) === draftAtSave;
 
+        privacyBaseline = !!courseApi.course.isPrivate;
+
         if ($settings.isPrivate === privacyAtSave) {
-          privacyEdited = false;
-          $settings.isPrivate = !!courseApi.course.isPrivate;
+          $settings.isPrivate = privacyBaseline;
 
           if ($settings.isPrivate && $settings.type === 'PUBLIC') {
             $settings.type = (courseApi.course.type as TCourseType) || 'SELF_PACED';
@@ -381,7 +381,7 @@
   async function setDefault(course: Course) {
     if (!course || !Object.keys(course).length) return;
 
-    privacyEdited = false;
+    privacyBaseline = !!course.isPrivate;
 
     if (course.isPrivate && publicConversionFlow.isActive && publicConversionFlow.courseId === course.id) {
       publicConversionFlow.cancel();
