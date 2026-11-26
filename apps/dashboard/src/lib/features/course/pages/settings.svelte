@@ -1155,7 +1155,7 @@
       {/if}
 
       {#if !courseApi.course?.isTemplate}
-        <Field.Set id="publish" class="scroll-mt-24">
+        <Field.Set id="private" class="scroll-mt-24">
           <Field.Field orientation="horizontal">
             <Field.Content>
               <Field.Label for="is-private">{$t('course.navItem.settings.private.label')}</Field.Label>
@@ -1172,7 +1172,11 @@
               onCheckedChange={onPrivateToggle}
             />
           </Field.Field>
+        </Field.Set>
 
+        <SettingsSeparator />
+
+        <Field.Set id="publish" class="scroll-mt-24">
           <AttentionHighlight id="publish">
             <Field.Field orientation="horizontal">
               <Field.Content>
