@@ -96,6 +96,12 @@ export async function createPublicApiLessonBlockService(
     return toPublicLessonBlock(block);
   }
 
+  if (payload.type === 'image') {
+    const block = await createLessonBlock(params.lessonId, { type: 'image', data: payload.image, ...anchor }, options);
+
+    return toPublicLessonBlock(block);
+  }
+
   const [video] = await resolveLessonVideos(orgId, actor, [payload.video]);
   const block = await createLessonBlock(
     params.lessonId,
@@ -135,11 +141,12 @@ export async function updatePublicApiLessonBlockService(
   attribution: TBlockChangeAttribution = {}
 ) {
   const actor = await authorize(orgId, actorId, params);
-  if (Boolean(payload.video) === Boolean(payload.slides)) {
-    throw new AppError('Provide exactly one of video or slides', ErrorCodes.VALIDATION_ERROR, 400);
+  const sourceCount = [payload.video, payload.slides, payload.image].filter(Boolean).length;
+  if (sourceCount !== 1) {
+    throw new AppError('Provide exactly one of video, slides or image', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  const data = payload.slides ?? (await resolveLessonVideos(orgId, actor, [payload.video!]))[0];
+  const data = payload.slides ?? payload.image ?? (await resolveLessonVideos(orgId, actor, [payload.video!]))[0];
   const block = await updateLessonBlock(
     params.lessonId,
     params.blockId,

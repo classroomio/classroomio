@@ -72,6 +72,7 @@ import type {
   TPublicApiUpdateCourseLessonComment,
   TPublicApiUpdateCourseSection,
   TPublicApiCreateAsset,
+  TPublicApiCreateImageUpload,
   TPublicApiCreateAudience,
   TPublicApiEmailTemplateParam,
   TPublicApiEmailTemplateQuery,
@@ -1359,6 +1360,13 @@ export class ClassroomIoApiClient {
 
   async createAssetUpload(payload: TPublicApiCreateAsset) {
     return this.request<{ assetId: string; uploadUrl: string; expiresAt: string }>('/public-api/v1/assets', {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async createImageUpload(payload: TPublicApiCreateImageUpload) {
+    return this.request<{ url: string; uploadUrl: string; expiresAt: string }>('/public-api/v1/assets/images', {
       method: 'POST',
       body: payload
     });

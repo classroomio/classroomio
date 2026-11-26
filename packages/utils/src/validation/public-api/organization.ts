@@ -20,7 +20,7 @@ export const ZPublicApiUpdateOrganization = z
     avatarUrl: z
       .url({ protocol: /^https?$/ })
       .optional()
-      .describe('Public http(s) URL of the logo image. Upload the image first, then send its URL.'),
+      .describe('Public http(s) URL of the logo image, such as the url from POST /assets/images with purpose avatar.'),
     theme: ZPublicApiOrganizationTheme.optional()
   })
   .refine((data) => Object.keys(data).length > 0, { message: 'No fields to update' });

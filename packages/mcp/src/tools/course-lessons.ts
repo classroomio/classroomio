@@ -114,7 +114,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'add_lesson_block',
-    `Add a note, video or slides block to a lesson, at the end unless beforePlacementId or afterPlacementId is set. A note takes HTML content in one locale; a video takes the same input as create_lesson videos; ${COURSE_TEAM_RULE}.`,
+    `Add a note, video, slides or image block to a lesson, at the end unless beforePlacementId or afterPlacementId is set. A note takes HTML content in one locale; a video takes the same input as create_lesson videos; an image takes an http(s) url, such as one from create_image_upload; ${COURSE_TEAM_RULE}.`,
     shape(ZCreateLessonBlockToolInput),
     CREATE,
     async (args) => {
@@ -136,7 +136,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'update_lesson_block',
-    `Replace a video or slides block's source. Send the version you last read as expectedVersion; a stale version fails with 409. The change shows in every lesson that uses the block; ${COURSE_TEAM_RULE}.`,
+    `Replace a video, slides or image block's source. Send the version you last read as expectedVersion; a stale version fails with 409. The change shows in every lesson that uses the block; ${COURSE_TEAM_RULE}.`,
     shape(ZUpdateLessonBlockToolInput),
     UPDATE,
     async (args) => {

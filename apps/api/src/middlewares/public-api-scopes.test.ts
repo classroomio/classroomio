@@ -55,6 +55,7 @@ function buildApp(scopes: string[], oauthConsentId: string | null = null) {
     .get('/courses', (c) => c.json({ success: true }))
     .post('/courses', (c) => c.json({ success: true }, 201))
     .post('/assets', (c) => c.json({ success: true }, 201))
+    .post('/assets/images', (c) => c.json({ success: true }, 201))
     .get('/assets', (c) => c.json({ success: true }))
     .get('/tags', (c) => c.json({ success: true }))
     .post('/tags', (c) => c.json({ success: true }, 201))
@@ -232,6 +233,18 @@ describe('publicApiScopesMiddleware', () => {
     const app = buildApp(COHORT_SCOPES);
 
     expect((await app.request('/public-api/v1/assets', { method: 'POST' })).status).toBe(403);
+  });
+
+  it('lets a media:write key create an image upload', async () => {
+    const app = buildApp(MEDIA_SCOPES);
+
+    expect((await app.request('/public-api/v1/assets/images', { method: 'POST' })).status).toBe(201);
+  });
+
+  it('does not let a key without media:write create an image upload', async () => {
+    const app = buildApp(COHORT_SCOPES);
+
+    expect((await app.request('/public-api/v1/assets/images', { method: 'POST' })).status).toBe(403);
   });
 
   it('lets course:read list courses but not create one', async () => {

@@ -68,7 +68,7 @@ export const v1CourseLessonBlocksRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Add a note, video or slides block to a lesson, at the end unless beforePlacementId or afterPlacementId is given; ${COURSE_TEAM_RULE}.`,
+      description: `Add a note, video, slides or image block to a lesson, at the end unless beforePlacementId or afterPlacementId is given; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         201: jsonResponse('Block created', BlockResponse),
@@ -227,7 +227,7 @@ export const v1CourseLessonBlocksRouter = new Hono()
   .patch(
     '/:blockId',
     describeRoute({
-      description: `Replace a block's video or slides. The change shows up in every lesson that uses the block; ${COURSE_TEAM_RULE}.`,
+      description: `Replace a block's video, slides or image. The change shows up in every lesson that uses the block; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Block updated', BlockResponse),

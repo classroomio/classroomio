@@ -4,6 +4,7 @@
   import CameraIcon from '@lucide/svelte/icons/camera';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import { validateImageUpload } from '$lib/utils/functions/fileValidation';
+  import { AVATAR_IMAGE_MAX_MB } from '@cio/utils/config/upload-limits';
   import { snackbar } from '$features/ui/snackbar/store';
 
   import { t } from '$lib/utils/functions/translations';
@@ -15,7 +16,7 @@
     shape?: string;
     errorMessage?: string | null;
     isDisabled?: boolean;
-    maxFileSizeInMb?: number; // Default max file size 2MB
+    maxFileSizeInMb?: number;
     flexDirection?: string;
     isUploading?: boolean;
     previewVariant?: 'avatar' | 'signature';
@@ -31,7 +32,7 @@
     shape = 'rounded-full',
     errorMessage = $bindable(null),
     isDisabled = false,
-    maxFileSizeInMb = 2,
+    maxFileSizeInMb = AVATAR_IMAGE_MAX_MB,
     flexDirection = 'flex-col',
     isUploading = $bindable(false),
     previewVariant = 'avatar',

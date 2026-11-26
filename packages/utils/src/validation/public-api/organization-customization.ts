@@ -9,7 +9,7 @@ export const ZPublicApiUpdateOrganizationCustomization = z
         community: z.boolean().optional().describe('Show Community in the student sidebar'),
         exercise: z.boolean().optional().describe('Show Exercises in the student sidebar'),
         bannerImage: ZImageUrl.optional().describe(
-          'Public http(s) URL of the dashboard banner image; null removes it. Upload the image first, then send its URL.'
+          'Public http(s) URL of the dashboard banner image, such as the url from POST /assets/images with purpose cover; null removes it.'
         ),
         bannerText: z.string().max(500).optional().describe('Dashboard banner text; an empty string removes it')
       })

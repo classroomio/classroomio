@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { ZBlockLocale, ZBlockType, ZSlidesBlockData } from '../block';
+import { ZBlockLocale, ZBlockType, ZImageBlockData, ZSlidesBlockData } from '../block';
 import { ZPublicApiCourseLessonParam } from './course-lesson';
 import { ZPublicApiLessonVideo } from './lesson';
 
@@ -47,6 +47,10 @@ const placementSettings = {
     .describe('Percent of the video that counts as watched in this lesson; null uses the lesson default.')
 };
 
+const ZPublicApiImageBlockData = ZImageBlockData.extend({
+  url: z.url({ protocol: /^https?$/ }).describe('Public http(s) URL of the image.')
+});
+
 export const ZPublicApiCreateLessonBlock = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('note'),
@@ -64,6 +68,11 @@ export const ZPublicApiCreateLessonBlock = z.discriminatedUnion('type', [
     type: z.literal('slides'),
     slides: ZSlidesBlockData.describe('A supported slide embed URL and its platform.'),
     ...placementAnchor
+  }),
+  z.object({
+    type: z.literal('image'),
+    image: ZPublicApiImageBlockData.describe('The image URL, optional alt text and how it fits the frame.'),
+    ...placementAnchor
   })
 ]);
 export type TPublicApiCreateLessonBlock = z.infer<typeof ZPublicApiCreateLessonBlock>;
@@ -79,7 +88,8 @@ export const ZPublicApiUpdateLessonBlock = z
   .object({
     expectedVersion: z.number().int().min(1).describe('The block version you last read; a stale value returns 409.'),
     video: ZPublicApiLessonVideo.optional().describe('New video source, for a video block.'),
-    slides: ZSlidesBlockData.optional().describe('New slide embed, for a slides block.')
+    slides: ZSlidesBlockData.optional().describe('New slide embed, for a slides block.'),
+    image: ZPublicApiImageBlockData.optional().describe('New image, for an image block.')
   })
   .describe('Updates a block everywhere it is used. Notes are saved per language with the locale endpoint.');
 export type TPublicApiUpdateLessonBlock = z.infer<typeof ZPublicApiUpdateLessonBlock>;

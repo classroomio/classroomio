@@ -26,6 +26,7 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     PUT: 'update_audience_member',
     DELETE: 'remove_audience_member'
   },
+  '/public-api/v1/assets/images': { POST: 'create_image_upload' },
   '/public-api/v1/team': { GET: 'list_team_members' },
   '/public-api/v1/team/invites': { POST: 'invite_team_members' },
   '/public-api/v1/team/invite-link': {

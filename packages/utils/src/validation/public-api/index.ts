@@ -7,6 +7,7 @@ export * from './organization-overview';
 export * from './organization-overview-responses';
 export * from './section-query';
 export * from './asset';
+export * from './image';
 export * from './audience';
 export * from './audience-responses';
 export * from './cohort';
