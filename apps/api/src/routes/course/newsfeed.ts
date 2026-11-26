@@ -47,8 +47,9 @@ export const newsfeedRouter = new Hono()
   })
   .get('/:feedId', authMiddleware, courseMemberMiddleware, zValidator('param', ZNewsfeedGetParam), async (c) => {
     try {
+      const courseId = c.req.param('courseId')!;
       const { feedId } = c.req.valid('param');
-      const feed = await getNewsfeedItem(feedId);
+      const feed = await getNewsfeedItem(courseId, feedId);
 
       return c.json({ success: true, data: feed }, 200);
     } catch (error) {
@@ -81,10 +82,11 @@ export const newsfeedRouter = new Hono()
     zValidator('json', ZNewsfeedUpdate),
     async (c) => {
       try {
+        const courseId = c.req.param('courseId')!;
         const { feedId } = c.req.valid('param');
         const data = c.req.valid('json');
 
-        const feed = await updateNewsfeedService(feedId, data);
+        const feed = await updateNewsfeedService(courseId, feedId, data);
 
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
@@ -100,10 +102,11 @@ export const newsfeedRouter = new Hono()
     zValidator('json', ZNewsfeedReactionUpdate),
     async (c) => {
       try {
+        const courseId = c.req.param('courseId')!;
         const { feedId } = c.req.valid('param');
         const { reaction } = c.req.valid('json');
 
-        const feed = await updateNewsfeedReactionService(feedId, reaction);
+        const feed = await updateNewsfeedReactionService(courseId, feedId, reaction);
 
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
@@ -113,8 +116,9 @@ export const newsfeedRouter = new Hono()
   )
   .delete('/:feedId', authMiddleware, courseTeamMemberMiddleware, zValidator('param', ZNewsfeedGetParam), async (c) => {
     try {
+      const courseId = c.req.param('courseId')!;
       const { feedId } = c.req.valid('param');
-      const feed = await deleteNewsfeedService(feedId);
+      const feed = await deleteNewsfeedService(courseId, feedId);
 
       return c.json({ success: true, data: feed }, 200);
     } catch (error) {
@@ -130,10 +134,11 @@ export const newsfeedRouter = new Hono()
     zValidator('query', ZNewsfeedCommentThreadQuery),
     async (c) => {
       try {
+        const courseId = c.req.param('courseId')!;
         const { feedId } = c.req.valid('param');
         const { rootId, cursor, childCursor, limit = 5, childLimit = 3, maxDepth = 3 } = c.req.valid('query');
 
-        const result = await getNewsfeedCommentThreadService(feedId, {
+        const result = await getNewsfeedCommentThreadService(courseId, feedId, {
           rootId,
           cursor,
           childCursor,
@@ -166,7 +171,7 @@ export const newsfeedRouter = new Hono()
           return c.json({ success: false, error: 'User is not a member of this course' }, 403);
         }
 
-        const comment = await createNewsfeedCommentService(feedId, groupMemberId, content, parentId);
+        const comment = await createNewsfeedCommentService(courseId, feedId, groupMemberId, content, parentId);
 
         return c.json({ success: true, data: comment }, 201);
       } catch (error) {

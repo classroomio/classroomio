@@ -125,13 +125,18 @@ export async function getNewsfeedByCourseIdPaginated(
 }
 
 /**
- * Gets a newsfeed item by ID
+ * Gets a newsfeed item of a course
+ * @param courseId Course ID
  * @param feedId Newsfeed ID
- * @returns Newsfeed item or null
+ * @returns Newsfeed item, or null when it doesn't exist or belongs to another course
  */
-export async function getNewsfeedById(feedId: string): Promise<TCourseNewsfeed | null> {
+export async function getNewsfeedById(courseId: string, feedId: string): Promise<TCourseNewsfeed | null> {
   try {
-    const [feed] = await db.select().from(schema.courseNewsfeed).where(eq(schema.courseNewsfeed.id, feedId)).limit(1);
+    const [feed] = await db
+      .select()
+      .from(schema.courseNewsfeed)
+      .where(and(eq(schema.courseNewsfeed.courseId, courseId), eq(schema.courseNewsfeed.id, feedId)))
+      .limit(1);
     return feed || null;
   } catch (error) {
     console.error('getNewsfeedById error:', error);
@@ -160,17 +165,22 @@ export async function createNewsfeed(data: TNewCourseNewsfeed): Promise<TCourseN
 }
 
 /**
- * Updates a newsfeed item
+ * Updates a newsfeed item of a course
+ * @param courseId Course ID
  * @param feedId Newsfeed ID
  * @param data Partial newsfeed data
- * @returns Updated newsfeed item or null
+ * @returns Updated newsfeed item, or null when it doesn't exist or belongs to another course
  */
-export async function updateNewsfeed(feedId: string, data: Partial<TCourseNewsfeed>): Promise<TCourseNewsfeed | null> {
+export async function updateNewsfeed(
+  courseId: string,
+  feedId: string,
+  data: Partial<TCourseNewsfeed>
+): Promise<TCourseNewsfeed | null> {
   try {
     const [updated] = await db
       .update(schema.courseNewsfeed)
       .set(data)
-      .where(eq(schema.courseNewsfeed.id, feedId))
+      .where(and(eq(schema.courseNewsfeed.courseId, courseId), eq(schema.courseNewsfeed.id, feedId)))
       .returning();
     return updated || null;
   } catch (error) {
@@ -182,13 +192,17 @@ export async function updateNewsfeed(feedId: string, data: Partial<TCourseNewsfe
 }
 
 /**
- * Deletes a newsfeed item
+ * Deletes a newsfeed item of a course
+ * @param courseId Course ID
  * @param feedId Newsfeed ID
- * @returns Deleted newsfeed item or null
+ * @returns Deleted newsfeed item, or null when it doesn't exist or belongs to another course
  */
-export async function deleteNewsfeed(feedId: string): Promise<TCourseNewsfeed | null> {
+export async function deleteNewsfeed(courseId: string, feedId: string): Promise<TCourseNewsfeed | null> {
   try {
-    const [deleted] = await db.delete(schema.courseNewsfeed).where(eq(schema.courseNewsfeed.id, feedId)).returning();
+    const [deleted] = await db
+      .delete(schema.courseNewsfeed)
+      .where(and(eq(schema.courseNewsfeed.courseId, courseId), eq(schema.courseNewsfeed.id, feedId)))
+      .returning();
     return deleted || null;
   } catch (error) {
     console.error('deleteNewsfeed error:', error);
