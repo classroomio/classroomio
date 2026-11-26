@@ -46,8 +46,10 @@ export const mcpRouter = new Hono()
       return c.json(jsonRpcError('Authentication required'), 401, { 'WWW-Authenticate': challenge });
     }
 
+    let scopes: readonly string[];
+
     try {
-      await authenticateMcpCredentialService(credential);
+      scopes = (await authenticateMcpCredentialService(credential)).scopes ?? [];
     } catch (error) {
       if (!(error instanceof AppError) || error.statusCode >= 500) throw error;
 
@@ -58,7 +60,7 @@ export const mcpRouter = new Hono()
       return c.json(jsonRpcError('Invalid or expired credential'), 401, { 'WWW-Authenticate': challenge });
     }
 
-    const server = createRemoteMcpServer({ credential, requestHeaders: c.req.raw.headers, env: c.env });
+    const server = createRemoteMcpServer({ credential, scopes, requestHeaders: c.req.raw.headers, env: c.env });
     const transport = new WebStandardStreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
       enableJsonResponse: true

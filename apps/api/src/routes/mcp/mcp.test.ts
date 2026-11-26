@@ -42,7 +42,7 @@ describe('POST /mcp', () => {
     mocks.authenticateKey.mockReset();
     mocks.authenticateOAuth.mockReset();
     mocks.authenticateOAuth.mockResolvedValue({
-      key: { id: 'key-1', type: 'mcp', organizationId: 'org-1' },
+      key: { id: 'key-1', type: 'mcp', organizationId: 'org-1', scopes: ['public_api:*'] },
       clientId: 'client-1',
       planName: null
     });
@@ -100,7 +100,12 @@ describe('POST /mcp', () => {
   });
 
   it('authenticates cio_ credentials as automation keys', async () => {
-    mocks.authenticateKey.mockResolvedValue({ id: 'key-2', type: 'mcp', organizationId: 'org-1' });
+    mocks.authenticateKey.mockResolvedValue({
+      id: 'key-2',
+      type: 'mcp',
+      organizationId: 'org-1',
+      scopes: ['public_api:*']
+    });
 
     const response = await rpc('initialize', {}, { Authorization: 'Bearer cio_mcp_abc' });
 

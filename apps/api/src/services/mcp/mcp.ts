@@ -7,6 +7,7 @@ import { authenticateOAuthAccessTokenService } from '@api/services/oauth/oauth';
 import { authenticateOrganizationApiKeyService } from '@api/services/organization/automation-key';
 import { AUTOMATION_KEY_PREFIX } from '@api/middlewares/oauth-token';
 import { dispatchInternalRequest } from '@api/utils/internal-dispatch';
+import { isMcpToolAllowedForScopes } from './tool-scopes';
 
 const INTERNAL_API_ORIGIN = 'http://mcp.internal';
 const FORWARDED_CLIENT_HEADERS = ['cf-connecting-ip', 'x-real-ip', 'x-forwarded-for'] as const;
@@ -40,9 +41,14 @@ export function getMcpResourceMetadataUrl(): string {
 /**
  * Builds an MCP server whose tool calls run in-process against the caller's own credential,
  * so every tool is subject to the same routes, scopes, limits and metering as a direct API call.
- * Tools that read the server's filesystem are never registered.
+ * Tools that read the server's filesystem are never registered, and neither are tools the credential's scopes don't cover.
  */
-export function createRemoteMcpServer(options: { credential: string; requestHeaders: Headers; env: unknown }) {
+export function createRemoteMcpServer(options: {
+  credential: string;
+  scopes: readonly string[];
+  requestHeaders: Headers;
+  env: unknown;
+}) {
   const forwardedHeaders: Record<string, string> = {};
 
   for (const name of FORWARDED_CLIENT_HEADERS) {
@@ -63,5 +69,8 @@ export function createRemoteMcpServer(options: { credential: string; requestHead
     }
   );
 
-  return createMcpServer(apiClient, { includeLocalFileTools: false });
+  return createMcpServer(apiClient, {
+    includeLocalFileTools: false,
+    isToolAllowed: (toolName) => isMcpToolAllowedForScopes(toolName, options.scopes)
+  });
 }
