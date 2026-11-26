@@ -265,6 +265,11 @@ describe('canSelfEnrollForFree', () => {
     expect(canSelfEnrollForFree(openCourse({ metadata: { allowSelfEnrollment: false } }) as never)).toBe(false);
   });
 
+  it('never offers a private course for one-click enrollment', () => {
+    expect(canSelfEnrollForFree(openCourse({ isPrivate: true }) as never)).toBe(false);
+    expect(canSelfEnrollForFree(openCourse({ isPrivate: false }) as never)).toBe(true);
+  });
+
   it('treats paid courses as restricted even when self-enrollment is open', () => {
     expect(canSelfEnrollForFree(openCourse({ cost: 50 }) as never)).toBe(false);
     expect(canSelfEnrollForFree(openCourse({ metadata: { paymentEnabled: true } }) as never)).toBe(false);

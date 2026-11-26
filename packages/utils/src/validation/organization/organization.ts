@@ -48,7 +48,7 @@ export const ZGetOrganizationCoursesQuery = z.object({
   search: z.string().trim().max(200).optional(),
   tags: z.string().max(2000).optional(),
   type: ZCourseType.optional(),
-  status: z.enum(['published', 'unpublished']).optional(),
+  status: z.enum(['published', 'unpublished', 'private']).optional(),
   sort: ZOrganizationCourseSort.optional(),
   order: z.enum(['asc', 'desc']).optional()
 });

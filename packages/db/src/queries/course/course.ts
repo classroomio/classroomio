@@ -815,7 +815,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   }
 }
 
-type OrgCoursePublishedStatus = 'published' | 'unpublished';
+type OrgCoursePublishedStatus = 'published' | 'unpublished' | 'private';
 type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons' | 'name' | 'price';
 type OrgCourseSortOrder = 'asc' | 'desc';
 
@@ -891,6 +891,10 @@ function orgCourseListConditions({
 
   if (publishedStatus === 'unpublished') {
     conditions.push(eq(schema.course.isPublished, false));
+  }
+
+  if (publishedStatus === 'private') {
+    conditions.push(eq(schema.course.isPrivate, true));
   }
 
   return conditions;
