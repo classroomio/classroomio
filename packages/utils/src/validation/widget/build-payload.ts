@@ -62,12 +62,13 @@ export function buildWidgetPayload(input: BuildWidgetPayloadInput): TWidgetPaylo
   } = input;
 
   const normalizedConfig = normalizeWidgetConfig(widget.config as Record<string, unknown>, planName);
-  const allPublishedCourses = allCourses.filter((course) => course.isPublished);
+  const publicCourses = allCourses.filter((course) => !course.isPrivate);
+  const allPublishedCourses = publicCourses.filter((course) => course.isPublished);
   const manualOrderLookup = new Map(selectedCourseIds.map((courseId, index) => [courseId, index]));
 
   let resolvedCourses =
     widget.selectionMode === 'manual'
-      ? allCourses.filter((course) => manualOrderLookup.has(course.id))
+      ? publicCourses.filter((course) => manualOrderLookup.has(course.id))
       : allPublishedCourses;
 
   const tagsByCourseId: Record<string, TWidgetPayloadCourseTag[]> = {};
@@ -182,6 +183,25 @@ export function buildWidgetPayload(input: BuildWidgetPayloadInput): TWidgetPaylo
     categories,
     timestamp: Date.now()
   });
+}
+
+export function removeCoursesFromWidgetPayload(payload: TWidgetPayload, hiddenCourseIds: Set<string>): TWidgetPayload {
+  if (hiddenCourseIds.size === 0) {
+    return payload;
+  }
+
+  const courses = payload.courses.filter((course) => !hiddenCourseIds.has(course.id));
+  const remainingTagIds = new Set(courses.flatMap((course) => course.tags.map((tag) => tag.id)));
+
+  return {
+    ...payload,
+    courses,
+    tagPool: payload.tagPool.filter((tag) => remainingTagIds.has(tag.id)),
+    categories: payload.categories.map((category) => ({
+      ...category,
+      courseIds: category.courseIds.filter((courseId) => !hiddenCourseIds.has(courseId))
+    }))
+  };
 }
 
 function buildTagPool(

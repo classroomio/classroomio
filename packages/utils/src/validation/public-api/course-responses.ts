@@ -139,6 +139,7 @@ export const ZPublicApiCourseResponse = z.object({
   currency: z.string(),
   bannerImage: z.string().nullable(),
   isPublished: z.boolean().nullable(),
+  isPrivate: z.boolean().describe('Published but hidden from every listing; students join only when enrolled by staff'),
   displayOrder: z.number().nullable(),
   certificate: ZCourseCertificate.nullable(),
   compliance: ZCourseCompliance.nullable(),

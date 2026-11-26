@@ -11,6 +11,7 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
       "type": "string",
     },
     "options": {
+      "description": "Shown to students in this order; vary where the correct option sits across questions instead of always listing it first.",
       "items": {
         "properties": {
           "isCorrect": {
@@ -328,6 +329,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
       "items": {
         "properties": {
           "options": {
+            "description": "Shown to students in this order; vary where the correct option sits across questions instead of always listing it first.",
             "items": {
               "properties": {
                 "isCorrect": {
@@ -660,6 +662,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
             "type": "integer",
           },
           "options": {
+            "description": "Options with an id edit or delete that option; new options (no id) are shown after existing ones, in the order sent. Vary where the correct option sits.",
             "items": {
               "properties": {
                 "delete": {
@@ -894,6 +897,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQ
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "addOptions": {
+      "description": "New options are shown after the existing ones, in the order sent. Vary where the correct option sits across questions.",
       "items": {
         "properties": {
           "isCorrect": {

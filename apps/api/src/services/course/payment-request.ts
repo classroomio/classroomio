@@ -50,7 +50,7 @@ export async function createPaymentRequest(data: PaymentRequestData) {
     // Get course and organization data
     const course = await getCourseWithOrgData(data.courseId);
 
-    if (!course) {
+    if (!course || course.isPrivate) {
       throw new AppError('Course not found', ErrorCodes.NOT_FOUND, 404);
     }
 

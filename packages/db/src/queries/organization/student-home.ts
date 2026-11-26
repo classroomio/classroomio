@@ -10,6 +10,7 @@ export type StudentHomeCourseCandidate = {
   type: string | null;
   status: string;
   isPublished: boolean | null;
+  isPrivate: boolean;
   isTemplate: boolean;
   cost: number | null;
   metadata: unknown;
@@ -44,6 +45,7 @@ export async function getStudentHomeCourseCandidate(
         type: schema.course.type,
         status: schema.course.status,
         isPublished: schema.course.isPublished,
+        isPrivate: schema.course.isPrivate,
         isTemplate: schema.course.isTemplate,
         cost: schema.course.cost,
         metadata: schema.course.metadata
@@ -70,6 +72,7 @@ function studentHomeCourseFilter(orgId: string, search: string | undefined) {
     eq(schema.group.organizationId, orgId),
     eq(schema.course.status, 'ACTIVE'),
     eq(schema.course.isPublished, true),
+    eq(schema.course.isPrivate, false),
     eq(schema.course.isTemplate, false),
     ...(searchValue ? [ilike(schema.course.title, searchValue)] : [])
   );
@@ -82,6 +85,7 @@ const STUDENT_HOME_COURSE_COLUMNS = {
   type: schema.course.type,
   status: schema.course.status,
   isPublished: schema.course.isPublished,
+  isPrivate: schema.course.isPrivate,
   isTemplate: schema.course.isTemplate,
   cost: schema.course.cost,
   metadata: schema.course.metadata

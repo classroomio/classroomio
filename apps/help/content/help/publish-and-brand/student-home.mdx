@@ -22,7 +22,7 @@ Open the **Authenticated student home** menu and pick one option:
 
 - **Landing page (default)** — keep today's behavior. Everyone sees the landing page first.
 - A page under **Learning portal** — Dashboard, My Learning, Certificates, Explore, Cohorts, Exercise, Community, or Settings. Names match the student sidebar exactly.
-- A course under **Courses** — search by title. New courses appear here once published.
+- A course under **Courses**: search by title. Published courses appear here. **Private** courses and templates are not listed.
 
 Click **Save changes**. The choice applies immediately.
 
@@ -56,13 +56,14 @@ When you pick a course, each student lands as close to it as they are allowed:
 
 The course type decides before the price does: a **Public** course always opens straight away, even when it is free to join. Every other course type offers the **Join course** screen when it is free and open for self-enrollment. New students confirm there, so nobody is enrolled without asking.
 
-Courses appear in the picker once they are published. Unavailable courses are greyed out, and the course you saved stays in the list even after it becomes unavailable, so you can see and replace it.
+Courses appear in the picker once they are published and not **Private**, and saving a private course is rejected with an error on the Student home control. Unavailable courses are greyed out, and the course you saved stays in the list even after it becomes unavailable, so you can see and replace it.
 
 ## When a destination becomes unavailable
 
 If a saved destination later breaks, students go to the **Dashboard** instead of a dead page:
 
 - The course is unpublished, deleted, or turned into a template.
+- The course is made **Private** after you saved it: students who are enrolled still go to it, students who are not enrolled go to the **Dashboard**, and the control does not mark it **Unavailable**.
 - Exercises or Community is turned off in **Customize LMS → Dashboard**.
 - Certificates is picked and the academy moves to the free plan.
 

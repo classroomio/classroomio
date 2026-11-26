@@ -982,6 +982,12 @@
         "access_people": "Personas",
         "publish": "Publicar curso",
         "determines": "Esto determina si su curso se muestra en su página de destino.",
+        "private": {
+          "label": "Curso privado",
+          "description": "Oculto en tu página de inicio, en explorar y en la búsqueda. Los estudiantes solo pueden acceder a este curso cuando tú los inscribes.",
+          "public_type_blocked": "Un tipo de curso público está abierto a cualquiera que tenga el enlace, por lo que no puede ser privado.",
+          "badge": "Privado"
+        },
         "published": "Publicado",
         "unpublished": "Inédito",
         "type": "Tipo de curso",

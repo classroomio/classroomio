@@ -898,7 +898,7 @@ export async function enrollInCourse(
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
-  const { groupId, cost: courseCost, status, isPublished, title } = courseWithRelations;
+  const { groupId, cost: courseCost, status, isPublished, isPrivate, title } = courseWithRelations;
   const isPaidCourse = isCoursePaid(
     courseCost,
     courseWithRelations.metadata as { paymentEnabled?: boolean; paymentLink?: string | null } | null | undefined
@@ -916,7 +916,7 @@ export async function enrollInCourse(
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
-  if (status !== 'ACTIVE' || !isPublished) {
+  if (status !== 'ACTIVE' || !isPublished || isPrivate) {
     throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
   }
 

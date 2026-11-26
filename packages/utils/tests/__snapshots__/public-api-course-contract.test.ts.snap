@@ -53,6 +53,7 @@ exports[`public API course request contract > ZPublicApiCoursesQuery keeps its p
       "enum": [
         "published",
         "unpublished",
+        "private",
       ],
       "type": "string",
     },

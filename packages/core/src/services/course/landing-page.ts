@@ -111,14 +111,14 @@ export async function resolveCourseBanner(
 
 /**
  * `appUrl` is the staff dashboard page for the course and works at any time; `landingPageUrl` is the public page
- * and is null until the course is published.
+ * and is null until the course is published, and always null for a private course.
  */
 export async function buildCourseLinks(
   organizationId: string,
-  course: Pick<TCourse, 'id' | 'title' | 'isPublished'>
+  course: Pick<TCourse, 'id' | 'title' | 'isPublished' | 'isPrivate'>
 ): Promise<CourseLinks> {
   const appUrl = `${getAppBaseUrl()}/courses/${course.id}`;
-  if (!course.isPublished) {
+  if (!course.isPublished || course.isPrivate) {
     return { appUrl, landingPageUrl: null };
   }
 

@@ -492,6 +492,23 @@ export async function updateCourse(
       );
     }
 
+    const nextIsPrivate = data.isPrivate ?? currentCourse.isPrivate;
+    if (nextIsPrivate && nextType === 'PUBLIC') {
+      throw new AppError(
+        'A course open to anonymous readers cannot be private',
+        ErrorCodes.VALIDATION_ERROR,
+        400,
+        'isPrivate'
+      );
+    }
+
+    if (nextIsPrivate) {
+      sanitizedData.metadata = {
+        ...(sanitizedData.metadata ?? currentCourse.metadata),
+        allowSelfEnrollment: false
+      };
+    }
+
     const courseValues = sanitizeUnknownStrings(sanitizedData);
     const isPublishing = !currentCourse.isPublished && data.isPublished === true;
     const writeCourse = async (client: DbOrTxClient) => {

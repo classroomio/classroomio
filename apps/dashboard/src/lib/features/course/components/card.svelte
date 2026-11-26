@@ -52,6 +52,7 @@
     title = '',
     description = '',
     isPublished = false,
+    isPrivate = false,
     totalLessons = 0,
     totalExercises = 0,
     totalStudents = 0,
@@ -71,6 +72,7 @@
     type: course.type,
     description: course.description,
     isPublished: !!course.isPublished,
+    isPrivate: !!course.isPrivate,
     pricingData: {
       cost: course.cost,
       discount: course.metadata?.discount || 0,
@@ -324,7 +326,7 @@
               {/if}
             {/if}
           {:else}
-            <CoursePublishBadge {isPublished} />
+            <CoursePublishBadge {isPublished} {isPrivate} />
           {/if}
         </div>
       </div>

@@ -4486,6 +4486,12 @@
         "access_people": "Persone",
         "publish": "Pubblica corso",
         "determines": "Ciò determina se il tuo corso viene visualizzato sulla tua pagina di destinazione",
+        "private": {
+          "label": "Corso privato",
+          "description": "Nascosto nella tua pagina di destinazione, in Esplora e nella ricerca. Gli studenti possono accedere a questo corso solo quando li iscrivi tu.",
+          "public_type_blocked": "Un tipo di corso pubblico è aperto a chiunque abbia il link, quindi non può essere privato.",
+          "badge": "Privato"
+        },
         "published": "Pubblicato",
         "unpublished": "Inedito",
         "certificate_deadline_required": "Imposta prima la scadenza del certificato",

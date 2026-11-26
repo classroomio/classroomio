@@ -238,6 +238,10 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/unpublish`, { method: 'POST' });
   }
 
+  async setCoursePrivacy(courseId: string, isPrivate: boolean) {
+    return this.request(`/public-api/v1/courses/${courseId}`, { method: 'PUT', body: { isPrivate } });
+  }
+
   async getCourseStructure(courseId: string) {
     const { draft, ...rest } = await this.request<{ courseId: string; draft: unknown }>(
       `/public-api/v1/courses/${courseId}/structure`,

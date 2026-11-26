@@ -19,6 +19,7 @@ export const MCP_TOOL_CREDIT_COST = {
   create_course: 1,
   publish_course: 1,
   unpublish_course: 1,
+  set_course_private: 1,
   get_course_structure: 0,
   list_course_exercises: 0,
   get_course_exercise: 0,

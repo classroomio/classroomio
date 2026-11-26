@@ -7,7 +7,7 @@ import {
   type CourseSortOrder as CourseSortOrderType
 } from './constants';
 
-export type PublishedStatusFilter = 'all' | 'published' | 'unpublished';
+export type PublishedStatusFilter = 'all' | 'published' | 'unpublished' | 'private';
 
 export interface CourseListFilters {
   search: string;
@@ -36,7 +36,7 @@ export const MAX_COURSE_LIST_NEXT = 50;
 const VALID_COURSE_TYPES = new Set(['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'PUBLIC']);
 
 export function parsePublishedStatusFilter(value: string | null | undefined): PublishedStatusFilter {
-  if (value === 'published' || value === 'unpublished') {
+  if (value === 'published' || value === 'unpublished' || value === 'private') {
     return value;
   }
 
@@ -101,7 +101,11 @@ export function buildCourseListSearchParams(
     params.set('type', filters.courseType);
   }
 
-  if (filters.publishedStatus === 'published' || filters.publishedStatus === 'unpublished') {
+  if (
+    filters.publishedStatus === 'published' ||
+    filters.publishedStatus === 'unpublished' ||
+    filters.publishedStatus === 'private'
+  ) {
     params.set('status', filters.publishedStatus);
   }
 

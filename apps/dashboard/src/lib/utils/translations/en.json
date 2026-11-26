@@ -4496,6 +4496,12 @@
         "access_people": "People",
         "publish": "Publish Course",
         "determines": "This determines if your course displays on your landing page",
+        "private": {
+          "label": "Private course",
+          "description": "Hidden from your landing page, explore and search. Students can only access this course when you enroll them.",
+          "public_type_blocked": "A public course type is open to anyone with the link, so it cannot be private.",
+          "badge": "Private"
+        },
         "published": "Published",
         "unpublished": "Unpublished",
         "certificate_deadline_required": "Set Certificate Deadline First",

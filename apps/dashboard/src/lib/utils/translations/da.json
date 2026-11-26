@@ -982,6 +982,12 @@
         "access_people": "Personer",
         "publish": "Udgiv kursus",
         "determines": "Dette afgør, om dit kursus vises på din landingsside",
+        "private": {
+          "label": "Privat kursus",
+          "description": "Skjult på din landingsside, i udforsk og i søgning. Studerende kan kun få adgang til dette kursus, når du tilmelder dem.",
+          "public_type_blocked": "En offentlig kursustype er åben for alle med linket, så den kan ikke være privat.",
+          "badge": "Privat"
+        },
         "published": "Udgivet",
         "unpublished": "Upubliceret",
         "type": "Kursustype",

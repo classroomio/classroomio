@@ -12,7 +12,7 @@ const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, i
 export function registerLandingPageTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'set_featured_courses',
-    `Set the published courses shown first, in order, on the organization landing page and public course list; ${ORG_ADMIN_RULE}. The list replaces the current one, so include every course to keep; an empty list clears it.`,
+    `Set the published, non-private courses shown first, in order, on the organization landing page and public course list; ${ORG_ADMIN_RULE}. The list replaces the current one, so include every course to keep; an empty list clears it.`,
     ZPublicApiSetFeaturedCourses.shape as unknown as ZodRawShapeCompat,
     UPDATE,
     async (args) => {
