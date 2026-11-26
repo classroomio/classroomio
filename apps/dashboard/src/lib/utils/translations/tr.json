@@ -4506,6 +4506,12 @@
         "access_people": "People",
         "publish": "Kursu Yayınla",
         "determines": "Bu, kursunuzun açılış sayfanızda görüntülenip görüntülenmeyeceğini belirler",
+        "private": {
+          "label": "Özel kurs",
+          "description": "Açılış sayfanızda, keşfet bölümünde ve aramada gizlenir. Öğrenciler bu kursa yalnızca siz onları kaydettiğinizde erişebilir.",
+          "public_type_blocked": "Herkese açık kurs türü bağlantıya sahip herkese açıktır, bu yüzden özel olamaz.",
+          "badge": "Özel"
+        },
         "published": "Published",
         "unpublished": "Unpublished",
         "certificate_deadline_required": "Önce Sertifika Son Tarihini Ayarla",

@@ -4,9 +4,10 @@
 
   interface Props {
     isPublished?: boolean;
+    isPrivate?: boolean;
   }
 
-  let { isPublished = false }: Props = $props();
+  let { isPublished = false, isPrivate = false }: Props = $props();
 </script>
 
 <Badge variant={isPublished ? 'default' : 'outline'}>
@@ -16,3 +17,6 @@
     {$t('courses.course_card.unpublished')}
   {/if}
 </Badge>
+{#if isPrivate}
+  <Badge variant="secondary">{$t('course.navItem.settings.private.badge')}</Badge>
+{/if}

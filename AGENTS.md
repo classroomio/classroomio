@@ -134,6 +134,18 @@ await createComment(text, parentId, target.commentId);
 
 The tell that this went wrong: an edit form shows raw markup, because the markup *is* the content.
 
+## Private courses stay out of discovery
+
+`course.isPrivate` marks a course that is published but hidden from everyone who is not enrolled. Students reach it only when an admin enrolls them (invite, direct add, cohort, program, audience assignment). It is separate from `course.type = PUBLIC`, which means anonymous readers can open the lessons by slug; a course cannot be both.
+
+Any new surface that lists, searches, recommends, counts, previews or self-enrolls into courses for a student, anonymous visitor, widget, sitemap, feed, API response or LLM tool **must exclude private courses** (`AND NOT is_private`). Do this in the query, not in the UI, and add a test that a private course is absent.
+
+- Applies to: org landing page and catalog, explore/recommended, search, related courses, featured courses, tag counts, widgets, public course routes, student-home pickers, and `GET /course/slug/:slug` for non-enrolled callers.
+- Self-enrollment (`enrollInCourse` without an invite token) must reject private courses, and `allowSelfEnrollment` is forced off while a course is private.
+- Admin-driven enrollment includes private courses, including an audience import with "all courses": "all" means all.
+- Does not apply to: admin and team listings (`GET /organization/courses`, MCP `list_org_courses`), which show private courses with a badge, or to membership-scoped views such as a student's own enrolled courses, where access checks are unchanged.
+- Cloning a course does not copy the flag: the copy starts public. Keep it that way, or change it on purpose.
+
 ## Creating a New Route
 
 ### Step 1: Validation Schema

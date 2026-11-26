@@ -20,7 +20,7 @@ const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, i
 const DESTRUCTIVE: ToolAnnotations = { readOnlyHint: false, destructiveHint: true, idempotentHint: false };
 
 const LINKS_RULE =
-  'The result has appUrl, the dashboard page where the team edits the course and the link to give the user while the course is unpublished, and landingPageUrl, the public page that is null until the course is published; give the user landingPageUrl only when it is not null.';
+  'The result has appUrl, the dashboard page where the team edits the course and the link to give the user while the course is unpublished, and landingPageUrl, the public page that is null until the course is published and always null for a private course; give the user landingPageUrl only when it is not null.';
 
 const courseId = ZPublicApiCourseParam.shape.courseId;
 
@@ -34,6 +34,12 @@ export const ZCreateCourseToolInput = ZPublicApiCreateCourse.safeExtend({
 });
 export const ZGetCourseStructureToolInput = z.object({ courseId });
 export const ZPublishCourseToolInput = z.object({ courseId });
+export const ZSetCoursePrivateToolInput = z.object({
+  courseId,
+  isPrivate: z
+    .boolean()
+    .describe('true hides the course from every listing and blocks self-enrollment; false makes it public again')
+});
 export const ZUpdateCourseLandingPageToolInput = ZCourseLandingPageUpdate.extend({ courseId });
 export const ZCloneCourseToolInput = ZPublicApiCloneCourse.safeExtend({ courseId });
 export const ZListRelatedCoursesToolInput = ZPublicApiRelatedCoursesQuery.safeExtend({ courseId });
@@ -84,6 +90,17 @@ export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApi
     async (args) => {
       const { courseId } = ZPublishCourseToolInput.parse(args);
       return jsonContent(await apiClient.publishCourse(courseId));
+    }
+  );
+
+  server.tool(
+    'set_course_private',
+    'Make a course private (isPrivate true) or public again (false; this does not turn self-enrollment back on); the API key creator must be a course tutor/admin or an org admin. A private course stays published but is hidden from the landing page, explore, search, related courses and widgets, it has no public landing page, and students cannot enroll themselves: they get in only when staff enroll them, for example with enroll_course_student or add_course_member. A PUBLIC-type course cannot be private.',
+    shape(ZSetCoursePrivateToolInput),
+    { title: 'Set course private', ...UPDATE },
+    async (args) => {
+      const { courseId, isPrivate } = ZSetCoursePrivateToolInput.parse(args);
+      return jsonContent(await apiClient.setCoursePrivacy(courseId, isPrivate));
     }
   );
 

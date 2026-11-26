@@ -183,6 +183,7 @@
           type={courseData.type}
           description={courseData.description}
           isPublished={courseData.isPublished ?? false}
+          isPrivate={courseData.isPrivate ?? false}
           lessonCount={courseData.lessonCount}
           exerciseCount={'exerciseCount' in courseData ? (courseData.exerciseCount ?? 0) : 0}
           totalStudents={'totalStudents' in courseData ? courseData.totalStudents : 0}

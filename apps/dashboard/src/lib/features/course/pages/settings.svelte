@@ -206,7 +206,17 @@
 
     // Otherwise, publish normally
     $settings.isPublished = true;
-    $settings.allowSelfEnrollment = true;
+    $settings.allowSelfEnrollment = !$settings.isPrivate;
+    hasUnsavedChanges = true;
+  }
+
+  let privacyBaseline = false;
+
+  function onPrivateToggle(checked: boolean) {
+    $settings.isPrivate = checked;
+    if (checked) {
+      $settings.allowSelfEnrollment = false;
+    }
     hasUnsavedChanges = true;
   }
 
@@ -284,6 +294,7 @@
         type: $settings.type,
         bannerImage: bannerImageUrl,
         isPublished: $settings.isPublished,
+        ...($settings.isPrivate !== privacyBaseline ? { isPrivate: $settings.isPrivate } : {}),
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
         compliance:
@@ -309,6 +320,7 @@
         avatar
       });
 
+      const privacyAtSave = $settings.isPrivate;
       const response = await courseApi.update(courseApi.course.id, updatePayload, {
         showSuccessToast: !hasTagChanges
       });
@@ -316,6 +328,17 @@
       if (courseApi.success && response) {
         const draftUnchanged =
           JSON.stringify({ settings: $settings, tagIds: [...selectedTagIds].sort(), avatar }) === draftAtSave;
+
+        privacyBaseline = !!courseApi.course.isPrivate;
+
+        if ($settings.isPrivate === privacyAtSave) {
+          $settings.isPrivate = privacyBaseline;
+
+          if ($settings.isPrivate && $settings.type === 'PUBLIC') {
+            $settings.type = (courseApi.course.type as TCourseType) || 'SELF_PACED';
+            publicConversionFlow.cancel();
+          }
+        }
 
         if (hasTagChanges) {
           // The server stored the submitted tags; keep the user's newer toggles selected.
@@ -358,21 +381,29 @@
   async function setDefault(course: Course) {
     if (!course || !Object.keys(course).length) return;
 
+    privacyBaseline = !!course.isPrivate;
+
+    if (course.isPrivate && publicConversionFlow.isActive && publicConversionFlow.courseId === course.id) {
+      publicConversionFlow.cancel();
+    }
+
     const isConversionFlowActive = publicConversionFlow.isActive && publicConversionFlow.courseId === course.id;
 
     untrack(() => {
       settings.set({
         courseTitle: course.title,
-        type: isConversionFlowActive
-          ? ('PUBLIC' as TCourseType)
-          : (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
+        type:
+          isConversionFlowActive && !course.isPrivate
+            ? ('PUBLIC' as TCourseType)
+            : (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
         courseDescription: course.description,
         bannerImage: course.bannerImage || '',
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
         allowMarkdownExport: !!course.metadata?.allowMarkdownExport,
         isPublished: !!course.isPublished,
-        allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
+        isPrivate: !!course.isPrivate,
+        allowSelfEnrollment: !course.isPrivate && isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
@@ -695,12 +726,16 @@
                 <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
                   {$t('course.navItem.settings.compliance')}
                 </Select.Item>
-                <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
+                <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')} disabled={$settings.isPrivate}>
                   {$t('course.navItem.settings.public')}
                 </Select.Item>
               </Select.Group>
             </Select.Content>
           </Select.Root>
+
+          {#if $settings.isPrivate}
+            <Field.Description>{$t('course.navItem.settings.private.public_type_blocked')}</Field.Description>
+          {/if}
 
           {#if publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id && publicConversionFlow.offenders.length > 0}
             {#if courseApi.course}
@@ -1107,6 +1142,7 @@
             <Switch
               id="allow-self-enrollment"
               checked={$settings.allowSelfEnrollment}
+              disabled={$settings.isPrivate}
               onCheckedChange={(checked) => {
                 $settings.allowSelfEnrollment = checked;
                 hasUnsavedChanges = true;
@@ -1119,6 +1155,27 @@
       {/if}
 
       {#if !courseApi.course?.isTemplate}
+        <Field.Set id="private" class="scroll-mt-24">
+          <Field.Field orientation="horizontal">
+            <Field.Content>
+              <Field.Label for="is-private">{$t('course.navItem.settings.private.label')}</Field.Label>
+              <Field.Description>
+                {$settings.type === 'PUBLIC'
+                  ? $t('course.navItem.settings.private.public_type_blocked')
+                  : $t('course.navItem.settings.private.description')}
+              </Field.Description>
+            </Field.Content>
+            <Switch
+              id="is-private"
+              checked={$settings.isPrivate}
+              disabled={$settings.type === 'PUBLIC'}
+              onCheckedChange={onPrivateToggle}
+            />
+          </Field.Field>
+        </Field.Set>
+
+        <SettingsSeparator />
+
         <Field.Set id="publish" class="scroll-mt-24">
           <AttentionHighlight id="publish">
             <Field.Field orientation="horizontal">

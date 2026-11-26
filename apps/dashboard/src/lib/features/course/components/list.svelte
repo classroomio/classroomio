@@ -17,6 +17,7 @@
     type?: string;
     description?: string;
     isPublished?: boolean;
+    isPrivate?: boolean;
     totalLessons?: number;
     totalStudents?: number;
     isExplore?: boolean;
@@ -38,6 +39,7 @@
     type = '',
     description = '',
     isPublished = false,
+    isPrivate = false,
     totalLessons = 0,
     totalStudents = 0,
     isExplore = false,
@@ -109,7 +111,7 @@
     {#if !isLMS}
       <Table.Cell>{totalStudents}</Table.Cell>
       <Table.Cell>
-        <CoursePublishBadge {isPublished} />
+        <CoursePublishBadge {isPublished} {isPrivate} />
       </Table.Cell>
     {/if}
   {/if}

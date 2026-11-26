@@ -111,6 +111,14 @@ describe('assertStudentHomeDestination', () => {
     ).resolves.toEqual({ path: null, courseId: COURSE_ID });
   });
 
+  it('rejects a private course as the student home', async () => {
+    vi.mocked(getStudentHomeCourseCandidate).mockResolvedValue(openCourse({ isPrivate: true }) as never);
+
+    await expect(
+      assertStudentHomeDestination(ORG_ID, { type: 'course', courseId: COURSE_ID }, null, {} as never)
+    ).rejects.toMatchObject({ statusCode: 400, code: 'STUDENT_HOME_INVALID_COURSE', field: 'studentHome' });
+  });
+
   it('rejects unknown and cross-org courses with the same error', async () => {
     vi.mocked(getStudentHomeCourseCandidate).mockResolvedValue(null);
 
@@ -263,6 +271,11 @@ describe('canSelfEnrollForFree', () => {
     expect(canSelfEnrollForFree(openCourse() as never)).toBe(true);
     expect(canSelfEnrollForFree(openCourse({ metadata: { allowNewStudent: true } }) as never)).toBe(true);
     expect(canSelfEnrollForFree(openCourse({ metadata: { allowSelfEnrollment: false } }) as never)).toBe(false);
+  });
+
+  it('never offers a private course for one-click enrollment', () => {
+    expect(canSelfEnrollForFree(openCourse({ isPrivate: true }) as never)).toBe(false);
+    expect(canSelfEnrollForFree(openCourse({ isPrivate: false }) as never)).toBe(true);
   });
 
   it('treats paid courses as restricted even when self-enrollment is open', () => {

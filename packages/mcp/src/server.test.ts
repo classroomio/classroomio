@@ -86,6 +86,7 @@ describe('createMcpServer', () => {
     ['create_course', false, false],
     ['publish_course', false, false],
     ['unpublish_course', false, true],
+    ['set_course_private', false, false],
     ['tag_courses', false, true]
   ])('annotates %s as readOnly=%s, destructive=%s', async (name, readOnlyHint, destructiveHint) => {
     const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();

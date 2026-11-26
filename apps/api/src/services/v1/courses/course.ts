@@ -214,6 +214,10 @@ export async function updatePublicApiCourseService(
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCertificateChangeAllowed(params.courseId, payload.certificate);
 
+  if (payload.isPrivate !== undefined) {
+    await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  }
+
   const { tagIds, addTagIds, ...courseData } = payload;
 
   let updated: UpdateCourseResult & { tags: TTag[] };

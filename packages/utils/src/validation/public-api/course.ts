@@ -12,7 +12,7 @@ export const ZPublicApiCoursesQuery = ZPublicApiPaginationQuery.extend({
   title: z.string().trim().min(1).max(200).optional().describe('Exact course title, case-insensitive'),
   tags: z.string().max(2000).optional().describe('Comma-separated tag slugs; returns courses with any of them.'),
   type: ZCourseType.optional(),
-  status: z.enum(['published', 'unpublished']).optional(),
+  status: z.enum(['published', 'unpublished', 'private']).optional(),
   sort: ZOrganizationCourseSort.optional().describe(
     'price sorts on the stored cost, with free courses as 0. Default: date_created.'
   ),

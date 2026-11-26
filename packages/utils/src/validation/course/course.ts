@@ -528,6 +528,7 @@ export const ZCourseUpdateBase = z.object({
   logo: z.string().optional(),
   slug: z.string().optional(),
   isPublished: z.boolean().optional(),
+  isPrivate: z.boolean().optional(),
   orgOnly: z.boolean().optional(),
   overview: z.string().optional(),
   metadata: ZCourseMetadata.optional(),

@@ -91,6 +91,7 @@ export const getPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
+      eq(schema.course.isPrivate, false),
       eq(schema.course.isTemplate, false)
     ];
 
@@ -163,6 +164,24 @@ export const getPublishedCoursesBySiteName = async (
   }
 };
 
+export async function getPrivateCourseIds(courseIds: string[], dbClient: DbOrTxClient = db): Promise<string[]> {
+  try {
+    if (courseIds.length === 0) {
+      return [];
+    }
+
+    const rows = await dbClient
+      .select({ id: schema.course.id })
+      .from(schema.course)
+      .where(and(inArray(schema.course.id, courseIds), eq(schema.course.isPrivate, true)));
+
+    return rows.map((row) => row.id);
+  } catch (error) {
+    console.error('getPrivateCourseIds error:', error);
+    throw new Error(`Failed to get private course ids: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export const countPublishedCoursesBySiteName = async (
   siteName: string,
   courseIds?: string[],
@@ -179,6 +198,7 @@ export const countPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
+      eq(schema.course.isPrivate, false),
       eq(schema.course.isTemplate, false)
     ];
 
@@ -813,7 +833,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   }
 }
 
-type OrgCoursePublishedStatus = 'published' | 'unpublished';
+type OrgCoursePublishedStatus = 'published' | 'unpublished' | 'private';
 type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons' | 'name' | 'price';
 type OrgCourseSortOrder = 'asc' | 'desc';
 
@@ -889,6 +909,10 @@ function orgCourseListConditions({
 
   if (publishedStatus === 'unpublished') {
     conditions.push(eq(schema.course.isPublished, false));
+  }
+
+  if (publishedStatus === 'private') {
+    conditions.push(eq(schema.course.isPrivate, true));
   }
 
   return conditions;
@@ -1326,6 +1350,7 @@ export const getExploreCourses = async ({
       eq(schema.group.organizationId, orgId),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
+      eq(schema.course.isPrivate, false),
       eq(schema.course.isTemplate, false),
       isNull(schema.groupmember.id),
       // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
@@ -1423,6 +1448,7 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
   orgAvatarUrl: string | null;
   orgTheme: string | null;
   groupId: string | null;
+  isPrivate: boolean;
   welcomeEmailMessage: string | null;
 } | null> {
   try {
@@ -1437,6 +1463,7 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
         orgAvatarUrl: schema.organization.avatarUrl,
         orgTheme: schema.organization.theme,
         groupId: schema.course.groupId,
+        isPrivate: schema.course.isPrivate,
         metadata: schema.course.metadata
       })
       .from(schema.course)

@@ -438,7 +438,7 @@ export const v1CourseRouter = new Hono()
   .put(
     '/:courseId',
     describeRoute({
-      description: `Update a course; ${ANY_KEY_RULE}, and a key with only course:tag:write may send just tagIds or addTagIds.`,
+      description: `Update a course; ${ANY_KEY_RULE}; course:tag:write alone may send just tagIds or addTagIds; with course:write too, just isPrivate.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
@@ -452,7 +452,7 @@ export const v1CourseRouter = new Hono()
         401: errorResponses.unauthorized,
         403: {
           description:
-            'Missing the public_api:* scope (a course:tag:write key may send only tagIds or addTagIds), or a non-admin sent tags'
+            'Missing the public_api:* scope (course:tag:write alone: only tagIds or addTagIds; plus course:write: only isPrivate), or a non-admin sent tags'
         },
         404: { description: 'Course not found' },
         429: mcpRateLimitResponse
@@ -469,9 +469,12 @@ export const v1CourseRouter = new Hono()
 
         const fields = Object.keys(payload);
         const tagsOnly = fields.length > 0 && fields.every((field) => field === 'tagIds' || field === 'addTagIds');
-        c.set('automationAction', tagsOnly ? 'set_course_tags' : 'update_course');
+        const privacyOnly = fields.length === 1 && fields[0] === 'isPrivate';
+        c.set('automationAction', tagsOnly ? 'set_course_tags' : privacyOnly ? 'set_course_private' : 'update_course');
         const keyScopes = c.get('automationKey')?.scopes ?? [];
-        if (!tagsOnly && !organizationApiKeyHasScopes(keyScopes, ['public_api:*'])) {
+        const canSendPrivacyOnly =
+          privacyOnly && organizationApiKeyHasScopes(keyScopes, ['course:write', 'course:tag:write']);
+        if (!tagsOnly && !canSendPrivacyOnly && !organizationApiKeyHasScopes(keyScopes, ['public_api:*'])) {
           return c.json(
             { success: false, error: 'Automation key is missing required scopes', code: ErrorCodes.FORBIDDEN },
             403

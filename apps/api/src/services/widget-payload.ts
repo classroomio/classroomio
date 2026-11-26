@@ -192,6 +192,7 @@ export function formatCourseForWidget(
     description: course.description,
     imageUrl: resolveCourseBannerImage(course),
     isPublished: course.isPublished,
+    isPrivate: course.isPrivate,
     price: isPaidCourse && course.cost ? `${course.currency} ${course.cost}` : 'Free',
     lessonCount: course.lessonCount,
     exerciseCount: course.exerciseCount ?? 0,

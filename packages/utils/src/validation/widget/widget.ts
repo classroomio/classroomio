@@ -367,6 +367,7 @@ export const ZWidgetEditorCourse = z.object({
   description: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
   isPublished: z.boolean().nullable().optional(),
+  isPrivate: z.boolean().optional(),
   price: z.union([z.string(), z.number()]).nullable().optional(),
   lessonCount: z.number().int().nonnegative(),
   exerciseCount: z.number().int().nonnegative().default(0),

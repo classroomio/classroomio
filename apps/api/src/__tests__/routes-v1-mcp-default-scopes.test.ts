@@ -188,7 +188,8 @@ describe('default MCP key across the cohort, course member, certificate, exercis
     ['POST', '/courses', 'create_course', 1, 201, { title: 'New course', description: 'About it', type: 'SELF_PACED' }],
     ['GET', `/courses/${COURSE_ID}/structure`, 'get_course_structure', 0, 200, undefined],
     ['POST', `/courses/${COURSE_ID}/publish`, 'publish_course', 1, 200, undefined],
-    ['POST', `/courses/${COURSE_ID}/unpublish`, 'unpublish_course', 1, 200, undefined]
+    ['POST', `/courses/${COURSE_ID}/unpublish`, 'unpublish_course', 1, 200, undefined],
+    ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { isPrivate: true }]
   ])('reaches %s %s and meters it as %s (%i credits)', async (method, path, toolName, credits, status, body) => {
     const response = await request(path, method, body);
 

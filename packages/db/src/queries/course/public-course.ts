@@ -88,6 +88,7 @@ export async function getCourseRowBySlug(courseSlug: string): Promise<{
   id: string;
   type: string | null;
   isPublished: boolean | null;
+  isPrivate: boolean;
   status: string | null;
 } | null> {
   try {
@@ -96,6 +97,7 @@ export async function getCourseRowBySlug(courseSlug: string): Promise<{
         id: schema.course.id,
         type: schema.course.type,
         isPublished: schema.course.isPublished,
+        isPrivate: schema.course.isPrivate,
         status: schema.course.status
       })
       .from(schema.course)
@@ -129,6 +131,7 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
         metadata: schema.course.metadata,
         type: schema.course.type,
         isPublished: schema.course.isPublished,
+        isPrivate: schema.course.isPrivate,
         status: schema.course.status,
         groupId: schema.course.groupId
       })
@@ -138,7 +141,7 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
 
     if (!courseRow) return null;
     if (courseRow.type !== 'PUBLIC') return null;
-    if (!courseRow.isPublished) return null;
+    if (!courseRow.isPublished || courseRow.isPrivate) return null;
     if (courseRow.status !== 'ACTIVE') return null;
     if (!courseRow.slug) return null;
 
@@ -396,6 +399,7 @@ export async function getPublicCourseItem(
         organizationId: schema.group.organizationId,
         type: schema.course.type,
         isPublished: schema.course.isPublished,
+        isPrivate: schema.course.isPrivate,
         status: schema.course.status
       })
       .from(schema.course)
@@ -405,7 +409,7 @@ export async function getPublicCourseItem(
 
     if (!courseRow) return null;
     if (courseRow.type !== 'PUBLIC') return null;
-    if (!courseRow.isPublished) return null;
+    if (!courseRow.isPublished || courseRow.isPrivate) return null;
     if (courseRow.status !== 'ACTIVE') return null;
 
     const [lessonRow] = await db
@@ -531,6 +535,7 @@ export async function getPublicLessonMarkdownSource(
         metadata: schema.course.metadata,
         type: schema.course.type,
         isPublished: schema.course.isPublished,
+        isPrivate: schema.course.isPrivate,
         status: schema.course.status
       })
       .from(schema.course)
@@ -539,7 +544,7 @@ export async function getPublicLessonMarkdownSource(
 
     if (!courseRow) return null;
     if (courseRow.type !== 'PUBLIC') return null;
-    if (!courseRow.isPublished) return null;
+    if (!courseRow.isPublished || courseRow.isPrivate) return null;
     if (courseRow.status !== 'ACTIVE') return null;
 
     const [lessonRow] = await db

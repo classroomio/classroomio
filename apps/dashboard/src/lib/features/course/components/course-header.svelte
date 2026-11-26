@@ -44,6 +44,7 @@
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const activeNavKey = $derived(getActiveCourseNavKey(page.url.pathname, courseApi.course?.id ?? ''));
   const isPublished = $derived(courseApi.course?.isPublished ?? false);
+  const isPrivate = $derived(courseApi.course?.isPrivate ?? false);
   const lessonId = $derived(page.params.lessonId as string | undefined);
   const exerciseId = $derived(page.params.exerciseId as string | undefined);
   const showMobileBottomNav = $derived(
@@ -147,7 +148,7 @@
         {#if courseApi.course?.isTemplate}
           <Badge variant="secondary">{$t('course_templates.editor.badge')}</Badge>
         {:else if showCoursePublishBadge}
-          <CoursePublishBadge {isPublished} />
+          <CoursePublishBadge {isPublished} {isPrivate} />
         {/if}
       </div>
     </div>

@@ -1478,6 +1478,10 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
     },
+    "isPrivate": {
+      "description": "Published but hidden from every listing; students join only when enrolled by staff",
+      "type": "boolean",
+    },
     "isPublished": {
       "anyOf": [
         {
@@ -1877,6 +1881,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
     "currency",
     "bannerImage",
     "isPublished",
+    "isPrivate",
     "displayOrder",
     "certificate",
     "compliance",
@@ -2180,6 +2185,10 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
+    },
+    "isPrivate": {
+      "description": "Published but hidden from every listing; students join only when enrolled by staff",
+      "type": "boolean",
     },
     "isPublished": {
       "anyOf": [
@@ -2558,6 +2567,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
     "currency",
     "bannerImage",
     "isPublished",
+    "isPrivate",
     "displayOrder",
     "certificate",
     "compliance",
@@ -2857,6 +2867,10 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
+    },
+    "isPrivate": {
+      "description": "Published but hidden from every listing; students join only when enrolled by staff",
+      "type": "boolean",
     },
     "isPublished": {
       "anyOf": [
@@ -3200,6 +3214,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
     "currency",
     "bannerImage",
     "isPublished",
+    "isPrivate",
     "displayOrder",
     "certificate",
     "compliance",
@@ -4471,6 +4486,10 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
           "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
           "type": "string",
         },
+        "isPrivate": {
+          "description": "Published but hidden from every listing; students join only when enrolled by staff",
+          "type": "boolean",
+        },
         "isPublished": {
           "anyOf": [
             {
@@ -4813,6 +4832,7 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
         "currency",
         "bannerImage",
         "isPublished",
+        "isPrivate",
         "displayOrder",
         "certificate",
         "compliance",

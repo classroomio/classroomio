@@ -982,6 +982,12 @@
         "access_people": "Mọi người",
         "publish": "Xuất bản khóa học",
         "determines": "Điều này xác định xem khóa học của bạn có hiển thị trên trang đích hay không",
+        "private": {
+          "label": "Khóa học riêng tư",
+          "description": "Được ẩn khỏi trang đích, mục khám phá và tìm kiếm của bạn. Học viên chỉ có thể truy cập khóa học này khi bạn ghi danh cho họ.",
+          "public_type_blocked": "Loại khóa học công khai mở cho bất kỳ ai có liên kết, nên không thể đặt riêng tư.",
+          "badge": "Riêng tư"
+        },
         "published": "Đã xuất bản",
         "unpublished": "Chưa được xuất bản",
         "type": "Loại khóa học",

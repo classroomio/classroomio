@@ -36,12 +36,12 @@
     sortOptions?: readonly SortOption[];
     isFiltering?: boolean;
     hasActiveFilters?: boolean;
-    publishedStatus?: 'all' | 'published' | 'unpublished';
+    publishedStatus?: 'all' | 'published' | 'unpublished' | 'private';
     courseType?: string;
     courseTypeOptions?: { value: string; label: string }[];
     onToggleTag?: (tagSlug: string, checked: boolean) => void;
     onClearFilters?: () => void | Promise<void>;
-    onPublishedStatusChange?: (status: 'all' | 'published' | 'unpublished') => void;
+    onPublishedStatusChange?: (status: 'all' | 'published' | 'unpublished' | 'private') => void;
     onCourseTypeChange?: (type: string) => void;
   }
 
@@ -80,7 +80,7 @@
     return selectedTags.includes(tagSlug);
   }
 
-  function setPublishedStatus(status: 'all' | 'published' | 'unpublished') {
+  function setPublishedStatus(status: 'all' | 'published' | 'unpublished' | 'private') {
     publishedStatus = status;
     onPublishedStatusChange?.(status);
   }
@@ -123,6 +123,12 @@
             size="sm"
             variant={publishedStatus === 'unpublished' ? 'secondary' : 'outline'}
             onclick={() => setPublishedStatus('unpublished')}>{$t('widgets.filter.unpublished')}</Button
+          >
+          <Button
+            type="button"
+            size="sm"
+            variant={publishedStatus === 'private' ? 'secondary' : 'outline'}
+            onclick={() => setPublishedStatus('private')}>{$t('course.navItem.settings.private.badge')}</Button
           >
         </div>
       </div>

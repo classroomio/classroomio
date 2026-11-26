@@ -362,6 +362,7 @@ export async function getTagGroupsWithTags(
     ];
     if (onlyPublishedCourses) {
       courseJoinConditions.push(eq(schema.course.isPublished, true));
+      courseJoinConditions.push(eq(schema.course.isPrivate, false));
     }
 
     const [groups, tags] = await Promise.all([
@@ -478,6 +479,7 @@ export async function getRelatedCourses(
       ne(schema.course.id, courseId),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
+      eq(schema.course.isPrivate, false),
       eq(schema.course.isTemplate, false)
     ];
 
