@@ -1141,18 +1141,6 @@
 
       {#if !courseApi.course?.isTemplate}
         <Field.Set id="publish" class="scroll-mt-24">
-          <AttentionHighlight id="publish">
-            <Field.Field orientation="horizontal">
-              <Field.Content>
-                <Field.Label for="is-published">
-                  <a href="#publish" class="hover:underline">{$t('course.navItem.settings.publish')}</a>
-                </Field.Label>
-                <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
-              </Field.Content>
-              <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
-            </Field.Field>
-          </AttentionHighlight>
-
           <Field.Field orientation="horizontal">
             <Field.Content>
               <Field.Label for="is-private">{$t('course.navItem.settings.private.label')}</Field.Label>
@@ -1169,6 +1157,18 @@
               onCheckedChange={onPrivateToggle}
             />
           </Field.Field>
+
+          <AttentionHighlight id="publish">
+            <Field.Field orientation="horizontal">
+              <Field.Content>
+                <Field.Label for="is-published">
+                  <a href="#publish" class="hover:underline">{$t('course.navItem.settings.publish')}</a>
+                </Field.Label>
+                <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
+              </Field.Content>
+              <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
+            </Field.Field>
+          </AttentionHighlight>
 
           {#if showLockedContentNotice}
             <Alert.Root variant={isLiveClassCourse ? 'information' : 'warning'}>
