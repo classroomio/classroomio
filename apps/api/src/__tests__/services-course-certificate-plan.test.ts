@@ -120,6 +120,27 @@ describe('assertCertificateChangeAllowed', () => {
     expect(getActiveOrganizationPlan).not.toHaveBeenCalled();
   });
 
+  it('lets a Basic org save a new course whose stored certificate is empty when the dashboard sends back the default theme', async () => {
+    onPlan(PLAN.BASIC);
+    vi.mocked(getCourseById).mockResolvedValue([
+      { id: COURSE_ID, type: 'SELF_PACED', compliance: null, certificate: {} }
+    ] as unknown as TCourseResult);
+
+    await expect(
+      assertCertificateChangeAllowed(COURSE_ID, { isDownloadable: false, theme: 'professional', deadline: null })
+    ).resolves.toBeUndefined();
+    expect(getActiveOrganizationPlan).not.toHaveBeenCalled();
+  });
+
+  it('blocks a Basic org from switching to a different template through the legacy theme', async () => {
+    onPlan(PLAN.BASIC);
+    vi.mocked(getCourseById).mockResolvedValue([
+      { id: COURSE_ID, type: 'SELF_PACED', compliance: null, certificate: {} }
+    ] as unknown as TCourseResult);
+
+    await expect(assertCertificateChangeAllowed(COURSE_ID, { theme: 'plain' })).rejects.toMatchObject(upgradeRequired);
+  });
+
   it.each([
     ['isDownloadable', { isDownloadable: false }],
     ['emailMessage', { emailMessage: 'Changed' }],
