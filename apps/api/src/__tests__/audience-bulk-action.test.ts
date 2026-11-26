@@ -6,6 +6,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   countAudienceMatchesNotArchived: vi.fn(),
   bulkUpdateOrganizationMemberStatus: vi.fn(),
   bulkDeleteOrganizationAudienceMembers: vi.fn(),
+  deleteCohortMembershipsForOrgProfiles: vi.fn(),
   deleteGroupMembershipsForOrgProfiles: vi.fn(),
   recordOrganizationMemberAudit: vi.fn(),
   resolveAudienceMemberIds: vi.fn(),
@@ -38,6 +39,7 @@ import {
   bulkUpdateOrganizationMemberStatus,
   countActiveStudents,
   countAudienceMatchesNotArchived,
+  deleteCohortMembershipsForOrgProfiles,
   deleteGroupMembershipsForOrgProfiles,
   getAudienceMatchSample,
   getBulkAudienceMembersByIds,
@@ -160,6 +162,7 @@ describe('applyBulkAudienceAction — delete gate', () => {
 
     expect(result).toMatchObject({ mode: 'completed', succeeded: 2 });
     expect(deleteGroupMembershipsForOrgProfiles).toHaveBeenCalledWith(ORG, ['profile-1', 'profile-2'], {});
+    expect(deleteCohortMembershipsForOrgProfiles).toHaveBeenCalledWith(ORG, ['profile-1', 'profile-2'], {});
     expect(revokeActiveOrganizationInvitesByEmails).toHaveBeenCalled();
     // Audit rows are written before the delete, while the identities still exist.
     expect(recordOrganizationMemberAudit).toHaveBeenCalled();

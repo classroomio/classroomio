@@ -386,6 +386,13 @@
       "when": 1795634851304,
       "tag": "0054_organization_invite_lower_email_index",
       "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1795681998056,
+      "tag": "0055_cohort_newsfeed_author_set_null",
+      "breakpoints": true
     }
   ]
 }

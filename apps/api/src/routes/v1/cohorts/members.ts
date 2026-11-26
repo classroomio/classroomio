@@ -60,7 +60,7 @@ export const v1CohortMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Add people to a cohort directly, without sending an invitation; ${COHORT_TEAM_RULE}.`,
+      description: `Add people to a cohort without an invitation; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         201: jsonResponse(
@@ -98,8 +98,11 @@ export const v1CohortMembersRouter = new Hono()
         200: jsonResponse('Cohort member updated successfully', MemberResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: cohortForbiddenResponses.team,
-        404: { description: 'Cohort or member not found' }
+        403: {
+          description: `${cohortForbiddenResponses.team.description}, or the plan can't take another student (UPGRADE_REQUIRED)`
+        },
+        404: { description: 'Cohort or member not found' },
+        409: { description: "The member's email has a pending team invite or belongs to another account" }
       }
     }),
     validator('param', ZPublicApiCohortMemberParam),
