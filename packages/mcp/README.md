@@ -204,7 +204,7 @@ Course settings and what students can open:
 
 - `get_course_settings` and `update_course_settings` read and change the settings on the course Settings page: Student progression (`progressionMode`, `free` or `sequential`), self-enrollment, Markdown export and lesson comments. They call `GET` and `PATCH /public-api/v1/courses/:id/settings` with the key's `course:read` and `course:write` scopes, and the key creator must be a course tutor/admin or an org admin. A private course cannot turn self-enrollment on. Plan-limited and structural settings (lesson download, content grouping, privacy, welcome email, live session reminders) are not covered; `set_course_private` changes privacy.
 - When a client connects, the server sends instructions explaining the three controls that decide what a student can open: Student progression, each item's completion rule (`completionPolicy` on `update_lesson` and `update_course_exercise`) and release (`isUnlocked`, a manual hold that `set_course_content_released` sets for many items at once). To make students finish one item before the next, use a sequential course with a required completion rule, never a release hold.
-- `update_lesson` takes `completionPolicy` (`manual`, `video_watch` or `none`) and `videoWatchThreshold` (1 to 100, 95 when unset).
+- `update_lesson` takes `completionPolicy` (`manual`, `video_watch` or `none`) and `videoWatchThreshold` (1 to 100, 95 when unset; a video block can set its own threshold, and the highest applicable one counts).
 
 Course section, lesson and content tools:
 

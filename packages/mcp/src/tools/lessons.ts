@@ -78,7 +78,7 @@ export const ZUpdateLessonToolInput = z.object({
     .max(100)
     .optional()
     .describe(
-      'Percent of each uploaded video the student must watch when completionPolicy is video_watch; 95 when unset.'
+      'Percent of each uploaded video the student must watch when completionPolicy is video_watch; 95 when unset. A video block can set its own watch threshold: for each video the highest threshold among its blocks counts, blocks without one use this value, and only required blocks count when any block for that video is required.'
     )
 });
 

@@ -105,7 +105,9 @@ export const updateLessonParam = z
       .min(1)
       .max(100)
       .optional()
-      .describe('Percent of each uploaded video to watch when completionPolicy is "video_watch"; 95 when unset.')
+      .describe(
+        'Percent of each uploaded video to watch when completionPolicy is "video_watch"; 95 when unset. A video block can set its own threshold, and the highest applicable one counts.'
+      )
   })
   .refine(
     (data) =>

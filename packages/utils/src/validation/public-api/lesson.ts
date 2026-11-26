@@ -67,7 +67,9 @@ export const ZPublicApiUpdateLesson = z
       .min(1)
       .max(100)
       .optional()
-      .describe('Percent of each uploaded video to watch for video_watch; 95 when unset.')
+      .describe(
+        'Percent of each uploaded video to watch for video_watch; 95 when unset. A video block can set its own threshold, and the highest applicable one counts.'
+      )
   })
   .describe('Send only the fields to change.');
 export type TPublicApiUpdateLesson = z.infer<typeof ZPublicApiUpdateLesson>;

@@ -218,7 +218,7 @@ If a lesson has \`hasExercise: true\`, the linked exercise takes the next order 
 Three separate controls, named as the dashboard names them:
 - **Student progression** (course setting \`metadata.progressionMode\`, set with update_course_landing_page): \`"free"\` lets students open every released item in any order; \`"sequential"\` opens each item only after the student completes the previous required item.
 - **Completion rules** (each item) decide what "complete" means. A required item is one whose rule is not \`"none"\`.
-  - Lessons (update_lesson \`completionPolicy\`): \`"manual"\` (default) — the student marks it complete; \`"video_watch"\` — completes after watching \`videoWatchThreshold\` percent (95 by default) of its uploaded videos, so only use it on a lesson with an uploaded video; \`"none"\` — never required.
+  - Lessons (update_lesson \`completionPolicy\`): \`"manual"\` (default) — the student marks it complete; \`"video_watch"\` — completes after watching \`videoWatchThreshold\` percent (95 by default; a video block can set its own threshold, and the highest applicable one counts) of its uploaded videos, so only use it on a lesson with an uploaded video; \`"none"\` — never required.
   - Exercises (update_exercise \`completionPolicy\`): \`"submitted"\` (default) — any attempt completes it; \`"passed"\` + \`passThreshold\` (100 by default) — only a graded score at or above it counts, and a hand-graded question keeps the student waiting until the teacher grades it; \`"none"\` — never required.
 - **Release** (\`isUnlocked\` on update_lesson / update_exercise) is the teacher's manual hold: \`false\` holds the item back from every student until it is released again, whatever they have completed.
 

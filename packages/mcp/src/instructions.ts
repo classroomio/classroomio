@@ -12,7 +12,7 @@ To make students finish something first ("pass the quiz before the next lesson",
 A required item is one whose rule is not none. In a sequential course an incomplete required item keeps everything after it closed.
 Lessons, set with update_lesson (completionPolicy):
 - manual (default): the student marks the lesson complete.
-- video_watch: the lesson completes on its own once the student has watched videoWatchThreshold percent (95 when unset) of its uploaded videos, unless a video block in the lesson sets its own threshold. YouTube and other links are not tracked, so a lesson with no uploaded video can never be completed this way.
+- video_watch: the lesson completes on its own once the student has watched videoWatchThreshold percent (95 when unset) of its uploaded videos. A video block can set its own watch threshold: for each video the highest threshold among its blocks counts, blocks without one use videoWatchThreshold, and only required blocks count when any block for that video is required. YouTube and other links are not tracked, so a lesson with no uploaded video can never be completed this way.
 - none: never required. It never holds students back and does not count toward course completion or certificates.
 Exercises, set with update_course_exercise (completionPolicy, passThreshold):
 - submitted (default): any submission completes it.
@@ -21,4 +21,4 @@ Exercises, set with update_course_exercise (completionPolicy, passThreshold):
 list_course_lessons and list_course_exercises show each item's completionPolicy, threshold and isUnlocked.
 
 ## Release (each lesson and exercise)
-isUnlocked is a manual hold, called release in the dashboard. false holds the item back from every student, whatever they have completed, until someone releases it again. Use set_course_content_released, or isUnlocked on update_lesson and update_course_exercise, only when the user wants content held back, for example to pace a cohort or hide an unfinished lesson. Never use it to make students finish earlier items: it does not open when they do. In a sequential course, a required item that is held back also keeps everything after it closed for students who have not completed it.`;
+isUnlocked is a manual hold, called release in the dashboard. false holds the item back from every student, whatever they have completed, until someone releases it again. Use set_course_content_released, or isUnlocked on update_lesson and update_course_exercise, only when the user wants content held back, for example to pace a cohort or keep students out of an unfinished lesson (it stays visible in the outline). Never use it to make students finish earlier items: it does not open when they do. In a sequential course, a required item that is held back also keeps everything after it closed for students who have not completed it.`;

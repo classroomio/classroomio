@@ -6009,8 +6009,8 @@
     },
     "course_settings": {
       "success": {
-        "unlocked_all_content": "Tutti gli elementi del corso sono disponibili",
-        "all_content_already_unlocked": "Tutto il contenuto è già disponibile",
+        "unlocked_all_content": "Nessun elemento del corso è più trattenuto",
+        "all_content_already_unlocked": "Nessun contenuto è trattenuto",
         "content_grouping_enabled": "Raggruppamento dei contenuti abilitato",
         "content_grouping_disabled": "Raggruppamento dei contenuti disabilitato",
         "download": "Scarica completo",
