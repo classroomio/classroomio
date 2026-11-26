@@ -208,18 +208,21 @@ If a lesson has \`hasExercise: true\`, the linked exercise takes the next order 
 ## Updating Existing Metadata
 
 - Section name/order change: get_course_structure, then update_section with the existing ID. Never create a replacement.
-- Lesson name/move/reorder/schedule/visibility/unlock: get_course_structure, then update_lesson with the existing ID. Never create a replacement.
-- Exercise metadata (title, description, linked lesson, course section placement, order, due date, lock state, multiple-attempt behavior, completion policy, passing threshold): update_exercise. Never create a replacement.
+- Lesson name/move/reorder/schedule/visibility/release/completion rule: get_course_structure, then update_lesson with the existing ID. Never create a replacement.
+- Exercise metadata (title, description, linked lesson, course section placement, order, due date, release state, multiple-attempt behavior, completion policy, passing threshold): update_exercise. Never create a replacement.
 - New **block of questions inside an exercise**: create_exercise_section. Rename/add intro to an existing block: get_exercise_details, then update_exercise_section (use the in-exercise section id from its sections array, NOT update_section which only changes course outline sections).
 - create_section / create_lesson only for brand-new items the teacher clearly wants added.
 
-## Exercise Completion Gates
+## Controlling What Students Can Open
 
-Two independent completion controls:
-- \`completionPolicy: "submitted"\` — any attempt marks the exercise complete.
-- \`completionPolicy: "passed"\` + \`passThreshold: <0-100>\` — complete only at/above that score.
+Three separate controls, named as the dashboard names them:
+- **Student progression** (course setting \`metadata.progressionMode\`, set with update_course_landing_page): \`"free"\` lets students open every released item in any order; \`"sequential"\` opens each item only after the student completes the previous required item.
+- **Completion rules** (each item) decide what "complete" means. A required item is one whose rule is not \`"none"\`.
+  - Lessons (update_lesson \`completionPolicy\`): \`"manual"\` (default) — the student marks it complete; \`"video_watch"\` — completes after watching \`videoWatchThreshold\` percent (95 by default) of its uploaded videos, so only use it on a lesson with an uploaded video; \`"none"\` — never required.
+  - Exercises (update_exercise \`completionPolicy\`): \`"submitted"\` (default) — any attempt completes it; \`"passed"\` + \`passThreshold\` (100 by default) — only a graded score at or above it counts, and a hand-graded question keeps the student waiting until the teacher grades it; \`"none"\` — never required.
+- **Release** (\`isUnlocked\` on update_lesson / update_exercise) is the teacher's manual hold: \`false\` holds the item back from every student until it is released again, whatever they have completed.
 
-When the teacher says students must "pass"/"hit a score"/"get 70%"/"score at least X%", use update_exercise with \`completionPolicy: "passed"\` and the requested \`passThreshold\`. If they must complete/pass **before progressing**, also set sequential progression via update_course_landing_page \`metadata.progressionMode: "sequential"\` when not already sequential. Progression mode decides whether later items are locked; the exercise policy decides when this exercise counts complete.
+When the teacher says students must "pass"/"hit a score"/"get 70%"/"score at least X%", use update_exercise with \`completionPolicy: "passed"\` and the requested \`passThreshold\`. If they must finish or pass something **before moving on**, also set \`metadata.progressionMode: "sequential"\` with update_course_landing_page when it is not already sequential. Never use \`isUnlocked: false\` for this: a held-back item does not open when students finish the earlier one, and in a sequential course a required held-back item also keeps everything after it closed for students who have not completed it.
 
 ## Editing Existing Questions
 

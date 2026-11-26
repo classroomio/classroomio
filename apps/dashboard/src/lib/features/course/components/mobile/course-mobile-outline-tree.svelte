@@ -16,6 +16,7 @@
   } from '$features/course/utils/content-navigation';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
+  import { getContentLockIndicatorLabelKey } from '$features/course/utils/content-lock-utils';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { SvelteSet } from 'svelte/reactivity';
@@ -101,8 +102,8 @@
   {:else if isContentLocked || isLockedForStudent}
     <span
       class="shrink-0"
-      title={$t('course.navItem.lessons.add_lesson.lock')}
-      aria-label={$t('course.navItem.lessons.add_lesson.lock')}
+      title={$t(getContentLockIndicatorLabelKey(isContentLocked))}
+      aria-label={$t(getContentLockIndicatorLabelKey(isContentLocked))}
     >
       <LockIcon size={12} />
     </span>

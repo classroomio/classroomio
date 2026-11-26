@@ -41,6 +41,7 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
     tags: [
       { tag: 'Courses', label: 'Overview' },
       { tag: 'Course Structure', label: 'Structure' },
+      { tag: 'Course Settings', label: 'Settings' },
       { tag: 'Course Sections', label: 'Sections' },
       { tag: 'Course Lessons', label: 'Lessons' },
       { tag: 'Lesson Blocks', label: 'Blocks' },

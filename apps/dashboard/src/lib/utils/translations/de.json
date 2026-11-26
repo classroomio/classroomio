@@ -360,8 +360,8 @@
         "successful_integration": "Integration erfolgreich",
         "successful_deletion": "Integration gelöscht",
         "update_successful": "Update erfolgreich",
-        "unlocked_all_content": "Alle Kursgegenstände freigeschaltet",
-        "all_content_already_unlocked": "Alle Inhalte sind bereits freigeschaltet",
+        "unlocked_all_content": "Alle Kurselemente freigegeben",
+        "all_content_already_unlocked": "Alle Inhalte sind bereits freigegeben",
         "content_grouping_enabled": "Inhaltsgruppierung aktiviert",
         "content_grouping_disabled": "Inhaltsgruppierung deaktiviert",
         "link_generated": "Der Kurslink wurde erfolgreich aktualisiert",
@@ -964,8 +964,8 @@
         "content_grouping_title": "Inhaltsgruppierung",
         "content_grouping_description": "Gruppieren Sie Lektionen und Übungen nach Abschnitten in der Inhaltsliste.",
         "progression_mode_title": "Schülerfortschritt",
-        "progression_mode_free": "Frei — freigeschaltete Inhalte sind zugänglich",
-        "progression_mode_sequential": "Sequenziell — vorherige Elemente abschließen, um das nächste freizuschalten",
+        "progression_mode_free": "Frei — Schüler können jedes freigegebene Element öffnen",
+        "progression_mode_sequential": "Sequenziell — Schüler schließen jedes Pflichtelement ab, bevor sich das nächste öffnet",
         "comments": {
           "title": "Lektionskommentare",
           "description": "Erlauben Sie Schülern, Kommentare in den Lektionen dieses Kurses anzusehen und hinzuzufügen. Kommentare können weiterhin für einzelne Lektionen deaktiviert werden.",
@@ -1020,7 +1020,7 @@
         },
         "callout": {
           "legend": "Hinweis zum öffentlichen Kurs",
-          "description": "Wird am Ende jeder Lektion und anstelle von gesperrten Gegenständen angezeigt. Nutzen Sie es, um Studierende auf Ihre Website oder einen kostenpflichtigen Kurs zu leiten.",
+          "description": "Wird am Ende jeder Lektion und anstelle von Elementen, die Sie noch nicht freigegeben haben angezeigt. Nutzen Sie es, um Studierende auf Ihre Website oder einen kostenpflichtigen Kurs zu leiten.",
           "title_label": "Titel",
           "title_placeholder": "Möchten Sie näher darauf eingehen?",
           "description_label": "Beschreibung",
@@ -1050,10 +1050,10 @@
         "content_card_title": "Inhalt",
         "access_card_title": "Zugriff",
         "locked_content": {
-          "title": "{count} Kurselemente sind gesperrt",
-          "description": "Eingeschriebene Schüler können erst dann an gesperrten Lektionen oder Übungen teilnehmen, wenn Sie sie entsperren.",
-          "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
-          "unlock_all": "Schalte alle frei"
+          "title": "{count} Kurselemente sind noch nicht freigegeben",
+          "description": "Eingeschriebene Schüler können diese Lektionen oder Übungen erst öffnen, wenn Sie sie freigeben.",
+          "description_live": "Schüler können nicht freigegebene Lektionen und Übungen erst öffnen, wenn Sie sie freigeben — praktisch, wenn Sie Inhalte Woche für Woche freigeben.",
+          "unlock_all": "Alle freigeben"
         },
         "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
         "go_to_certificate_settings": "Gehen Sie zu Zertifikatseinstellungen",
@@ -1099,9 +1099,9 @@
         "fix": "Beheben",
         "save_changes_to_fix_questions": "Speichern Sie Ihre ungespeicherten Änderungen, bevor Sie die Fragen bearbeiten.",
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
-        "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen. Beim Abschluss der Videowiedergabe werden nur hochgeladene Videos erfasst.",
+        "progression_mode_description": "Legen Sie fest, ob Schüler jedes freigegebene Element öffnen können oder die Elemente der Reihe nach abschließen müssen. Der Videoabschluss erfasst nur hochgeladene Videos.",
         "allow_markdown_export": "Lernenden erlauben, Lektionsseiten als Markdown zu kopieren",
-        "allow_markdown_export_description": "Wenn aktiviert, zeigen öffentliche Lektionsseiten eine „Seite kopieren“-Schaltfläche, die den Lektionsinhalt (ohne Videos) als Markdown exportiert. Dadurch wird außerdem eine öffentliche Markdown-URL für jede entsperrte Lektion veröffentlicht.",
+        "allow_markdown_export_description": "Wenn aktiviert, zeigen öffentliche Lektionsseiten eine „Seite kopieren“-Schaltfläche, die den Lektionsinhalt (ohne Videos) als Markdown exportiert. Dadurch wird außerdem eine öffentliche Markdown-URL für jede freigegebene Lektion veröffentlicht.",
         "live_session_reminders": {
           "legend": "E-Mail-Erinnerungen für Sitzungen",
           "description": "Legen Sie fest, wann eingeschriebene Studierende vor jeder Live-Sitzung eine E-Mail mit dem Beitrittslink erhalten.",
@@ -1720,7 +1720,7 @@
         "add_content_lesson_title_placeholder": "z. B. Erste Schritte mit Variablen",
         "content_menu": {
           "label": "Inhaltsoptionen",
-          "unlock_all": "Alle Inhalte freischalten",
+          "unlock_all": "Alle Inhalte freigeben",
           "enable_grouping": "Inhaltsgruppierung aktivieren",
           "disable_grouping": "Inhaltsgruppierung deaktivieren"
         },
@@ -2729,9 +2729,11 @@
           "lesson_title": "Titel der Lektion",
           "course_section_title": "Abschnittstitel",
           "click_to": "Klicken Sie hier",
-          "lock": "Sperren",
-          "unlock": "Entsperren",
+          "lock": "Zurückhalten",
+          "unlock": "Freigeben",
           "all": "Alle",
+          "hold_back_all": "Alle zurückhalten",
+          "release_all": "Alle freigeben",
           "fullname": "vollständiger Name",
           "save": "Speichern",
           "edit": "Bearbeiten",
@@ -2747,12 +2749,14 @@
           "activate": "Aktivieren",
           "cancel": "Abbrechen"
         },
-        "content_locked_title": "Dieser Inhalt ist gesperrt",
-        "content_locked_description": "Ihr Kursleiter hat diesen Inhalt noch nicht freigeschaltet. Vervollständigen Sie den vorherigen Inhalt oder schauen Sie später noch einmal vorbei.",
+        "content_locked_title": "Noch nicht freigegeben",
+        "content_locked_description": "Ihre Lehrkraft hat diesen Inhalt noch nicht freigegeben. Schauen Sie später noch einmal vorbei.",
         "content_progression_locked_title": "Schließen Sie zuerst den vorherigen Inhalt ab",
         "content_progression_locked_description": "Dieser Inhalt wird freigeschaltet, nachdem Sie den vorherigen erforderlichen Kurseintrag abgeschlossen haben.",
         "content_progression_locked_description_lesson": "Diese Lektion wird freigeschaltet, nachdem Sie den vorherigen erforderlichen Kurseintrag abgeschlossen haben.",
         "content_progression_locked_description_exercise": "Diese Übung wird freigeschaltet, nachdem Sie den vorherigen erforderlichen Kurseintrag abgeschlossen haben.",
+        "content_progression_locked_description_named_lesson": "Schließen Sie „{title}“ ab, um diese Lektion zu entsperren.",
+        "content_progression_locked_description_named_exercise": "Schließen Sie „{title}“ ab, um diese Übung zu entsperren.",
         "completion_policy": {
           "label": "Abschlussregel",
           "manual_label": "Manuell",
@@ -2786,7 +2790,9 @@
           },
           "access": {
             "title": "Zugang",
-            "description": "Schüler können eine gesperrte Lektion erst öffnen, wenn Sie sie entsperren."
+            "description": "Schüler sehen diese Lektion in der Kursübersicht, können sie aber erst öffnen, wenn Sie sie freigeben.",
+            "released": "Freigegeben",
+            "not_released": "Noch nicht freigegeben"
           }
         },
         "watch_progress": {
@@ -6545,6 +6551,10 @@
       "x": "X",
       "instagram": "Instagram",
       "instagram_copied": "Link kopiert. Füge ihn in Instagram ein."
+    },
+    "not_released": {
+      "title": "Noch nicht freigegeben",
+      "description": "Der Ersteller hat diesen Inhalt noch nicht freigegeben. Schauen Sie später noch einmal vorbei."
     }
   },
   "account": {
@@ -7748,7 +7758,7 @@
       },
       "failed": "Schüler konnten nicht geladen werden",
       "cells_failed": "Übungsergebnisse konnten nicht geladen werden",
-      "attempts_unavailable": "Es konnte nicht geprüft werden, welche Übungen Versuche haben, daher sind einige gesperrte Übungen möglicherweise ausgeblendet."
+      "attempts_unavailable": "Es konnte nicht geprüft werden, welche Übungen Versuche haben, daher sind einige nicht freigegebene Übungen möglicherweise ausgeblendet."
     },
     "empty": {
       "failed": "Dieses Diagramm konnte nicht geladen werden.",

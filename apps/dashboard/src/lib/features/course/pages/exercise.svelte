@@ -72,6 +72,7 @@
     // , refreshExercisePageData
   } from '$features/course/utils/exercise-page-utils';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
+  import { getProgressionBlockingItemTitle } from '$features/course/utils/content-lock-utils';
   import {
     getQuestionTypeId,
     getQuestionTypeKeyFromId
@@ -684,6 +685,11 @@
   const isExerciseProgressionLocked = $derived(
     $isOrgStudent && exerciseContentItem?.accessible === false && !isExerciseTeacherLocked
   );
+  const progressionBlockingItemTitle = $derived(
+    isExerciseProgressionLocked
+      ? getProgressionBlockingItemTitle(courseApi.course, exerciseId, ContentType.Exercise)
+      : null
+  );
   const isExerciseAccessible = $derived.by(() => {
     if ($isOrgStudent && (!isCourseContentReady || !exerciseContentItem)) {
       return false;
@@ -949,6 +955,7 @@
           <StudentContentLockedNotice
             reason={isExerciseProgressionLocked ? 'progression_locked' : 'teacher_locked'}
             contentType={ContentType.Exercise}
+            blockingItemTitle={progressionBlockingItemTitle}
           />
         {/if}
       {:else}

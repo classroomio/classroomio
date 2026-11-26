@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { LESSON_COMPLETION_POLICIES } from '../../functions/course-progression';
 import { ZPublicApiCourseParam } from './course';
 
 /**
@@ -36,7 +37,7 @@ export const ZPublicApiCreateLesson = z.object({
   title: z.string().min(1).max(255),
   sectionId: z.string().uuid().optional(),
   order: z.number().int().min(1).describe(LESSON_ORDER_DESCRIPTION),
-  isUnlocked: z.boolean().optional(),
+  isUnlocked: z.boolean().optional().describe('false holds the lesson back from every student until it is released.'),
   public: z.boolean().optional(),
   videos: z.array(ZPublicApiLessonVideo).max(20).optional().describe(VIDEOS_DESCRIPTION)
 });
@@ -46,14 +47,27 @@ export const ZPublicApiUpdateLesson = z
   .object({
     title: z.string().min(1).max(255).optional(),
     order: z.number().int().min(1).optional().describe(LESSON_ORDER_DESCRIPTION),
-    isUnlocked: z.boolean().optional(),
+    isUnlocked: z.boolean().optional().describe('false holds the lesson back from every student until it is released.'),
     public: z.boolean().optional(),
     lessonAt: z.iso.datetime({ offset: true }).nullable().optional().describe(LESSON_AT_DESCRIPTION),
     videos: z
       .array(ZPublicApiLessonVideo)
       .max(20)
       .optional()
-      .describe(`Replaces all of the lesson's videos; omit to keep them. ${VIDEOS_DESCRIPTION}`)
+      .describe(`Replaces all of the lesson's videos; omit to keep them. ${VIDEOS_DESCRIPTION}`),
+    completionPolicy: z
+      .enum(LESSON_COMPLETION_POLICIES)
+      .optional()
+      .describe(
+        'manual: the student marks it complete. video_watch: completes after watching its uploaded videos. none: never required.'
+      ),
+    videoWatchThreshold: z
+      .number()
+      .int()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe('Percent of each uploaded video to watch for video_watch; 95 when unset.')
   })
   .describe('Send only the fields to change.');
 export type TPublicApiUpdateLesson = z.infer<typeof ZPublicApiUpdateLesson>;

@@ -28,6 +28,9 @@
     exercise: PublicExerciseViewData;
     callout?: PublicCourseCalloutData | null;
     calloutAnimation?: PublicCourseCalloutAnimation;
+    /** Shown in place of an unreleased item when there is no callout. Defaults are English. */
+    notReleasedTitle?: string;
+    notReleasedDescription?: string;
     labels?: ExerciseQuestionLabels;
     /** When set, completed attempts persist and hydrate from `localStorage`. */
     attemptsPersistenceKey?: string | null;
@@ -49,6 +52,8 @@
     exercise,
     callout = null,
     calloutAnimation,
+    notReleasedTitle,
+    notReleasedDescription,
     labels,
     attemptsPersistenceKey = null,
     formatAttemptOption = ({ attemptNumber, correct, total }) => `Attempt ${attemptNumber} - ${correct}/${total}`,
@@ -375,7 +380,13 @@
   <div class="ui:min-w-0 ui:flex-1">
     <div class="ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10">
       {#if !exercise.isUnlocked}
-        <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
+        <Callout
+          variant="full"
+          {callout}
+          animation={resolvedCalloutAnimation}
+          lockedFallbackTitle={notReleasedTitle}
+          lockedFallbackDescription={notReleasedDescription}
+        />
       {:else}
         {#if exercise.sectionTitle}
           <div class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">

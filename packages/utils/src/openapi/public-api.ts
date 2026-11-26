@@ -178,6 +178,8 @@ export const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/related': 'List related courses',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
+  'GET /public-api/v1/courses/{courseId}/settings': 'Get course settings',
+  'PATCH /public-api/v1/courses/{courseId}/settings': 'Update course settings',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
   'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
   'GET /public-api/v1/courses/{courseId}/certificate': 'Get course certificate settings',
@@ -214,7 +216,7 @@ export const OPERATION_SUMMARIES: Record<string, string> = {
   'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Edit a lesson comment',
   'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Delete a lesson comment',
   'PUT /public-api/v1/courses/{courseId}/content/reorder': 'Reorder course content',
-  'PATCH /public-api/v1/courses/{courseId}/content': 'Lock or unlock course content',
+  'PATCH /public-api/v1/courses/{courseId}/content': 'Release or hold back course content',
   'DELETE /public-api/v1/courses/{courseId}/content': 'Delete course content',
   'GET /public-api/v1/courses/{courseId}/exercises': 'List course exercises',
   'POST /public-api/v1/courses/{courseId}/exercises': 'Create a course exercise',
@@ -348,6 +350,10 @@ const OPERATION_TAGS = [
   },
   { name: 'Courses', description: 'Create, update, delete, and clone courses.' },
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
+  {
+    name: 'Course Settings',
+    description: 'Read and change how students move through a course, enroll, export lessons and comment.'
+  },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },
   { name: 'Course Invites', description: 'Invite people to a course.' },
   { name: 'Course Sections', description: 'Add, rename, move and delete course sections.' },
@@ -366,7 +372,7 @@ const OPERATION_TAGS = [
     description: "Read and save a lesson's content per language, and its version history."
   },
   { name: 'Lesson Comments', description: 'Read, post, edit and delete comments on a lesson.' },
-  { name: 'Course Content', description: 'Reorder, lock and delete lessons and exercises in bulk.' },
+  { name: 'Course Content', description: 'Reorder, release and delete lessons and exercises in bulk.' },
   { name: 'Course Exercises', description: 'Create and manage course exercises.' },
   { name: 'Exercise Questions', description: 'Manage the questions of a course exercise.' },
   { name: 'Exercise Sections', description: 'Manage the sections of a course exercise.' },

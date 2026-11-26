@@ -207,7 +207,7 @@ describe('MCP metering on course content routes through the real v1 router', () 
       body('PUT', { items: [{ ...lessonItem, order: 1 }] })
     ],
     [
-      'set_course_content_unlocked',
+      'set_course_content_released',
       1,
       200,
       `${course}/content`,

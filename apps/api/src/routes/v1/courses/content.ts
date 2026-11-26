@@ -62,7 +62,7 @@ export const v1CourseContentRouter = new Hono()
   .patch(
     '/',
     describeRoute({
-      description: `Lock or unlock lessons and exercises for students; ${COURSE_TEAM_RULE}.`,
+      description: `Release lessons and exercises to students or hold them back; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Content updated successfully', itemResponse(ZPublicApiCourseContentLockResponse)),

@@ -276,6 +276,10 @@
     },
     "outline": {
       "label": "Bu sayfada"
+    },
+    "not_released": {
+      "title": "Henüz erişime açılmadı",
+      "description": "İçerik sahibi bunu henüz erişime açmadı. Daha sonra tekrar kontrol edin."
     }
   },
   "onboarding": {
@@ -2672,12 +2676,14 @@
         },
         "drag": "yeniden sıralamak için bir kartı sürükleyin",
         "no_lesson": "Henüz ders yok",
-        "content_locked_title": "Bu içerik kilitli",
-        "content_locked_description": "Eğitmeniniz henüz bu içeriğin kilidini açmadı. Önceki içeriği tamamlayın veya daha sonra tekrar kontrol edin.",
+        "content_locked_title": "Henüz erişime açılmadı",
+        "content_locked_description": "Eğitmeniniz bunu henüz erişime açmadı. Daha sonra tekrar kontrol edin.",
         "content_progression_locked_title": "Önce önceki içeriği tamamlayın",
         "content_progression_locked_description": "Bu içeriğin kilidi, kurstaki önceki gerekli öğeyi bitirdikten sonra açılır.",
         "content_progression_locked_description_lesson": "Bu dersin kilidi, kurstaki önceki gerekli öğeyi bitirdikten sonra açılır.",
         "content_progression_locked_description_exercise": "Bu alıştırmanın kilidi, kurstaki önceki gerekli öğeyi tamamladıktan sonra açılır.",
+        "content_progression_locked_description_named_lesson": "Bu dersin kilidini açmak için “{title}” öğesini tamamlayın.",
+        "content_progression_locked_description_named_exercise": "Bu alıştırmanın kilidini açmak için “{title}” öğesini tamamlayın.",
         "completion_policy": {
           "label": "Tamamlama kural",
           "manual_label": "Manual",
@@ -2711,7 +2717,9 @@
           },
           "access": {
             "title": "Erişim",
-            "description": "Siz kilidi açana kadar öğrenciler kilitli bir dersi açamazlar."
+            "description": "Öğrenciler bu dersi kurs ana hatlarında görür, ancak siz erişime açana kadar açamaz.",
+            "released": "Erişime açık",
+            "not_released": "Henüz erişime açılmadı"
           }
         },
         "watch_progress": {
@@ -2782,9 +2790,11 @@
           "lesson_title": "LDers Başlığı",
           "course_section_title": "Bölüm Başlığı",
           "click_to": "Tıklayın",
-          "lock": "LKilit",
-          "unlock": "Unlock",
+          "lock": "Beklet",
+          "unlock": "Erişime aç",
           "all": "All",
+          "hold_back_all": "Tümünü beklet",
+          "release_all": "Tümünü erişime aç",
           "fullname": "fullname",
           "save": "Save",
           "edit": "Edit",
@@ -2829,7 +2839,7 @@
         "add_content_lesson_title_placeholder": "örn., Değişkenlere Başlarken",
         "content_menu": {
           "label": "İçerik seçenekleri",
-          "unlock_all": "Tüm içeriğin kilidini açın",
+          "unlock_all": "Tüm içeriği erişime aç",
           "enable_grouping": "İçerik gruplamayı etkinleştirin",
           "disable_grouping": "İçerik gruplamayı devre dışı bırak"
         },
@@ -4485,9 +4495,9 @@
         "content_grouping_title": "İçerik gruplandırma",
         "content_grouping_description": "İçerikteki bölümlere göre grup dersleri ve alıştırmalar list.",
         "progression_mode_title": "Öğrenci ilerlemesi",
-        "progression_mode_description": "Öğrencilerin kilidi açılmış tüm içeriğe erişip erişemeyeceklerini veya öğeleri sırayla tamamlamaları gerekip gerekmediğini kontrol edin. Video izleme tamamlama yalnızca yüklenen videoları izler.",
-        "progression_mode_free": "Ücretsiz — kilidi açılmış içeriğe erişilebilir",
-        "progression_mode_sequential": "Sıralı — sonraki kilidi açmak için önceki öğeleri tamamlayın",
+        "progression_mode_description": "Öğrencilerin erişime açılmış herhangi bir öğeyi açıp açamayacağını veya öğeleri sırayla tamamlamaları gerekip gerekmediğini belirleyin. Video izleme tamamlaması yalnızca yüklenen videoları izler.",
+        "progression_mode_free": "Serbest — öğrenciler erişime açılmış herhangi bir öğeyi açabilir",
+        "progression_mode_sequential": "Sıralı — öğrenciler bir sonraki öğe açılmadan önce her zorunlu öğeyi tamamlar",
         "comments": {
           "title": "Lders yorumları",
           "description": "Öğrencilerin bu kurstaki derslere yorum eklemesine ve görüntülemesine izin verin. Bireysel dersler hâlâ yorumları devre dışı bırakabilir.",
@@ -4497,7 +4507,7 @@
         "lesson_download": "Lders indirme",
         "available": "LKayıtlı öğrencilerin dersleri PDF olarak indirmesine izin verin.",
         "allow_markdown_export": "Öğrencilerin ders sayfalarını Markdown olarak kopyalamasına izin verin",
-        "allow_markdown_export_description": "Etkinleştirildiğinde, genel ders sayfalarında ders içeriğini (videolar hariç) Markdown olarak dışa aktaran bir Sayfayı Kopyala düğmesi görüntülenir. Bu aynı zamanda kilidi açılmış her ders için genel bir Markdown URL'si yayınlar.",
+        "allow_markdown_export_description": "Etkinleştirildiğinde, genel ders sayfalarında ders içeriğini (videolar hariç) Markdown olarak dışa aktaran bir Sayfayı Kopyala düğmesi görüntülenir. Bu aynı zamanda erişime açılmış her ders için genel bir Markdown URL'si yayınlar.",
         "course_download": "Kurs indirme",
         "course_avail": "Bu kursun bir kopyasını indirin.",
         "download": "İndir",
@@ -4520,10 +4530,10 @@
         "completion_deadline_label": "Ders Tamamlama Son Tarihi",
         "completion_deadline_helper": "Öğrenciler kursu bu tarih ve saatten (yerel saat) önce tamamlamalıdır. Son tarih olmaması için boş bırakın.",
         "locked_content": {
-          "title": "{count} kurs öğesi/öğeleri kilitlidir",
-          "description": "Kayıtlı öğrenciler, siz bunların kilidini açana kadar kilitli dersler veya alıştırmalar alamayacaktır.",
-          "description_live": "Lilitli dersler ve alıştırmalar, siz bunların kilidini açana kadar öğrencilerden gizli kalır; içeriği hafta hafta yayınlarsanız kullanışlıdır.",
-          "unlock_all": "Tümünün kilidini açın"
+          "title": "{count} kurs öğesi henüz erişime açılmadı",
+          "description": "Kayıtlı öğrenciler, siz erişime açana kadar bu dersleri veya alıştırmaları açamaz.",
+          "description_live": "Öğrenciler, siz erişime açana kadar erişime açılmamış dersleri ve alıştırmaları açamaz — içeriği haftadan haftaya açıyorsanız kullanışlıdır.",
+          "unlock_all": "Tümünü erişime aç"
         },
         "type": "Kurs türü",
         "course_type_desc": "Daha kişiselleştirilmiş bir deneyim için kurs türünü güncelleyin.",
@@ -4573,7 +4583,7 @@
         },
         "callout": {
           "legend": "Genel kurs açıklaması",
-          "description": "Her dersin altında ve kilitli öğelerin yerinde gösterilir. Öğrencileri sitenize veya ücretli bir kursa yönlendirmek için kullanın.",
+          "description": "Her dersin altında ve henüz erişime açmadığınız öğelerin yerinde gösterilir. Öğrencileri sitenize veya ücretli bir kursa yönlendirmek için kullanın.",
           "title_label": "Başlık",
           "title_placeholder": "Bu konuda daha derinlere inmek mi istiyorsunuz?",
           "description_label": "Açıklama",
@@ -6019,8 +6029,8 @@
     },
     "course_settings": {
       "success": {
-        "unlocked_all_content": "Tüm kurs öğelerinin kilidi açıldı",
-        "all_content_already_unlocked": "Tüm içeriğin kilidi zaten açıldı",
+        "unlocked_all_content": "Tüm kurs öğeleri erişime açıldı",
+        "all_content_already_unlocked": "Tüm içerik zaten erişime açık",
         "content_grouping_enabled": "İçerik gruplama etkin",
         "content_grouping_disabled": "İçerik gruplama devre dışı",
         "download": "İndirme Tamamlandı",
@@ -7842,7 +7852,7 @@
       },
       "failed": "Öğrenciler yüklenemedi",
       "cells_failed": "Alıştırma puanları yüklenemedi",
-      "attempts_unavailable": "Hangi alıştırmalarda deneme olduğu kontrol edilemedi, bu yüzden bazı kilitli alıştırmalar gizli olabilir."
+      "attempts_unavailable": "Hangi alıştırmalarda deneme olduğu kontrol edilemedi, bu yüzden erişime açılmamış bazı alıştırmalar gizli olabilir."
     },
     "empty": {
       "failed": "Bu grafik yüklenemedi",

@@ -2,6 +2,7 @@ import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
+import { LESSON_COMPLETION_POLICIES } from '@cio/utils/functions/course-progression';
 import * as z from 'zod';
 
 const CREATE: ToolAnnotations = {
@@ -31,6 +32,9 @@ const ZLessonVideo = z.union([
 const VIDEOS_DESCRIPTION =
   'Videos for this lesson. Use { "type": "upload", "assetId": "..." } for a file uploaded with upload_video, or { "type": "youtube" | "vimeo" | "generic", "link": "..." } for an external URL.';
 
+const RELEASE_DESCRIPTION =
+  'Release flag: false holds the lesson back from every student until it is released again. To make students finish earlier items first, use a sequential course instead (update_course_settings).';
+
 const ORDER_DESCRIPTION =
   'Position within the section, starting at 1. Without a section, the position among the course top-level sections, lessons and exercises; the entry at that position and every later one move down one.';
 
@@ -39,7 +43,7 @@ export const ZCreateLessonToolInput = z.object({
   title: z.string().min(1).max(255),
   order: z.number().int().min(1).describe(ORDER_DESCRIPTION),
   sectionId: z.string().uuid().optional(),
-  isUnlocked: z.boolean().optional(),
+  isUnlocked: z.boolean().optional().describe(RELEASE_DESCRIPTION),
   public: z.boolean().optional(),
   videos: z.array(ZLessonVideo).max(20).optional().describe(VIDEOS_DESCRIPTION)
 });
@@ -49,7 +53,7 @@ export const ZUpdateLessonToolInput = z.object({
   lessonId: z.string().uuid(),
   title: z.string().min(1).max(255).optional(),
   order: z.number().int().min(1).optional().describe(ORDER_DESCRIPTION),
-  isUnlocked: z.boolean().optional(),
+  isUnlocked: z.boolean().optional().describe(RELEASE_DESCRIPTION),
   public: z.boolean().optional(),
   lessonAt: z.iso
     .datetime({ offset: true })
@@ -60,7 +64,22 @@ export const ZUpdateLessonToolInput = z.object({
     .array(ZLessonVideo)
     .max(20)
     .optional()
-    .describe(`${VIDEOS_DESCRIPTION} Supplying this replaces the lesson's videos entirely.`)
+    .describe(`${VIDEOS_DESCRIPTION} Supplying this replaces the lesson's videos entirely.`),
+  completionPolicy: z
+    .enum(LESSON_COMPLETION_POLICIES)
+    .optional()
+    .describe(
+      'What completes the lesson. manual (default): the student marks it complete. video_watch: completes on its own once the student has watched videoWatchThreshold percent of its uploaded videos; YouTube and other links are not tracked, so only use it on a lesson with an uploaded video. none: never required, never blocks a sequential course, and does not count toward completion or certificates.'
+    ),
+  videoWatchThreshold: z
+    .number()
+    .int()
+    .min(1)
+    .max(100)
+    .optional()
+    .describe(
+      'Percent of each uploaded video the student must watch when completionPolicy is video_watch; 95 when unset.'
+    )
 });
 
 const createLessonShape = ZCreateLessonToolInput.shape as unknown as ZodRawShapeCompat;

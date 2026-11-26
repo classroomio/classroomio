@@ -276,6 +276,10 @@
     },
     "outline": {
       "label": "In questa pagina"
+    },
+    "not_released": {
+      "title": "Non ancora disponibile",
+      "description": "Il creatore non ha ancora reso disponibile questo contenuto. Torna più tardi."
     }
   },
   "onboarding": {
@@ -2662,12 +2666,14 @@
         },
         "drag": "trascina una carta per riordinare",
         "no_lesson": "Nessuna lezione ancora",
-        "content_locked_title": "Questo contenuto è bloccato",
-        "content_locked_description": "Il tuo insegnante non ha ancora sbloccato questo contenuto. Completa il contenuto precedente o controlla più tardi.",
+        "content_locked_title": "Non ancora disponibile",
+        "content_locked_description": "Il tuo istruttore non ha ancora reso disponibile questo contenuto. Torna più tardi.",
         "content_progression_locked_title": "Completa prima il contenuto precedente",
         "content_progression_locked_description": "Questo contenuto si sblocca dopo aver completato l'elemento richiesto precedente nel corso.",
         "content_progression_locked_description_lesson": "Questa lezione si sblocca dopo aver completato l'elemento precedente richiesto nel corso.",
         "content_progression_locked_description_exercise": "Questo esercizio si sblocca dopo aver completato l'elemento richiesto precedente nel corso.",
+        "content_progression_locked_description_named_lesson": "Completa “{title}” per sbloccare questa lezione.",
+        "content_progression_locked_description_named_exercise": "Completa “{title}” per sbloccare questo esercizio.",
         "completion_policy": {
           "label": "Regola di completamento",
           "manual_label": "Manuale",
@@ -2701,7 +2707,9 @@
           },
           "access": {
             "title": "Accesso",
-            "description": "Gli studenti non possono aprire una lezione bloccata finché non la sblocchi."
+            "description": "Gli studenti vedono questa lezione nell'indice del corso, ma non possono aprirla finché non la rendi disponibile.",
+            "released": "Disponibile",
+            "not_released": "Non ancora disponibile"
           }
         },
         "watch_progress": {
@@ -2772,9 +2780,11 @@
           "lesson_title": "Titolo della lezione",
           "course_section_title": "Titolo della sezione",
           "click_to": "Fare clic su",
-          "lock": "Serratura",
-          "unlock": "Sbloccare",
+          "lock": "Trattieni",
+          "unlock": "Rendi disponibile",
           "all": "Tutto",
+          "hold_back_all": "Trattieni tutto",
+          "release_all": "Rendi tutto disponibile",
           "fullname": "nome e cognome",
           "save": "Salva",
           "edit": "Modificare",
@@ -2821,7 +2831,7 @@
         "add_content_lesson_title_placeholder": "ad esempio, Iniziare con le variabili",
         "content_menu": {
           "label": "Opzioni di contenuto",
-          "unlock_all": "Sblocca tutti i contenuti",
+          "unlock_all": "Rendi disponibile tutto il contenuto",
           "enable_grouping": "Abilita il raggruppamento dei contenuti",
           "disable_grouping": "Disabilita il raggruppamento dei contenuti"
         },
@@ -4465,9 +4475,9 @@
         "content_grouping_title": "Raggruppamento dei contenuti",
         "content_grouping_description": "Lezioni ed esercizi di gruppo per sezione nell'elenco dei contenuti.",
         "progression_mode_title": "Progressione degli studenti",
-        "progression_mode_description": "Controlla se gli studenti possono accedere a tutti i contenuti sbloccati o devono completare gli elementi in ordine. Il completamento della visualizzazione del video tiene traccia solo dei video caricati.",
-        "progression_mode_free": "Gratuito: i contenuti sbloccati sono accessibili",
-        "progression_mode_sequential": "Sequenziale: completa gli elementi precedenti per sbloccare quelli successivi",
+        "progression_mode_description": "Scegli se gli studenti possono aprire qualsiasi elemento disponibile o devono completare gli elementi in ordine. Il completamento tramite visione video traccia solo i video caricati.",
+        "progression_mode_free": "Libera — gli studenti possono aprire qualsiasi elemento disponibile",
+        "progression_mode_sequential": "Sequenziale — gli studenti completano ogni elemento obbligatorio prima che si apra il successivo",
         "comments": {
           "title": "Commenti alla lezione",
           "description": "Consenti agli studenti di visualizzare e aggiungere commenti nelle lezioni di questo corso. Le lezioni individuali possono comunque disabilitare i commenti.",
@@ -4477,7 +4487,7 @@
         "lesson_download": "Scarica la lezione",
         "available": "Consenti agli studenti registrati di scaricare le lezioni in formato PDF.",
         "allow_markdown_export": "Consenti agli studenti di copiare le pagine delle lezioni come Markdown",
-        "allow_markdown_export_description": "Se abilitate, le pagine delle lezioni pubbliche mostrano un pulsante Copia pagina che esporta il contenuto della lezione (esclusi i video) come Markdown. Questo pubblica anche un URL Markdown pubblico per ogni lezione sbloccata.",
+        "allow_markdown_export_description": "Se abilitate, le pagine delle lezioni pubbliche mostrano un pulsante Copia pagina che esporta il contenuto della lezione (esclusi i video) come Markdown. Questo pubblica anche un URL Markdown pubblico per ogni lezione disponibile.",
         "course_download": "Scarica il corso",
         "course_avail": "Scarica una copia di questo corso.",
         "download": "Scaricamento",
@@ -4500,10 +4510,10 @@
         "completion_deadline_label": "Scadenza per il completamento del corso",
         "completion_deadline_helper": "Gli studenti devono completare il corso entro questa data e ora (ora locale). Lascia vuoto per nessuna scadenza.",
         "locked_content": {
-          "title": "{count} gli elementi del corso sono bloccati",
-          "description": "Gli studenti iscritti non potranno seguire lezioni o esercizi bloccati finché non li sbloccherai.",
-          "description_live": "Le lezioni e gli esercizi bloccati rimangono nascosti agli studenti finché non li sblocchi: è utile se pubblichi contenuti settimana per settimana.",
-          "unlock_all": "Sblocca tutto"
+          "title": "{count} elementi del corso non sono ancora disponibili",
+          "description": "Gli studenti iscritti non possono aprire queste lezioni o esercizi finché non li rendi disponibili.",
+          "description_live": "Gli studenti non possono aprire lezioni ed esercizi non disponibili finché non li rendi disponibili — utile se pubblichi i contenuti settimana dopo settimana.",
+          "unlock_all": "Rendi tutto disponibile"
         },
         "type": "Tipo di corso",
         "course_type_desc": "Aggiorna il tipo di corso per un'esperienza più personalizzata.",
@@ -4553,7 +4563,7 @@
         },
         "callout": {
           "legend": "Bando del corso pubblico",
-          "description": "Mostrato in fondo a ogni lezione e al posto degli oggetti bloccati. Usalo per indirizzare gli studenti al tuo sito o a un corso a pagamento.",
+          "description": "Mostrato in fondo a ogni lezione e al posto degli elementi che non hai ancora reso disponibili. Usalo per indirizzare gli studenti al tuo sito o a un corso a pagamento.",
           "title_label": "Titolo",
           "title_placeholder": "Vuoi approfondire questo argomento?",
           "description_label": "Descrizione",
@@ -5999,8 +6009,8 @@
     },
     "course_settings": {
       "success": {
-        "unlocked_all_content": "Tutti gli elementi del corso sbloccati",
-        "all_content_already_unlocked": "Tutti i contenuti sono già sbloccati",
+        "unlocked_all_content": "Tutti gli elementi del corso sono disponibili",
+        "all_content_already_unlocked": "Tutto il contenuto è già disponibile",
         "content_grouping_enabled": "Raggruppamento dei contenuti abilitato",
         "content_grouping_disabled": "Raggruppamento dei contenuti disabilitato",
         "download": "Scarica completo",
@@ -7708,7 +7718,7 @@
       },
       "failed": "Impossibile caricare gli studenti",
       "cells_failed": "Impossibile caricare i punteggi degli esercizi",
-      "attempts_unavailable": "Impossibile verificare quali esercizi hanno tentativi, quindi alcuni esercizi bloccati potrebbero essere nascosti."
+      "attempts_unavailable": "Impossibile verificare quali esercizi hanno tentativi, quindi alcuni esercizi non disponibili potrebbero essere nascosti."
     },
     "empty": {
       "failed": "Impossibile caricare questo grafico",

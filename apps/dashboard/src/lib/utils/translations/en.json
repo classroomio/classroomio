@@ -276,6 +276,10 @@
     },
     "outline": {
       "label": "On this page"
+    },
+    "not_released": {
+      "title": "Not released yet",
+      "description": "The creator hasn't released this yet. Check back later."
     }
   },
   "onboarding": {
@@ -2662,12 +2666,14 @@
         },
         "drag": "drag a card to reorder",
         "no_lesson": "No lessons yet",
-        "content_locked_title": "This content is locked",
-        "content_locked_description": "Your instructor has not unlocked this content yet. Complete previous content or check back later.",
+        "content_locked_title": "Not released yet",
+        "content_locked_description": "Your instructor hasn't released this yet. Check back later.",
         "content_progression_locked_title": "Complete previous content first",
         "content_progression_locked_description": "This content unlocks after you finish the previous required item in the course.",
         "content_progression_locked_description_lesson": "This lesson unlocks after you finish the previous required item in the course.",
         "content_progression_locked_description_exercise": "This exercise unlocks after you finish the previous required item in the course.",
+        "content_progression_locked_description_named_lesson": "Finish “{title}” to unlock this lesson.",
+        "content_progression_locked_description_named_exercise": "Finish “{title}” to unlock this exercise.",
         "completion_policy": {
           "label": "Completion rule",
           "manual_label": "Manual",
@@ -2681,7 +2687,9 @@
         "settings": {
           "access": {
             "title": "Access",
-            "description": "Students can't open a locked lesson until you unlock it."
+            "description": "Students see this lesson in the course outline but can't open it until you release it.",
+            "released": "Released",
+            "not_released": "Not released yet"
           },
           "comments": {
             "title": "Lesson comments",
@@ -2778,9 +2786,11 @@
           "lesson_title": "Lesson Title",
           "course_section_title": "Section Title",
           "click_to": "Click to",
-          "lock": "Lock",
-          "unlock": "Unlock",
+          "lock": "Hold back",
+          "unlock": "Release",
           "all": "All",
+          "hold_back_all": "Hold back all",
+          "release_all": "Release all",
           "fullname": "fullname",
           "save": "Save",
           "edit": "Edit",
@@ -2827,7 +2837,7 @@
         "add_content_lesson_title_placeholder": "e.g., Getting Started with Variables",
         "content_menu": {
           "label": "Content options",
-          "unlock_all": "Unlock all content",
+          "unlock_all": "Release all content",
           "enable_grouping": "Enable content grouping",
           "disable_grouping": "Disable content grouping"
         },
@@ -4475,9 +4485,9 @@
         "content_grouping_title": "Content grouping",
         "content_grouping_description": "Group lessons and exercises by section in the content list.",
         "progression_mode_title": "Student progression",
-        "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order. Video watch completion only tracks uploaded videos.",
-        "progression_mode_free": "Free — unlocked content is accessible",
-        "progression_mode_sequential": "Sequential — complete prior items to unlock next",
+        "progression_mode_description": "Control whether students can open any released item or must complete items in order. Video watch completion only tracks uploaded videos.",
+        "progression_mode_free": "Free — students can open any released item",
+        "progression_mode_sequential": "Sequential — students finish each required item before the next one opens",
         "comments": {
           "title": "Lesson comments",
           "description": "Allow students to view and add comments across lessons in this course. Individual lessons can still disable comments.",
@@ -4487,7 +4497,7 @@
         "lesson_download": "Lesson download",
         "available": "Let registered students download lessons as PDF.",
         "allow_markdown_export": "Allow learners to copy lesson pages as Markdown",
-        "allow_markdown_export_description": "When enabled, public lesson pages show a Copy Page button that exports the lesson content (excluding videos) as Markdown. This also publishes a public Markdown URL for each unlocked lesson.",
+        "allow_markdown_export_description": "When enabled, public lesson pages show a Copy Page button that exports the lesson content (excluding videos) as Markdown. This also publishes a public Markdown URL for each released lesson.",
         "course_download": "Course download",
         "course_avail": "Download a copy of this course.",
         "download": "Download",
@@ -4510,10 +4520,10 @@
         "completion_deadline_label": "Course Completion Deadline",
         "completion_deadline_helper": "Students must complete the course before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
-          "title": "{count} course item(s) are locked",
-          "description": "Enrolled students won't be able to take locked lessons or exercises until you unlock them.",
-          "description_live": "Locked lessons and exercises stay hidden from students until you unlock them — useful if you release content week by week.",
-          "unlock_all": "Unlock all"
+          "title": "{count} course item(s) aren't released yet",
+          "description": "Enrolled students can't open these lessons or exercises until you release them.",
+          "description_live": "Students can't open unreleased lessons and exercises until you release them — useful if you release content week by week.",
+          "unlock_all": "Release all"
         },
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
@@ -4563,7 +4573,7 @@
         },
         "callout": {
           "legend": "Public course callout",
-          "description": "Shown at the bottom of each lesson and in place of locked items. Use it to drive students to your site or a paid course.",
+          "description": "Shown at the bottom of each lesson and in place of items you haven't released yet. Use it to drive students to your site or a paid course.",
           "title_label": "Title",
           "title_placeholder": "Want to go deeper on this?",
           "description_label": "Description",
@@ -6085,8 +6095,8 @@
     },
     "course_settings": {
       "success": {
-        "unlocked_all_content": "All course items unlocked",
-        "all_content_already_unlocked": "All content is already unlocked",
+        "unlocked_all_content": "All course items released",
+        "all_content_already_unlocked": "All content is already released",
         "content_grouping_enabled": "Content grouping enabled",
         "content_grouping_disabled": "Content grouping disabled",
         "download": "Download Complete",
@@ -7724,7 +7734,7 @@
       "empty": "No students match these filters",
       "failed": "Students couldn't load",
       "cells_failed": "Exercise scores couldn't load",
-      "attempts_unavailable": "Couldn't check which exercises have attempts, so some locked exercises may be hidden.",
+      "attempts_unavailable": "Couldn't check which exercises have attempts, so some unreleased exercises may be hidden.",
       "showing": {
         "cohort": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in cohort",
         "course": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in course",

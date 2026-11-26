@@ -1,21 +1,19 @@
 ---
 title: Understand locked course content
-description: Check individual locks and sequential completion rules when a student cannot open course content.
+description: Check whether an item is released and whether sequential progression blocks it when a student cannot open course content.
 last_reviewed: '2026-10-21'
 ---
 
-A student may see locked content because the item has its own availability lock or the course requires earlier items to be completed in sequence. Publishing the course does not clear those restrictions.
-
-![Locked lesson showing the student restriction message](./images/understand-locked-course-content/overview.webp)
+A student can't open an item for one of two reasons: you haven't released it (they see **Not released yet**), or the course is sequential and an earlier required item is unfinished (they see **Complete previous content first**, and the item's page names the item to finish). Publishing the course does not change either.
 
 ## Find the blocking rule
 
-1. Open the course's **Settings → Content** and check **Student progression**. With **Sequential**, the student must complete earlier items in the saved course order.
-2. Open the course outline and check whether the specific lesson or exercise is individually locked.
+1. Open the course's **Settings → Completion rules** and check **Student progression**. With **Sequential**, the student must complete earlier required items in the saved course order.
+2. In **Content**, check whether the lesson or exercise is held back (its lock button's tooltip reads **Release**). Releasing it removes the hold for every student; in a sequential course they still need to finish earlier required items. In a sequential course, a required item that is held back also keeps every later item closed until you release it and the student completes it.
 3. If an earlier lesson is unfinished, inspect its **Completion rule**. A **Video watch** rule needs an uploaded video and its configured watch threshold.
 4. If an earlier exercise is unfinished, inspect whether it requires **Submitted**, **Passed**, or **None — optional**. Optional exercises never block sequential progression. A passing rule may wait for instructor grading or another attempt.
 
-After changing a rule or lock, save it and test with a separately enrolled demo student. Administrator access can bypass restrictions and give a misleading result.
+After changing a rule or releasing an item, save it and test with a separately enrolled demo student. Administrator access can bypass restrictions and give a misleading result.
 
 For a student-facing explanation, share [Understand locked content and progression](/learner-guides/understand-locked-content-and-progression).
 

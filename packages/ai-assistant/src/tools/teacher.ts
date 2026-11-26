@@ -71,7 +71,7 @@ export const createLessonSchema = {
 
 export const updateLessonSchema = {
   description:
-    'Update metadata for an existing lesson in the course. Use this to rename, move, reorder, schedule, or change visibility/unlock settings for a lesson instead of creating a new lesson.',
+    'Update metadata for an existing lesson in the course. Use this to rename, move, reorder, schedule, release or hold back, change visibility, or set the completion rule of a lesson instead of creating a new lesson.',
   parameters: z
     .object({
       courseId: z.string().describe('The course ID'),
@@ -81,8 +81,26 @@ export const updateLessonSchema = {
       order: z.number().int().min(0).optional().describe('New order within the section (0-based)'),
       lessonAt: z.string().optional().describe('Scheduled lesson datetime'),
       callUrl: z.string().optional().describe('Optional live session URL'),
-      isUnlocked: z.boolean().optional().describe('Whether the lesson is unlocked for students'),
-      public: z.boolean().optional().describe('Whether the lesson is public')
+      isUnlocked: z
+        .boolean()
+        .optional()
+        .describe(
+          'Release flag: false holds the lesson back from every student until it is released. Not a way to make students finish earlier items first.'
+        ),
+      public: z.boolean().optional().describe('Whether the lesson is public'),
+      completionPolicy: z
+        .enum(['manual', 'video_watch', 'none'])
+        .optional()
+        .describe(
+          '"manual" (default): the student marks the lesson complete. "video_watch": completes once the student watches videoWatchThreshold percent of its uploaded videos; links are not tracked. "none": never required and never blocks a sequential course.'
+        ),
+      videoWatchThreshold: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Percent of each uploaded video to watch when completionPolicy is "video_watch"; 95 when unset.')
     })
     .refine(
       (data) =>
@@ -92,7 +110,9 @@ export const updateLessonSchema = {
         data.lessonAt !== undefined ||
         data.callUrl !== undefined ||
         data.isUnlocked !== undefined ||
-        data.public !== undefined,
+        data.public !== undefined ||
+        data.completionPolicy !== undefined ||
+        data.videoWatchThreshold !== undefined,
       {
         message: 'Provide at least one field to update'
       }
@@ -207,7 +227,7 @@ export const updateExerciseSectionSchema = {
 
 export const updateExerciseSchema = {
   description:
-    'Update an existing exercise\'s metadata (title, description, linked lesson, section, order, due date, lock state, allow-multiple-attempts, completion policy, passing threshold). Use this to edit the exercise itself — not its questions. To require students to pass before progress/completion, set completionPolicy to "passed" and passThreshold to the required percentage. To only require submission, set completionPolicy to "submitted". To change questions, use update_questions; to add questions, use add_questions.',
+    'Update an existing exercise\'s metadata (title, description, linked lesson, section, order, due date, release state, allow-multiple-attempts, completion policy, passing threshold). Use this to edit the exercise itself — not its questions. To require students to pass before progress/completion, set completionPolicy to "passed" and passThreshold to the required percentage. To only require submission, set completionPolicy to "submitted". To change questions, use update_questions; to add questions, use add_questions.',
   parameters: z
     .object({
       courseId: z.string().describe('The course ID'),
@@ -224,7 +244,12 @@ export const updateExerciseSchema = {
         .string()
         .optional()
         .describe('Due date in ISO 8601 format (e.g. 2026-05-01T23:59:00Z). Omit to keep unchanged.'),
-      isUnlocked: z.boolean().optional().describe('Whether the exercise is unlocked for students.'),
+      isUnlocked: z
+        .boolean()
+        .optional()
+        .describe(
+          'Release flag: false holds the exercise back from every student until it is released. Not a way to make students finish earlier items first.'
+        ),
       allowMultipleAttempts: z.boolean().optional().describe('Whether students can re-take the exercise.'),
       completionPolicy: z
         .enum(['submitted', 'passed', 'none'])

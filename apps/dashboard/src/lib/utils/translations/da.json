@@ -360,8 +360,8 @@
         "successful_integration": "Integration lykkedes",
         "successful_deletion": "Integration slettet",
         "update_successful": "Opdateringen lykkedes",
-        "unlocked_all_content": "Alle kursusartikler er låst op",
-        "all_content_already_unlocked": "Alt indhold er allerede låst op",
+        "unlocked_all_content": "Alle kursuselementer er frigivet",
+        "all_content_already_unlocked": "Alt indhold er allerede frigivet",
         "content_grouping_enabled": "Indholdsgruppering aktiveret",
         "content_grouping_disabled": "Indholdsgruppering deaktiveret",
         "link_generated": "Kursuslinket blev opdateret",
@@ -964,8 +964,8 @@
         "content_grouping_title": "Indholdsgruppering",
         "content_grouping_description": "Gruppelektioner og øvelser efter afsnit i indholdslisten.",
         "progression_mode_title": "Elevprogression",
-        "progression_mode_free": "Fri — ulåst indhold er tilgængeligt",
-        "progression_mode_sequential": "Sekventiel — fuldfør tidligere elementer for at låse næste op",
+        "progression_mode_free": "Fri — elever kan åbne ethvert frigivet element",
+        "progression_mode_sequential": "Sekventiel — elever gør hvert påkrævet element færdigt, før det næste åbner",
         "comments": {
           "title": "Lektionskommentarer",
           "description": "Tillad elever at se og tilføje kommentarer i lektionerne på dette kursus. Kommentarer kan stadig deaktiveres for enkelte lektioner.",
@@ -1020,7 +1020,7 @@
         },
         "callout": {
           "legend": "Offentlig kursusopkald",
-          "description": "Vist i bunden af ​​hver lektion og i stedet for låste genstande. Brug det til at lede studerende til dit websted eller et betalt kursus.",
+          "description": "Vist i bunden af ​​hver lektion og i stedet for elementer, du ikke har frigivet endnu. Brug det til at lede studerende til dit websted eller et betalt kursus.",
           "title_label": "Titel",
           "title_placeholder": "Vil du gå dybere ind i dette?",
           "description_label": "Beskrivelse",
@@ -1050,10 +1050,10 @@
         "content_card_title": "Indhold",
         "access_card_title": "Adgang",
         "locked_content": {
-          "title": "{count} kursuselement(er) er låst",
-          "description": "Tilmeldte elever vil ikke kunne tage låste lektioner eller øvelser, før du låser dem op.",
-          "description_live": "Låste lektioner og øvelser forbliver skjult for eleverne, indtil du låser dem op - nyttigt, hvis du udgiver indhold uge for uge.",
-          "unlock_all": "Lås alle op"
+          "title": "{count} kursuselement(er) er ikke frigivet endnu",
+          "description": "Tilmeldte elever kan ikke åbne disse lektioner eller øvelser, før du frigiver dem.",
+          "description_live": "Elever kan ikke åbne ufrigivne lektioner og øvelser, før du frigiver dem — praktisk, hvis du frigiver indhold uge for uge.",
+          "unlock_all": "Frigiv alle"
         },
         "certificate_deadline_required": "Indstil certifikatfrist først",
         "go_to_certificate_settings": "Gå til Certifikatindstillinger",
@@ -1099,9 +1099,9 @@
         "fix": "Ret",
         "save_changes_to_fix_questions": "Gem dine ikke-gemte ændringer, før du navigerer for at rette spørgsmål.",
         "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
-        "progression_mode_description": "Kontroller, om eleverne kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge. Afslutning af videoafspilning sporer kun uploadede videoer.",
+        "progression_mode_description": "Bestem, om elever kan åbne ethvert frigivet element eller skal gennemføre elementerne i rækkefølge. Fuldførelse via videovisning sporer kun uploadede videoer.",
         "allow_markdown_export": "Tillad elever at kopiere lektionssider som Markdown",
-        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion.",
+        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver frigivet lektion.",
         "live_session_reminders": {
           "legend": "E-mailpåmindelser om sessioner",
           "description": "Vælg, hvornår tilmeldte elever får en e-mail med deltagelseslinket før hver livesession.",
@@ -1720,7 +1720,7 @@
         "add_content_lesson_title_placeholder": "f.eks. Kom godt i gang med variabler",
         "content_menu": {
           "label": "Indholdsindstillinger",
-          "unlock_all": "Lås alt indhold op",
+          "unlock_all": "Frigiv alt indhold",
           "enable_grouping": "Aktivér indholdsgruppering",
           "disable_grouping": "Deaktivér indholdsgruppering"
         },
@@ -2729,9 +2729,11 @@
           "lesson_title": "Lektionens titel",
           "course_section_title": "Afsnitstitel",
           "click_to": "Klik for at",
-          "lock": "Lås",
-          "unlock": "Lås op",
+          "lock": "Hold tilbage",
+          "unlock": "Frigiv",
           "all": "Alle",
+          "hold_back_all": "Hold alle tilbage",
+          "release_all": "Frigiv alle",
           "fullname": "fulde navn",
           "save": "Gem",
           "edit": "Rediger",
@@ -2747,12 +2749,14 @@
           "activate": "Aktiver",
           "cancel": "Annuller"
         },
-        "content_locked_title": "Dette indhold er låst",
-        "content_locked_description": "Din instruktør har ikke låst dette indhold op endnu. Fuldfør tidligere indhold, eller tjek tilbage senere.",
+        "content_locked_title": "Ikke frigivet endnu",
+        "content_locked_description": "Din underviser har ikke frigivet dette endnu. Kig forbi igen senere.",
         "content_progression_locked_title": "Fuldfør tidligere indhold først",
         "content_progression_locked_description": "Dette indhold låses op, når du har fuldført det forrige påkrævede element i kurset.",
         "content_progression_locked_description_lesson": "Denne lektion låses op, når du har fuldført det forrige påkrævede element i kurset.",
         "content_progression_locked_description_exercise": "Denne øvelse låses op, når du har fuldført det forrige påkrævede element i kurset.",
+        "content_progression_locked_description_named_lesson": "Gør “{title}” færdig for at låse denne lektion op.",
+        "content_progression_locked_description_named_exercise": "Gør “{title}” færdig for at låse denne øvelse op.",
         "completion_policy": {
           "label": "Fuldførelsesregel",
           "manual_label": "Manuel",
@@ -2786,7 +2790,9 @@
           },
           "access": {
             "title": "Adgang",
-            "description": "Elever kan ikke åbne en låst lektion, før du låser den op."
+            "description": "Elever kan se denne lektion i kursusoversigten, men kan ikke åbne den, før du frigiver den.",
+            "released": "Frigivet",
+            "not_released": "Ikke frigivet endnu"
           }
         },
         "watch_progress": {
@@ -6545,6 +6551,10 @@
       "x": "X",
       "instagram": "Instagram",
       "instagram_copied": "Link kopieret. Indsæt det i Instagram."
+    },
+    "not_released": {
+      "title": "Ikke frigivet endnu",
+      "description": "Skaberen har ikke frigivet dette endnu. Kig forbi igen senere."
     }
   },
   "account": {
@@ -7748,7 +7758,7 @@
       },
       "failed": "Kunne ikke indlæse elever",
       "cells_failed": "Kunne ikke indlæse øvelsesresultater",
-      "attempts_unavailable": "Kunne ikke kontrollere, hvilke øvelser der har forsøg, så nogle låste øvelser kan være skjult."
+      "attempts_unavailable": "Kunne ikke kontrollere, hvilke øvelser der har forsøg, så nogle ufrigivne øvelser kan være skjult."
     },
     "empty": {
       "failed": "Dette diagram kunne ikke indlæses",

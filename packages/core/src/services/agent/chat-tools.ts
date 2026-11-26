@@ -753,7 +753,7 @@ export function buildAgentTools(
 
     update_lesson: tool({
       description:
-        'Update metadata for an existing lesson in this course. Use this to rename, move, reorder, schedule, or change visibility/unlock settings instead of creating a new lesson.',
+        'Update metadata for an existing lesson in this course. Use this to rename, move, reorder, schedule, release or hold back, change visibility, or set the completion rule of a lesson instead of creating a new lesson.',
       inputSchema: updateLessonParam,
       execute: async (args) => {
         return executeAgentTool('update_lesson', { orgId, userId, courseId, args }, async () => {
@@ -769,7 +769,9 @@ export function buildAgentTools(
             ...(args.lessonAt !== undefined ? { lessonAt: args.lessonAt } : {}),
             ...(args.callUrl !== undefined ? { callUrl: args.callUrl } : {}),
             ...(args.isUnlocked !== undefined ? { isUnlocked: args.isUnlocked } : {}),
-            ...(args.public !== undefined ? { public: args.public } : {})
+            ...(args.public !== undefined ? { public: args.public } : {}),
+            ...(args.completionPolicy !== undefined ? { completionPolicy: args.completionPolicy } : {}),
+            ...(args.videoWatchThreshold !== undefined ? { videoWatchThreshold: args.videoWatchThreshold } : {})
           });
 
           return { id: lesson.id, title: lesson.title, updated: true };
@@ -1174,7 +1176,7 @@ export function buildAgentTools(
 
     update_exercise: tool({
       description:
-        'Update an existing exercise\'s metadata (title, description, linked lesson, section, order, due date, lock state, allow-multiple-attempts, completion policy, passing threshold). Use this for editing the exercise itself — not for changing its questions. To require students to pass before progress/completion, set completionPolicy to "passed" and passThreshold to the required percentage. To edit questions, use update_questions; to add questions, use add_questions.',
+        'Update an existing exercise\'s metadata (title, description, linked lesson, section, order, due date, release state, allow-multiple-attempts, completion policy, passing threshold). Use this for editing the exercise itself — not for changing its questions. To require students to pass before progress/completion, set completionPolicy to "passed" and passThreshold to the required percentage. To edit questions, use update_questions; to add questions, use add_questions.',
       inputSchema: updateExerciseParam,
       execute: async (args) => {
         return executeAgentTool('update_exercise', { orgId, userId, courseId, args }, async () => {

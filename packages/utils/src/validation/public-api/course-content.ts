@@ -55,7 +55,13 @@ export type TPublicApiReorderCourseContent = z.infer<typeof ZPublicApiReorderCou
 export const ZPublicApiUpdateCourseContentLock = z
   .object({
     items: z
-      .array(ZContentItemRef.extend({ isUnlocked: z.boolean() }))
+      .array(
+        ZContentItemRef.extend({
+          isUnlocked: z
+            .boolean()
+            .describe('true releases the item to students; false holds it back from every student.')
+        })
+      )
       .min(1)
       .max(MAX_ITEMS)
       .describe('An id may appear once per type')

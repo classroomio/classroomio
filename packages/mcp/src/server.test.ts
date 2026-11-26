@@ -102,9 +102,59 @@ describe('createMcpServer', () => {
     expect(local.filter((name) => !remote.includes(name))).toEqual(['upload_video']);
   });
 
+  it('sends the course access instructions when a client connects', async () => {
+    const client = await connect({ includeLocalFileTools: false });
+    const instructions = client.getInstructions() ?? '';
+
+    expect(instructions).toContain('update_course_settings');
+    expect(instructions).toContain('set_course_content_released');
+    expect(instructions).toContain('sequential');
+  });
+
+  it('registers the release tool under its new name only', async () => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+    const names = tools.map((tool) => tool.name);
+
+    expect(names).toContain('set_course_content_released');
+    expect(names).not.toContain('set_course_content_unlocked');
+  });
+
+  it('sends update_course_settings as a PATCH of only the given settings', async () => {
+    const requests: { url: string; method?: string; body: unknown }[] = [];
+    const respond = async (input: RequestInfo | URL, init?: RequestInit) => {
+      requests.push({ url: String(input), method: init?.method, body: JSON.parse(String(init?.body)) });
+      const data = {
+        progressionMode: 'sequential',
+        allowSelfEnrollment: true,
+        allowMarkdownExport: false,
+        commentsEnabled: true
+      };
+
+      return new Response(JSON.stringify({ success: true, data }), { status: 200 });
+    };
+    const client = await connect({ includeLocalFileTools: false }, respond as typeof fetch);
+    const courseId = '3f0d8a3e-6f43-4f5b-9a2a-0d7a0c3b1e11';
+
+    const result = await client.callTool({
+      name: 'update_course_settings',
+      arguments: { courseId, progressionMode: 'sequential' }
+    });
+
+    expect(result.isError).toBeFalsy();
+    expect(requests).toEqual([
+      {
+        url: `https://api.example.com/public-api/v1/courses/${courseId}/settings`,
+        method: 'PATCH',
+        body: { progressionMode: 'sequential' }
+      }
+    ]);
+  });
+
   it.each([
     ['list_org_courses', true, false],
     ['get_course_structure', true, false],
+    ['get_course_settings', true, false],
+    ['update_course_settings', false, false],
     ['update_course_landing_page', false, false],
     ['update_lesson', false, true],
     ['create_course', false, false],
