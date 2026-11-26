@@ -1,7 +1,6 @@
 import type {
   TPublicApiCloneCourse,
   TPublicApiCourseParam,
-  TPublicApiSetCoursePrivacy,
   TPublicApiCoursesQuery,
   TPublicApiCreateCourse,
   TPublicApiPaginationQuery,
@@ -204,20 +203,6 @@ export async function unpublishPublicApiCourseService(
   return { course, ...links };
 }
 
-export async function setPublicApiCoursePrivacyService(
-  orgId: string,
-  actorId: string | null,
-  params: TPublicApiCourseParam,
-  payload: TPublicApiSetCoursePrivacy
-) {
-  await assertCourseTeamAccess(orgId, actorId, params.courseId);
-
-  const { course } = await updateCourseService(params.courseId, { isPrivate: payload.isPrivate });
-  const links = await buildCourseLinks(orgId, course);
-
-  return { course, ...links };
-}
-
 const toCourseTag = ({ id, name, slug, color }: TTag) => ({ id, name, slug, color });
 
 export async function updatePublicApiCourseService(
@@ -228,6 +213,10 @@ export async function updatePublicApiCourseService(
 ) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCertificateChangeAllowed(params.courseId, payload.certificate);
+
+  if (payload.isPrivate !== undefined) {
+    await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  }
 
   const { tagIds, addTagIds, ...courseData } = payload;
 

@@ -238,7 +238,7 @@ export class ClassroomIoApiClient {
   }
 
   async setCoursePrivacy(courseId: string, isPrivate: boolean) {
-    return this.request(`/public-api/v1/courses/${courseId}/privacy`, { method: 'PUT', body: { isPrivate } });
+    return this.request(`/public-api/v1/courses/${courseId}`, { method: 'PUT', body: { isPrivate } });
   }
 
   async getCourseStructure(courseId: string) {

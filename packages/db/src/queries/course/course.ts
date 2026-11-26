@@ -913,6 +913,7 @@ function orgCourseListConditions({
 
   if (publishedStatus === 'private') {
     conditions.push(eq(schema.course.isPrivate, true));
+    conditions.push(eq(schema.course.isPublished, true));
   }
 
   return conditions;

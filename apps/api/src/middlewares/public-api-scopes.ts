@@ -19,7 +19,6 @@ const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections
 const COURSE_CLONE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/clone\/?$/;
 const COURSE_STRUCTURE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/structure\/?$/;
 const COURSE_PUBLISH_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:publish|unpublish)\/?$/;
-const COURSE_PRIVACY_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/privacy\/?$/;
 const COURSE_RELATED_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/related\/?$/;
 const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercises|exercise-templates)(?:\/|$)/;
 const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submissions|marks)(?:\/|$)/;
@@ -93,10 +92,6 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (COURSE_PUBLISH_PATH.test(path)) {
     return method === 'POST' ? 'course:write' : null;
-  }
-
-  if (COURSE_PRIVACY_PATH.test(path)) {
-    return method === 'PUT' ? 'course:write' : null;
   }
 
   if (COURSE_STRUCTURE_PATH.test(path)) {

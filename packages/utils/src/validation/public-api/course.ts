@@ -6,15 +6,6 @@ import { ZCourseType } from '../course/course-type';
 import { ZOrganizationCourseSort } from '../organization';
 import { ZPublicApiPaginationQuery } from './pagination';
 
-export const ZPublicApiSetCoursePrivacy = z.object({
-  isPrivate: z
-    .boolean()
-    .describe(
-      'true hides the course from every listing and landing page and blocks self-enrollment; false makes it public again'
-    )
-});
-export type TPublicApiSetCoursePrivacy = z.infer<typeof ZPublicApiSetCoursePrivacy>;
-
 export const ZPublicApiCoursesQuery = ZPublicApiPaginationQuery.extend({
   search: z.string().trim().max(200).optional().describe('Matches the course title.'),
   slug: z.string().trim().min(1).max(200).optional().describe('Exact course slug'),

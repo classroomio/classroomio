@@ -52,11 +52,12 @@ vi.mock('@cio/db/queries/tag', () => ({
   getRelatedCourses: vi.fn()
 }));
 
+import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
 import {
   createPublicApiCourseService,
   publishPublicApiCourseService,
   unpublishPublicApiCourseService,
-  setPublicApiCoursePrivacyService
+  updatePublicApiCourseService
 } from '@api/services/v1/courses/course';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
@@ -173,23 +174,19 @@ describe('course create, publish and unpublish services', () => {
     expect(mocks.updateCourse).not.toHaveBeenCalled();
   });
 
-  it('sets a course private through the shared update path and refuses outsiders', async () => {
+  it('requires course team access to change privacy and passes isPrivate to the shared update', async () => {
     mocks.updateCourse.mockResolvedValue({ course: unpublishedCourse, publishChange: null });
+    vi.mocked(getCourseTagsForOrganization).mockResolvedValue([]);
 
-    const result = await setPublicApiCoursePrivacyService(
-      'org-1',
-      'actor-1',
-      { courseId: COURSE_ID },
-      { isPrivate: true }
-    );
+    await updatePublicApiCourseService('org-1', 'actor-1', { courseId: COURSE_ID }, { isPrivate: true });
 
+    expect(mocks.assertCourseTeamAccess).toHaveBeenCalledWith('org-1', 'actor-1', COURSE_ID);
     expect(mocks.updateCourse).toHaveBeenCalledWith(COURSE_ID, { isPrivate: true });
-    expect(result).toMatchObject(LINKS);
 
     mocks.updateCourse.mockClear();
     mocks.assertCourseTeamAccess.mockRejectedValue(new Error('forbidden'));
     await expect(
-      setPublicApiCoursePrivacyService('org-1', 'member-1', { courseId: COURSE_ID }, { isPrivate: true })
+      updatePublicApiCourseService('org-1', 'member-1', { courseId: COURSE_ID }, { isPrivate: true })
     ).rejects.toThrow('forbidden');
     expect(mocks.updateCourse).not.toHaveBeenCalled();
   });

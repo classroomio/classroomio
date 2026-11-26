@@ -3,8 +3,7 @@ import {
   ZPublicApiCourseParam,
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
-  ZPublicApiRelatedCoursesQuery,
-  ZPublicApiSetCoursePrivacy
+  ZPublicApiRelatedCoursesQuery
 } from '@cio/utils/validation/public-api';
 import { ZAutomationCourseTagAssignment } from '@cio/utils/validation/tag';
 import { ZCourseLandingPageUpdate } from '@cio/utils/validation/course';
@@ -35,7 +34,12 @@ export const ZCreateCourseToolInput = ZPublicApiCreateCourse.safeExtend({
 });
 export const ZGetCourseStructureToolInput = z.object({ courseId });
 export const ZPublishCourseToolInput = z.object({ courseId });
-export const ZSetCoursePrivateToolInput = ZPublicApiSetCoursePrivacy.safeExtend({ courseId });
+export const ZSetCoursePrivateToolInput = z.object({
+  courseId,
+  isPrivate: z
+    .boolean()
+    .describe('true hides the course from every listing and blocks self-enrollment; false makes it public again')
+});
 export const ZUpdateCourseLandingPageToolInput = ZCourseLandingPageUpdate.extend({ courseId });
 export const ZCloneCourseToolInput = ZPublicApiCloneCourse.safeExtend({ courseId });
 export const ZListRelatedCoursesToolInput = ZPublicApiRelatedCoursesQuery.safeExtend({ courseId });

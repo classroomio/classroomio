@@ -705,12 +705,16 @@
                 <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
                   {$t('course.navItem.settings.compliance')}
                 </Select.Item>
-                <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
+                <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')} disabled={$settings.isPrivate}>
                   {$t('course.navItem.settings.public')}
                 </Select.Item>
               </Select.Group>
             </Select.Content>
           </Select.Root>
+
+          {#if $settings.isPrivate}
+            <Field.Description>{$t('course.navItem.settings.private.public_type_blocked')}</Field.Description>
+          {/if}
 
           {#if publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id && publicConversionFlow.offenders.length > 0}
             {#if courseApi.course}
