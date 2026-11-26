@@ -10,6 +10,7 @@ export type StudentHomeCourseCandidate = {
   type: string | null;
   status: string;
   isPublished: boolean | null;
+  isPrivate: boolean;
   isTemplate: boolean;
   cost: number | null;
   metadata: unknown;
@@ -44,6 +45,7 @@ export async function getStudentHomeCourseCandidate(
         type: schema.course.type,
         status: schema.course.status,
         isPublished: schema.course.isPublished,
+        isPrivate: schema.course.isPrivate,
         isTemplate: schema.course.isTemplate,
         cost: schema.course.cost,
         metadata: schema.course.metadata
@@ -82,6 +84,7 @@ const STUDENT_HOME_COURSE_COLUMNS = {
   type: schema.course.type,
   status: schema.course.status,
   isPublished: schema.course.isPublished,
+  isPrivate: schema.course.isPrivate,
   isTemplate: schema.course.isTemplate,
   cost: schema.course.cost,
   metadata: schema.course.metadata

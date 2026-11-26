@@ -62,12 +62,13 @@ export function buildWidgetPayload(input: BuildWidgetPayloadInput): TWidgetPaylo
   } = input;
 
   const normalizedConfig = normalizeWidgetConfig(widget.config as Record<string, unknown>, planName);
-  const allPublishedCourses = allCourses.filter((course) => course.isPublished);
+  const publicCourses = allCourses.filter((course) => !course.isPrivate);
+  const allPublishedCourses = publicCourses.filter((course) => course.isPublished);
   const manualOrderLookup = new Map(selectedCourseIds.map((courseId, index) => [courseId, index]));
 
   let resolvedCourses =
     widget.selectionMode === 'manual'
-      ? allCourses.filter((course) => manualOrderLookup.has(course.id))
+      ? publicCourses.filter((course) => manualOrderLookup.has(course.id))
       : allPublishedCourses;
 
   const tagsByCourseId: Record<string, TWidgetPayloadCourseTag[]> = {};

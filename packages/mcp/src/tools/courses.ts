@@ -20,7 +20,7 @@ const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, i
 const DESTRUCTIVE: ToolAnnotations = { readOnlyHint: false, destructiveHint: true, idempotentHint: false };
 
 const LINKS_RULE =
-  'The result has appUrl, the dashboard page where the team edits the course and the link to give the user while the course is unpublished, and landingPageUrl, the public page that is null until the course is published; give the user landingPageUrl only when it is not null.';
+  'The result has appUrl, the dashboard page where the team edits the course and the link to give the user while the course is unpublished, and landingPageUrl, the public page that is null until the course is published and always null for a private course; give the user landingPageUrl only when it is not null.';
 
 const courseId = ZPublicApiCourseParam.shape.courseId;
 

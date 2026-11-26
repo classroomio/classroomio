@@ -23,6 +23,10 @@ export async function setPublicApiFeaturedCoursesService(
     if (!course?.isPublished || course.status !== 'ACTIVE' || course.isTemplate) {
       throw new AppError(`Course ${courseId} is not published`, ErrorCodes.VALIDATION_ERROR, 400, 'courseIds');
     }
+
+    if (course.isPrivate) {
+      throw new AppError(`Course ${courseId} is private`, ErrorCodes.VALIDATION_ERROR, 400, 'courseIds');
+    }
   }
 
   await reorderOrgCourses(

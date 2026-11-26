@@ -506,7 +506,7 @@ Lesson authoring rule:
 `create_course`, `publish_course` and `unpublish_course` each return two links:
 
 - `appUrl`: the dashboard page where the team edits the course. Hand this one to the user while the course is unpublished.
-- `landingPageUrl`: the public landing page. It is `null` until the course is published; hand it to the user only once it is not null.
+- `landingPageUrl`: the public landing page. It is `null` until the course is published, and always `null` for a private course; hand it to the user only once it is not null.
 
 ### Course banner
 

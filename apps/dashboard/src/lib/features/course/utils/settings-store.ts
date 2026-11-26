@@ -15,6 +15,7 @@ type CourseSettings = {
   lessonDownload: boolean;
   allowMarkdownExport: boolean;
   isPublished: boolean;
+  isPrivate: boolean;
   isContentGroupingEnabled: boolean;
   progressionMode: CourseProgressionMode;
   commentsEnabled: boolean;
@@ -36,6 +37,7 @@ export const settings = writable<CourseSettings>({
   lessonDownload: false,
   allowMarkdownExport: false,
   isPublished: false,
+  isPrivate: false,
   isContentGroupingEnabled: true,
   progressionMode: 'free',
   commentsEnabled: true,

@@ -206,7 +206,15 @@
 
     // Otherwise, publish normally
     $settings.isPublished = true;
-    $settings.allowSelfEnrollment = true;
+    $settings.allowSelfEnrollment = !$settings.isPrivate;
+    hasUnsavedChanges = true;
+  }
+
+  function onPrivateToggle(checked: boolean) {
+    $settings.isPrivate = checked;
+    if (checked) {
+      $settings.allowSelfEnrollment = false;
+    }
     hasUnsavedChanges = true;
   }
 
@@ -284,6 +292,7 @@
         type: $settings.type,
         bannerImage: bannerImageUrl,
         isPublished: $settings.isPublished,
+        isPrivate: $settings.isPrivate,
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
         compliance:
@@ -372,7 +381,8 @@
         lessonDownload: !!course.metadata?.lessonDownload,
         allowMarkdownExport: !!course.metadata?.allowMarkdownExport,
         isPublished: !!course.isPublished,
-        allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
+        isPrivate: !!course.isPrivate,
+        allowSelfEnrollment: !course.isPrivate && isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
@@ -1107,6 +1117,7 @@
             <Switch
               id="allow-self-enrollment"
               checked={$settings.allowSelfEnrollment}
+              disabled={$settings.isPrivate}
               onCheckedChange={(checked) => {
                 $settings.allowSelfEnrollment = checked;
                 hasUnsavedChanges = true;
@@ -1131,6 +1142,23 @@
               <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
             </Field.Field>
           </AttentionHighlight>
+
+          <Field.Field orientation="horizontal">
+            <Field.Content>
+              <Field.Label for="is-private">{$t('course.navItem.settings.private.label')}</Field.Label>
+              <Field.Description>
+                {$settings.type === 'PUBLIC'
+                  ? $t('course.navItem.settings.private.public_type_blocked')
+                  : $t('course.navItem.settings.private.description')}
+              </Field.Description>
+            </Field.Content>
+            <Switch
+              id="is-private"
+              checked={$settings.isPrivate}
+              disabled={$settings.type === 'PUBLIC'}
+              onCheckedChange={onPrivateToggle}
+            />
+          </Field.Field>
 
           {#if showLockedContentNotice}
             <Alert.Root variant={isLiveClassCourse ? 'information' : 'warning'}>

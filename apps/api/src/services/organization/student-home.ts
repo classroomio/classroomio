@@ -43,7 +43,9 @@ function toStudentHomePricing(course: StudentHomeCourseCandidate): StudentHomePr
 export function canSelfEnrollForFree(course: StudentHomeCourseCandidate): boolean {
   const pricing = toStudentHomePricing(course);
 
-  return isSelfEnrollmentAllowed(pricing.metadata) && !isCoursePaid(pricing.cost, pricing.metadata);
+  return (
+    !course.isPrivate && isSelfEnrollmentAllowed(pricing.metadata) && !isCoursePaid(pricing.cost, pricing.metadata)
+  );
 }
 
 function toAvailabilityContext(

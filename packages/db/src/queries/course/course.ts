@@ -91,6 +91,7 @@ export const getPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
+      eq(schema.course.isPrivate, false),
       eq(schema.course.isTemplate, false)
     ];
 
@@ -179,6 +180,7 @@ export const countPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
+      eq(schema.course.isPrivate, false),
       eq(schema.course.isTemplate, false)
     ];
 
@@ -1326,6 +1328,7 @@ export const getExploreCourses = async ({
       eq(schema.group.organizationId, orgId),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
+      eq(schema.course.isPrivate, false),
       eq(schema.course.isTemplate, false),
       isNull(schema.groupmember.id),
       // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
@@ -1423,6 +1426,7 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
   orgAvatarUrl: string | null;
   orgTheme: string | null;
   groupId: string | null;
+  isPrivate: boolean;
   welcomeEmailMessage: string | null;
 } | null> {
   try {
@@ -1437,6 +1441,7 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
         orgAvatarUrl: schema.organization.avatarUrl,
         orgTheme: schema.organization.theme,
         groupId: schema.course.groupId,
+        isPrivate: schema.course.isPrivate,
         metadata: schema.course.metadata
       })
       .from(schema.course)
