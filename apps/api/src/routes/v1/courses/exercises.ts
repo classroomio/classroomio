@@ -24,6 +24,7 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, LIVE_EDIT_NOTE, exerciseForbiddenResponses, mcpRateLimitResponse } from './docs';
@@ -80,7 +81,13 @@ export const v1CourseExercisesRouter = new Hono()
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
-        const exercise = await createCourseExerciseService(orgId, actorId, c.req.valid('param'), c.req.valid('json'));
+        const exercise = await createCourseExerciseService(
+          orgId,
+          actorId,
+          c.req.valid('param'),
+          c.req.valid('json'),
+          getEventSource(c)
+        );
 
         return c.json({ success: true, data: exercise }, 201);
       } catch (error) {
@@ -145,7 +152,8 @@ export const v1CourseExercisesRouter = new Hono()
           actorId,
           c.req.valid('param'),
           c.req.valid('json'),
-          c.req.valid('query')
+          c.req.valid('query'),
+          getEventSource(c)
         );
 
         return c.json({ success: true, data: exercise }, 200);

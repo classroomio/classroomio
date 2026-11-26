@@ -1,3 +1,4 @@
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 import {
   createExercise,
   createExerciseFromTemplate,
@@ -476,7 +477,8 @@ export async function createCourseExerciseService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseParam,
-  payload: TPublicApiCreateCourseExercise
+  payload: TPublicApiCreateCourseExercise,
+  createdVia: TCreatedVia = 'public_api'
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertPlacementBelongsToCourse(params.courseId, payload);
@@ -500,7 +502,8 @@ export async function createCourseExerciseService(
       payload.lessonId,
       payload.sectionId,
       payload.order,
-      template
+      template,
+      createdVia
     );
 
     return toPublicExerciseDetail(exercise as ExerciseDetail);
@@ -512,17 +515,20 @@ export async function createCourseExerciseService(
     questions.map((question) => question.questionTypeId)
   );
 
-  const exercise = await createExercise({
-    courseId: params.courseId,
-    title: payload.title!,
-    description: payload.description,
-    sectionId: payload.sectionId,
-    lessonId: payload.lessonId,
-    order: payload.order,
-    dueBy: payload.dueBy,
-    slug: payload.slug,
-    questions
-  });
+  const exercise = await createExercise(
+    {
+      courseId: params.courseId,
+      title: payload.title!,
+      description: payload.description,
+      sectionId: payload.sectionId,
+      lessonId: payload.lessonId,
+      order: payload.order,
+      dueBy: payload.dueBy,
+      slug: payload.slug,
+      questions
+    },
+    createdVia
+  );
 
   return toPublicExerciseDetail(exercise as ExerciseDetail);
 }
@@ -544,7 +550,8 @@ export async function applyCourseExerciseUpdate(
   actorId: string | null,
   params: TPublicApiCourseExerciseParam,
   payload: TPublicApiUpdateCourseExercise,
-  options: TPublicApiForceQuery = { force: false }
+  options: TPublicApiForceQuery = { force: false },
+  createdVia: TCreatedVia = 'public_api'
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
@@ -562,7 +569,8 @@ export async function applyCourseExerciseUpdate(
 
   const { createdQuestionIds = [], ...updated } = await updateExerciseService(
     params.exerciseId,
-    toInternalUpdate(payload, current)
+    toInternalUpdate(payload, current),
+    createdVia
   );
   const exercise = toPublicExerciseDetail(updated as ExerciseDetail);
 
@@ -574,9 +582,10 @@ export async function updateCourseExerciseService(
   actorId: string | null,
   params: TPublicApiCourseExerciseParam,
   payload: TPublicApiUpdateCourseExercise,
-  options: TPublicApiForceQuery = { force: false }
+  options: TPublicApiForceQuery = { force: false },
+  createdVia: TCreatedVia = 'public_api'
 ) {
-  const { exercise } = await applyCourseExerciseUpdate(orgId, actorId, params, payload, options);
+  const { exercise } = await applyCourseExerciseUpdate(orgId, actorId, params, payload, options, createdVia);
 
   return exercise;
 }

@@ -209,6 +209,8 @@ export type TOrganizationApiKey = typeof schema.organizationApiKey.$inferSelect;
 export type TNewOrganizationApiKey = typeof schema.organizationApiKey.$inferInsert;
 export type TOrganizationAutomationUsage = typeof schema.organizationAutomationUsage.$inferSelect;
 export type TNewOrganizationAutomationUsage = typeof schema.organizationAutomationUsage.$inferInsert;
+export type TAutomationChangeLog = typeof schema.automationChangeLog.$inferSelect;
+export type TNewAutomationChangeLog = typeof schema.automationChangeLog.$inferInsert;
 
 export type TCourseImportDraft = typeof schema.courseImportDraft.$inferSelect;
 export type TNewCourseImportDraft = typeof schema.courseImportDraft.$inferInsert;

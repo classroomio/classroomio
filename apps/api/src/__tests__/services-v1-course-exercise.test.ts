@@ -250,7 +250,8 @@ describe('createCourseExerciseService', () => {
     });
 
     expect(createExercise).toHaveBeenCalledWith(
-      expect.objectContaining({ courseId: COURSE_ID, title: 'Quiz', order: 1, questions: [question()] })
+      expect.objectContaining({ courseId: COURSE_ID, title: 'Quiz', order: 1, questions: [question()] }),
+      'public_api'
     );
     expect(result.questions[0]).toMatchObject({ id: 10, question: 'Pick one', options: [{ id: 100 }, { id: 101 }] });
     expect(result.sections[0]).toMatchObject({ id: SECTION_ID, questionIds: [10] });
@@ -296,7 +297,7 @@ describe('createCourseExerciseService', () => {
 
     await createCourseExerciseService(ORG_ID, ACTOR_ID, params, { order: 2, templateId: 4 });
 
-    expect(createExerciseFromTemplate).toHaveBeenCalledWith(COURSE_ID, undefined, undefined, 2, template);
+    expect(createExerciseFromTemplate).toHaveBeenCalledWith(COURSE_ID, undefined, undefined, 2, template, 'public_api');
     expect(createExercise).not.toHaveBeenCalled();
   });
 

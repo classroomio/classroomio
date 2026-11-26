@@ -11,6 +11,7 @@ import type {
 } from '@cio/utils/validation/public-api';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCourseExerciseService } from './exercises';
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 
 type PublicExerciseDetail = Awaited<ReturnType<typeof getCourseExerciseService>>;
 
@@ -32,11 +33,12 @@ export async function addCourseExerciseSectionService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseExerciseParam,
-  payload: TPublicApiAddExerciseSection
+  payload: TPublicApiAddExerciseSection,
+  createdVia: TCreatedVia = 'public_api'
 ) {
   await getCourseExerciseService(orgId, actorId, params);
 
-  const created = await createExerciseSectionService(params.exerciseId, payload);
+  const created = await createExerciseSectionService(params.exerciseId, payload, createdVia);
   const updated = await getCourseExerciseService(orgId, actorId, params);
 
   return findSection(updated, created.id);

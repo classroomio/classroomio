@@ -663,13 +663,17 @@ export async function publishCourseImportDraftToExistingCourseService(
         continue;
       }
 
-      const createdSection = await createCourseSection(course.id, {
-        courseId: course.id,
-        title: section.title,
-        order: isMerge
-          ? mergeRootOrders.get(`section:${section.externalId}`)!
-          : rootOrders.get(`section:${section.externalId}`)!
-      });
+      const createdSection = await createCourseSection(
+        course.id,
+        {
+          courseId: course.id,
+          title: section.title,
+          order: isMerge
+            ? mergeRootOrders.get(`section:${section.externalId}`)!
+            : rootOrders.get(`section:${section.externalId}`)!
+        },
+        'import'
+      );
       sectionIdMap.set(section.externalId, createdSection.id);
       createdSections += 1;
     }
@@ -737,15 +741,19 @@ export async function publishCourseImportDraftToExistingCourseService(
       }
 
       const nextLessonOrder = claimNextLessonOrder(sectionId, lesson.externalId);
-      const createdLesson = await createLesson(course.id, {
-        courseId: course.id,
-        title: lesson.title,
-        sectionId,
-        order: isMerge ? nextLessonOrder : draftOrder,
-        isUnlocked: lesson.isUnlocked,
-        public: lesson.public,
-        videos: lesson.videos
-      });
+      const createdLesson = await createLesson(
+        course.id,
+        {
+          courseId: course.id,
+          title: lesson.title,
+          sectionId,
+          order: isMerge ? nextLessonOrder : draftOrder,
+          isUnlocked: lesson.isUnlocked,
+          public: lesson.public,
+          videos: lesson.videos
+        },
+        { createdVia: 'import' }
+      );
       lessonIdMap.set(lesson.externalId, createdLesson.id);
       createdLessons += 1;
     }
@@ -852,11 +860,14 @@ export async function publishCourseImportDraftToExistingCourseService(
       const groupKey = groupKeyForExercise(payload.lessonId, payload.sectionId);
       const exerciseOrder = isMerge ? claimNextExerciseOrder(groupKey, exercise.externalId) : payload.order;
 
-      const createdExercise = await createExercise({
-        courseId: course.id,
-        ...payload,
-        order: exerciseOrder
-      });
+      const createdExercise = await createExercise(
+        {
+          courseId: course.id,
+          ...payload,
+          order: exerciseOrder
+        },
+        'import'
+      );
       exerciseIdMap.set(exercise.externalId, createdExercise.id);
       createdExercises += 1;
     }

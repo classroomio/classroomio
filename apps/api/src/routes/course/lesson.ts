@@ -50,6 +50,7 @@ import { notifyCourseSessionUpdateService } from '@api/services/course/notify-se
 import { generateLessonPdf } from '@api/utils/lesson';
 import { ensureCourseGroupMemberId } from '@cio/core/services/course/course';
 import { handleError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { lessonBlockRouter } from '@api/routes/course/lesson-block';
 import { lessonLanguageRouter } from '@api/routes/course/lesson-language';
 import { zValidator } from '@hono/zod-validator';
@@ -120,7 +121,7 @@ export const lessonRouter = new Hono()
       const createdLesson = await createLesson(
         courseId,
         { ...data, courseId },
-        { actorProfileId: c.get('user')?.id ?? null }
+        { actorProfileId: c.get('user')?.id ?? null, createdVia: getEventSource(c) }
       );
       const [lesson] = await hideLessonRecordingsFromLearners(courseId, user.id, [createdLesson]);
 

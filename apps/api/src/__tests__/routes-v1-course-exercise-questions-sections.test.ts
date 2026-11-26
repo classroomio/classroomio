@@ -164,12 +164,18 @@ describe('v1 exercise section routes', () => {
     const response = await request(`${EXERCISE}/sections`, send('POST', { title: 'Part 2', order: 1 }));
 
     expect(response.status).toBe(201);
-    expect(sections.addCourseExerciseSectionService).toHaveBeenCalledWith('org-1', 'actor-1', exerciseParams, {
-      title: 'Part 2',
-      order: 1,
-      colorTheme: 'blue',
-      afterBehavior: { action: 'continue' }
-    });
+    expect(sections.addCourseExerciseSectionService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      exerciseParams,
+      {
+        title: 'Part 2',
+        order: 1,
+        colorTheme: 'blue',
+        afterBehavior: { action: 'continue' }
+      },
+      'public_api'
+    );
   });
 
   it('edits and deletes a section', async () => {

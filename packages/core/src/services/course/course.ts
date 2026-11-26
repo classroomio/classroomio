@@ -30,6 +30,7 @@ import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/res
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
 import { ContentType, ROLE, resolveLiveSessionReminderOffsets } from '@cio/utils/constants';
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
@@ -305,7 +306,7 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
 export async function createCourse(
   profileId: string,
   data: TCourseCreate & { bannerImage?: string },
-  source: TEventSource = 'dashboard'
+  source: TCreatedVia = 'dashboard'
 ): Promise<{ course: TCourse; groupId: string; memberId: string }> {
   try {
     const description = sanitizeHtml(data.description);
@@ -330,6 +331,7 @@ export async function createCourse(
           description,
           type: data.type,
           groupId: newGroup.id,
+          createdVia: source,
           ...(data.bannerImage ? { bannerImage: data.bannerImage, logo: data.bannerImage } : {}),
           compliance: data.compliance ? sanitizeUnknownStrings(data.compliance) : undefined
         },

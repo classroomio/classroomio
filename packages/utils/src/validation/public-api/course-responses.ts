@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { COURSE_TYPE_VALUES } from '../../constants/course-type';
+import { CREATED_VIA_VALUES } from '../../constants/created-via';
 import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { ZCourseImportDraftPayload } from '../course-import/course-import';
 import { ZPublicApiCourseTagResponse } from './tag-responses';
@@ -127,6 +128,10 @@ export const ZPublicApiCourseResponse = z.object({
   templateId: z.string().uuid().nullable(),
   publicForAll: z.boolean(),
   seedKey: z.string().nullable(),
+  createdVia: z
+    .enum(CREATED_VIA_VALUES)
+    .nullable()
+    .describe('Channel the course was created through; null when it was not recorded'),
   logo: z.string().describe('Deprecated; use bannerImage'),
   slug: z.string().nullable(),
   metadata: ZCourseMetadata,

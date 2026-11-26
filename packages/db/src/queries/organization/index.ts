@@ -6,5 +6,6 @@ export * from './invite';
 export * from './link-invite';
 export * from './automation-key';
 export * from './automation-usage';
+export * from './automation-change';
 export * from './student-email-template';
 export * from './early-adopter-claim';

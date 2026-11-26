@@ -125,7 +125,8 @@ describe('v1 course exercise routes', () => {
       'org-1',
       'actor-1',
       { courseId: COURSE_ID },
-      expect.objectContaining({ title: 'Quiz', order: 1 })
+      expect.objectContaining({ title: 'Quiz', order: 1 }),
+      'public_api'
     );
     expect(await response.json()).toEqual({ success: true, data: { id: EXERCISE_ID } });
   });
@@ -187,7 +188,8 @@ describe('v1 course exercise routes', () => {
       'actor-1',
       { courseId: COURSE_ID, exerciseId: EXERCISE_ID },
       { title: 'Quiz 2', isUnlocked: false },
-      { force: false }
+      { force: false },
+      'public_api'
     );
   });
 

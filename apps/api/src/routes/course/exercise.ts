@@ -1,4 +1,5 @@
 import { ErrorCodes, handleError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import {
   ZExerciseCreate,
   ZExerciseFromTemplate,
@@ -173,7 +174,7 @@ export const exerciseRouter = new Hono()
           await assertMcpAutomationUsageAllowed(automationKey, 'create_course_exercise');
         }
 
-        const exercise = await createExercise(data);
+        const exercise = await createExercise(data, getEventSource(c));
 
         if (automationKey?.type === 'mcp') {
           await recordMcpAutomationUsage(automationKey, 'create_course_exercise', {
@@ -218,7 +219,14 @@ export const exerciseRouter = new Hono()
           return c.json({ success: false, error: 'Template is missing questionnaire data' }, 400);
         }
 
-        const exercise = await createExerciseFromTemplate(courseId, lessonId, sectionId, order, template);
+        const exercise = await createExerciseFromTemplate(
+          courseId,
+          lessonId,
+          sectionId,
+          order,
+          template,
+          getEventSource(c)
+        );
 
         if (automationKey?.type === 'mcp') {
           await recordMcpAutomationUsage(automationKey, 'create_course_exercise_from_template', {
@@ -267,7 +275,7 @@ export const exerciseRouter = new Hono()
           }
         }
 
-        const exercise = await updateExerciseService(exerciseId, data);
+        const exercise = await updateExerciseService(exerciseId, data, getEventSource(c));
 
         if (automationKey?.type === 'mcp') {
           await recordMcpAutomationUsage(automationKey, 'update_course_exercise', { courseId, exerciseId });

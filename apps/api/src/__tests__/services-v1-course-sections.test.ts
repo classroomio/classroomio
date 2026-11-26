@@ -107,7 +107,11 @@ describe('services/v1/courses/sections', () => {
       { courseId: COURSE_ID },
       { title: 'Week 1', order: 1 }
     );
-    expect(createCourseSection).toHaveBeenCalledWith(COURSE_ID, { title: 'Week 1', order: 1, courseId: COURSE_ID });
+    expect(createCourseSection).toHaveBeenCalledWith(
+      COURSE_ID,
+      { title: 'Week 1', order: 1, courseId: COURSE_ID },
+      'public_api'
+    );
     expect(created).toMatchObject({ id: SECTION_ID, movedLessons: 0, movedExercises: 0 });
 
     vi.mocked(promoteUngroupedSection).mockResolvedValue({
@@ -121,7 +125,7 @@ describe('services/v1/courses/sections', () => {
       { courseId: COURSE_ID },
       { title: 'Loose', moveUngrouped: true }
     );
-    expect(promoteUngroupedSection).toHaveBeenCalledWith(COURSE_ID, { title: 'Loose' });
+    expect(promoteUngroupedSection).toHaveBeenCalledWith(COURSE_ID, { title: 'Loose' }, 'public_api');
     expect(promoted).toMatchObject({ movedLessons: 2, movedExercises: 1 });
   });
 

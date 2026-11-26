@@ -1,3 +1,4 @@
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '../../utils/sanitize-html';
 import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion } from '@cio/db/types';
@@ -130,7 +131,8 @@ function groupQuestionsBySections(
 async function syncExerciseSections(
   exerciseId: string,
   sections: NonNullable<TExerciseUpdate['sections']>,
-  txClient: DbOrTxClient
+  txClient: DbOrTxClient,
+  createdVia: TCreatedVia
 ) {
   const currentSections = await getExerciseSectionsByExerciseId(exerciseId, txClient);
   const currentSectionIds = new Set(currentSections.map((section) => section.id));
@@ -160,7 +162,8 @@ async function syncExerciseSections(
       description: section.description ?? null,
       order: section.order,
       colorTheme: section.colorTheme,
-      afterBehavior: section.afterBehavior
+      afterBehavior: section.afterBehavior,
+      createdVia
     }));
 
   if (sectionsToCreate.length > 0) {
@@ -217,7 +220,7 @@ export async function resolveExerciseCourseId(exercise: TExercise): Promise<stri
   return section?.courseId ?? null;
 }
 
-async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
+async function prepareExerciseRow(sanitizedData: TExerciseCreate, createdVia: TCreatedVia) {
   await guardNonAutoGradableQuestionsForCourseType({
     courseId: sanitizedData.courseId,
     questionTypeIds: (sanitizedData.questions ?? []).map((question) => question.questionTypeId)
@@ -237,6 +240,7 @@ async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
     sectionId: sanitizedData.sectionId || null,
     order: sanitizedData.order,
     dueBy: sanitizedData.dueBy || null,
+    createdVia,
     slug
   };
 }
@@ -271,12 +275,13 @@ async function insertExerciseRow(exerciseData: Awaited<ReturnType<typeof prepare
 /**
  * Creates a new exercise with optional questions and options
  * @param data Exercise creation data
+ * @param createdVia Channel the exercise was created through
  * @returns Created exercise
  */
-export async function createExercise(data: TExerciseCreate): Promise<TExercise> {
+export async function createExercise(data: TExerciseCreate, createdVia: TCreatedVia = 'dashboard'): Promise<TExercise> {
   try {
     const sanitizedData = sanitizeExercisePayload(data);
-    const exerciseData = await prepareExerciseRow(sanitizedData);
+    const exerciseData = await prepareExerciseRow(sanitizedData, createdVia);
 
     const exercise = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
@@ -393,11 +398,13 @@ export async function getExercise(
  * Only updates what has changed by querying the current state first and computing a diff.
  * @param exerciseId Exercise ID
  * @param data Partial exercise update data
+ * @param createdVia Channel stamped on any exercise section this update adds
  * @returns Updated exercise, with the ids of the questions this update created
  */
 export async function updateExerciseService(
   exerciseId: string,
-  data: TExerciseUpdate
+  data: TExerciseUpdate,
+  createdVia: TCreatedVia = 'dashboard'
 ): Promise<TExercise & { createdQuestionIds: number[] }> {
   try {
     const sanitizedData = sanitizeExercisePayload(data);
@@ -438,7 +445,7 @@ export async function updateExerciseService(
       }
 
       if (sanitizedData.sections !== undefined) {
-        await syncExerciseSections(exerciseId, sanitizedData.sections, txClient);
+        await syncExerciseSections(exerciseId, sanitizedData.sections, txClient, createdVia);
       }
 
       // Process questions - only update what changed
@@ -608,7 +615,8 @@ export async function createExerciseSectionService(
       | { action: 'continue' }
       | { action: 'submit' }
       | { action: 'go_to_section'; exerciseSectionId: string };
-  }
+  },
+  createdVia: TCreatedVia = 'dashboard'
 ) {
   try {
     const sections = await getExerciseSectionsByExerciseId(exerciseId);
@@ -633,7 +641,8 @@ export async function createExerciseSectionService(
         description: data.description ?? null,
         order: data.order,
         colorTheme: data.colorTheme ?? 'blue',
-        afterBehavior: data.afterBehavior ?? { action: 'continue' }
+        afterBehavior: data.afterBehavior ?? { action: 'continue' },
+        createdVia
       }
     ]);
 
@@ -963,6 +972,7 @@ export async function listExercises(
  * @param courseId Course ID
  * @param lessonId Lesson ID
  * @param template Exercise template with questionnaire
+ * @param createdVia Channel the exercise was created through
  * @returns Created exercise with questions and options
  */
 export async function createExerciseFromTemplate(
@@ -970,7 +980,8 @@ export async function createExerciseFromTemplate(
   lessonId: string | undefined,
   sectionId: string | undefined,
   order: number,
-  template: TExerciseTemplate
+  template: TExerciseTemplate,
+  createdVia: TCreatedVia = 'dashboard'
 ): Promise<TExercise> {
   try {
     // Create the exercise
@@ -990,7 +1001,7 @@ export async function createExerciseFromTemplate(
       questionTypeIds: (questions ?? []).map((question) => question.question_type.id)
     });
 
-    const exerciseRow = await prepareExerciseRow(sanitizeExercisePayload(exerciseData));
+    const exerciseRow = await prepareExerciseRow(sanitizeExercisePayload(exerciseData), createdVia);
 
     const exercise = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;

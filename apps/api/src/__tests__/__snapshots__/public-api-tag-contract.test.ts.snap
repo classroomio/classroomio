@@ -629,6 +629,26 @@ exports[`public tag contract > ZPublicApiUpdateCourseResponse 1`] = `
         },
       ],
     },
+    "createdVia": {
+      "anyOf": [
+        {
+          "enum": [
+            "dashboard",
+            "public_api",
+            "mcp",
+            "agent",
+            "import",
+            "clone",
+            "template",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Channel the course was created through; null when it was not recorded",
+    },
     "currency": {
       "type": "string",
     },
@@ -1020,6 +1040,7 @@ exports[`public tag contract > ZPublicApiUpdateCourseResponse 1`] = `
     "templateId",
     "publicForAll",
     "seedKey",
+    "createdVia",
     "logo",
     "slug",
     "metadata",

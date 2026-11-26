@@ -1191,6 +1191,26 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
         },
       ],
     },
+    "createdVia": {
+      "anyOf": [
+        {
+          "enum": [
+            "dashboard",
+            "public_api",
+            "mcp",
+            "agent",
+            "import",
+            "clone",
+            "template",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Channel the course was created through; null when it was not recorded",
+    },
     "currency": {
       "type": "string",
     },
@@ -1849,6 +1869,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
     "templateId",
     "publicForAll",
     "seedKey",
+    "createdVia",
     "logo",
     "slug",
     "metadata",
@@ -2103,6 +2124,26 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
           "type": "null",
         },
       ],
+    },
+    "createdVia": {
+      "anyOf": [
+        {
+          "enum": [
+            "dashboard",
+            "public_api",
+            "mcp",
+            "agent",
+            "import",
+            "clone",
+            "template",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Channel the course was created through; null when it was not recorded",
     },
     "currency": {
       "type": "string",
@@ -2509,6 +2550,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
     "templateId",
     "publicForAll",
     "seedKey",
+    "createdVia",
     "logo",
     "slug",
     "metadata",
@@ -2762,6 +2804,26 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
           "type": "null",
         },
       ],
+    },
+    "createdVia": {
+      "anyOf": [
+        {
+          "enum": [
+            "dashboard",
+            "public_api",
+            "mcp",
+            "agent",
+            "import",
+            "clone",
+            "template",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Channel the course was created through; null when it was not recorded",
     },
     "currency": {
       "type": "string",
@@ -3130,6 +3192,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
     "templateId",
     "publicForAll",
     "seedKey",
+    "createdVia",
     "logo",
     "slug",
     "metadata",
@@ -4355,6 +4418,26 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
             },
           ],
         },
+        "createdVia": {
+          "anyOf": [
+            {
+              "enum": [
+                "dashboard",
+                "public_api",
+                "mcp",
+                "agent",
+                "import",
+                "clone",
+                "template",
+              ],
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+          "description": "Channel the course was created through; null when it was not recorded",
+        },
         "currency": {
           "type": "string",
         },
@@ -4722,6 +4805,7 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
         "templateId",
         "publicForAll",
         "seedKey",
+        "createdVia",
         "logo",
         "slug",
         "metadata",

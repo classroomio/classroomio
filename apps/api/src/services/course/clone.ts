@@ -303,6 +303,7 @@ async function cloneCourseWithClient(
     throw new Error('Failed to create a group for the copied course');
   }
 
+  const createdVia = options.templateId ? 'template' : 'clone';
   const [newCourse] = await createCourse(
     {
       title: options.title,
@@ -312,6 +313,7 @@ async function cloneCourseWithClient(
       isTemplate: options.isTemplate ?? false,
       publicForAll: false,
       templateId: options.templateId ?? null,
+      createdVia,
       slug: options.slug ?? null,
       metadata: metadataWithoutReviews(courseCopy.metadata),
       cost: courseCopy.cost,
@@ -349,7 +351,8 @@ async function cloneCourseWithClient(
         order: section.order,
         courseId: newCourse.id,
         sourceId: options.setSourceIds ? section.id : null,
-        sourceSyncedAt: options.setSourceIds ? syncedAt : null
+        sourceSyncedAt: options.setSourceIds ? syncedAt : null,
+        createdVia
       })),
       tx
     );
@@ -380,7 +383,8 @@ async function cloneCourseWithClient(
             sectionId: lesson.sectionId ? (sectionMap.get(lesson.sectionId) ?? null) : null,
             slug: lesson.slug,
             sourceId: options.setSourceIds ? lesson.id : null,
-            sourceSyncedAt: options.setSourceIds ? syncedAt : null
+            sourceSyncedAt: options.setSourceIds ? syncedAt : null,
+            createdVia
           })),
           tx
         )
@@ -427,7 +431,8 @@ async function cloneCourseWithClient(
             passThreshold: exercise.passThreshold,
             slug: exercise.slug,
             sourceId: options.setSourceIds ? exercise.id : null,
-            sourceSyncedAt: options.setSourceIds ? syncedAt : null
+            sourceSyncedAt: options.setSourceIds ? syncedAt : null,
+            createdVia
           })),
           tx
         )
@@ -448,7 +453,8 @@ async function cloneCourseWithClient(
         order: section.order,
         colorTheme: section.colorTheme,
         afterBehavior: section.afterBehavior,
-        exerciseId: exerciseMap.get(section.exerciseId)!
+        exerciseId: exerciseMap.get(section.exerciseId)!,
+        createdVia
       })),
       tx
     );
