@@ -25,7 +25,7 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
-import type { TCreatedVia } from '@cio/utils/constants/created-via';
+import type { TAutomationChannel, TCreatedVia } from '@cio/utils/constants/created-via';
 import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES, type TBlockChangeSource } from '@cio/utils/constants/lesson-version';
@@ -3437,6 +3437,40 @@ export const organizationAutomationUsage = pgTable(
     index('idx_org_automation_usage_org_created_at').on(table.organizationId, table.createdAt),
     index('idx_org_automation_usage_key_created_at').on(table.organizationApiKeyId, table.createdAt),
     index('idx_org_automation_usage_type_created_at').on(table.type, table.createdAt)
+  ]
+);
+
+export const automationChangeLog = pgTable(
+  'automation_change_log',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    organizationApiKeyId: uuid('organization_api_key_id').references(() => organizationApiKey.id, {
+      onDelete: 'set null'
+    }),
+    oauthClientId: text('oauth_client_id'),
+    keyType: organizationApiKeyType('key_type').notNull(),
+    channel: varchar('channel', { length: 20 }).notNull().$type<TAutomationChannel>(),
+    clientName: varchar('client_name', { length: 120 }),
+    actorProfileId: uuid('actor_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    method: varchar('method', { length: 10 }).notNull(),
+    route: varchar('route', { length: 255 }).notNull(),
+    action: varchar('action', { length: 160 }).notNull(),
+    resourceIds: jsonb('resource_ids').default({}).$type<Record<string, string>>().notNull(),
+    statusCode: integer('status_code').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    index('idx_automation_change_log_org_created_at').on(table.organizationId, table.createdAt),
+    index('idx_automation_change_log_channel_created_at').on(table.channel, table.createdAt),
+    index('idx_automation_change_log_action').on(table.action)
   ]
 );
 

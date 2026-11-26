@@ -65,6 +65,7 @@ import { apiSecureHeadersMiddleware } from '@api/middlewares/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { upgradeRequiredEvent } from '@api/middlewares/upgrade-required-event';
+import { automationChangeLogMiddleware } from '@api/middlewares/automation-change-log';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 
@@ -123,6 +124,7 @@ export const app = new Hono()
   })
   .use('*', rateLimiter)
   .use('*', upgradeRequiredEvent)
+  .use('*', automationChangeLogMiddleware)
 
   // Routes
   .get('/', (c) =>

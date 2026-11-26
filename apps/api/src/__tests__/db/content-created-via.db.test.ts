@@ -123,6 +123,7 @@ describe.skipIf(!shouldRun)('content created_via (database)', () => {
 
   it('records the channel on a course and on content created inside it', async () => {
     const { course, exercise } = await createSeededCourse('mcp');
+    expect(await readChannels(course.id)).toEqual(Array(5).fill('mcp'));
     const defaultSection = await createCourseSection(course.id, { title: 'Default', courseId: course.id, order: 5 });
     const defaultLesson = await createLesson(course.id, { title: 'Default', courseId: course.id, order: 6 });
     const defaultExercise = await createExercise({ title: 'Default', courseId: course.id, order: 7 });
