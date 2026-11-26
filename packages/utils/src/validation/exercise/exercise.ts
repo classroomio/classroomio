@@ -98,6 +98,32 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
   ],
   [QUESTION_TYPE.THUMBS]: [requireAtLeastTwoOptions('Thumbs up/down questions need both Yes and No options')],
   [QUESTION_TYPE.TEXTAREA]: [],
+  [QUESTION_TYPE.NUMERIC]: [
+    (question) => {
+      const rawCorrect = question.settings?.correctValue;
+      const hasValue = typeof rawCorrect === 'number' || (typeof rawCorrect === 'string' && rawCorrect.trim() !== '');
+      if (!hasValue || !Number.isFinite(Number(rawCorrect))) {
+        return 'Numeric questions need settings.correctValue set to a number';
+      }
+
+      return null;
+    }
+  ],
+  [QUESTION_TYPE.FILL_BLANK]: [
+    (question) => {
+      if ((question.options ?? []).length > 0) {
+        return 'Fill in the blank questions take no options; put the answers in settings.acceptedAnswers as a comma-separated string, one answer per blank';
+      }
+
+      const raw = question.settings?.acceptedAnswers;
+      const answers = typeof raw === 'string' ? raw.split(',').filter((answer) => answer.trim()) : [];
+      if (answers.length === 0) {
+        return 'Fill in the blank questions need settings.acceptedAnswers: a comma-separated string with one answer per blank';
+      }
+
+      return null;
+    }
+  ],
   [QUESTION_TYPE.WORD_BANK]: [
     (question) => {
       const settings = question.settings;

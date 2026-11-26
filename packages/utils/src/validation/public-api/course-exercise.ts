@@ -6,11 +6,18 @@ import { ZSlug } from '../shared/slug';
 import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
 
-/** The full type list for MCP tools; the API docs show it on the Question types guide. */
+/** The full type list and auto-graded answer formats for MCP tools and API docs. */
 export const PUBLIC_API_QUESTION_TYPES_NOTE =
-  'Question types: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
+  'Question types: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. ' +
+  'Auto-graded answer formats: 1 and 2 mark correct options with isCorrect (when you send options, send at least 2 and mark at least 1 correct); 4 uses settings.correctValue (boolean) with options True and False; ' +
+  '6 uses settings.correctValue (number) and optional settings.tolerance (allowed absolute difference, default 0); ' +
+  '7 uses settings.acceptedAnswers, a comma-separated string with one answer per blank in order (for example "red, blue" for two blanks; answers cannot contain commas), compared ignoring case and surrounding whitespace, and takes no options; ' +
+  '11 uses settings.template (text with ___ for each blank) and settings.correctAnswers (array of strings, one per blank), compared ignoring case and surrounding whitespace; ' +
+  '12 uses settings.correctValue (whole number from 1 up to settings.maxStars, default 5). With several blanks, each correct blank earns its share of the points. ' +
+  'Short answer (5), paragraph (3), file upload, link, video recording and thumbs up/down are not scored automatically. A numeric, fill in the blank, word bank or star rating question without its correct answer is rejected with a 400. ' +
+  'File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
 
-const QUESTION_TYPE_DESCRIPTION = 'Question type id from 1 to 14; the Question types guide lists each type.';
+const QUESTION_TYPE_DESCRIPTION = 'Question type id from 1 to 14; see the question types list in the tool description.';
 
 /** Question types the public API accepts; MATCHING (15) and HOTSPOT (16) are disabled and excluded. */
 export const ZPublicApiQuestionTypeId = z
@@ -37,6 +44,9 @@ export const PUBLIC_API_MAX_QUESTION_OPTIONS = 50;
 const MAX_SECTIONS = 50;
 
 const ZSettings = z.record(z.string(), z.unknown());
+const ZQuestionSettings = ZSettings.describe(
+  'Correct answer: 4 and 6 { correctValue }, 7 { acceptedAnswers: "a, b" }, 11 { template, correctAnswers }, 12 { correctValue }.'
+);
 
 export const ZPublicApiCourseExerciseParam = ZPublicApiCourseParam.extend({
   exerciseId: z.string().uuid()
@@ -71,7 +81,7 @@ export const ZPublicApiCreateExerciseQuestion = z
     questionTypeId: ZPublicApiQuestionTypeId.default(QUESTION_TYPE.RADIO),
     points: z.number().int().min(1),
     order: z.number().int().min(0).optional(),
-    settings: ZSettings.optional(),
+    settings: ZQuestionSettings.optional(),
     options: z
       .array(
         z.object({
@@ -137,7 +147,7 @@ export const ZPublicApiUpdateExerciseQuestion = z
     ),
     points: z.number().int().min(1).optional().describe('Required for a new question'),
     order: z.number().int().min(0).optional(),
-    settings: ZSettings.optional(),
+    settings: ZQuestionSettings.optional(),
     options: z
       .array(
         z.object({
@@ -320,7 +330,7 @@ export const ZPublicApiUpdateExerciseQuestionFields = z
     questionTypeId: ZPublicApiQuestionTypeId.optional(),
     points: z.number().int().min(1).optional(),
     order: z.number().int().min(0).optional(),
-    settings: ZSettings.optional(),
+    settings: ZQuestionSettings.optional(),
     addOptions: z.array(ZPublicApiNewQuestionOption).max(PUBLIC_API_MAX_QUESTION_OPTIONS).optional(),
     updateOptions: z
       .array(ZPublicApiQuestionOptionPatch)

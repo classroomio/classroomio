@@ -699,7 +699,7 @@ Supported `questionTypeId` values for exercise payloads:
 - `13` `VIDEO_RECORDING` - Video recording
 - `14` `THUMBS` - Thumbs up/down (open-ended poll with customizable Yes/No labels; no correct answer)
 
-`TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `MATCHING` and `HOTSPOT` are disabled and must not be used.
+`TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `NUMERIC` needs `settings.correctValue` (number, optional `tolerance`). `FILL_BLANK` needs `settings.acceptedAnswers` (comma-separated string, one answer per blank in order, case and surrounding whitespace ignored) and takes no options. `WORD_BANK` needs `settings.template` and `settings.correctAnswers`. A numeric, fill in the blank, word bank or star rating question without these is rejected with a validation error (`400`). `MATCHING` and `HOTSPOT` are disabled and must not be used.
 
 ## Recommended Agent Behavior
 

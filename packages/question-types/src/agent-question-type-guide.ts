@@ -7,11 +7,11 @@ export const ENABLED_QUESTION_TYPE_ID_DESCRIPTION = ENABLED_QUESTION_TYPE_REGIST
 
 /** Shared hint for `settings` on create/add/update question tool schemas. */
 export const QUESTION_SETTINGS_SCHEMA_HINT =
-  'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean } with exactly two options labeled True and False (factual statements). THUMBS: open-ended sentiment/poll — no correct answer; omit settings or use {}. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.';
+  'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean } with exactly two options labeled True and False (factual statements). THUMBS: open-ended sentiment/poll — no correct answer; omit settings or use {}. NUMERIC: { correctValue: number, tolerance?: number }. FILL_BLANK: { acceptedAnswers: string } comma-separated, one answer per blank in order, case and surrounding whitespace ignored. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.';
 
 /** Shared hint for `options` on create/add question tool schemas. */
 export const QUESTION_OPTIONS_SCHEMA_HINT =
-  'Answer options. RADIO and CHECKBOX must have at least 4 plausible options. TRUE_FALSE: exactly 2 options labeled True and False; teacher sets correct answer in settings.correctValue. THUMBS: exactly 2 options (default Yes/No labels, customizable); no correct answer — not auto-graded. Omit or leave empty for NUMERIC, STAR, and WORD_BANK.';
+  'Answer options. RADIO and CHECKBOX must have at least 4 plausible options. TRUE_FALSE: exactly 2 options labeled True and False; teacher sets correct answer in settings.correctValue. THUMBS: exactly 2 options (default Yes/No labels, customizable); no correct answer — not auto-graded. Omit or leave empty for NUMERIC, FILL_BLANK, STAR, and WORD_BANK.';
 
 /** Tool-level description fragment for update_questions (dashboard agent + legacy schemas). */
 export const UPDATE_QUESTIONS_BINARY_TYPES_HINT =

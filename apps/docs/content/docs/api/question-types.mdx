@@ -1,7 +1,7 @@
 ---
 title: Question types
-description: Question type ids, which ones need a paid plan, and the answer format for each type when you submit for a student.
-last_reviewed: '2026-11-04'
+description: Question type ids, which ones need a paid plan, how to set the correct answer when you create a question, and the answer format for each type when you submit for a student.
+last_reviewed: '2026-11-26'
 ---
 
 Exercises are made of questions. When you create or edit a question, its `questionTypeId` says what kind it is. When you submit an exercise for a student, each `answer` uses the format for that question's type.
@@ -15,12 +15,12 @@ Exercises are made of questions. When you create or edit a question, its `questi
 | `3` | Paragraph | No |
 | `4` | True/false | Yes, with `settings.correctValue` (boolean) |
 | `5` | Short answer | No |
-| `6` | Numeric | Yes |
-| `7` | Fill in the blank | Yes |
+| `6` | Numeric | Yes, with `settings.correctValue` (number) |
+| `7` | Fill in the blank | Yes, with `settings.acceptedAnswers` (string) |
 | `8` | File upload | No |
 | `9` | Ordering | Yes |
 | `10` | Link | No |
-| `11` | Word bank | Yes |
+| `11` | Word bank | Yes, with `settings.template` and `settings.correctAnswers` |
 | `12` | Star rating | Yes |
 | `13` | Video recording | No |
 | `14` | Thumbs up/down | No, it is open-ended |
@@ -28,6 +28,20 @@ Exercises are made of questions. When you create or edit a question, its `questi
 - File upload, ordering, link, star rating and video recording need a paid plan. On the Basic plan they return `403` with `UPGRADE_REQUIRED`.
 - `PUBLIC` courses only accept auto-graded types.
 - A new question is single choice (`1`) unless you set a type.
+
+## Setting the correct answer
+
+Auto-graded types keep their correct answer in the question's `settings`, the same place the dashboard editor writes it. A numeric, fill in the blank, word bank or star rating question without a valid correct answer in `settings` is rejected with `400`.
+
+| Type | `settings` |
+| --- | --- |
+| True/false | `{"correctValue": true}`, with options `True` and `False` |
+| Numeric | `{"correctValue": 42, "tolerance": 0.5}`; `tolerance` is the allowed absolute difference and is optional (default `0`) |
+| Fill in the blank | `{"acceptedAnswers": "Paris"}` |
+| Word bank | `{"template": "The ___ sat.", "correctAnswers": ["cat"]}` |
+| Star rating | `{"correctValue": 4}`, a whole number from `1` up to `settings.maxStars` (default `5`) |
+
+Fill in the blank takes no `options`; sending `options` returns `400`. `acceptedAnswers` is one comma-separated string with one answer per blank, in order: `"red, blue"` means the first blank must be `red` and the second `blue`. Answers cannot contain commas, and empty entries are ignored. A learner's answer matches when it equals the expected answer ignoring upper and lower case and spaces around it. The dashboard editor shows this value in its "Accepted answers (comma separated)" field. Word bank `correctAnswers` follows the same matching, with one array item per `___` in the template. When a question has several blanks, each correct blank earns its share of the points, rounded to a whole number for the question.
 
 ## Answer formats
 
