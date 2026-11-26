@@ -346,22 +346,10 @@
 
     const shouldLock = section.items.some((item) => item.isUnlocked ?? false);
     const nextIsUnlocked = !shouldLock;
-    const updatedItems = section.items.map((item) => ({
-      ...item,
-      isUnlocked: nextIsUnlocked
-    }));
-    const updatedSections = sections.map((entry) =>
-      entry.id === sectionId
-        ? {
-            ...entry,
-            items: updatedItems
-          }
-        : entry
-    );
 
     const wasUpdated = await contentApi.updateContent(
       courseId,
-      updatedItems.map((item) => ({
+      section.items.map((item) => ({
         id: item.contentId,
         type: item.type as ContentType.Lesson | ContentType.Exercise,
         isUnlocked: nextIsUnlocked
@@ -370,7 +358,14 @@
 
     if (!wasUpdated) return;
 
-    sections = updatedSections;
+    sections = sections.map((entry) =>
+      entry.id === sectionId
+        ? {
+            ...entry,
+            items: entry.items.map((item) => ({ ...item, isUnlocked: nextIsUnlocked }))
+          }
+        : entry
+    );
     syncCourseContentSections(sections);
   }
 
