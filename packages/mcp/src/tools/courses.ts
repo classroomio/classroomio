@@ -95,7 +95,7 @@ export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'set_course_private',
-    'Make a course private (isPrivate true) or public again (false; this does not turn self-enrollment back on); the API key creator must be a course tutor/admin or an org admin. A private course stays published but is hidden from the landing page, explore, search, related courses and widgets, its landingPageUrl is null, and students cannot enroll themselves: they get in only when staff enroll them, for example with enroll_course_student or add_course_member. A PUBLIC-type course cannot be private.',
+    'Make a course private (isPrivate true) or public again (false; this does not turn self-enrollment back on); the API key creator must be a course tutor/admin or an org admin. A private course stays published but is hidden from the landing page, explore, search, related courses and widgets, it has no public landing page, and students cannot enroll themselves: they get in only when staff enroll them, for example with enroll_course_student or add_course_member. A PUBLIC-type course cannot be private.',
     shape(ZSetCoursePrivateToolInput),
     { title: 'Set course private', ...UPDATE },
     async (args) => {

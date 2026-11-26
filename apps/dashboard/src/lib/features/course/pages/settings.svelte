@@ -292,7 +292,7 @@
         type: $settings.type,
         bannerImage: bannerImageUrl,
         isPublished: $settings.isPublished,
-        isPrivate: $settings.isPrivate,
+        ...($settings.isPrivate !== !!courseApi.course.isPrivate ? { isPrivate: $settings.isPrivate } : {}),
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
         compliance:
@@ -372,9 +372,10 @@
     untrack(() => {
       settings.set({
         courseTitle: course.title,
-        type: isConversionFlowActive
-          ? ('PUBLIC' as TCourseType)
-          : (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
+        type:
+          isConversionFlowActive && !course.isPrivate
+            ? ('PUBLIC' as TCourseType)
+            : (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
         courseDescription: course.description,
         bannerImage: course.bannerImage || '',
         grading: !!course.metadata?.grading,
