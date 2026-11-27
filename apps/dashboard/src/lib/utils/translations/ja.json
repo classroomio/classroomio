@@ -8,7 +8,7 @@
       "account_settings": "アカウント設定",
       "theme": "テーマ",
       "theme_light": "ライト",
-      "theme_dark": "暗い",
+      "theme_dark": "ダーク",
       "theme_system": "システム",
       "continue_learning": "学び続ける",
       "not_enrolled_note": "このアカデミーにはまだ登録されていません – 学習者の目的地は参加後に表示されます。"
@@ -43,17 +43,17 @@
       "guidance": "言っていいこと・言ってはいけないこと",
       "guidance_description": "講師がすべての返信で従うフリーテキストのガイダンスに加え、立ち入り禁止のトピックのオプションのリストも含まれます。",
       "assessment": "演習と評価",
-      "assessment_description": "生徒が演習の助けを求めたとき、家庭教師はどのように行動するか。",
+      "assessment_description": "生徒が演習の助けを求めたとき、講師はどのように行動するか。",
       "grounding": "根拠と引用",
-      "grounding_description": "家庭教師が話せる内容と、コースの内容を引用するかどうかを制限します。",
+      "grounding_description": "講師が話せる内容と、コースの内容を引用するかどうかを制限します。",
       "escalation": "エスカレーション",
       "escalation_description": "生徒が本物の人間を必要とするときにどこに指示すればよいか。",
       "inheritance": "コース継承",
       "inheritance_description": "ワークスペースのデフォルトを継承するか、コースごとにオーバーライドを設定します。"
     },
     "field": {
-      "enabled": "AI家庭教師が有効になりました",
-      "persona": "家庭教師の人物像",
+      "enabled": "AI講師を有効にする",
+      "persona": "講師の人物像",
       "customPersona": "カスタムペルソナ",
       "customPersona_description": "講師の口調、話し方、聴衆に特有のものなど、講師がどのように聞こえるべきかを説明します。",
       "responseLength": "応答の長さ",
@@ -66,13 +66,13 @@
       "thingsNotToSay": "言ってはいけないこと",
       "thingsNotToSay_description": "例: 「期末試験の答えを明かさないでください。」 「自分が書いたレビューを決して生徒に教えないでください。」",
       "forbiddenTopics": "禁止されたトピック",
-      "forbiddenTopics_description": "カンマ区切りのリスト。家庭教師はこれらについて議論することを拒否します。",
+      "forbiddenTopics_description": "カンマ区切りのリスト。講師はこれらについて議論することを拒否します。",
       "forbiddenTopics_placeholder": "政治、宗教、個人的な医学的アドバイス",
       "blockOffTopic": "本題から外れた質問をブロックする",
       "profanityFilter": "冒とく的な表現と機密性の高いコンテンツのフィルター",
       "assessmentMode": "評価モード",
       "revealSolutionsAfterAttempts": "N回の試行後に解決策を明らかにする",
-      "revealSolutionsAfterAttempts_description": "これだけ多くの試みが失敗した後、家庭教師はうまくいった例を提示するかもしれません。直接回答できるようにするには、0 に設定します。",
+      "revealSolutionsAfterAttempts_description": "この回数だけ失敗すると、講師が解答例を提示することがあります。0 に設定すると直接回答できます。",
       "codePolicy": "コードポリシー",
       "groundingScope": "接地範囲",
       "requireCitations": "コース資料への引用を必須にする",
@@ -81,10 +81,10 @@
       "inheritFromOrg": "ワークスペースのデフォルトを使用する"
     },
     "persona": {
-      "encouraging": "励ます",
+      "encouraging": "励まし",
       "friendly": "フレンドリー",
       "formal": "フォーマル",
-      "socratic": "ソクラテス",
+      "socratic": "ソクラテス式",
       "custom": "カスタム"
     },
     "responseLength": {
@@ -108,13 +108,13 @@
       "workspace": "ワークスペース全体"
     },
     "takeABreak": {
-      "title": "AI 家庭教師はお休み中です",
+      "title": "AI 講師はお休み中です",
       "learnerCap": "今月の講師のメッセージ制限に達しました。メッセージは翌月 1 日にリセットされます。",
       "poolExhausted": "あなたのワークスペースでは、今月の AI 講師のキャパシティが不足しています。後でもう一度確認するか、講師に連絡してください。",
       "disabled": "AI 講師はこのワークスペースでは有効になっていません。"
     },
     "creditsPage": {
-      "tutorSummaryTitle": "AI家庭教師のフェアユース",
+      "tutorSummaryTitle": "AI講師のフェアユース",
       "atCap": "キャップ時",
       "approaching": "キャップに近づく",
       "totalActive": "今月のアクティブな生徒さん",
@@ -124,7 +124,7 @@
       "headerTokens": "トークン",
       "headerStatus": "ステータス",
       "statusUnder": "アンダーキャップ",
-      "statusApproaching": "近づいてくる",
+      "statusApproaching": "上限間近",
       "statusAtCap": "キャップ時"
     }
   },
@@ -228,7 +228,7 @@
     "self_paced_subtitle": "自分のペースでレッスンを受けられるコースに最適",
     "compliance_label": "コンプライアンス",
     "compliance_subtitle": "再受講、リマインダー、更新追跡を備えた定期的なトレーニング",
-    "public_label": "公共",
+    "public_label": "公開",
     "public_subtitle": "サインアップ不要の無料のコース ページは公開で共有できるため、見込み顧客の発掘に最適です"
   },
   "public_course": {
@@ -461,7 +461,7 @@
       "learning_paths_heading": "学習パス",
       "learning_path_label": "学習パス",
       "tracks_label": "{count, plural, other {# 件のトラック}}",
-      "included": "付属",
+      "included": "含まれる",
       "untitled_lesson": "無題のレッスン",
       "format": "フォーマット"
     },
@@ -474,7 +474,7 @@
       "label": "時間範囲",
       "locked": "アップグレードしてこの範囲をロック解除します"
     },
-    "dismiss": "解雇する"
+    "dismiss": "閉じる"
   },
   "compliance": {
     "title": "コンプライアンス",
@@ -514,7 +514,7 @@
       "empty": "コンプライアンスコースはまだありません",
       "course": "コース",
       "learners": "学生",
-      "completion": "完成"
+      "completion": "修了率"
     },
     "learners": {
       "heading": "学生",
@@ -524,7 +524,7 @@
       "course": "コース",
       "status": "ステータス",
       "due_date": "期限",
-      "expires": "有効期限が切れます"
+      "expires": "有効期限"
     }
   },
   "login": {
@@ -608,7 +608,7 @@
       "landing_page_tab": "ランディングページ",
       "billing_tab": "請求",
       "ai_credits_tab": "AI クレジット",
-      "ai_tutor_tab": "AI家庭教師",
+      "ai_tutor_tab": "AI講師",
       "integrations_tab": "統合",
       "language_tab": "言語",
       "auth_tab": "認証",
@@ -973,7 +973,7 @@
           "client_secret_placeholder": "IdP から",
           "create_button": "接続の作成",
           "providers": {
-            "okta": "オクタ",
+            "okta": "Okta",
             "google_workspace": "Google Workspace",
             "auth0": "認証0"
           }
@@ -1093,7 +1093,7 @@
           "courses_desc": "ドラッグして、ランディング ページ上の公開コースの順序を設定します。"
         },
         "hero": {
-          "eyebrow": "眉毛",
+          "eyebrow": "アイブロウ",
           "eyebrow_placeholder": "// 工学アカデミー",
           "eyebrow_description": "見出しの上のオプションのラベル (それをサポートするテンプレートで使用されます (例: Tech))。非表示にする場合は空白のままにします。",
           "heading": "見出し",
@@ -1157,7 +1157,7 @@
           "description": "説明",
           "description_placeholder": "オプションの説明",
           "bold_visit_label": "太字のテーマ — ボタンのラベル",
-          "bold_visit_default": "訪問",
+          "bold_visit_default": "アクセス",
           "classic_learn_more_label": "クラシックテーマ — リンクラベル",
           "classic_learn_more_default": "さらに詳しく",
           "card_title": "カードタイトル",
@@ -1344,7 +1344,7 @@
     },
     "integrations": {
       "page_subtitle": "Telegram に接続すると、重要なことが起こったときに通知を受け取ることができます。",
-      "heading": "電報",
+      "heading": "Telegram",
       "sub_heading": "アカウントをテレグラムに接続すると、アプリケーション内の変更に関する通知を受け取ることができます。",
       "step_authenticate": "ステップ 1: ClassroomIO ボット経由でアカウントを認証します。",
       "open_bot_button": "オープンボット",
@@ -1384,7 +1384,7 @@
         "buy_more": "さらに購入する"
       },
       "chart": {
-        "heading": "使用法",
+        "heading": "使用量",
         "subheading": "今月の毎日の AI クレジット消費量。",
         "tokens": "クレジット",
         "total_tokens": "総クレジット数",
@@ -1584,7 +1584,7 @@
       "upload_custom": "カスタムサムネイルをアップロードする",
       "custom_selected_hint": "選択を保存すると、カスタム アップロードも保存されます。",
       "custom_preview_alt": "カスタムサムネイルプレビュー",
-      "regenerate": "再生する",
+      "regenerate": "再生成",
       "save_selection": "サムネイルの保存"
     },
     "usage": {
@@ -1597,7 +1597,7 @@
       "refresh": "リフレッシュの使用法",
       "target": {
         "lesson": "レッスン",
-        "exercise": "運動",
+        "exercise": "演習",
         "question": "質問",
         "unknown": "不明"
       },
@@ -1635,7 +1635,7 @@
     "table": {
       "tag": "タグ",
       "total_courses": "合計コース数",
-      "course": "もちろん",
+      "course": "コース",
       "courses": "コース",
       "description": "説明",
       "category": "カテゴリ",
@@ -1710,7 +1710,7 @@
     "courses": "コース",
     "tags": "タグ",
     "community": "コミュニティ",
-    "audience": "観客",
+    "audience": "オーディエンス",
     "media": "メディア",
     "distribute": "配布する",
     "widgets": "ウィジェット",
@@ -1839,7 +1839,7 @@
     },
     "layoutOptions": {
       "section": "レイアウトオプション",
-      "columns": "コラム",
+      "columns": "列",
       "max_count": "マックスコース",
       "show_rating": "評価を表示",
       "tag_source": "タグソース",
@@ -1876,13 +1876,13 @@
       "none": "なし"
     },
     "sort": {
-      "manual": "マニュアル",
+      "manual": "手動",
       "newest": "最新の",
       "title": "タイトル"
     },
     "status": {
-      "draft": "草案",
-      "published": "発行済み",
+      "draft": "下書き",
+      "published": "公開済み",
       "archived": "アーカイブ済み",
       "live": "ライブ"
     },
@@ -1914,7 +1914,7 @@
       "back": "ウィジェットに戻る",
       "save": "保存",
       "discard": "変更を破棄する",
-      "publish": "発行する",
+      "publish": "公開する",
       "archive": "アーカイブ",
       "restore": "復元",
       "copy_embed": "コピーして埋め込む",
@@ -2017,7 +2017,7 @@
     "progress": "進捗状況",
     "completed": "完成した",
     "done": "完了",
-    "todo": "藤堂",
+    "todo": "未着手",
     "personal_profile": {
       "title": "プロフィール写真をアップロードし、ユーザー名を更新します",
       "desc": "パーソナライズして人間味を加えて、インタラクションをより個人的で思い出深いものにします",
@@ -2067,7 +2067,7 @@
     "open_dashboard": "{name} ダッシュボードを開く",
     "open_academy": "{host} で {name} を開きます",
     "invited_as": "{role} として招待されました",
-    "accept_invite": "受け入れる",
+    "accept_invite": "承諾",
     "invites_error": "招待状を読み込めませんでした。接続を確認して、もう一度試してください。",
     "invites_retry": "もう一度試してください",
     "create_heading": "自分のアカデミーを運営する",
@@ -2186,7 +2186,7 @@
           "default_language": "デフォルトの言語",
           "enforce": "この言語を生徒に強制する"
         },
-        "disabled": "障害者",
+        "disabled": "無効",
         "enabled": "有効",
         "save": "変更を保存",
         "dashboard": {
@@ -2202,7 +2202,7 @@
         "course": {
           "title": "コース",
           "newsfeed": "ニュースフィード",
-          "grading": "グレーディング"
+          "grading": "採点"
         },
         "apps": {
           "title": "アプリ",
@@ -2306,7 +2306,7 @@
     "top_courses": "人気のコース",
     "students": "学生",
     "student": "学生",
-    "completion": "完成",
+    "completion": "修了率",
     "create_first_course": "最初のコースを作成する",
     "create_first_course_description": "コースの作成を開始してコースの進行状況を追跡する",
     "recent_enrollments": "最近の登録数",
@@ -2339,9 +2339,9 @@
       "clear_all": "すべてクリア",
       "popover_title": "フィルター",
       "sort": "並べ替え",
-      "order": "注文",
+      "order": "順序",
       "ascending": "昇順",
-      "descending": "説明",
+      "descending": "降順",
       "tags": "タグ",
       "empty_tags": "使用可能なタグがありません"
     },
@@ -2354,7 +2354,7 @@
       "fewest_lessons": "レッスン: 最初に最小数から",
       "date_created": "作成日",
       "last_updated_at": "最終更新日",
-      "published": "発行済み",
+      "published": "公開済み",
       "lessons": "レッスン",
       "name": "名前",
       "price": "価格"
@@ -2377,13 +2377,13 @@
       },
       "error_message": "エラーが発生しました。",
       "lessons_number": "レッスン",
-      "exercise": "運動する",
+      "exercise": "演習",
       "students": "学生",
-      "published": "発行済み",
+      "published": "公開済み",
       "unpublished": "未公開",
       "continue_course": "続ける",
       "learn_more": "さらに詳しく",
-      "public_badge": "公共",
+      "public_badge": "公開",
       "actions_menu_aria": "コースアクション",
       "due_date": "期限",
       "valid_until": "まで有効",
@@ -2397,7 +2397,7 @@
         "tags": "タグ",
         "lessons": "レッスン",
         "students": "学生",
-        "published": "発行済み",
+        "published": "公開済み",
         "type": "種類"
       }
     },
@@ -2491,7 +2491,7 @@
       "nav_content": "内容",
       "nav_attendance": "出席",
       "nav_submissions": "提出物",
-      "nav_marks": "マーク",
+      "nav_marks": "点数",
       "nav_compliance": "コンプライアンス",
       "nav_people": "人々",
       "nav_analytics": "分析",
@@ -2499,7 +2499,7 @@
       "nav_landing_page": "ランディングページ",
       "nav_settings": "設定",
       "nav_ai_assistant": "アシスタント",
-      "nav_ai_tutor": "AI家庭教師",
+      "nav_ai_tutor": "AI講師",
       "exit_course": "出口コース"
     },
     "sidebar": {
@@ -2593,7 +2593,7 @@
           "make_a_post": "投稿する",
           "placeholder": "生徒と最新情報を共有する",
           "cancel": "キャンセル",
-          "post": "ポスト"
+          "post": "投稿"
         },
         "body_header": "まだ投稿がありません",
         "body_content": "クラスに投稿します。まず「追加」ボタンをクリックします。",
@@ -2670,7 +2670,7 @@
         "content_progression_locked_description_exercise": "この演習は、コース内の前の必須項目を完了するとロックが解除されます。",
         "completion_policy": {
           "label": "完了ルール",
-          "manual_label": "マニュアル",
+          "manual_label": "手動",
           "manual_description": "生徒は自分でレッスンを完了したとマークします。",
           "video_watch_label": "ビデオを見る",
           "video_watch_description": "生徒が選択したアップロードされたビデオを視聴すると、レッスンは自動的に完了します。 YouTube と外部の埋め込みは追跡できません。",
@@ -2771,7 +2771,7 @@
         },
         "add_lesson": {
           "button_title": "追加",
-          "start_reorder": "再注文",
+          "start_reorder": "並べ替え",
           "end_reorder": "再注文の終了",
           "modal_heading": "新しいレッスンを追加",
           "modal_heading_section": "新しいセクションを追加",
@@ -2820,7 +2820,7 @@
           "section_description": "グループレッスンやエクササイズを一緒に行います。",
           "lesson_title": "レッスン",
           "lesson_description": "メモ、スライド、ビデオを使って教えます。",
-          "exercise_title": "運動",
+          "exercise_title": "演習",
           "exercise_description": "クイズや課題で生徒を評価します。"
         },
         "add_content_section_title_placeholder": "例: モジュール 1: はじめに",
@@ -2833,12 +2833,12 @@
         },
         "join_lesson": "レッスンに参加する",
         "no_link": "リンクなし",
-        "no_tutor": "家庭教師は追加されていません",
+        "no_tutor": "講師は追加されていません",
         "body_header": "まだレッスンはありません",
         "body_content": "魅力的なレッスンを作成して、知識を世界と共有しましょう。まず「追加」ボタンをクリックします。",
         "student_body_content": "このコースにはまだレッスンが追加されていません。後でもう一度確認してください。",
         "lesson_nav": {
-          "materials": "材料",
+          "materials": "教材",
           "exercises": "演習"
         },
         "download_pdf": "PDFをダウンロード",
@@ -2950,7 +2950,7 @@
               "embed_link": "リンクを埋め込む",
               "google_drive": "Googleドライブ",
               "upload": "アップロード",
-              "library": "図書館",
+              "library": "ライブラリ",
               "remove_video": "ビデオを削除する",
               "add_video": {
                 "title": "ビデオを追加する",
@@ -3040,7 +3040,7 @@
                 "transcription_in_progress": "(トランスクリプト生成中)"
               },
               "transcript": {
-                "title": "成績証明書",
+                "title": "文字起こし",
                 "open_side_panel": "トランスクリプトパネルを開く",
                 "captions_label": "キャプション",
                 "language": "言語: {language}",
@@ -3212,7 +3212,7 @@
               "conflict_description": "アシスタントは、あなたも編集した {count} 個の項目を変更しました。あなたのバージョンは現在保存されています。",
               "keep_mine": "編集内容を保存する",
               "use_assistant": "アシスタントの変更を使用する",
-              "dismiss": "解雇する"
+              "dismiss": "閉じる"
             },
             "questions": "質問",
             "settings": "設定",
@@ -3265,7 +3265,7 @@
             "question_auto_graded_badge": "自動採点",
             "question_manual_grading_badge": "手動採点",
             "points_required_auto_grade": "自動採点された演習のポイントは 0 より大きい必要があります。",
-            "zero_points_warning": "ポイントを 0 より大きく設定すると、学生はこの質問に対して採点されません。",
+            "zero_points_warning": "0 より大きいポイントを設定してください。0 のままだと、この質問は採点されません。",
             "guard": {
               "title": "保存する前に確認してください",
               "attempts_title": "生徒が不合格になったらどうなりますか?",
@@ -3324,7 +3324,7 @@
               "select_type": "タイプを選択してください",
               "question_type_auto_gradable": "自動",
               "question_type_auto_gradable_description": "システムにより自動的に採点されます",
-              "question_type_manual_grading": "マニュアル",
+              "question_type_manual_grading": "手動",
               "question_type_manual_grading_description": "採点には人間によるレビューが必要",
               "premium_question_type": "この質問タイプを使用するにはアップグレードしてください",
               "deleting": "削除中...",
@@ -3343,7 +3343,7 @@
                 "fill_blank": "空白を埋めてください",
                 "file_upload": "ファイルのアップロード",
                 "matching": "マッチング",
-                "ordering": "注文",
+                "ordering": "並べ替え",
                 "hotspot": "ホットスポット",
                 "link": "リンク",
                 "word_bank": "ワードバンク",
@@ -3373,7 +3373,7 @@
               "due": "期限までに",
               "no_description": "説明なし",
               "start": "スタート",
-              "graded": "段階的",
+              "graded": "採点済み",
               "pending": "保留中",
               "submitted": "提出済み",
               "status_pending": "ステータス: レビュー待ち",
@@ -3396,7 +3396,7 @@
                 "heading": "概要",
                 "question_chart": "質問表",
                 "responses": "応答",
-                "attempts": "試み",
+                "attempts": "試行回数",
                 "no_responses": "まだ返答はありません",
                 "other": "その他",
                 "unknown_student": "不明な学生",
@@ -3412,7 +3412,7 @@
                 "attempt_label": "{number} を試行します",
                 "date_unknown": "日付不明",
                 "status_awaiting_manual": "手動採点を待っています",
-                "status_completed": "段階的",
+                "status_completed": "採点済み",
                 "status_pending": "保留中",
                 "counts_as_complete": "完了としてカウントされます",
                 "optional": "オプション",
@@ -3648,7 +3648,7 @@
                   "stop_recording": "録音を停止する",
                   "elapsed": "経過",
                   "remaining": "残り",
-                  "max_duration": "マックス",
+                  "max_duration": "最大",
                   "too_short": "少なくとも 1 秒間録音します。",
                   "use_recording": "録音を使用する",
                   "retake": "リテイク",
@@ -3668,7 +3668,7 @@
                   "unavailable": "ビデオは利用できません。",
                   "duration": "期間",
                   "file_size": "ファイルサイズ",
-                  "recorded_at": "録音済み",
+                  "recorded_at": "録画済み",
                   "uploaded_at": "アップロードされました",
                   "retake_count": "リテイク"
                 }
@@ -3781,7 +3781,7 @@
           "kind": {
             "auto": "自動保存",
             "manual": "保存されたバージョン",
-            "publish": "発行済み"
+            "publish": "公開済み"
           },
           "by_author": "{name} 著",
           "empty": "まだバージョンがありません",
@@ -3803,7 +3803,7 @@
           "change_kind": {
             "added": "追加されました",
             "removed": "削除されました",
-            "moved": "移転しました",
+            "moved": "移動しました",
             "edited": "変更されました"
           },
           "change_added": "{name}を追加しました",
@@ -3834,7 +3834,7 @@
       },
       "attendance": {
         "title": "出席",
-        "present": "プレゼント",
+        "present": "出席",
         "absent": "欠席",
         "search_students": "学生を検索する",
         "student": "学生",
@@ -3850,7 +3850,7 @@
         "submission_status": {
           "submitted": "提出済み",
           "in_progress": "進行中",
-          "graded": "段階的"
+          "graded": "採点済み"
         },
         "workflow": {
           "awaiting_manual_hint": "手動レビューが必要",
@@ -3861,7 +3861,7 @@
           "details": "詳細",
           "student_avatar": "学生アバター",
           "early": "早い",
-          "late": "遅刻",
+          "late": "期限超過",
           "total_grade": "総合成績",
           "student": "学生",
           "status": "ステータス",
@@ -3870,7 +3870,7 @@
           "grade_with_ai": "AIによる採点",
           "ai_icon": "AI",
           "submit_grades": "成績を提出する",
-          "accept_grade": "受け入れる",
+          "accept_grade": "採用",
           "reject_grade": "拒否する",
           "allocated": "このスコアを割り当てた理由は、",
           "total_try": "合計試行数:",
@@ -3900,7 +3900,7 @@
         }
       },
       "marks": {
-        "title": "マーク",
+        "title": "点数",
         "student": "学生",
         "total": "合計",
         "avg_grade": "平均成績",
@@ -3962,7 +3962,7 @@
           "completed_at": "完了時刻",
           "valid_until": "まで有効",
           "score": "スコア",
-          "attempts": "試み"
+          "attempts": "試行回数"
         },
         "summary": {
           "total_learners": "学生総数",
@@ -4069,7 +4069,7 @@
           "loading_invites": "招待状を読み込んでいます...",
           "no_invites_yet": "招待状はまだ作成されていません。",
           "created": "作成されました",
-          "expires": "有効期限が切れます",
+          "expires": "有効期限",
           "uses": "用途",
           "remaining": "残り",
           "opened": "開いた",
@@ -4083,7 +4083,7 @@
           "no_audit_events": "監査イベントはありません。",
           "audit_at": "で",
           "audit_email": "電子メール",
-          "audit_actor": "俳優",
+          "audit_actor": "実行者",
           "audit_ip": "IP",
           "scan_qr": "QRをスキャン",
           "classroomio_brand": "ClassroomIO.com",
@@ -4127,7 +4127,7 @@
         },
         "roles": {
           "admin": "管理者",
-          "tutor": "家庭教師",
+          "tutor": "講師",
           "student": "学生",
           "filter": "フィルター"
         },
@@ -4179,7 +4179,7 @@
           "30d": "30日",
           "90d": "90日",
           "180d": "180日",
-          "never": "決してしない"
+          "never": "一度もなし"
         },
         "views": {
           "all": "すべての人",
@@ -4218,7 +4218,7 @@
         "complete_to_download_title": "コースが完了していません 😔",
         "complete_to_download_subtitle": "このコースのすべてのレッスンと演習を完了すると、証明書が利用可能になります。",
         "description_error": "説明は 200 文字を超えることはできません",
-        "characters": "キャラクター",
+        "characters": "文字",
         "unexpected_error": "予期しないエラーが発生しました",
         "editor": {
           "title": "証明書のデザイン",
@@ -4310,7 +4310,7 @@
             "description": "説明",
             "short_video": "ショートビデオ",
             "replace_cover": "表紙画像",
-            "replace": "交換する",
+            "replace": "置換",
             "remove": "削除",
             "no_cover": "表紙画像が設定されていません",
             "helper": "YouTube ビデオへのリンクを入力してください"
@@ -4445,7 +4445,7 @@
         "heading": "設定",
         "cover_image": "表紙画像",
         "optional_image": "このオプションの画像は、ようこそページに表示されます。含める場合は、少なくとも 280 x 200 にする必要があります。",
-        "replace": "交換する",
+        "replace": "置換",
         "remove": "削除",
         "del": "削除",
         "course_details": "コース詳細",
@@ -4460,9 +4460,9 @@
         "generate_link": "新しいリンクを生成する",
         "open_link": "リンクを新しいタブで開く",
         "copy_link": "リンクをコピー",
-        "grading": "グレーディング",
+        "grading": "採点",
         "reports": "レッスンで利用できる採点レポートを作成する",
-        "disabled": "障害者",
+        "disabled": "無効",
         "enabled": "有効",
         "welcome_email": {
           "title": "ウェルカムメール",
@@ -4502,7 +4502,7 @@
           "public_type_blocked": "公開コース タイプは、リンクを知っている誰でも公開されるため、非公開にすることはできません。",
           "badge": "プライベート"
         },
-        "published": "発行済み",
+        "published": "公開済み",
         "unpublished": "未公開",
         "certificate_deadline_required": "最初に証明書の期限を設定する",
         "certificate_deadline_required_description": "コンプライアンスコースでは、学生が登録する前に証明書の期限が必要です。公開する前にコース設定で期限を設定してください。",
@@ -4524,7 +4524,7 @@
         "live_class": "ライブクラス",
         "self_paced": "マイペース",
         "compliance": "コンプライアンス",
-        "public": "公共",
+        "public": "公開",
         "convert_to_public_blocked": "公開コースでは、自動採点可能な質問のみが必要です。",
         "convert_to_public_blocked_desc": "公開コースの演習はブラウザで自動的に採点されるため、自動採点可能な問題のみがサポートされています。このコースを公開コースに変換する前に、次の質問を削除または置き換えてください。",
         "question_in_exercise": "「{exercise}」で",
@@ -4611,7 +4611,7 @@
           "unit_label": "単位",
           "units": {
             "days": "日数",
-            "hours": "営業時間",
+            "hours": "時間",
             "minutes": "分"
           },
           "duration": {
@@ -4679,7 +4679,7 @@
       "page_subtitle": "コミュニティ全体が閲覧できるスレッドを開始し、必要に応じてそれをコースに結び付けます。",
       "go_back": "戻る",
       "ask_the": "コミュニティに質問する",
-      "publish": "発行する",
+      "publish": "公開する",
       "title": "タイトル",
       "select_course": "コース選択",
       "ask_community": "質問があればコミュニティに質問してください",
@@ -4706,7 +4706,7 @@
     "all": "すべて"
   },
   "audience": {
-    "title": "観客",
+    "title": "オーディエンス",
     "page_subtitle": "組織に誰が属しているか、誰が学習しているか、誰が招待されているか、および連絡方法を確認します。",
     "export": "エクスポート",
     "import_users": "ユーザーのインポート",
@@ -4742,7 +4742,7 @@
       "page_subtitle": "コース全体の進捗状況、成績、アクティビティ。",
       "tabs": {
         "courses": "コース",
-        "grades": "グレード",
+        "grades": "成績",
         "activity": "アクティビティ"
       },
       "activity_empty_title": "アクティビティのタイムライン 近日公開予定",
@@ -4765,7 +4765,7 @@
       "load_failed_title": "この生徒をロードできません",
       "load_failed_description": "この学生をロード中に問題が発生しました。もう一度試してください。",
       "retry": "再試行",
-      "exercise": "運動",
+      "exercise": "演習",
       "exercise_load_failed": "このコースの演習をロードできませんでした。"
     },
     "import": {
@@ -4810,7 +4810,7 @@
       "download_errors": "失敗した行をダウンロードする",
       "status": {
         "ready": "準備完了",
-        "already_member": "すでに観客の中にいます",
+        "already_member": "すでにオーディエンスの中にいます",
         "invite_resent": "再招待",
         "invalid_email": "無効な電子メール",
         "duplicate_in_file": "ファイル内で重複しています",
@@ -4839,7 +4839,7 @@
       "resend_snackbar_email_failed": "招待が更新されましたが、メールを送信できませんでした",
       "revoke_snackbar_success": "保留中の招待が取り消されました"
     },
-    "never": "決してしない",
+    "never": "未ログイン",
     "progress": "進捗状況",
     "learner_count": "{count} 人の生徒",
     "enrolled_ratio": "{completed} / {total}",
@@ -4864,11 +4864,11 @@
       "window_30d": "30日",
       "window_90d": "90日",
       "window_180d": "180日",
-      "window_never": "決してしない",
+      "window_never": "一度もなし",
       "enrollment": "登録",
       "enrolled": "登録済み",
       "not_enrolled": "未登録",
-      "completion": "完成",
+      "completion": "修了",
       "not_started": "開始されていません",
       "in_progress": "進行中",
       "completed": "完了",
@@ -4920,7 +4920,7 @@
       "partial_success": "{succeeded} が更新され、{failed} がスキップされました",
       "undo_available": "適用されました。これはまだ元に戻すことができます。",
       "undo": "元に戻す",
-      "undo_dismiss": "解雇する",
+      "undo_dismiss": "閉じる",
       "undo_success": "元に戻した",
       "queued_running": "{count} 人の学生に申請しています。作業を続けても構いません。終了したらお知らせします。",
       "queued_failed": "この一括操作は完了しませんでした。それ以上は何も適用されませんでした。",
@@ -4932,7 +4932,7 @@
     "subtitle": "訪問者がどのようにコースを発見し、生徒に転換するかを理解します。",
     "tabs": {
       "overview": "概要",
-      "funnel": "じょうご",
+      "funnel": "ファネル",
       "geography": "地理",
       "course_types": "コースの種類"
     },
@@ -4980,7 +4980,7 @@
         "SELF_PACED": "マイペース",
         "LIVE_CLASS": "ライブクラス",
         "COMPLIANCE": "コンプライアンス",
-        "PUBLIC": "公共"
+        "PUBLIC": "公開"
       }
     },
     "topCourses": {
@@ -5008,7 +5008,7 @@
     "months_ago": "{count, plural, other {# か月前}}",
     "years_ago": "{count, plural, other {# 年前}}",
     "exercises": "演習",
-    "graded": "段階的",
+    "graded": "採点済み",
     "not_graded": "採点されていない",
     "enrolled_courses": "登録コース",
     "enrolled_courses_description": "登録されているすべてのコース",
@@ -5021,7 +5021,7 @@
     "assignment_completion_description": "完了した課題の割合",
     "average_grade_description": "完了したすべての課題の平均成績",
     "lessons": "レッスン",
-    "tutors": "家庭教師",
+    "tutors": "講師",
     "avg_grade": "平均成績",
     "lessons_completed": "完了したレッスン",
     "average_grade": "平均成績",
@@ -5090,7 +5090,7 @@
         "no_recent_deliveries": "24時間以内に配達はありません"
       },
       "health": {
-        "healthy": "健康",
+        "healthy": "正常",
         "retrying": "再試行中",
         "degraded": "失敗しました",
         "disabled": "自動無効化"
@@ -5166,13 +5166,13 @@
         "course_payment_request_created": "学生がコース料金の支払いを要求する"
       },
       "deliveries": {
-        "title": "配達",
+        "title": "配信",
         "description": "過去 30 日間のイベント",
         "back": "配達に戻る",
         "filter_all": "すべてのステータス",
         "empty": "このフィルターに一致する配信はありません。",
         "load_error": "配達物を読み込めませんでした。もう一度試してください。",
-        "redeliver": "再配達",
+        "redeliver": "再配信",
         "test_badge": "テスト",
         "status": {
           "PENDING": "再試行中",
@@ -5184,7 +5184,7 @@
           "event": "イベント",
           "event_id": "イベントID",
           "status": "ステータス",
-          "attempt": "試みる",
+          "attempt": "試行",
           "http": "HTTPステータス",
           "duration": "応答時間",
           "time": "送信済み",
@@ -5216,7 +5216,7 @@
       "revoke": "取り消し",
       "created_at_label": "作成:",
       "last_used_label": "最後に使用した:",
-      "never_used": "決してしない",
+      "never_used": "未使用",
       "table_key": "キー",
       "table_status": "ステータス",
       "table_created": "作成されました",
@@ -5902,9 +5902,9 @@
     "home": "ダッシュボード",
     "my_learning": "私の学び",
     "certificates": "証明書",
-    "exercise": "運動",
+    "exercise": "演習",
     "community": "コミュニティ",
-    "explore": "探検する",
+    "explore": "探す",
     "help": "ヘルプ",
     "settings": "設定",
     "cohorts": "コホート"
@@ -5945,7 +5945,7 @@
     "not_submitted": "未提出",
     "submitted": "提出済み",
     "in_progress": "採点中",
-    "graded": "段階的",
+    "graded": "採点済み",
     "lesson": "レッスン"
   },
   "explore": {
@@ -6368,7 +6368,7 @@
       "modal": {
         "title": "コースに招待されました",
         "description": "招待を受け入れて、コースを学習に追加します。",
-        "accept": "受け入れる",
+        "accept": "承諾",
         "later": "後で"
       },
       "messages": {
@@ -6528,7 +6528,7 @@
     "messages_used_label": "今月のメッセージ",
     "quick_action": {
       "upload_document_course": "ドキュメントをアップロードしてコースを作成する",
-      "draft_lesson": "レッスンの草案を作成する",
+      "draft_lesson": "レッスンの下書きを作成する",
       "generate_questions_from_lesson": "このレッスンから質問を生成する",
       "summarize_lesson": "このレッスンを要約する",
       "publish_course": "このコースの公開にご協力ください"
@@ -6540,7 +6540,7 @@
       "what_to_review": "次に何を見直すべきですか?"
     },
     "plan_applying_changes": "変更を適用する",
-    "plan_working": "働く",
+    "plan_working": "処理中",
     "plan_thinking": "ご要望を検討中…",
     "plan_progress": "{completed} / {total} ステップが完了しました",
     "run_running": "生成コース",
@@ -6557,7 +6557,7 @@
     "send": "送信",
     "copy_full_error": "完全コピーエラー",
     "resize_panel_aria_label": "AI アシスタント パネルのサイズ変更",
-    "generic_working": "働く",
+    "generic_working": "処理中",
     "input_placeholder": "AIアシスタントに聞いてみると…",
     "ask_ai": "AIに聞く",
     "content_input_placeholder": "この内容について質問する…",
@@ -6636,7 +6636,7 @@
     "run_failed_after": "{action} は正常に終了しませんでした。",
     "tool": {
       "pending": {
-        "working": "働く",
+        "working": "処理中",
         "unknown_tool": "{toolName} の作業中",
         "get_course_structure": "リーディングコースの構造",
         "get_lesson_content": "レッスン内容を読む",
@@ -6735,12 +6735,12 @@
       }
     },
     "mention_lesson": "レッスン",
-    "mention_exercise": "運動",
+    "mention_exercise": "演習",
     "mention_section": "セクション",
     "mention_no_results": "一致するコンテンツはありません",
     "uploading_document": "ドキュメントをアップロードしています...",
     "agent_running_warning": "エージェントが完了すると、変更がコースに表示されます。ページをリロードしないでください。",
-    "agent_running_warning_dismiss": "解雇する",
+    "agent_running_warning_dismiss": "閉じる",
     "error_rate_limit": "AI サービスは一時的にビジー状態です。しばらくしてからもう一度お試しください。",
     "error_rate_limit_with_wait": "AI サービスは一時的にビジー状態です。 {seconds} 秒後にもう一度お試しください。",
     "error_context_too_long": "会話が長すぎます。新しいチャットを開始するか、メッセージを短くしてみてください。",
@@ -6759,7 +6759,7 @@
     "resize_panel_aria_label": "サイズ変更パネル",
     "titles": {
       "ai_assistant": "AIアシスタント",
-      "transcript": "成績証明書"
+      "transcript": "文字起こし"
     },
     "floating": {
       "resize_aria": "アシスタントウィンドウのサイズ変更",
@@ -6795,10 +6795,10 @@
       "clear_all": "すべてクリア",
       "popover_title": "フィルター",
       "sort": "並べ替え",
-      "order": "注文",
+      "order": "順序",
       "status": "ステータス",
       "ascending": "昇順",
-      "descending": "説明",
+      "descending": "降順",
       "sort_name": "名前",
       "sort_courses": "コース",
       "sort_students": "学生",
@@ -6839,7 +6839,7 @@
       "edit_post": "投稿の編集",
       "editor_placeholder": "最新情報を仲間と共有する",
       "cancel": "キャンセル",
-      "post_submit": "ポスト",
+      "post_submit": "投稿",
       "pinned": "固定された",
       "delete_feed_title": "投稿を削除する",
       "delete_feed_description": "この投稿を削除してもよろしいですか?",
@@ -6894,7 +6894,7 @@
       "filter_title": "人物をフィルタリングする",
       "views": {
         "all": "すべての人",
-        "tutors": "家庭教師",
+        "tutors": "講師",
         "students": "学生",
         "pending_invites": "保留中の招待",
         "never_logged_in": "ログインしたことがありません"
@@ -7033,7 +7033,7 @@
     "give_feedback": "フィードバックを送信する",
     "tabs": {
       "direct": "直接",
-      "watching": "見てる"
+      "watching": "フォロー中"
     },
     "watching_empty_title": "まだ見るものはありません",
     "watching_empty_description": "フォローしているアイテムの更新情報がここに表示されます。",
@@ -7076,7 +7076,7 @@
     "label": "エクスポート",
     "copy": "コピー",
     "format_csv": "CSV",
-    "format_excel": "エクセル",
+    "format_excel": "Excel",
     "format_pdf": "PDF",
     "format_html": "HTML",
     "format_json": "JSON",
@@ -7125,7 +7125,7 @@
       "comments_off": "レッスンのコメントはオフです",
       "lesson_download": "学習者はレッスンをダウンロードできます",
       "self_enrollment": "学習者自身も参加できます",
-      "ai_tutor": "AI家庭教師が登場",
+      "ai_tutor": "AI講師が有効です",
       "compliance_retake": "再受験は {months, plural, one {# month} other {# months}} ごとに",
       "compliance_mandatory": "必須",
       "counts": "{sections} セクション · {lessons} レッスン · {exercises} 演習",
@@ -7161,7 +7161,7 @@
     },
     "empty": {
       "title": "まだコースはありません",
-      "description": "コースを一度作成したら、顧客をそのコースに登録します。自分で作成するか、エージェントに草案を作成してもらいます。",
+      "description": "コースを一度作成したら、顧客をそのコースに登録します。自分で作成するか、エージェントに下書きを作成してもらいます。",
       "enrolled": "登録済み"
     },
     "editor": {
@@ -7202,7 +7202,7 @@
       "kind": {
         "section": "セクション",
         "lesson": "レッスン",
-        "exercise": "運動"
+        "exercise": "演習"
       },
       "detail": {
         "title": "タイトル",
@@ -7229,7 +7229,7 @@
         "pricing": "価格設定",
         "certificateDesign": "証明書のデザイン",
         "certificateRules": "証明書のルール",
-        "aiTutor": "AI家庭教師"
+        "aiTutor": "AI講師"
       },
       "section_description": "このコースはテンプレートから作成されました。必要なときに変更をプルします。それ自体では何も変更されません。",
       "updates_title": "{count, plural, other {# 件の更新があります}}",
@@ -7340,7 +7340,7 @@
       "load_failed": "コホートをロードできませんでした。"
     },
     "course_picker": "コース",
-    "exercise_picker": "運動",
+    "exercise_picker": "演習",
     "not_in_section": "セクションにありません",
     "section_number": "セクション {number}",
     "section_with_title": "セクション {number} · {title}",
@@ -7349,7 +7349,7 @@
     "awaiting_grade_short": "保留中",
     "pass_mark_tag": "合格点 {mark}%",
     "of_total": "{count}/{total}",
-    "never": "決してしない",
+    "never": "未ログイン",
     "invited": "{count} 人が招待されました",
     "no_students": "学生はいません",
     "no_students_yet": "まだ生徒はいません",
@@ -7684,7 +7684,7 @@
       "cohort": "コホート",
       "created": "作成されました",
       "overdue": "期限を過ぎました",
-      "health": "健康",
+      "health": "状態",
       "section": "コース部門",
       "exercises_taken": "受講した演習",
       "actions": "アクション"
@@ -7782,7 +7782,7 @@
           "not_certified": "証明書がありません"
         },
         "completion": {
-          "label": "完成",
+          "label": "修了",
           "any": "任意の完了",
           "incomplete": "未完了"
         },
@@ -7885,7 +7885,7 @@
         "student": "学生",
         "course": "コース",
         "cohort": "コホート",
-        "exercise": "運動",
+        "exercise": "演習",
         "section": "セクション",
         "lesson": "レッスン",
         "question": "質問",
