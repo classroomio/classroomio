@@ -251,7 +251,7 @@
       "attempt_option": "試行 {attemptNumber} - {correct}/{total}",
       "attempts_select_aria": "あなたの試み",
       "privacy_hint": "ブラウザで即座に採点されます。何も提出されません。",
-      "summary_template": "あなたは [[正解]] / [[合計]] 正解しました。"
+      "summary_template": "[[total]] 問中 [[correct]] 問正解しました。"
     },
     "copy_page": {
       "copy": "ページをコピー",
@@ -1060,7 +1060,7 @@
       "gallery": {
         "heading": "人気のテーマ",
         "description": "簡単にカスタマイズできるコア機能で作られており、コーディングは必要ありません。",
-        "by_classroomio": "by ClassroomIO",
+        "by_classroomio": "ClassroomIO 提供",
         "add": "追加",
         "upgrade": "アップグレード",
         "apply_theme": "テーマの適用",
@@ -4044,7 +4044,7 @@
           "direct_email_bulk": "ダイレクトメール / 一括招待",
           "direct_email_description": "電子メール アドレスをカンマ、スペース、または改行で区切って貼り付けます。一意の安全な招待状が電子メールごとに作成されます。",
           "recipient_emails": "受信者の電子メール",
-          "recipient_emails_placeholder": "Student1@example.com、student2@example.com",
+          "recipient_emails_placeholder": "student1@example.com, student2@example.com",
           "send_invite_emails": "招待メールをすぐに送信する",
           "create_email_invites": "招待メールを作成する",
           "existing_students_title": "既存の組織の学生を追加する",
@@ -4135,7 +4135,7 @@
           "add": "追加",
           "add_team": "チームメイトや共同作業者を組織に追加します。一緒に仕事を始めましょう",
           "invite": "招待する",
-          "placeholder": "user1@domain.com、user2@domain.com",
+          "placeholder": "user1@domain.com, user2@domain.com",
           "role": "役割",
           "send_invite": "招待を送信する",
           "members": "メンバー",
@@ -6680,10 +6680,10 @@
         "undo_lesson_change": "変更を元に戻す"
       },
       "meta": {
-        "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
+        "lesson_char_count": "({count, plural, other {# 文字}})",
         "landing_page_preview": "· 変更をプレビューする",
-        "exercise_questions_added": "· {count, plural, one {# question added} other {# questions added}}",
-        "exercise_questions_updated": "· {count, plural, one {# question updated} other {# questions updated}}"
+        "exercise_questions_added": "· {count, plural, other {# 問を追加}}",
+        "exercise_questions_updated": "· {count, plural, other {# 問を更新}}"
       },
       "done": {
         "generic": "完了",
@@ -6691,7 +6691,7 @@
         "update_section": "更新されたセクション: {title}",
         "create_lesson": "作成したレッスン: {title}",
         "update_lesson": "更新されたレッスン: {title}",
-        "update_lesson_content_fallback": "Wrote {count, plural, one {# character} other {# characters}}",
+        "update_lesson_content_fallback": "{count, plural, other {# 文字を書き込みました}}",
         "remove_lesson_block": "{title} からテキスト ブロックを削除しました",
         "move_lesson_block": "{title} のブロックを移動しました",
         "add_lesson_slides_block": "スライドを {title} に追加しました",
@@ -6703,11 +6703,11 @@
         "attach_library_block": "ライブラリ ブロックを {title} に追加しました",
         "move_lesson_block_to_lesson": "ブロックを {title} に移動しました",
         "attach_document_to_lesson": "追加されたドキュメント: {title}",
-        "create_exercise": "Created exercise «{title}» · {count, plural, one {# question} other {# questions}}",
+        "create_exercise": "演習「{title}」を作成しました · {count, plural, other {# 問}}",
         "update_exercise": "更新された演習: {title}",
         "update_exercise_section": "更新された演習セクション: {title}",
-        "add_questions_fallback": "{count, plural, one {Added # question} other {Added # questions}}",
-        "update_questions_fallback": "{count, plural, one {Updated # question} other {Updated # questions}}",
+        "add_questions_fallback": "{count, plural, other {# 問を追加しました}}",
+        "update_questions_fallback": "{count, plural, other {# 問を更新しました}}",
         "create_exercise_section": "作成された演習セクション: {title}",
         "get_course_structure": "コース構造が読み込まれました",
         "get_lesson_content": "レッスンコンテンツをロードしました",
@@ -6976,7 +6976,7 @@
       "lms": {
         "heading": "あなたの目標",
         "empty_title": "目標は割り当てられていません",
-        "empty_description": "When your instructors set goals, they'll show up here.",
+        "empty_description": "講師が目標を設定すると、ここに表示されます。",
         "due_in_days": "{days} 日以内に期限が切れる",
         "due_tomorrow": "明日締め切り",
         "due_today": "本日締切",
@@ -7420,7 +7420,7 @@
       "section_scorecard": "コースセクションごとに 1 行。ビデオ出席率は、視聴されたレッスンビデオの割合です。授業への出席は講師によってマークされます。",
       "needs_attention": "学生は複数の理由で出席する場合があります。",
       "overdue": "学生には、締め切り前にスケジュールされたリマインダーメールがすでに送信されています。 「リマインダーを送信」を選択すると、すぐにリマインダーが送信されます。",
-      "hardest_questions": "The questions students miss most, with the most common wrong answer.",
+      "hardest_questions": "学生が最も間違える問題と、最も多い誤答です。",
       "logins_per_day": "毎日サインインした生徒たち。",
       "students": {
         "all_courses": "学生をクリックしてコースを表示します。",
@@ -7431,12 +7431,12 @@
       "cohorts_select": "コホートを選択してダッシュボードを開きます。",
       "courses_select": "コースを選択してダッシュボードを開きます。",
       "cohorts_in_table": "上の表の {count, plural, one {コホート} other {# コホート}}。",
-      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "courses_in_table": "上の表の{count, plural, =1 {コース} other {# 件のコース}}です。",
       "not_counted_empty": "カウントされません: {names} (生徒はまだいません)。",
       "not_charted_empty": "グラフ化されていません: {names} (生徒はまだいません)。",
       "direct_students_charted": "直接の生徒はコホートに属しません。それらは独自の行として表示されます。",
       "bucketed_total": "各バーは、{days} 日間のログイン数を合計します。生徒は 1 日に 1 回カウントします。",
-      "student_sheet_pick_course": "Click a course to chart their scores by exercise.",
+      "student_sheet_pick_course": "コースをクリックすると、演習ごとのスコアをグラフで表示します。",
       "lesson_dropoff": "最も急な下りは {from} と {to} の間です。",
       "no_pass_mark": "ここの演習にはまだ合格点がないため、合格率はありません。練習問題に合格マークを設定すると、それが表示されます。"
     },
@@ -7459,11 +7459,11 @@
       }
     },
     "kpi": {
-      "share_of_cohort": "{percent} of the cohort",
-      "share_of_enrolled": "{percent} of enrolled",
-      "share_of_completions": "{percent} of completions",
+      "share_of_cohort": "コホートの {percent}",
+      "share_of_enrolled": "登録者の {percent}",
+      "share_of_completions": "修了者の {percent}",
       "avg_progress_hint": "完了した必須レッスンと演習数 / 合計",
-      "avg_score_hint": "across exercises taken",
+      "avg_score_hint": "受けた演習全体の平均",
       "overdue_hint": "期限を過ぎた、まだ終わっていない",
       "completed_certified": "コホートの {percent} · {count} 人が認定されました",
       "enrolled_this_week": "{count, plural, =0 {今週は新入生はいません} other {+# 今週は}}",
@@ -7479,8 +7479,8 @@
       "needs_attention_hint": "非アクティブ、低スコア、または期限切れ",
       "delta": {
         "this_week": {
-          "up": "+{count} pts this week",
-          "down": "−{count} pts this week",
+          "up": "今週 +{count} ポイント",
+          "down": "今週 −{count} ポイント",
           "flat": "今週は変化なし"
         },
         "vs_last_week": {
@@ -7500,23 +7500,23 @@
         }
       },
       "no_data": {
-        "students": "no students yet",
-        "graded": "no graded attempts yet",
+        "students": "まだ学生がいません",
+        "graded": "まだ採点済みの解答がありません",
         "first_try": "合格点演習の採点試行はまだありません",
-        "completions": "no completions yet",
-        "enrolments": "no enrolments yet",
+        "completions": "まだ修了者がいません",
+        "enrolments": "まだ登録がありません",
         "in_days": "過去 {days} 日間に何もありませんでした"
       }
     },
     "widgets": {
       "kpi_logged_in_today": {
-        "title": "Logged in today"
+        "title": "今日ログインした学生"
       },
       "kpi_logged_in_week": {
-        "title": "Logged in, last 7 days"
+        "title": "過去 7 日間にログインした学生"
       },
       "kpi_avg_progress": {
-        "title": "Average progress"
+        "title": "平均進捗"
       },
       "kpi_avg_score": {
         "title": "平均点"
@@ -7941,7 +7941,7 @@
       "deny": "拒否する",
       "unknown_client": "このアプリ",
       "error_title": "この接続リクエストは無効です",
-      "error_description": "Go back to the app you were connecting and start again.",
+      "error_description": "接続しようとしていたアプリに戻り、もう一度やり直してください。",
       "verified": "確認済み",
       "allow_changes": {
         "label": "{client} による変更を許可する",
@@ -7949,7 +7949,7 @@
       },
       "plan_required": "このアプリを接続するには、Early Adopter にアップグレードしてください",
       "no_eligible_title": "対象となるワークスペースがありません",
-      "no_eligible_description": "None of your workspaces has a plan that includes this app. Upgrade to Early Adopter or Enterprise and try again."
+      "no_eligible_description": "このアプリを利用できるプランのワークスペースがありません。Early Adopter または Enterprise にアップグレードして、もう一度お試しください。"
     },
     "error": {
       "generic": "何か問題が発生しました。もう一度試してください。",
@@ -7958,7 +7958,7 @@
     "scope_group": {
       "courses": {
         "read": "コースとその内容を表示する",
-        "write": "Create, edit and publish courses and their content"
+        "write": "コースとそのコンテンツを作成、編集、公開する"
       },
       "exercises": {
         "read": "演習と質問を表示する",
