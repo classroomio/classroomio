@@ -276,6 +276,10 @@
     },
     "outline": {
       "label": "このページでは"
+    },
+    "not_released": {
+      "title": "まだ配信されていません",
+      "description": "作成者はまだこのコンテンツを配信していません。後でもう一度確認してください。"
     }
   },
   "onboarding": {
@@ -2662,12 +2666,14 @@
         },
         "drag": "カードをドラッグして並べ替えます",
         "no_lesson": "まだレッスンはありません",
-        "content_locked_title": "このコンテンツはロックされています",
-        "content_locked_description": "講師はまだこのコンテンツのロックを解除していません。前のコンテンツを完了するか、後でもう一度確認してください。",
+        "content_locked_title": "まだ配信されていません",
+        "content_locked_description": "講師はまだこのコンテンツを配信していません。後でもう一度確認してください。",
         "content_progression_locked_title": "最初に前のコンテンツを完了してください",
         "content_progression_locked_description": "このコンテンツは、コース内の前の必須アイテムを完了するとロックが解除されます。",
         "content_progression_locked_description_lesson": "このレッスンは、コース内の前の必須項目を完了するとロックが解除されます。",
         "content_progression_locked_description_exercise": "この演習は、コース内の前の必須項目を完了するとロックが解除されます。",
+        "content_progression_locked_description_named_lesson": "「{title}」を完了すると、このレッスンのロックが解除されます。",
+        "content_progression_locked_description_named_exercise": "「{title}」を完了すると、この演習のロックが解除されます。",
         "completion_policy": {
           "label": "完了ルール",
           "manual_label": "手動",
@@ -2681,7 +2687,9 @@
         "settings": {
           "access": {
             "title": "アクセス",
-            "description": "ロックを解除するまで、生徒はロックされたレッスンを開くことができません。"
+            "description": "生徒はコースの目次でこのレッスンを確認できますが、配信するまで開くことはできません。",
+            "released": "配信中",
+            "not_released": "未配信"
           },
           "comments": {
             "title": "レッスンコメント",
@@ -2778,9 +2786,11 @@
           "lesson_title": "レッスンのタイトル",
           "course_section_title": "セクションのタイトル",
           "click_to": "クリックして",
-          "lock": "ロック",
-          "unlock": "ロックを解除する",
+          "lock": "配信を止める",
+          "unlock": "配信する",
           "all": "すべて",
+          "hold_back_all": "すべての配信を止める",
+          "release_all": "すべて配信する",
           "fullname": "フルネーム",
           "save": "保存",
           "edit": "編集",
@@ -2827,7 +2837,7 @@
         "add_content_lesson_title_placeholder": "例: 変数の使い方",
         "content_menu": {
           "label": "コンテンツオプション",
-          "unlock_all": "すべてのコンテンツのロックを解除する",
+          "unlock_all": "すべてのコンテンツを配信する",
           "enable_grouping": "コンテンツのグループ化を有効にする",
           "disable_grouping": "コンテンツのグループ化を無効にする"
         },
@@ -3824,7 +3834,7 @@
           "optional": "オプション",
           "make_required": "必須にする",
           "make_optional": "オプションにする",
-          "make_all_required": "必要なものをすべて揃える",
+          "make_all_required": "すべて必須にする",
           "make_all_optional": "すべてをオプションにする",
           "make_section_required": "セクションを必須にする",
           "make_section_optional": "セクションをオプションにする",
@@ -4475,9 +4485,9 @@
         "content_grouping_title": "コンテンツのグループ化",
         "content_grouping_description": "コンテンツリストのセクションごとにグループレッスンと演習を行います。",
         "progression_mode_title": "学生の進歩",
-        "progression_mode_description": "学生がロックされていないすべてのコンテンツにアクセスできるか、または項目を順番に完了する必要があるかを制御します。ビデオ視聴の完了は、アップロードされたビデオのみを追跡します。",
-        "progression_mode_free": "無料 — ロック解除されたコンテンツにアクセス可能",
-        "progression_mode_sequential": "順次 — 前の項目を完了すると、次にロックが解除されます",
+        "progression_mode_description": "生徒が配信済みの項目を自由に開けるか、順番に完了する必要があるかを設定します。動画の視聴完了は、アップロードされた動画のみ記録されます。",
+        "progression_mode_free": "自由 — 生徒は配信済みの項目を自由に開けます",
+        "progression_mode_sequential": "順次 — 生徒は必須項目を完了すると次の項目を開けます",
         "comments": {
           "title": "レッスンコメント",
           "description": "学生がこのコースのレッスン全体でコメントを表示および追加できるようにします。個別のレッスンでもコメントを無効にすることができます。",
@@ -4487,7 +4497,7 @@
         "lesson_download": "レッスンのダウンロード",
         "available": "登録済みの生徒にレッスンを PDF としてダウンロードさせます。",
         "allow_markdown_export": "学習者がレッスン ページをマークダウンとしてコピーできるようにする",
-        "allow_markdown_export_description": "有効にすると、公開レッスン ページに、レッスン コンテンツ (ビデオを除く) をマークダウンとしてエクスポートする [ページをコピー] ボタンが表示されます。これにより、ロック解除された各レッスンのパブリック Markdown URL も公開されます。",
+        "allow_markdown_export_description": "有効にすると、公開レッスンページに「ページをコピー」ボタンが表示され、レッスンのコンテンツ (動画を除く) を Markdown としてエクスポートできます。また、配信済みの各レッスンに公開 Markdown URL が作成されます。",
         "course_download": "コースのダウンロード",
         "course_avail": "このコースのコピーをダウンロードしてください。",
         "download": "ダウンロード",
@@ -4510,10 +4520,10 @@
         "completion_deadline_label": "コース修了期限",
         "completion_deadline_helper": "学生はこの日付時刻 (現地時間) までにコースを完了する必要があります。期限を設けない場合は空のままにしておきます。",
         "locked_content": {
-          "title": "{count} 個のコース項目がロックされています",
-          "description": "登録した生徒は、ロックが解除されるまで、ロックされたレッスンや演習を受講することはできません。",
-          "description_live": "ロックされたレッスンと演習は、ロックを解除するまで生徒には表示されません。コンテンツを毎週リリースする場合に便利です。",
-          "unlock_all": "すべてのロックを解除する"
+          "title": "{count} 件のコース項目がまだ配信されていません",
+          "description": "登録済みの生徒は、配信されるまでこれらのレッスンや演習を開くことができません。",
+          "description_live": "未配信のレッスンと演習は、配信するまで生徒が開くことはできません。毎週コンテンツを配信する場合に便利です。",
+          "unlock_all": "すべて配信する"
         },
         "type": "コースタイプ",
         "course_type_desc": "よりパーソナライズされたエクスペリエンスを得るためにコース タイプを更新します。",
@@ -4563,7 +4573,7 @@
         },
         "callout": {
           "legend": "公開コースの呼びかけ",
-          "description": "各レッスンの下部およびロックされたアイテムの代わりに表示されます。これを使用して、学生をサイトまたは有料コースに誘導します。",
+          "description": "各レッスンの下部と、まだ配信していない項目の代わりに表示されます。生徒をサイトや有料コースに誘導するために使用します。",
           "title_label": "タイトル",
           "title_placeholder": "これについてさらに詳しく知りたいですか?",
           "description_label": "説明",
@@ -6085,8 +6095,8 @@
     },
     "course_settings": {
       "success": {
-        "unlocked_all_content": "すべてのコースアイテムのロックが解除されました",
-        "all_content_already_unlocked": "すべてのコンテンツはすでにロック解除されています",
+        "unlocked_all_content": "すべてのコース項目を配信しました",
+        "all_content_already_unlocked": "すべてのコンテンツはすでに配信されています",
         "content_grouping_enabled": "コンテンツのグループ化が有効になっている",
         "content_grouping_disabled": "コンテンツのグループ化が無効になっています",
         "download": "ダウンロード完了",
@@ -7724,7 +7734,7 @@
       "empty": "これらのフィルターに一致する生徒はいません",
       "failed": "学生は読み込めませんでした",
       "cells_failed": "エクササイズのスコアを読み込めませんでした",
-      "attempts_unavailable": "どの演習に試行があるかを確認できなかったため、ロックされた演習の一部が非表示になっている可能性があります。",
+      "attempts_unavailable": "どの演習に解答があるかを確認できなかったため、一部の未配信の演習が表示されていない可能性があります。",
       "showing": {
         "cohort": "コホート内の {total} 件中 {from}–{to} を表示しています · {count, plural, one {# students} other {# students}}",
         "course": "一致する {total} 件中 {from}–{to} を表示しています · {count, plural, one {# students} other {# students}} をコース内で表示しています",
