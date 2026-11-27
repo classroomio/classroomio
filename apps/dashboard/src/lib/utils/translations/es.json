@@ -592,9 +592,9 @@
     "any_course": "Cualquier curso que completes se mostrará aquí.",
     "find_courses": "encontrar cursos",
     "pending_invites": {
-      "title": "Tienes invitaciones a cursos pendientes",
       "description": "Acéptalas para empezar a aprender.",
-      "review": "Revisar invitaciones"
+      "review": "Revisar invitaciones",
+      "title": "Tienes invitaciones pendientes"
     }
   },
   "certificates": {
@@ -700,7 +700,8 @@
       "revoke": "Revocar invitación pendiente",
       "resend_snackbar_success": "Correo electrónico de invitación enviado",
       "resend_snackbar_email_failed": "La invitación se renovó pero no se pudo enviar el correo electrónico.",
-      "revoke_snackbar_success": "Invitación pendiente revocada"
+      "revoke_snackbar_success": "Invitación pendiente revocada",
+      "revoke_course_snackbar_success": "Acceso al curso revocado"
     },
     "assign": {
       "title": "Asignar a cursos",
@@ -759,7 +760,9 @@
         "duplicate_in_file": "Duplicado en el archivo",
         "over_seat_limit": "No quedan plazas disponibles",
         "missing_email": "Sin correo electrónico",
-        "is_staff": "Personal, no estudiante"
+        "is_staff": "Personal, no estudiante",
+        "archived": "Miembro archivado",
+        "already_invited": "Ya invitado"
       },
       "submit_count": "Importar {count} estudiantes",
       "result_heading": "{count} estudiantes importados",
@@ -1218,7 +1221,8 @@
           "members_only": "Solo los miembros de esta organización pueden inscribirse. Solicite una invitación a un administrador.",
           "invite_restricted_email": "Esta invitación se envió a {inviteEmail}, pero has iniciado sesión como {currentEmail}. Cierra sesión y continúa con el correo invitado.",
           "invite_restricted": "Esta invitación está restringida a otra cuenta. Cierra sesión y continúa con la cuenta invitada.",
-          "switch_account": "Cerrar sesión y cambiar de cuenta"
+          "switch_account": "Cerrar sesión y cambiar de cuenta",
+          "invite_replaced": "Esta invitación fue reemplazada. Consulta tu último correo electrónico."
         },
         "pricing_section": {
           "free": "Gratis",
@@ -1580,7 +1584,16 @@
             "multi_use_30d": "Multiuso (30 días)",
             "custom": "personalizado"
           },
-          "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes."
+          "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes.",
+          "revoke_course_access": "Revocar el acceso a este curso",
+          "outcomes": {
+            "title": "Resultados",
+            "enrolled": "Añadido al curso",
+            "already_enrolled": "Ya está en este curso",
+            "invited": "Invitado",
+            "archived": "Miembro archivado",
+            "not_found": "Ningún miembro coincidente"
+          }
         },
         "learner": "Estudiante",
         "views": {
@@ -1607,13 +1620,15 @@
           "in_progress": "En progreso",
           "completed": "Completado",
           "membership": "Membresía",
-          "joined": "Se unió",
-          "invited": "Invitado, aún no hay cuenta",
+          "joined": "Inscrito",
+          "invited": "Invitado",
           "certificate": "Certificado",
           "earned": "Ganado",
           "not_earned": "No ganado",
           "no_login_since": "No he iniciado sesión desde",
-          "joined_within": "Unidos dentro"
+          "joined_within": "Unidos dentro",
+          "status": "Estado",
+          "all_statuses": "Todos"
         }
       },
       "marks": {
@@ -5097,17 +5112,27 @@
       "join_failed": "No se pudo unir a la organización",
       "joined": "Organización unida"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "Te han invitado a un curso",
-        "description": "Acepta una invitación para añadir el curso a tu aprendizaje.",
-        "accept": "Aceptar",
-        "later": "Más tarde"
+        "title": "Has sido invitado",
+        "description": "Únete a una academia para aceptar sus cursos y cohortes."
       },
+      "join_org": "Unirse a {orgName}",
+      "joined_button": "Miembro",
+      "later": "Más tarde",
+      "pending_courses": "Has sido invitado a los cursos de {orgName}.",
+      "courses_count": "{count, plural, one {# curso} other {# cursos}}",
+      "untitled_course": "Curso sin título",
+      "joined_title": "¡Ya estás dentro! Empieza a aprender:",
       "messages": {
-        "joined": "Te has unido al curso.",
-        "join_failed": "No pudimos aceptar la invitación. Inténtalo de nuevo."
-      }
+        "joined": "Te has unido a la academia.",
+        "join_failed": "No pudimos unirte a la academia. Inténtalo de nuevo."
+      },
+      "invitation_team": "Te han invitado a {orgName} como {role}.",
+      "verify_to_accept": "Verifique su dirección de correo electrónico para aceptar esta invitación.",
+      "send_verification": "Enviar correo electrónico de verificación",
+      "verification_sent": "Correo electrónico de verificación enviado",
+      "untitled_cohort": "Cohorte sin título"
     }
   },
   "automation": {
@@ -6771,7 +6796,12 @@
         "students": "estudiantes",
         "pending_invites": "Invitaciones pendientes",
         "never_logged_in": "Nunca inicie sesión"
-      }
+      },
+      "invite_revoked": "Cohorte eliminada de la invitación",
+      "resend_invite": "Reenviar invitación",
+      "revoke_invite": "Quitar de la invitación",
+      "remove_member": "Eliminar de la cohorte",
+      "invite_new_students_description": "Invite a nuevas personas a su organización con esta cohorte según su invitación. Crean una cuenta, aceptan la invitación y se unen al grupo y sus cursos."
     },
     "courses": {
       "add": "Agregar curso",

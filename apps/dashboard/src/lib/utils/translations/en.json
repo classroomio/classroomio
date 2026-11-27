@@ -4107,7 +4107,16 @@
           "snackbar_failed_load_audit": "Failed to load invite audit",
           "snackbar_metadata_copied": "Invite metadata copied",
           "snackbar_email_invites_success": "Created {count} invite(s). Sent {sent}, failed {failed}. Skipped {duplicates} duplicate(s).",
-          "select_at_least_one_student": "Select at least one existing student"
+          "select_at_least_one_student": "Select at least one existing student",
+          "revoke_course_access": "Revoke access to this course",
+          "outcomes": {
+            "title": "Results",
+            "enrolled": "Added to course",
+            "already_enrolled": "Already in this course",
+            "invited": "Invited",
+            "archived": "Archived member",
+            "not_found": "No matching member"
+          }
         },
         "delete_confirmation": {
           "title": "Delete",
@@ -4182,7 +4191,11 @@
           "earned": "Earned",
           "not_earned": "Not earned",
           "no_login_since": "No login since",
-          "joined_within": "Joined within"
+          "joined_within": "Joined within",
+          "status": "Status",
+          "all_statuses": "All",
+          "joined": "Joined",
+          "invited": "Invited"
         },
         "window": {
           "7d": "7 days",
@@ -4403,7 +4416,8 @@
           "members_only": "Only members of this organization can enroll. Ask an administrator for an invitation.",
           "invite_restricted_email": "This invitation was sent to {inviteEmail}, but you're signed in as {currentEmail}. Sign out and continue with the invited email.",
           "invite_restricted": "This invitation is restricted to a different account. Sign out and continue with the invited account.",
-          "switch_account": "Sign out and switch account"
+          "switch_account": "Sign out and switch account",
+          "invite_replaced": "This invitation was replaced. Check your latest email."
         },
         "course_content": "Course content",
         "modules": "modules",
@@ -4826,7 +4840,9 @@
         "duplicate_in_file": "Duplicate in file",
         "is_staff": "Staff, not a student",
         "over_seat_limit": "No seats left",
-        "missing_email": "No email"
+        "missing_email": "No email",
+        "archived": "Archived member",
+        "already_invited": "Already invited"
       }
     },
     "assign": {
@@ -4847,7 +4863,8 @@
       "revoke": "Revoke pending invite",
       "resend_snackbar_success": "Invitation email sent",
       "resend_snackbar_email_failed": "Invite was renewed but the email could not be sent",
-      "revoke_snackbar_success": "Pending invitation revoked"
+      "revoke_snackbar_success": "Pending invitation revoked",
+      "revoke_course_snackbar_success": "Course access revoked"
     },
     "never": "Never",
     "progress": "Progress",
@@ -5933,7 +5950,7 @@
     "any_course": "Any course that you complete will be displayed here",
     "find_courses": "Find courses",
     "pending_invites": {
-      "title": "You have pending course invitations",
+      "title": "You have pending invitations",
       "description": "Accept them to start learning.",
       "review": "Review invitations"
     }
@@ -6374,17 +6391,27 @@
       "join_failed": "Failed to join organization",
       "joined": "Joined organization"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "You've been invited to a course",
-        "description": "Accept an invitation to add the course to your learning.",
-        "accept": "Accept",
-        "later": "Later"
+        "title": "You've been invited",
+        "description": "Join an academy to accept its courses and cohorts."
       },
+      "join_org": "Join {orgName}",
+      "joined_button": "Joined",
+      "later": "Later",
+      "pending_courses": "You've been invited to courses at {orgName}.",
+      "courses_count": "{count, plural, one {# course} other {# courses}}",
+      "untitled_course": "Untitled course",
+      "untitled_cohort": "Untitled cohort",
+      "joined_title": "You're in! Start learning:",
       "messages": {
-        "joined": "You've joined the course.",
-        "join_failed": "We couldn't accept this invitation. Please try again."
-      }
+        "joined": "You've joined the academy.",
+        "join_failed": "Failed to join the academy."
+      },
+      "invitation_team": "You've been invited to {orgName} as {role}.",
+      "verify_to_accept": "Verify your email address to accept this invitation.",
+      "send_verification": "Send verification email",
+      "verification_sent": "Verification email sent"
     }
   },
   "content": {
@@ -6908,7 +6935,12 @@
         "students": "Students",
         "pending_invites": "Pending invites",
         "never_logged_in": "Never logged in"
-      }
+      },
+      "invite_revoked": "Cohort removed from the invitation",
+      "resend_invite": "Resend invite",
+      "revoke_invite": "Remove from invitation",
+      "remove_member": "Remove from cohort",
+      "invite_new_students_description": "Invite new people into your organization with this cohort on their invitation. They create an account, accept the invite, and join the cohort and its courses."
     },
     "lms": {
       "empty_title": "No cohorts yet",

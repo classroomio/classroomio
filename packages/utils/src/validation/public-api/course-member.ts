@@ -36,7 +36,9 @@ export const ZPublicApiCourseMembersQuery = ZPublicApiPaginationQuery.extend({
   progress: CoursePeopleProgress.optional().describe(
     'Joined students only; tutors, admins and pending invites never match.'
   ),
-  membership: CoursePeopleMembership.optional().describe('invited = the invite has not been accepted yet.'),
+  membership: CoursePeopleMembership.optional().describe(
+    'Omit to list joined members, then invited people. invited = the invite has not been accepted yet.'
+  ),
   enrolledWithin: CoursePeopleEnrolledWindow.optional().describe('Added to the course within the last N days.'),
   lastLoginBefore: CoursePeopleActivityWindow.optional().describe(
     'Not logged in for N days or more (including never); never = no login recorded.'
@@ -57,7 +59,7 @@ export const ZPublicApiAddCourseMember = z
       .email()
       .optional()
       .describe(
-        "Must belong to someone already in your organization; it is linked to that person's profile. To onboard someone new, use the invites endpoints."
+        'Email of someone who has joined your organization. A pending member gets 409 MEMBER_NOT_JOINED; invite them with the enrollments endpoint instead.'
       ),
     name: z.string().optional().describe('Used in the welcome email sent to added tutors/admins'),
     sendEmail: z

@@ -24,7 +24,9 @@ export const ZPublicApiCohortMembersQuery = ZPublicApiPaginationQuery.extend({
   roleId: z.coerce.number().int().min(ROLE.TUTOR).max(ROLE.STUDENT).optional().describe('2 = tutor, 3 = student'),
   sortBy: CohortPeopleSortBy.default('joined').describe('joined = when they were added. Default: joined.'),
   sortOrder: CohortPeopleSortOrder.default('asc').describe('Default: asc.'),
-  membership: CohortPeopleMembership.optional().describe('invited = the invite has not been accepted yet.'),
+  membership: CohortPeopleMembership.optional().describe(
+    'Omit to list joined members, then invited people (cohort team only). invited = the invite has not been accepted yet.'
+  ),
   lastLoginBefore: CohortPeopleActivityWindow.optional().describe(
     'Not logged in for N days or more (including never); never = no login recorded.'
   )
@@ -41,7 +43,7 @@ export const ZPublicApiAddCohortMembers = z.object({
           .email()
           .optional()
           .describe(
-            'Linked to its existing profile if there is one; otherwise the membership is stored against the email alone.'
+            'A student who already joined your organization is added directly; anyone else is sent an organization invite that carries this cohort.'
           ),
         name: z.string().optional(),
         roleId: ZPublicApiCohortMemberRole

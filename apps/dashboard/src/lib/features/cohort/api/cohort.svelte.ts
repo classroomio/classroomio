@@ -10,6 +10,8 @@ import type {
   GetCohortInviteLinkRequest,
   ListCohortPeopleQuery,
   ListCohortPeopleRequest,
+  ResendCohortInviteRequest,
+  RevokeCohortInviteRequest,
   ToggleCohortInviteLinkRequest
 } from '../utils/types';
 import type {
@@ -243,6 +245,26 @@ class CohortApi extends BaseApiWithErrors {
     });
   }
 
+  /** Sends a pending student a fresh link to their organization invite with this cohort on it. */
+  async resendInvite(cohortId: string, email: string) {
+    return this.execute<ResendCohortInviteRequest>({
+      requestFn: () => classroomio.cohort[':cohortId'].invite.resend.$post({ param: { cohortId }, json: { email } }),
+      onSuccess: () => snackbar.success('audience.invite.resend_snackbar_success'),
+      onError: (error) => snackbar.error(error.message || 'snackbar.something'),
+      logContext: 'resendCohortInvite'
+    });
+  }
+
+  /** Removes this cohort from a pending student's organization invite. */
+  async revokeInvite(cohortId: string, email: string) {
+    return this.execute<RevokeCohortInviteRequest>({
+      requestFn: () => classroomio.cohort[':cohortId'].invite.revoke.$post({ param: { cohortId }, json: { email } }),
+      onSuccess: () => snackbar.success('cohorts.people.invite_revoked'),
+      onError: (error) => snackbar.error(error.message || 'snackbar.something'),
+      logContext: 'revokeCohortInvite'
+    });
+  }
+
   // Courses
 
   async listCourses(cohortId: string, force = false) {
@@ -345,20 +367,18 @@ class CohortApi extends BaseApiWithErrors {
    * endpoint so a Cohort ADMIN/TUTOR can invite without org-admin rights.
    * Returns whether the call succeeded so callers can refresh their lists.
    */
-  async inviteStudentsToCohort(cohortId: string, data: TInviteStudentsToCohort): Promise<boolean> {
-    let ok = false;
-
-    await this.execute<(typeof classroomio.cohort)[':cohortId']['invite']['$post']>({
+  async inviteStudentsToCohort(cohortId: string, data: TInviteStudentsToCohort) {
+    const result = await this.execute<(typeof classroomio.cohort)[':cohortId']['invite']['$post']>({
       requestFn: () => classroomio.cohort[':cohortId'].invite.$post({ param: { cohortId }, json: data }),
       onSuccess: async () => {
         await this.listMembers(cohortId, true);
         snackbar.success(t.get('cohorts.invite_sent') || 'Invites sent');
-        ok = true;
       },
+      onError: (error) => snackbar.error(error.message || 'snackbar.something'),
       logContext: 'inviteStudentsToCohort'
     });
 
-    return ok;
+    return result?.data ?? null;
   }
 
   /**

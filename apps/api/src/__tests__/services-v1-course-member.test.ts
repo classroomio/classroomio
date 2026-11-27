@@ -147,12 +147,12 @@ describe('services/v1/courses/members', () => {
       [{ roleId: ROLE.STUDENT, email: 'a@example.com', profileId: 'profile-1' }],
       'public_api',
       expect.objectContaining({ actorProfileId: ACTOR_ID }),
-      { sendEmail: true }
+      { sendEmail: true, rejectExisting: true }
     );
     expect(result).toEqual({ id: MEMBER_ID });
   });
 
-  it('addCourseMemberService keeps a pending org member (no profile yet) as an email-only member', async () => {
+  it('addCourseMemberService returns 409 MEMBER_NOT_JOINED for a pending org member and points to enrollment', async () => {
     const payload = { roleId: ROLE.STUDENT, email: 'pending@example.com', sendEmail: true };
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
       {
@@ -165,15 +165,11 @@ describe('services/v1/courses/members', () => {
     ]);
     vi.mocked(addMembers).mockResolvedValue([{ id: MEMBER_ID }] as Awaited<ReturnType<typeof addMembers>>);
 
-    await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
-
-    expect(addMembers).toHaveBeenCalledWith(
-      COURSE_ID,
-      [{ roleId: ROLE.STUDENT, email: 'pending@example.com' }],
-      'public_api',
-      expect.objectContaining({ actorProfileId: ACTOR_ID }),
-      { sendEmail: true }
-    );
+    await expect(addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload)).rejects.toMatchObject({
+      statusCode: 409,
+      code: 'MEMBER_NOT_JOINED'
+    });
+    expect(addMembers).not.toHaveBeenCalled();
   });
 
   it('addCourseMemberService returns 404 when the email does not belong to this organization', async () => {
@@ -243,7 +239,9 @@ describe('services/v1/courses/members', () => {
   });
 
   it('addCourseMemberService passes a 409 through when the person is already a member', async () => {
-    vi.mocked(addMembers).mockRejectedValue(new AppError('Already a member of this course', 'CONFLICT', 409));
+    vi.mocked(addMembers).mockRejectedValue(
+      new AppError('Already a member of this course', 'COURSE_MEMBER_EXISTS', 409)
+    );
 
     await expect(
       addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, {
@@ -251,7 +249,8 @@ describe('services/v1/courses/members', () => {
         email: 'a@example.com',
         sendEmail: true
       })
-    ).rejects.toMatchObject({ statusCode: 409 });
+    ).rejects.toMatchObject({ statusCode: 409, code: 'COURSE_MEMBER_EXISTS' });
+    expect(vi.mocked(addMembers).mock.calls[0][4]).toEqual({ sendEmail: true, rejectExisting: true });
   });
 
   it('getCourseMemberService returns 404 when the member is missing or in another course', async () => {

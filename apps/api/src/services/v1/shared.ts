@@ -102,10 +102,15 @@ export async function assertProfileBelongsToOrganization(orgId: string, profileI
 }
 
 /**
- * Email twin of assertProfileBelongsToOrganization. Returns the member's profileId, or null for a pending member.
+ * Email twin of assertProfileBelongsToOrganization. Distinguishes joined members
+ * (profile bound) from pending ones (invited, no profile yet) so callers cannot
+ * mistake "pending" for "joined" and write email-only access rows.
  * Archived members are refused here instead of gaining a course seat they cannot use.
  */
-export async function assertEmailBelongsToOrganization(orgId: string, email: string): Promise<string | null> {
+export async function assertEmailBelongsToOrganization(
+  orgId: string,
+  email: string
+): Promise<{ profileId: string | null; status: string; roleId: number; joined: boolean }> {
   const members = await getOrganizationMembersByNormalizedEmails(orgId, [email]);
   if (members.length === 0) {
     throw new AppError(
@@ -126,7 +131,9 @@ export async function assertEmailBelongsToOrganization(orgId: string, email: str
     );
   }
 
-  return member?.profileId ?? null;
+  const profileId = member?.profileId ?? null;
+
+  return { profileId, status: member.status, roleId: member.roleId, joined: profileId !== null };
 }
 
 /**

@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { invitationFields, peopleListItemId, peopleListMembership } from './invited-person-responses';
+
 // Response shapes for OpenAPI docs only; handlers don't validate against them. Timestamps are Postgres text, not strict ISO.
 const timestamp = z.string();
 const nullableTimestamp = z.string().nullable();
@@ -39,6 +41,12 @@ export const ZPublicApiCohortMemberResponse = z.object({
 });
 
 export const ZPublicApiCohortMemberListItemResponse = ZPublicApiCohortMemberResponse.extend({
+  id: peopleListItemId,
+  membership: peopleListMembership,
+  invitation: z
+    .object({ ...invitationFields, cohortMemberId: z.string().uuid().nullable() })
+    .nullable()
+    .describe('Null for joined members'),
   profile: z
     .object({
       id: z.string().uuid(),
@@ -53,6 +61,20 @@ export const ZPublicApiCohortMemberListItemResponse = ZPublicApiCohortMemberResp
 
 export const ZPublicApiAddCohortMembersResponse = z.object({
   added: z.array(ZPublicApiCohortMemberResponse).describe('Memberships created by this request'),
+  invited: z
+    .array(
+      z.object({
+        index: z.number().describe('Position of the entry in the request members array'),
+        email: z.string(),
+        status: z
+          .enum(['invited', 'already_invited', 'enrolled'])
+          .describe(
+            'invited: the cohort is on their organization invite (a new email uses a seat); already_invited: it already was; enrolled: they had already joined'
+          ),
+        inviteId: z.string().uuid().nullable().describe('The organization invite that carries the cohort')
+      })
+    )
+    .describe('Students who have not joined your organization yet; they join the cohort when they accept'),
   errors: z
     .array(
       z.object({

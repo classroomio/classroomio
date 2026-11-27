@@ -36,6 +36,8 @@ export const removeCourseMember = defineCreate({
   }
 });
 
+const SKIPPED_INVITE_STATUSES = new Set(['is_staff', 'archived', 'over_seat_limit', 'invalid_email']);
+
 export const sendCourseInvite = defineCreate({
   key: 'send_course_invite',
   noun: 'Invite',
@@ -43,7 +45,13 @@ export const sendCourseInvite = defineCreate({
   operation: {
     inputFields: defineInputFields([
       courseField,
-      { key: 'emails', label: 'Emails', list: true, required: true, helpText: 'Each address gets its own invite.' }
+      {
+        key: 'emails',
+        label: 'Emails',
+        list: true,
+        required: true,
+        helpText: 'Each address gets the course on its organization invite; people who already joined are enrolled.'
+      }
     ]),
     perform: async (z, bundle) => {
       const emails = (bundle.inputData.emails as string[]).map((email) => email.trim()).filter(Boolean);
@@ -53,6 +61,7 @@ export const sendCourseInvite = defineCreate({
         body: { preset: SINGLE_INVITE_PRESET, recipientEmails: emails, allowedEmails: emails, sendEmail: true }
       });
       const data = response.data.data as {
+        recipients?: Array<{ email: string; status: string }>;
         delivery?: {
           requested: number;
           sent: number;
@@ -60,6 +69,13 @@ export const sendCourseInvite = defineCreate({
           failures: Array<{ email: string; error: string }>;
         };
       };
+      const skipped = (data.recipients ?? []).filter((recipient) => SKIPPED_INVITE_STATUSES.has(recipient.status));
+
+      if (skipped.length > 0) {
+        const detail = skipped.map((recipient) => `${recipient.email}: ${recipient.status}`).join('; ');
+        throw new z.errors.Error(`ClassroomIO could not invite ${detail}`, 'InviteSkipped', 422);
+      }
+
       const failed = data.delivery?.failed ?? 0;
 
       if (failed > 0) {
@@ -76,22 +92,17 @@ export const sendCourseInvite = defineCreate({
     },
     sample: {
       mode: 'bulk',
-      invites: [
+      invites: [],
+      inviteLink: null,
+      recipients: [
         {
-          id: '000000e1-0000-4000-8000-0000000000e1',
-          courseId: '000000c1-0000-4000-8000-0000000000c1',
-          roleId: 3,
-          expiresAt: '2026-11-01T00:00:00.000Z',
-          maxUses: 1,
-          usedCount: 0,
-          allowedEmails: ['student@example.com'],
-          allowedDomains: null,
-          createdAt: '2026-10-01T00:00:00.000Z',
-          status: 'ACTIVE',
-          inviteLink: 'https://acme.myclassroomio.com/invites/token'
+          email: 'student@example.com',
+          status: 'invited',
+          inviteId: '000000e1-0000-4000-8000-0000000000e1',
+          inviteKind: 'organization',
+          inviteLink: 'https://acme.myclassroomio.com/invite/token'
         }
       ],
-      inviteLink: null,
       duplicatesSkipped: [],
       delivery: { requested: 1, sent: 1, failed: 0, failures: [] }
     }
@@ -101,11 +112,21 @@ export const sendCourseInvite = defineCreate({
 export const revokeCourseInvite = defineCreate({
   key: 'revoke_course_invite',
   noun: 'Invite',
-  display: { label: 'Revoke Course Invite', description: 'Cancels a pending course invite so its link stops working.' },
+  display: {
+    label: 'Revoke Course Invite',
+    description: 'Removes this course from a pending invite, or cancels a course invite link so it stops working.'
+  },
   operation: {
     inputFields: defineInputFields([
       courseField,
-      { key: 'inviteId', label: 'Invite', dynamic: 'course_invite_list.id.label', required: true }
+      {
+        key: 'inviteId',
+        label: 'Invite',
+        dynamic: 'course_invite_list.id.label',
+        required: true,
+        helpText:
+          'Pick an invite link, or pass an organization invite id from Send Course Invite or Enroll Student to remove just this course from it.'
+      }
     ]),
     perform: async (z, bundle) => {
       const response = await z.request({

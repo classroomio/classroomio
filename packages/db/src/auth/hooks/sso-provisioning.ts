@@ -7,6 +7,7 @@ import { db } from '@db/drizzle';
 import { enrollUsersInCourseGroups } from '@db/queries/group';
 import { getOrgCourseGroups } from '@db/queries/course';
 import { markUserAndProfileEmailVerified } from '@db/queries/auth';
+import { getInviteBindingHandler } from '@db/auth/invite-binding-handler';
 
 const DEFAULT_STUDENT_ROLE_ID = 3;
 
@@ -19,7 +20,8 @@ export async function ensureOrgMembership(
   userId: string,
   email: string,
   orgId: string,
-  roleId?: number
+  roleId?: number,
+  trigger: 'sso' | 'token-auth' = 'sso'
 ): Promise<void> {
   const emailLower = email.toLowerCase();
   console.log('ensureOrgMembership', {
@@ -28,6 +30,32 @@ export async function ensureOrgMembership(
     roleId,
     email
   });
+
+  const bindingHandler = getInviteBindingHandler();
+  if (bindingHandler) {
+    const sideEffects = await db.transaction(async (tx) => {
+      const result = await bindingHandler(tx, {
+        orgId,
+        profileId: userId,
+        email: emailLower,
+        trigger,
+        identityProven: true,
+        roleForNewMember: roleId
+      });
+      return result.sideEffects ?? [];
+    });
+    await markUserAndProfileEmailVerified(userId).catch((error) => {
+      console.error('ensureOrgMembership mark verified error:', error);
+    });
+    for (const run of sideEffects) {
+      try {
+        await run();
+      } catch (error) {
+        console.error('ensureOrgMembership post-commit side effect error:', error);
+      }
+    }
+    return;
+  }
 
   const [existingByProfile] = await db
     .select()

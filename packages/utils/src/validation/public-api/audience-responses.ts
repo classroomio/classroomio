@@ -78,10 +78,19 @@ export const ZPublicApiAudienceBulkStatusResponse = z.object({
     .describe('One entry per memberId or email, in request order')
 });
 
+export const ZPublicApiAssignAudienceCourseDetail = z.object({
+  profileId: z.string().uuid().nullable().optional(),
+  memberId: z.number().int().positive().nullable().optional(),
+  email: z.string().nullable().optional(),
+  status: z.enum(['enrolled', 'already_enrolled', 'invited', 'is_staff', 'archived', 'over_seat_limit', 'not_found'])
+});
+
 export const ZPublicApiAssignAudienceCoursesResponse = z.object({
   assigned: z.number(),
   alreadyEnrolled: z.number(),
-  emailsSent: z.number()
+  invited: z.number(),
+  emailsSent: z.number(),
+  details: z.array(ZPublicApiAssignAudienceCourseDetail)
 });
 
 export const ZPublicApiRemoveAudienceMemberResponse = z.object({

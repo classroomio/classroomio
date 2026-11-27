@@ -21,6 +21,8 @@
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
   import { buildResourceInviteLink } from '$features/people/utils/invite-link-utils';
   import type { OrgTeamMember } from '$lib/utils/types/org';
+  import InviteOutcomeList from '$features/course/components/people/invite-outcome-list.svelte';
+  import { getImportOutcomeLabelKey, type InviteOutcomeRow } from '$features/course/components/people/invite-utils';
   import { cohortApi } from '../api';
 
   interface Props {
@@ -34,6 +36,7 @@
   let selectedIds = $state<string[]>([]);
   let isLoadingStudents = $state(false);
   let activeTab = $state<'tutors' | 'students' | 'link'>('students');
+  let inviteOutcomes = $state<InviteOutcomeRow[]>([]);
 
   const addPeopleParam = $derived(new URLSearchParams(page.url.search).get('add'));
   const isOpen = $derived(addPeopleParam === 'true');
@@ -79,6 +82,7 @@
   }
 
   function closeModal() {
+    inviteOutcomes = [];
     const searchParams = new URLSearchParams(page.url.searchParams);
     searchParams.delete('add');
     const nextSearch = searchParams.toString();
@@ -171,10 +175,14 @@
   }
 
   async function inviteNewStudents(recipientCsv: string, sendEmail: boolean) {
-    await cohortApi.inviteStudentsToCohort(cohortId, { recipientCsv, sendEmail });
-    if (cohortApi.success) {
-      onMembersChanged?.();
-    }
+    inviteOutcomes = [];
+    const result = await cohortApi.inviteStudentsToCohort(cohortId, { recipientCsv, sendEmail });
+    if (!result) return false;
+
+    inviteOutcomes = result.rows.map((row) => ({ email: row.email, labelKey: getImportOutcomeLabelKey(row) }));
+    onMembersChanged?.();
+
+    return true;
   }
 
   async function generateInviteLink() {
@@ -261,7 +269,12 @@
           {#if $isStudentLimitReached}
             <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
           {/if}
-          <BulkEmailSection onInvite={inviteNewStudents} disabled={$isStudentLimitReached} />
+          <BulkEmailSection
+            onInvite={inviteNewStudents}
+            descriptionKey="cohorts.people.invite_new_students_description"
+            disabled={$isStudentLimitReached}
+          />
+          <InviteOutcomeList titleKey="course.navItem.people.invite_modal.outcomes.title" items={inviteOutcomes} />
         </div>
       </UnderlineTabs.Content>
 

@@ -592,9 +592,9 @@
     "any_course": "Tutaj wyświetli się każdy ukończony kurs",
     "find_courses": "Znajdź kursy",
     "pending_invites": {
-      "title": "Masz oczekujące zaproszenia do kursów",
       "description": "Zaakceptuj je, aby zacząć naukę.",
-      "review": "Zobacz zaproszenia"
+      "review": "Zobacz zaproszenia",
+      "title": "Masz oczekujące zaproszenia"
     }
   },
   "certificates": {
@@ -700,7 +700,8 @@
       "revoke": "Odwołaj oczekujące zaproszenie",
       "resend_snackbar_success": "E-mail z zaproszeniem wysłany",
       "resend_snackbar_email_failed": "Zaproszenie zostało odnowione, ale e-mail nie mógł zostać wysłany",
-      "revoke_snackbar_success": "Oczekujące zaproszenie zostało odwołane"
+      "revoke_snackbar_success": "Oczekujące zaproszenie zostało odwołane",
+      "revoke_course_snackbar_success": "Cofnięto dostęp do kursu"
     },
     "assign": {
       "title": "Przypisz do kursów",
@@ -759,7 +760,9 @@
         "duplicate_in_file": "Duplikat w pliku",
         "over_seat_limit": "Brak wolnych miejsc",
         "missing_email": "Brak adresu e-mail",
-        "is_staff": "Pracownik, nie student"
+        "is_staff": "Pracownik, nie student",
+        "archived": "Zarchiwizowany członek",
+        "already_invited": "Już zaproszony"
       },
       "submit_count": "Importuj {count} studentów",
       "result_heading": "Zaimportowano {count} studentów",
@@ -1218,7 +1221,8 @@
           "members_only": "Tylko członkowie tej organizacji mogą się zapisać. Poproś administratora o zaproszenie.",
           "invite_restricted_email": "To zaproszenie zostało wysłane na adres {inviteEmail}, ale jesteś zalogowany jako {currentEmail}. Wyloguj się i kontynuuj z zaproszonym adresem e-mail.",
           "invite_restricted": "To zaproszenie jest ograniczone do innego konta. Wyloguj się i kontynuuj z zaproszonym kontem.",
-          "switch_account": "Wyloguj się i zmień konto"
+          "switch_account": "Wyloguj się i zmień konto",
+          "invite_replaced": "To zaproszenie zostało zastąpione. Sprawdź swój najnowszy e-mail."
         },
         "pricing_section": {
           "free": "Bezpłatny",
@@ -1580,7 +1584,16 @@
             "multi_use_30d": "Wielokrotnego użytku (30 dni)",
             "custom": "Niestandardowe"
           },
-          "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów."
+          "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów.",
+          "revoke_course_access": "Cofnij dostęp do tego kursu",
+          "outcomes": {
+            "title": "Wyniki",
+            "enrolled": "Dodano do kursu",
+            "already_enrolled": "Już na tym kursie",
+            "invited": "Zaproszony",
+            "archived": "Zarchiwizowany uczestnik",
+            "not_found": "Nie znaleziono członka"
+          }
         },
         "learner": "Student",
         "views": {
@@ -1607,13 +1620,15 @@
           "in_progress": "W toku",
           "completed": "Ukończono",
           "membership": "Członkostwo",
-          "joined": "Dołączył",
-          "invited": "Zaproszono, nie masz jeszcze konta",
+          "joined": "Dołączony",
+          "invited": "Zaproszony",
           "certificate": "Certyfikat",
           "earned": "Zdobyte",
           "not_earned": "Nie zarobione",
           "no_login_since": "Od tego czasu brak logowania",
-          "joined_within": "Dołączył wewnątrz"
+          "joined_within": "Dołączył wewnątrz",
+          "status": "Status",
+          "all_statuses": "Wszystkie"
         }
       },
       "marks": {
@@ -5097,17 +5112,27 @@
       "join_failed": "Nie udało się dołączyć do organizacji",
       "joined": "Dołączył do organizacji"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "Zaproszono Cię do kursu",
-        "description": "Zaakceptuj zaproszenie, aby dodać kurs do swojej nauki.",
-        "accept": "Akceptuj",
-        "later": "Później"
+        "title": "Zostałeś zaproszony",
+        "description": "Dołącz do akademii, aby zaakceptować jej kursy i kohorty."
       },
+      "join_org": "Dołącz do {orgName}",
+      "joined_button": "Dołączono",
+      "later": "Później",
+      "pending_courses": "Zostałeś zaproszony na kursy {orgName}.",
+      "courses_count": "{count, plural, one {# kurs} few {# kursy} other {# kursów}}",
+      "untitled_course": "Kurs bez tytułu",
+      "joined_title": "Udało się! Zacznij się uczyć:",
       "messages": {
-        "joined": "Dołączono do kursu.",
-        "join_failed": "Nie udało się zaakceptować zaproszenia. Spróbuj ponownie."
-      }
+        "joined": "Dołączono do akademii.",
+        "join_failed": "Nie udało się dołączyć do akademii. Spróbuj ponownie."
+      },
+      "invitation_team": "Zostałeś zaproszony do organizacji {orgName} jako {role}.",
+      "verify_to_accept": "Aby zaakceptować to zaproszenie, zweryfikuj swój adres e-mail.",
+      "send_verification": "Wyślij e-mail weryfikacyjny",
+      "verification_sent": "Wysłano e-mail weryfikacyjny",
+      "untitled_cohort": "Kohorta bez tytułu"
     }
   },
   "automation": {
@@ -6771,7 +6796,12 @@
         "students": "Studenci",
         "pending_invites": "Oczekujące zaproszenia",
         "never_logged_in": "Nigdy się nie logowałem"
-      }
+      },
+      "invite_revoked": "Kohorta została usunięta z zaproszenia",
+      "resend_invite": "Wyślij zaproszenie ponownie",
+      "revoke_invite": "Usuń z zaproszenia",
+      "remove_member": "Usuń z kohorty",
+      "invite_new_students_description": "Zaproś nowe osoby do swojej organizacji wraz z tą kohortą na ich zaproszenie. Tworzą konto, akceptują zaproszenie i dołączają do kohorty i jej kursów."
     },
     "courses": {
       "add": "Dodaj kurs",

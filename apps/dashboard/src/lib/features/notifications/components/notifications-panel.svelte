@@ -2,9 +2,7 @@
   import * as Empty from '@cio/ui/base/empty';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import EyeIcon from '@lucide/svelte/icons/eye';
-  import { pendingCourseInvitesApi } from '$features/invite/api/pending-course-invites.svelte';
-  import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
-  import PendingInviteModal from '$features/invite/components/pending-invite-modal.svelte';
+  import { pendingInvitationsApi } from '$features/invite/api/pending-invitations.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { notificationsApi } from '../api/notifications.svelte';
   import { filterByUnread } from '../utils/notification-utils';
@@ -19,43 +17,13 @@
   let activeTab = $state(DIRECT_TAB);
   // Always false while the toggle is hidden; the filter stays wired so re-enabling is one line.
   const onlyUnread = false;
-  let selectedInviteId = $state<string | null>(null);
-  let isModalOpen = $state(false);
 
   const visible = $derived(filterByUnread(notificationsApi.items, onlyUnread));
-  const selectedInvite = $derived(pendingInvitesApi.invites.find((invite) => invite.id === selectedInviteId));
 
   function handleSelect(item: NotificationItem) {
-    if (item.kind === 'org_invite') {
-      selectedInviteId = item.sourceId;
-      isModalOpen = true;
+    if (item.kind === 'org_invite' || item.kind === 'course_invite') {
+      pendingInvitationsApi.openModal();
     }
-
-    if (item.kind === 'course_invite') {
-      pendingCourseInvitesApi.openModal();
-    }
-  }
-
-  /**
-   * Mirrors the org switcher: stash the site name, then hard-navigate so account data
-   * refetches and the newly joined org becomes current.
-   */
-  function handleAccepted(redirectTo?: string) {
-    const siteName = selectedInvite?.organization.siteName;
-    const acceptedId = selectedInviteId;
-    selectedInviteId = null;
-
-    // The modal posts the acceptance itself, so drop the invite here too. Without this the
-    // badge keeps counting it until a full page load replaces the list.
-    if (acceptedId) {
-      pendingInvitesApi.removeInvite(acceptedId);
-    }
-
-    if (siteName) {
-      localStorage.setItem('classroomio_org_sitename', siteName);
-    }
-
-    window.location.href = redirectTo || '/org';
   }
 </script>
 
@@ -89,7 +57,3 @@
     </Empty.Root>
   </UnderlineTabs.Content>
 </UnderlineTabs.Root>
-
-{#if selectedInvite}
-  <PendingInviteModal bind:open={isModalOpen} invite={selectedInvite} onAccepted={handleAccepted} />
-{/if}

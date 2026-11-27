@@ -592,9 +592,9 @@
     "any_course": "Ethvert kursus, du gennemfører, vil blive vist her",
     "find_courses": "Find kurser",
     "pending_invites": {
-      "title": "Du har afventende kursusinvitationer",
       "description": "Accepter dem for at begynde at lære.",
-      "review": "Gennemse invitationer"
+      "review": "Gennemse invitationer",
+      "title": "Du har afventende invitationer"
     }
   },
   "certificates": {
@@ -700,7 +700,8 @@
       "revoke": "Tilbagekald afventende invitation",
       "resend_snackbar_success": "Invitationsmail sendt",
       "resend_snackbar_email_failed": "Invitationen blev fornyet, men e-mailen kunne ikke sendes",
-      "revoke_snackbar_success": "Afventende invitation tilbagekaldt"
+      "revoke_snackbar_success": "Afventende invitation tilbagekaldt",
+      "revoke_course_snackbar_success": "Adgang til kurset er fjernet"
     },
     "assign": {
       "title": "Tildel til kurser",
@@ -759,7 +760,9 @@
         "duplicate_in_file": "Duplikat i filen",
         "over_seat_limit": "Ingen pladser tilbage",
         "missing_email": "Ingen e-mail",
-        "is_staff": "Personal, ikke en studerende"
+        "is_staff": "Personal, ikke en studerende",
+        "archived": "Arkiveret medlem",
+        "already_invited": "Allerede inviteret"
       },
       "submit_count": "Importer {count} studerende",
       "result_heading": "{count} studerende importeret",
@@ -1218,7 +1221,8 @@
           "members_only": "Kun medlemmer af denne organisation kan tilmelde sig. Bed en administrator om en invitation.",
           "invite_restricted_email": "Denne invitation blev sendt til {inviteEmail}, men du er logget ind som {currentEmail}. Log ud, og fortsæt med den inviterede e-mailadresse.",
           "invite_restricted": "Denne invitation er begrænset til en anden konto. Log ud, og fortsæt med den inviterede konto.",
-          "switch_account": "Log ud og skift konto"
+          "switch_account": "Log ud og skift konto",
+          "invite_replaced": "Denne invitation blev erstattet. Tjek din seneste e-mail."
         },
         "pricing_section": {
           "free": "Gratis",
@@ -1580,7 +1584,16 @@
             "multi_use_30d": "Multi-brug (30 dage)",
             "custom": "Brugerdefineret"
           },
-          "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever."
+          "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever.",
+          "revoke_course_access": "Fjern adgang til dette kursus",
+          "outcomes": {
+            "title": "Resultater",
+            "enrolled": "Tilføjet til kurset",
+            "already_enrolled": "Er allerede på dette kursus",
+            "invited": "Inviteret",
+            "archived": "Arkiveret medlem",
+            "not_found": "Ingen matchende medlem"
+          }
         },
         "learner": "Studerende",
         "views": {
@@ -1607,13 +1620,15 @@
           "in_progress": "I gang",
           "completed": "Afsluttet",
           "membership": "Medlemskab",
-          "joined": "Tiltrådte",
-          "invited": "Inviteret, ingen konto endnu",
+          "joined": "Tilmeldt",
+          "invited": "Inviteret",
           "certificate": "Certifikat",
           "earned": "Optjent",
           "not_earned": "Ikke tjent",
           "no_login_since": "Intet login siden",
-          "joined_within": "Tiltrådte indenfor"
+          "joined_within": "Tiltrådte indenfor",
+          "status": "Status",
+          "all_statuses": "Alle"
         }
       },
       "marks": {
@@ -5097,17 +5112,27 @@
       "join_failed": "Kunne ikke deltage i organisationen",
       "joined": "Tilsluttet organisation"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "Du er blevet inviteret til et kursus",
-        "description": "Accepter en invitation for at tilføje kurset til din læring.",
-        "accept": "Accepter",
-        "later": "Senere"
+        "title": "Du er blevet inviteret",
+        "description": "Bliv medlem af et akademi for at acceptere dets kurser og kohorter."
       },
+      "join_org": "Bliv medlem af {orgName}",
+      "joined_button": "Medlem",
+      "later": "Senere",
+      "pending_courses": "Du er blevet inviteret til kurser hos {orgName}.",
+      "courses_count": "{count, plural, one {# kursus} other {# kurser}}",
+      "untitled_course": "Unavngivet kursus",
+      "joined_title": "Du er med! Start med at lære:",
       "messages": {
-        "joined": "Du er tilmeldt kurset.",
-        "join_failed": "Invitationen kunne ikke accepteres. Prøv igen."
-      }
+        "joined": "Du er blevet medlem af akademiet.",
+        "join_failed": "Kunne ikke blive medlem af akademiet. Prøv igen."
+      },
+      "invitation_team": "Du er blevet inviteret til {orgName} som {role}.",
+      "verify_to_accept": "Bekræft din e-mailadresse for at acceptere denne invitation.",
+      "send_verification": "Send bekræftelses-e-mail",
+      "verification_sent": "Bekræftelsesmail sendt",
+      "untitled_cohort": "Unavngivet kohorte"
     }
   },
   "automation": {
@@ -6771,7 +6796,12 @@
         "students": "studerende",
         "pending_invites": "Afventende invitationer",
         "never_logged_in": "Aldrig logget ind"
-      }
+      },
+      "invite_revoked": "Kohorte fjernet fra invitationen",
+      "resend_invite": "Send invitationen igen",
+      "revoke_invite": "Fjern fra invitationen",
+      "remove_member": "Fjern fra kohorte",
+      "invite_new_students_description": "Inviter nye mennesker til din organisation med denne kohorte på deres invitation. De opretter en konto, accepterer invitationen og deltager i kohorten og dens kurser."
     },
     "courses": {
       "add": "Tilføj kursus",

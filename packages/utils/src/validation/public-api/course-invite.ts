@@ -23,7 +23,9 @@ export const ZPublicApiCreateCourseInvite = z
     sendEmail: z
       .boolean()
       .default(false)
-      .describe('Email the recipients; false mints invite tokens without emailing anyone. Default: false.'),
+      .describe(
+        'Email the recipients their organization invite (or welcome email when already joined); false creates the invites without emailing anyone. Default: false.'
+      ),
     metadata: z.record(z.string(), z.unknown()).optional()
   })
   .refine(

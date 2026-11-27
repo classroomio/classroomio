@@ -397,21 +397,28 @@ describe('v1 cohort member service', () => {
     const added = { id: MEMBER_ID };
     vi.mocked(addCohortMembersSettled).mockResolvedValue([
       { status: 'rejected', reason: new AppError('already a member', 'MEMBER_ALREADY_IN_COHORT', 409) },
-      { status: 'fulfilled', value: added as never },
-      { status: 'rejected', reason: new Error('db exploded') }
+      { status: 'fulfilled', value: { kind: 'added', member: added as never } },
+      { status: 'rejected', reason: new Error('db exploded') },
+      {
+        status: 'fulfilled',
+        value: { kind: 'invited', email: 'pending@example.com', status: 'invited', inviteId: 'org-invite-1' }
+      }
     ]);
     const payload = {
       members: [
         { email: 'existing@example.com', roleId: 3 as const },
         { email: 'new@example.com', roleId: 3 as const },
-        { profileId: PROFILE_ID, roleId: 2 as const }
+        { profileId: PROFILE_ID, roleId: 2 as const },
+        { email: 'pending@example.com', roleId: 3 as const }
       ]
     };
 
     const result = await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
 
+    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload, 'public_api', ACTOR_ID);
     expect(result).toEqual({
       added: [added],
+      invited: [{ index: 3, email: 'pending@example.com', status: 'invited', inviteId: 'org-invite-1' }],
       errors: [
         {
           index: 0,

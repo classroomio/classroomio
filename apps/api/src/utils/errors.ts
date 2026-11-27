@@ -2,7 +2,7 @@ import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { ZodError } from 'zod';
 
-import { AppError, ErrorCodes, type ErrorCode, isUniqueConstraintViolation } from '@cio/utils/errors';
+import { AppError, ErrorCodes, type ErrorCode, getPostgresError, isUniqueConstraintViolation } from '@cio/utils/errors';
 
 // AppError moved to `@cio/utils/errors` so it can be thrown from
 // non-api workspace packages (notably `@cio/core`). Re-exported
@@ -37,6 +37,32 @@ export function formatZodErrorMessage(error: ZodError): string {
       return `${fieldPath}${issue.message}`;
     })
     .join('; ');
+}
+
+/**
+ * Maps residual membership unique violations to explicit conflict codes.
+ * Enrolment writers dedupe up front, so these only fire on concurrent races —
+ * defence in depth, never the primary path. Returns null when the error is not
+ * a recognized membership conflict.
+ */
+export function membershipConflictError(error: unknown): AppError | null {
+  const pg = getPostgresError(error);
+  if (!pg || pg.code !== '23505') return null;
+
+  if (pg.constraint === 'organizationmember_org_email_unique') {
+    return new AppError(
+      'This email is already linked to another account in this organization',
+      ErrorCodes.ORG_MEMBER_EMAIL_LINKED_TO_OTHER_ACCOUNT,
+      409,
+      'email'
+    );
+  }
+
+  if (pg.constraint === 'unique_group_email' || pg.constraint === 'unique_group_profile') {
+    return new AppError('Already a member of this course', ErrorCodes.COURSE_MEMBER_EXISTS, 409);
+  }
+
+  return null;
 }
 
 /**

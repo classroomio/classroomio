@@ -1,24 +1,22 @@
-import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
-  createOrganizationMember,
   getOrganizationById,
   getOrganizationMemberIdByOrgAndProfile,
-  hasLapsedStudentInvite
+  selectOrganizationMemberByOrgAndNormalizedEmail
 } from '@cio/db/queries/organization';
-import {
-  getActivePendingOrgInviteForEmail,
-  selectOrganizationMemberByOrgAndNormalizedEmail,
-  updateOrganizationMemberById
-} from '@cio/db/queries/organization/invite';
+import { getActivePendingOrgInviteForEmail } from '@cio/db/queries/organization/invite';
 
 import { ROLE } from '@cio/utils/constants';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { getProfileById } from '@cio/db/queries/auth';
 import { db } from '@cio/db/drizzle';
 import { env } from '@cio/core/config/env';
-import { assertStudentCapacityOrThrow, notifyStudentMilestone } from './student-limit';
-import type { StudentMilestoneNotification } from './student-limit';
+import {
+  bindProfileInOrg,
+  buildFulfilledSummary,
+  runBindingSideEffects,
+  type TInviteFulfilment
+} from './invite-binding';
 
 interface OrgSignupSettings {
   signup?: {
@@ -32,54 +30,8 @@ export interface JoinOrganizationResult {
   linkedExistingMember: boolean;
   /** True when the user has an active org invite — caller should surface accept UI instead of joining. */
   pendingInvite?: boolean;
-}
-
-/**
- * Links a pre-existing org roster row (audience import, team invite, tutor add)
- * that was created with email but no profile_id yet. Preserves the existing role
- * (TUTOR, ADMIN, etc.) — does not downgrade to STUDENT.
- */
-async function linkExistingMemberByEmail(
-  userId: string,
-  orgId: string,
-  normalizedEmail: string
-): Promise<JoinOrganizationResult | null> {
-  const existingMemberByEmail = await selectOrganizationMemberByOrgAndNormalizedEmail(db, orgId, normalizedEmail);
-
-  if (!existingMemberByEmail) {
-    return null;
-  }
-
-  if (existingMemberByEmail.profileId && existingMemberByEmail.profileId !== userId) {
-    throw new AppError('Email is already linked to another profile', ErrorCodes.CONFLICT, 409);
-  }
-
-  if (!existingMemberByEmail.profileId) {
-    let studentMilestoneNotification: StudentMilestoneNotification | null = null;
-
-    await db.transaction(async (tx) => {
-      const needsSeat = await hasLapsedStudentInvite(orgId, existingMemberByEmail.id, tx);
-      if (needsSeat) {
-        studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, { deferNotification: true });
-      }
-
-      await updateOrganizationMemberById(tx, existingMemberByEmail.id, {
-        profileId: userId,
-        email: normalizedEmail,
-        verified: true
-      });
-    });
-
-    if (studentMilestoneNotification) {
-      notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
-        console.error('notifyStudentMilestone error:', error);
-      });
-    }
-
-    return { alreadyMember: true, linkedExistingMember: true };
-  }
-
-  return { alreadyMember: true, linkedExistingMember: false };
+  /** Courses/cohorts fulfilled from the learner's other same-org invitations. */
+  fulfilled?: TInviteFulfilment;
 }
 
 /**
@@ -87,7 +39,8 @@ async function linkExistingMemberByEmail(
  *
  * The caller owns the intent: tenant signup invokes this after creating a new
  * account, while an existing account invokes it from the explicit Join Academy
- * action. Login and app bootstrap never call this service.
+ * action. Login and app bootstrap never call this service. A verified email already on the roster is linked even
+ * when the organization is invite-only or closed to signup; everyone else must pass those settings.
  */
 export async function joinOrganization(userId: string, orgId: string): Promise<JoinOrganizationResult> {
   if (env.PUBLIC_IS_SELFHOSTED === 'true') {
@@ -111,11 +64,43 @@ export async function joinOrganization(userId: string, orgId: string): Promise<J
     return { alreadyMember: false, linkedExistingMember: false, pendingInvite: true };
   }
 
-  const linked = await linkExistingMemberByEmail(userId, orgId, normalizedEmail);
-  if (linked) {
-    return linked;
+  const rosterMember = await selectOrganizationMemberByOrgAndNormalizedEmail(db, orgId, normalizedEmail);
+  const isVerifiedRosterMember = !!rosterMember && !rosterMember.profileId && profile.isEmailVerified === true;
+  if (!isVerifiedRosterMember) {
+    await assertOrganizationOpenForSignup(orgId);
   }
 
+  const bindResult = await db.transaction(async (tx) =>
+    bindProfileInOrg(tx, {
+      orgId,
+      profileId: userId,
+      email: normalizedEmail,
+      trigger: 'join-academy',
+      identityProven: profile.isEmailVerified === true,
+      roleForNewMember: ROLE.STUDENT
+    })
+  );
+
+  await runBindingSideEffects(bindResult, {
+    orgId,
+    profileId: userId,
+    email: normalizedEmail,
+    trigger: 'join-academy'
+  });
+
+  // A course team role from a previous membership must not come back on rejoin.
+  await scheduleCourseRoleReconcile(orgId, userId);
+
+  const fulfilled = await buildFulfilledSummary(orgId, bindResult);
+
+  return {
+    alreadyMember: !bindResult.createdMember,
+    linkedExistingMember: bindResult.linkedPendingMember,
+    fulfilled
+  };
+}
+
+async function assertOrganizationOpenForSignup(orgId: string): Promise<void> {
   const organization = await getOrganizationById(orgId);
   if (!organization) {
     throw new AppError('Organization not found', ErrorCodes.NOT_FOUND, 404);
@@ -129,20 +114,4 @@ export async function joinOrganization(userId: string, orgId: string): Promise<J
   if (settings?.signup?.inviteOnly) {
     throw new AppError('This organization requires an invitation to join', ErrorCodes.FORBIDDEN, 403);
   }
-
-  await assertStudentCapacityOrThrow(orgId, 1);
-
-  const createdMember = await createOrganizationMember({
-    organizationId: orgId,
-    profileId: userId,
-    email: normalizedEmail,
-    roleId: ROLE.STUDENT,
-    verified: true
-  });
-  await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, createdMember, userId);
-
-  // A course team role from a previous membership must not come back on rejoin.
-  await scheduleCourseRoleReconcile(orgId, userId);
-
-  return { alreadyMember: false, linkedExistingMember: false };
 }

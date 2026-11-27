@@ -2,7 +2,7 @@ import type { TCourseInvite, TCourseInviteAudit, TNewCourseInvite, TNewCourseInv
 import * as schema from '@db/schema';
 import { ROLE } from '@cio/utils/constants/roles';
 
-import { and, arrayContains, desc, eq, gt, gte, inArray, lt, notExists, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, gte, inArray, lt, notExists, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 export async function createCourseInvite(values: TNewCourseInvite, client: DbOrTxClient = db): Promise<TCourseInvite> {
@@ -567,7 +567,8 @@ export async function getActivePendingCourseInvitesForEmail(
       .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
       .where(
         and(
-          arrayContains(schema.courseInvite.allowedEmails, [normalized]),
+          sql`cardinality(${schema.courseInvite.allowedEmails}) = 1`,
+          eq(sql`lower((${schema.courseInvite.allowedEmails})[1])`, normalized),
           eq(schema.courseInvite.roleId, ROLE.STUDENT),
           eq(schema.courseInvite.isRevoked, false),
           gt(schema.courseInvite.expiresAt, sql`NOW()`),
@@ -751,5 +752,175 @@ export async function createEnrollmentInviteIfAbsent(
   } catch (error) {
     console.error('createEnrollmentInviteIfAbsent error:', error);
     throw new Error('Failed to create enrollment invite');
+  }
+}
+
+export type TLiveEmailBoundCourseInvite = TCourseInvite & {
+  courseTitle: string | null;
+  organizationId: string;
+};
+
+/**
+ * Live STUDENT course invites in an org whose `allowed_emails` is exactly `[email]`, compared case-insensitively.
+ * Shareable links (null/empty `allowed_emails`, multiple emails) and domain invites are
+ * never returned: fulfilment must not consume uses the learner was not addressed.
+ */
+export async function listLiveEmailBoundCourseInvitesInOrg(
+  orgId: string,
+  email: string,
+  dbClient: DbOrTxClient = db
+): Promise<TLiveEmailBoundCourseInvite[]> {
+  const normalized = email.trim().toLowerCase();
+  if (!orgId || !normalized) return [];
+
+  try {
+    const rows = await dbClient
+      .select({
+        invite: schema.courseInvite,
+        courseTitle: schema.course.title,
+        organizationId: schema.group.organizationId
+      })
+      .from(schema.courseInvite)
+      .innerJoin(schema.course, eq(schema.courseInvite.courseId, schema.course.id))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(
+        and(
+          eq(schema.group.organizationId, orgId),
+          eq(schema.courseInvite.roleId, ROLE.STUDENT),
+          eq(schema.courseInvite.isRevoked, false),
+          gt(schema.courseInvite.expiresAt, sql`NOW()`),
+          lt(schema.courseInvite.usedCount, schema.courseInvite.maxUses),
+          sql`cardinality(${schema.courseInvite.allowedEmails}) = 1`,
+          eq(sql`lower((${schema.courseInvite.allowedEmails})[1])`, normalized),
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true)
+        )
+      )
+      .orderBy(desc(schema.courseInvite.createdAt));
+
+    return rows.map((row) => ({
+      ...row.invite,
+      courseTitle: row.courseTitle,
+      organizationId: row.organizationId as string
+    }));
+  } catch (error) {
+    console.error('listLiveEmailBoundCourseInvitesInOrg error:', error);
+    throw new Error(
+      `Failed to list live email-bound course invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Consumes one use of a course invite with an optimistic concurrency guard.
+ * Returns the invite id when the increment applied, undefined when another
+ * request consumed the last use first.
+ */
+export async function fulfillCourseInvite(
+  inviteId: string,
+  priorUsedCount: number,
+  dbClient: DbOrTxClient = db
+): Promise<{ id: string } | undefined> {
+  try {
+    return await optimisticIncrementCourseInviteUsedCount(dbClient, inviteId, priorUsedCount);
+  } catch (error) {
+    console.error('fulfillCourseInvite error:', error);
+    throw new Error(`Failed to fulfill course invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Revokes every live single-recipient STUDENT invite for `(courseId, email)` and records `supersededBy` (the
+ * organization invite that now carries the course) in each row's metadata. Multi-recipient and shareable-link
+ * invites stay live.
+ */
+export async function revokeLiveEmailBoundCourseInvitesForCourse(
+  courseId: string,
+  email: string,
+  revokedByProfileId: string,
+  supersededBy: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCourseInvite[]> {
+  const normalized = email.trim().toLowerCase();
+  if (!courseId || !normalized) return [];
+
+  try {
+    const conditions = [
+      eq(schema.courseInvite.courseId, courseId),
+      eq(schema.courseInvite.roleId, ROLE.STUDENT),
+      eq(schema.courseInvite.isRevoked, false),
+      gt(schema.courseInvite.expiresAt, sql`NOW()`),
+      lt(schema.courseInvite.usedCount, schema.courseInvite.maxUses),
+      sql`cardinality(${schema.courseInvite.allowedEmails}) = 1`,
+      eq(sql`lower((${schema.courseInvite.allowedEmails})[1])`, normalized)
+    ];
+
+    const revoked = await dbClient
+      .update(schema.courseInvite)
+      .set({
+        isRevoked: true,
+        revokedByProfileId,
+        revokedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        metadata: sql`coalesce(${schema.courseInvite.metadata}, '{}'::jsonb) || ${JSON.stringify({ supersededBy })}::jsonb`
+      })
+      .where(and(...conditions))
+      .returning();
+
+    return revoked;
+  } catch (error) {
+    console.error('revokeLiveEmailBoundCourseInvitesForCourse error:', error);
+    throw new Error(
+      `Failed to revoke live email-bound course invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export type TInvitationCourseRow = {
+  id: string;
+  organizationId: string;
+  title: string | null;
+  description: string | null;
+  slug: string | null;
+};
+
+/**
+ * The ACTIVE, published courses among `courseIds` that `profileId` has not joined, with their organization.
+ */
+export async function getUnjoinedPublishedCoursesByIds(
+  courseIds: string[],
+  profileId: string
+): Promise<TInvitationCourseRow[]> {
+  if (courseIds.length === 0) return [];
+
+  try {
+    const rows = await db
+      .select({
+        id: schema.course.id,
+        organizationId: schema.group.organizationId,
+        title: schema.course.title,
+        description: schema.course.description,
+        slug: schema.course.slug
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(
+        and(
+          inArray(schema.course.id, courseIds),
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true),
+          notExists(
+            db
+              .select({ id: schema.groupmember.id })
+              .from(schema.groupmember)
+              .where(and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId)))
+          )
+        )
+      );
+
+    return rows.flatMap((row) => (row.organizationId ? [{ ...row, organizationId: row.organizationId }] : []));
+  } catch (error) {
+    console.error('getUnjoinedPublishedCoursesByIds error:', error);
+    throw new Error(`Failed to load invitation courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

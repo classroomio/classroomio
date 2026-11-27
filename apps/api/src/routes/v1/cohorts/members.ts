@@ -28,7 +28,7 @@ export const v1CohortMembersRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the members of a cohort; ${COHORT_MEMBER_RULE}.`,
+      description: `List a cohort's members, then people invited who have not joined (cohort team only); ${COHORT_MEMBER_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         200: jsonResponse(
@@ -60,7 +60,7 @@ export const v1CohortMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Add people to a cohort directly, without sending an invitation; ${COHORT_TEAM_RULE}.`,
+      description: `Add people to a cohort. Tutors and joined students are added; other students get an organization invite that carries the cohort; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         201: jsonResponse(

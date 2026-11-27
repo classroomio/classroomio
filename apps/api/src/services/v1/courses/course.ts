@@ -117,7 +117,8 @@ export async function listCourseStudentsService(
   return listPaginatedCourseMembers(params.courseId, {
     page: query.page,
     limit: query.limit,
-    roleId: ROLE.STUDENT
+    roleId: ROLE.STUDENT,
+    membership: 'joined'
   });
 }
 

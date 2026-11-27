@@ -23,6 +23,9 @@ type ListCohortPeopleResponse = InferResponseType<ListCohortPeopleRequest>;
 type ListCohortPeopleSuccess = Extract<ListCohortPeopleResponse, { success: true }>;
 export type CohortPerson = ListCohortPeopleSuccess['data'][number];
 export type CohortPeoplePagination = ListCohortPeopleSuccess['pagination'];
+export type ResendCohortInviteRequest = (typeof classroomio.cohort)[':cohortId']['invite']['resend']['$post'];
+export type RevokeCohortInviteRequest = (typeof classroomio.cohort)[':cohortId']['invite']['revoke']['$post'];
+
 export type ListCohortPeopleQuery = {
   page: number;
   limit: number;

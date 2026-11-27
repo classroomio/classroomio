@@ -11,6 +11,7 @@ import type {
   ListStudentInvitesRequest,
   ListPeopleRequest,
   ListPeopleQuery,
+  ResendCourseInviteRequest,
   ResetMemberCourseProgressRequest,
   RevokeStudentInviteRequest,
   ToggleCourseInviteLinkRequest,
@@ -111,6 +112,7 @@ export class PeopleApi extends BaseApiWithErrors {
         } else {
           this.errors.general = result.message;
         }
+        snackbar.error(result.message || 'snackbar.something');
       }
     });
 
@@ -141,6 +143,30 @@ export class PeopleApi extends BaseApiWithErrors {
   }
 
   /**
+   * Sends one email a fresh link to their organization invite with this course on it.
+   */
+  async resendCourseInvite(courseId: string, email: string, sendEmail = true) {
+    const result = await this.execute<ResendCourseInviteRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId']['invites']['resend'].$post({
+          param: { courseId },
+          json: { email, sendEmail }
+        }),
+      logContext: 'resending course invite',
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
+        snackbar.success('audience.invite.resend_snackbar_success');
+      },
+      onError: (error) => {
+        snackbar.error(error.message || 'snackbar.something');
+      }
+    });
+
+    return result?.data;
+  }
+
+  /**
    * Revokes a secure student invite
    * @param courseId Course ID
    * @param inviteId Invite ID
@@ -158,6 +184,28 @@ export class PeopleApi extends BaseApiWithErrors {
       },
       onError: () => {
         snackbar.error('Failed to revoke invite');
+      }
+    });
+
+    return result?.data;
+  }
+
+  /**
+   * Removes this course from an invited person's organization invite, or revokes their legacy course invite.
+   */
+  async revokePersonInvitation(courseId: string, inviteId: string) {
+    const result = await this.execute<RevokeStudentInviteRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId']['invites'][':inviteId']['revoke'].$post({
+          param: { courseId, inviteId }
+        }),
+      logContext: 'revoking course invitation',
+      onSuccess: () => {
+        this.success = true;
+        snackbar.success('audience.invite.revoke_course_snackbar_success');
+      },
+      onError: (error) => {
+        snackbar.error(error.message || 'snackbar.something');
       }
     });
 

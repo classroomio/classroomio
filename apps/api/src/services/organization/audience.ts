@@ -1,6 +1,14 @@
-import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
-import { AppError, ErrorCodes } from '@api/utils/errors';
+import {
+  emitCohortMemberWebhookEvent,
+  emitCourseWebhookEvent,
+  emitOrganizationMemberWebhookEvent
+} from '@cio/core/services/webhook/emit';
+import { AppError, ErrorCodes, membershipConflictError } from '@api/utils/errors';
 import { parseFullnameFromInviteMetadata } from '@api/utils/org';
+import {
+  parseCohortIdsFromInviteMetadata,
+  parseCourseIdsFromInviteMetadata
+} from '@cio/utils/functions/invite-metadata';
 import {
   type AudienceImportResult,
   type ParsedImportRow,
@@ -13,12 +21,23 @@ import type {
   TAudienceInviteByEmail,
   TImportAudienceMembers
 } from '@cio/utils/validation/organization';
-import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } from '@cio/db/queries/group';
+import {
+  addGroupMembers,
+  claimEmailOnlyGroupMembersForGroups,
+  enrollUsersInCourseGroups,
+  getExistingGroupMembers
+} from '@cio/db/queries/group';
+import {
+  supersedeStudentOrgInvites,
+  type TSupersedeStudentOrgInvitesResult
+} from '@cio/core/services/organization/supersede-invites';
+import type { TOrganizationInvite } from '@cio/db/types';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import {
   addCohortMember,
+  claimEmailOnlyCohortMembersForCohorts,
   getCohortsByOrg,
   getCourseIdsByCohortIds,
   getExistingCohortMembers
@@ -27,6 +46,7 @@ import {
   createOrganizationInvite,
   createOrganizationInvites,
   createOrganizationMembers,
+  getBulkAudienceMembersByIds,
   getOrganizationAudienceMember,
   getLatestOrganizationInviteMetadataByEmails,
   getLatestOrganizationInviteRowByOrgAndEmail,
@@ -36,6 +56,7 @@ import {
   getStudentOrganizationMemberByOrgAndEmail,
   hasActiveOrganizationInviteForEmail,
   hasLapsedStudentInvite,
+  listLiveStudentOrgInvitesForEmail,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { recordOrganizationInviteAudits } from './invite';
@@ -139,9 +160,9 @@ async function enrollAudienceStudentProfilesInCourses(
   courseIds: string[],
   shouldSendEmail: boolean,
   source: TEventSource
-): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
+): Promise<TAudienceEnrollResult> {
   if (courseIds.length === 0 || profileIds.length === 0) {
-    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, outcomes: [] };
   }
 
   const uniqueProfileIds = [...new Set(profileIds)];
@@ -153,13 +174,19 @@ async function enrollAudienceStudentProfilesInCourses(
   const courseGroups = await getOrgCourseGroups(orgId, courseIds);
 
   if (courseGroups.length === 0) {
-    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, outcomes: [] };
   }
 
   const validGroupIds = courseGroups.map((cg) => cg.groupId).filter(Boolean) as string[];
   const courseTitleByGroupId = new Map(courseGroups.map((cg) => [cg.groupId, cg.courseTitle]));
   const welcomeMessageByGroupId = new Map(courseGroups.map((cg) => [cg.groupId, cg.welcomeEmailMessage]));
   const validProfiles = uniqueProfileIds.filter((id) => validProfileIds.has(id));
+  const users = validProfiles.map((profileId) => ({
+    profileId,
+    email: profileEmailMap.get(profileId) || undefined
+  }));
+
+  await claimEmailOnlyGroupMembersForGroups(validGroupIds, users);
 
   const pairs = validProfiles.flatMap((profileId) => validGroupIds.map((groupId) => ({ groupId, profileId })));
 
@@ -228,7 +255,11 @@ async function enrollAudienceStudentProfilesInCourses(
   return {
     assigned: toInsert.length,
     alreadyEnrolled,
-    emailsSent
+    emailsSent,
+    outcomes: validProfiles.map((profileId) => ({
+      profileId,
+      status: toInsert.some((p) => p.profileId === profileId) ? ('enrolled' as const) : ('already_enrolled' as const)
+    }))
   };
 }
 
@@ -240,9 +271,9 @@ async function enrollAudienceStudentProfilesInCohorts(
   shouldSendEmail: boolean,
   source: TEventSource,
   actorProfileId: string | null = null
-): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
+): Promise<TAudienceEnrollResult> {
   if (cohortIds.length === 0 || profileIds.length === 0) {
-    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, outcomes: [] };
   }
 
   const uniqueProfileIds = [...new Set(profileIds)];
@@ -255,13 +286,20 @@ async function enrollAudienceStudentProfilesInCohorts(
 
   const cohorts = await getCohortsByOrg(orgId, cohortIds);
   if (cohorts.length === 0) {
-    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, outcomes: [] };
   }
 
   const cohortNameById = new Map(cohorts.map((cohort) => [cohort.id, cohort.name || 'Cohort']));
   const loginUrl = getDashboardBaseUrl(organization);
   const validCohortIds = cohorts.map((cohort) => cohort.id);
   const validProfiles = uniqueProfileIds.filter((profileId) => validProfileIds.has(profileId));
+  const users = validProfiles.map((profileId) => ({
+    profileId,
+    email: profileEmailMap.get(profileId) || undefined
+  }));
+
+  await claimEmailOnlyCohortMembersForCohorts(validCohortIds, users);
+
   const pairs = validProfiles.flatMap((profileId) => validCohortIds.map((cohortId) => ({ cohortId, profileId })));
   const existingSet = await getExistingCohortMembers(pairs);
   const toInsert = pairs.filter((pair) => !existingSet.has(`${pair.cohortId}:${pair.profileId}`));
@@ -297,10 +335,6 @@ async function enrollAudienceStudentProfilesInCohorts(
   if (cohortCourseIds.length > 0 && validProfiles.length > 0) {
     const courseGroups = await getCourseGroupIds(cohortCourseIds);
     const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
-    const users = validProfiles.map((profileId) => ({
-      profileId,
-      email: profileEmailMap.get(profileId) || undefined
-    }));
     const enrolledMembers = await enrollUsersInCourseGroups(groupIds, users, ROLE.STUDENT);
 
     if (enrolledMembers.length > 0) {
@@ -344,7 +378,13 @@ async function enrollAudienceStudentProfilesInCohorts(
   return {
     assigned: toInsert.length,
     alreadyEnrolled,
-    emailsSent
+    emailsSent,
+    outcomes: validProfiles.map((profileId) => ({
+      profileId,
+      status: toInsert.some((pair) => pair.profileId === profileId)
+        ? ('enrolled' as const)
+        : ('already_enrolled' as const)
+    }))
   };
 }
 
@@ -354,187 +394,245 @@ type StudentOrgInviteInput = {
   emails: string[];
   courseIds: string[];
   cohortIds: string[];
-  accessNamesLabel: string | undefined;
   invitedByProfileId: string;
   shouldSendEmail: boolean;
   fullnamesByEmail?: Map<string, string>;
+  reissue?: 'always' | 'when-changed';
+  source?: string;
 };
 
 async function createStudentOrgInvitesAndSendEmails(
   input: StudentOrgInviteInput
-): Promise<{ created: number; emailsSent: number; emailsFailed: number }> {
-  return sendStudentOrgInvites(input, await createStudentOrgInvites(input));
+): Promise<TStudentOrgInviteSendResult & { invites: TStudentOrgInvites | null }> {
+  const invites = await createStudentOrgInvites(input);
+  const sent = await sendStudentOrgInvites(input, invites);
+
+  return { ...sent, invites };
 }
 
-/** Revokes and re-creates the invites. Pass a transaction to save them under the seat lock. */
+type TStudentOrgInvites = TSupersedeStudentOrgInvitesResult;
+
+type TStudentOrgInviteSendResult = {
+  created: number;
+  emailsSent: number;
+  emailsFailed: number;
+  emailFailures: { email: string; error: string }[];
+};
+
+/** Merges the resources into each email's live student invite. Pass a transaction to save under the seat lock. */
 async function createStudentOrgInvites(
   input: Pick<
     StudentOrgInviteInput,
-    'orgId' | 'emails' | 'courseIds' | 'cohortIds' | 'invitedByProfileId' | 'fullnamesByEmail'
+    'orgId' | 'emails' | 'courseIds' | 'cohortIds' | 'invitedByProfileId' | 'fullnamesByEmail' | 'reissue' | 'source'
   >,
   dbClient: DbOrTxClient = db
-) {
-  const { orgId, emails, courseIds, cohortIds, invitedByProfileId, fullnamesByEmail } = input;
+): Promise<TStudentOrgInvites | null> {
+  if (input.emails.length === 0) return null;
 
-  if (emails.length === 0) {
-    return null;
+  return supersedeStudentOrgInvites(dbClient, {
+    orgId: input.orgId,
+    emails: input.emails,
+    courseIds: input.courseIds,
+    cohortIds: input.cohortIds,
+    invitedByProfileId: input.invitedByProfileId,
+    fullnamesByEmail: input.fullnamesByEmail,
+    source: input.source ?? 'AUDIENCE_IMPORT',
+    reissue: input.reissue ?? 'always'
+  });
+}
+
+async function resolveInviteAccessNames(orgId: string, invites: TOrganizationInvite[]): Promise<Map<string, string>> {
+  const courseIds = [...new Set(invites.flatMap((invite) => parseCourseIdsFromInviteMetadata(invite.metadata)))];
+  const cohortIds = [...new Set(invites.flatMap((invite) => parseCohortIdsFromInviteMetadata(invite.metadata)))];
+  const [courseGroups, cohorts] = await Promise.all([
+    courseIds.length > 0 ? getOrgCourseGroups(orgId, courseIds) : [],
+    cohortIds.length > 0 ? getCohortsByOrg(orgId, cohortIds) : []
+  ]);
+  const names = new Map<string, string>();
+  for (const courseGroup of courseGroups) {
+    if (courseGroup.courseTitle) names.set(courseGroup.courseId, courseGroup.courseTitle);
+  }
+  for (const cohort of cohorts) {
+    if (cohort.name) names.set(cohort.id, cohort.name);
   }
 
-  await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId, dbClient);
+  return names;
+}
 
-  const namelessEmails = emails.filter((email) => !fullnamesByEmail?.get(email));
-  const previousInvites = await getLatestOrganizationInviteMetadataByEmails(orgId, namelessEmails, dbClient);
-  const previousFullnames = new Map<string, string>();
-  for (const previousInvite of previousInvites) {
-    const previousFullname = parseFullnameFromInviteMetadata(previousInvite.metadata);
-    if (previousFullname) previousFullnames.set(previousInvite.email.toLowerCase(), previousFullname);
-  }
+function accessLabelForInvite(invite: TOrganizationInvite, names: Map<string, string>): string | undefined {
+  const ids = [
+    ...parseCourseIdsFromInviteMetadata(invite.metadata),
+    ...parseCohortIdsFromInviteMetadata(invite.metadata)
+  ];
+  const labels = ids.flatMap((id) => {
+    const name = names.get(id);
 
-  const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
-
-  const inviteInputs = emails.map((email) => {
-    const token = generateToken();
-    const fullname = fullnamesByEmail?.get(email) ?? previousFullnames.get(email);
-
-    return {
-      email,
-      token,
-      row: {
-        organizationId: orgId,
-        roleId: ROLE.STUDENT,
-        email,
-        tokenHash: hashToken(token),
-        createdByProfileId: invitedByProfileId,
-        expiresAt,
-        isRevoked: false,
-        metadata: {
-          source: 'AUDIENCE_IMPORT',
-          courseIds: courseIds.length > 0 ? courseIds : undefined,
-          cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
-          fullname
-        }
-      }
-    };
+    return name ? [name] : [];
   });
 
-  const invites = await createOrganizationInvites(
-    inviteInputs.map((i) => i.row),
-    dbClient
-  );
-
-  return {
-    expiresAt,
-    inviteByEmail: new Map(invites.map((inv) => [(inv.email ?? '').toLowerCase(), inv])),
-    tokenByEmail: new Map(inviteInputs.map((i) => [i.email.toLowerCase(), i.token]))
-  };
+  return labels.length > 0 ? labels.join(', ') : undefined;
 }
 
-/** Records the invites and emails them. Runs after any transaction, since it emits webhooks and queues email. */
+/**
+ * Emits `course.invite.created` / `course.invite.revoked` for courses added to or removed from a person's
+ * organization invite, with the org invite id as `inviteId`.
+ */
+async function emitCourseInviteChanges(invites: TStudentOrgInvites, actorProfileId: string): Promise<void> {
+  for (const [email, courseIds] of invites.addedCourseIdsByEmail) {
+    const invite = invites.inviteByEmail.get(email);
+    if (!invite) continue;
+
+    for (const courseId of courseIds) {
+      await emitCourseWebhookEvent(courseId, 'course.invite.created', {
+        inviteId: invite.id,
+        inviteLinkId: null,
+        email,
+        actorProfileId
+      });
+    }
+  }
+
+  for (const [email, courseIds] of invites.removedCourseIdsByEmail) {
+    const invite = invites.inviteByEmail.get(email) ?? invites.revoked.find((row) => row.email === email);
+    if (!invite) continue;
+
+    for (const courseId of courseIds) {
+      await emitCourseWebhookEvent(courseId, 'course.invite.revoked', {
+        inviteId: invite.id,
+        inviteLinkId: null,
+        email,
+        actorProfileId
+      });
+    }
+  }
+}
+
+/**
+ * Audits and emails the invites this call issued (fresh tokens only), listing every course and cohort each invite
+ * carries. Runs after any transaction, since it emits webhooks and queues email.
+ */
 async function sendStudentOrgInvites(
   input: StudentOrgInviteInput,
-  created: Awaited<ReturnType<typeof createStudentOrgInvites>>
-): Promise<{ created: number; emailsSent: number; emailsFailed: number }> {
-  const { orgId, organization, emails, courseIds, cohortIds, accessNamesLabel, invitedByProfileId, shouldSendEmail } =
-    input;
-
-  if (!created) {
-    return { created: 0, emailsSent: 0, emailsFailed: 0 };
+  invites: TStudentOrgInvites | null
+): Promise<TStudentOrgInviteSendResult> {
+  const { orgId, organization, invitedByProfileId, shouldSendEmail } = input;
+  if (!invites) {
+    return { created: 0, emailsSent: 0, emailsFailed: 0, emailFailures: [] };
   }
 
-  const { expiresAt, inviteByEmail, tokenByEmail } = created;
+  await emitCourseInviteChanges(invites, invitedByProfileId);
+
+  const issued = invites.created.filter((invite) => invites.tokenByEmail.has((invite.email ?? '').toLowerCase()));
+  if (issued.length === 0) {
+    return { created: 0, emailsSent: 0, emailsFailed: 0, emailFailures: [] };
+  }
+
+  const names = await resolveInviteAccessNames(orgId, issued);
 
   await recordOrganizationInviteAudits(
-    emails.map((email) => {
-      const invite = inviteByEmail.get(email)!;
-      return {
-        inviteId: invite.id,
-        organizationId: orgId,
-        eventType: 'CREATED' as const,
-        actorProfileId: invitedByProfileId,
-        targetEmail: email,
-        ipAddress: null,
-        userAgent: null,
-        metadata: {
-          roleId: ROLE.STUDENT,
-          roleName: 'Student',
-          expiresAt,
-          courseIds,
-          cohortIds
-        }
-      };
-    })
+    issued.map((invite) => ({
+      inviteId: invite.id,
+      organizationId: orgId,
+      eventType: 'CREATED' as const,
+      actorProfileId: invitedByProfileId,
+      targetEmail: invite.email,
+      ipAddress: null,
+      userAgent: null,
+      metadata: {
+        roleId: ROLE.STUDENT,
+        roleName: 'Student',
+        expiresAt: invite.expiresAt,
+        courseIds: parseCourseIdsFromInviteMetadata(invite.metadata),
+        cohortIds: parseCohortIdsFromInviteMetadata(invite.metadata)
+      }
+    }))
   );
 
-  let emailsSent = 0;
-  let emailsFailed = 0;
-
-  if (shouldSendEmail) {
-    const emailOutcomes = await mapWithConcurrency(emails, EMAIL_SEND_CONCURRENCY, async (email) => {
-      const invite = inviteByEmail.get(email)!;
-      const token = tokenByEmail.get(email)!;
-      try {
-        const inviteLink = buildInviteLink(token, organization);
-        await enqueueTransactionalEmail('studentOrgInvite', {
-          to: email,
-          fields: {
-            email,
-            orgName: organization.name,
-            inviteLink,
-            expiresAt: getExpiryLabel(expiresAt),
-            courseNames: accessNamesLabel,
-            branding: buildEmailBranding(organization)
-          },
-          from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-          organizationId: orgId,
-          idempotencyKey: `student-org-invite:${invite.id}`
-        });
-
-        // Optimistic — see comment in services/organization/invite.ts.
-        return {
-          inviteId: invite.id,
-          email,
-          success: true as const,
-          error: undefined as string | undefined
-        };
-      } catch (emailError) {
-        const message = emailError instanceof Error ? emailError.message : 'Unknown email error';
-        return { inviteId: invite.id, email, success: false as const, error: message };
-      }
-    });
-
-    emailsSent = emailOutcomes.filter((o) => o.success).length;
-    emailsFailed = emailOutcomes.length - emailsSent;
-
-    await recordOrganizationInviteAudits(
-      emailOutcomes.map((o) => ({
-        inviteId: o.inviteId,
-        organizationId: orgId,
-        eventType: o.success ? ('EMAIL_SENT' as const) : ('EMAIL_FAILED' as const),
-        actorProfileId: invitedByProfileId,
-        targetEmail: o.email,
-        ipAddress: null,
-        userAgent: null,
-        metadata: o.success ? {} : { error: o.error ?? 'Unknown' }
-      }))
-    );
+  if (!shouldSendEmail) {
+    return { created: issued.length, emailsSent: 0, emailsFailed: 0, emailFailures: [] };
   }
 
-  return { created: emails.length, emailsSent, emailsFailed };
+  const emailOutcomes = await mapWithConcurrency(issued, EMAIL_SEND_CONCURRENCY, async (invite) => {
+    const email = (invite.email ?? '').toLowerCase();
+    const token = invites.tokenByEmail.get(email)!;
+    try {
+      await enqueueTransactionalEmail('studentOrgInvite', {
+        to: email,
+        fields: {
+          email,
+          orgName: organization.name,
+          inviteLink: buildInviteLink(token, organization),
+          expiresAt: getExpiryLabel(invite.expiresAt),
+          courseNames: accessLabelForInvite(invite, names),
+          branding: buildEmailBranding(organization)
+        },
+        from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+        organizationId: orgId,
+        idempotencyKey: `student-org-invite:${invite.id}`
+      });
+
+      return { inviteId: invite.id, email, success: true as const, error: undefined as string | undefined };
+    } catch (emailError) {
+      const message = emailError instanceof Error ? emailError.message : 'Unknown email error';
+
+      return { inviteId: invite.id, email, success: false as const, error: message };
+    }
+  });
+
+  const emailsSent = emailOutcomes.filter((outcome) => outcome.success).length;
+
+  await recordOrganizationInviteAudits(
+    emailOutcomes.map((outcome) => ({
+      inviteId: outcome.inviteId,
+      organizationId: orgId,
+      eventType: outcome.success ? ('EMAIL_SENT' as const) : ('EMAIL_FAILED' as const),
+      actorProfileId: invitedByProfileId,
+      targetEmail: outcome.email,
+      ipAddress: null,
+      userAgent: null,
+      metadata: outcome.success ? {} : { error: outcome.error ?? 'Unknown' }
+    }))
+  );
+
+  const emailFailures = emailOutcomes.flatMap((outcome) =>
+    outcome.success ? [] : [{ email: outcome.email, error: outcome.error ?? 'Unknown email error' }]
+  );
+
+  return { created: issued.length, emailsSent, emailsFailed: emailFailures.length, emailFailures };
 }
 
+type TImportRow = ParsedImportRow & {
+  status: TAudienceImportRowStatus;
+  inviteId?: string;
+  inviteLink?: string;
+  enrollment?: 'enrolled' | 'already_enrolled';
+};
+
+export type TImportAudienceOptions = {
+  /** `when-changed` leaves a live invite that already covers the requested access untouched (no email). */
+  reissue?: 'always' | 'when-changed';
+  /** Return the accept link for each invite issued by this call. */
+  includeInviteLinks?: boolean;
+  inviteSource?: string;
+};
+
+/**
+ * Adds or re-invites students by email: new emails become pending members with an invite, pending members get the
+ * access merged into their live invite, joined students are enrolled directly, and staff, archived and over-limit
+ * rows are reported per row. Nobody gets course or cohort rows before they join.
+ */
 export async function importAudienceMembers(
   orgId: string,
   data: TImportAudienceMembers,
   invitedByProfileId: string,
-  source: TEventSource = 'dashboard'
+  source: TEventSource = 'dashboard',
+  options: TImportAudienceOptions = {}
 ) {
   const organization = await getOrganizationById(orgId);
   if (!organization || !organization.siteName) {
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
   }
 
-  // Structured rows when the client parsed a file; otherwise parse the pasted
-  // list here so both paths classify identically.
   const parsed = data.recipients?.length
     ? {
         rows: data.recipients.map((recipient, index) => ({
@@ -548,10 +646,8 @@ export async function importAudienceMembers(
       }
     : parseAudienceImportCsv(data.recipientCsv ?? '');
 
-  // Re-check duplicates across the whole set: the client may have sent
-  // structured rows without deduplicating them.
   const seenEmails = new Set<string>();
-  const rows: (ParsedImportRow & { status: TAudienceImportRowStatus })[] = parsed.rows.map((row) => {
+  const rows: TImportRow[] = parsed.rows.map((row) => {
     if (row.status !== 'ready') return row;
     if (seenEmails.has(row.email)) return { ...row, status: 'duplicate_in_file' as const };
 
@@ -562,14 +658,13 @@ export async function importAudienceMembers(
   const candidateEmails = rows.filter((row) => row.status === 'ready').map((row) => row.email);
 
   if (candidateEmails.length === 0) {
-    // Nothing importable at all is still a successful call with per-row
-    // reasons, so the UI can show which rows failed and why.
     return {
       ...buildImportResult(rows, { imported: 0, enrolled: 0, emailsSent: 0, emailsFailed: 0 }),
       assigned: 0,
       alreadyEnrolledInCourses: 0,
       alreadyEnrolledInCohorts: 0,
       pendingInvitesRenewed: 0,
+      emailFailures: [] as { email: string; error: string }[],
       truncated: parsed.truncated
     };
   }
@@ -581,8 +676,6 @@ export async function importAudienceMembers(
   const existingStudentProfileIds: string[] = [];
   const pendingStudentEmails: string[] = [];
 
-  // Import what the plan allows and report the overflow, rather than refusing
-  // the whole file when it does not fit.
   let seatsLeft = await getRemainingStudentSeats(orgId);
   let renewedSeats = 0;
   const takeSeat = () => {
@@ -606,10 +699,13 @@ export async function importAudienceMembers(
       continue;
     }
 
-    // Staff addresses are reported per row rather than rejecting the file: an
-    // admin's own address pasted into a 900-row list should not block it.
     if (m.roleId !== ROLE.STUDENT) {
       row.status = 'is_staff';
+      continue;
+    }
+
+    if (m.status === 'ARCHIVED') {
+      row.status = 'archived';
       continue;
     }
 
@@ -640,10 +736,8 @@ export async function importAudienceMembers(
     if (fullname) fullnamesByEmail.set(row.email, fullname);
   }
 
-  const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
-  const { cohortIds, cohortNames } = await resolveCohortIdsAndNamesForImport(orgId, data);
-  const accessNames = [...courseNames, ...cohortNames];
-  const accessNamesLabel = accessNames.length > 0 ? accessNames.join(', ') : undefined;
+  const { courseIds } = await resolveCourseIdsAndNamesForImport(orgId, data);
+  const { cohortIds } = await resolveCohortIdsAndNamesForImport(orgId, data);
 
   const assignedToCourses = await enrollAudienceStudentProfilesInCourses(
     orgId,
@@ -663,41 +757,59 @@ export async function importAudienceMembers(
     invitedByProfileId
   );
 
-  let imported = 0;
-  let importEmailsSent = 0;
-  let importEmailsFailed = 0;
+  const enrolledProfileIds = new Set(
+    [...assignedToCourses.outcomes, ...assignedToCohorts.outcomes]
+      .filter((outcome) => outcome.status === 'enrolled')
+      .map((outcome) => outcome.profileId)
+  );
+  for (const row of rows) {
+    const profileId = row.status === 'already_member' ? memberByEmail.get(row.email)?.profileId : null;
+    if (!profileId || (courseIds.length === 0 && cohortIds.length === 0)) continue;
+
+    row.enrollment = enrolledProfileIds.has(profileId) ? 'enrolled' : 'already_enrolled';
+  }
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
   let insertedMembers: Awaited<ReturnType<typeof createOrganizationMembers>> = [];
-  let renewedInvites: Awaited<ReturnType<typeof createStudentOrgInvites>> = null;
-  const renewalInput = {
+  let renewedInvites: TStudentOrgInvites | null = null;
+  const inviteInput = {
     orgId,
-    emails: pendingStudentEmails,
+    organization,
     courseIds,
     cohortIds,
     invitedByProfileId,
-    fullnamesByEmail
+    shouldSendEmail: data.sendEmail,
+    fullnamesByEmail,
+    reissue: options.reissue ?? 'always',
+    source: options.inviteSource
   };
 
-  // New members and renewed invites are both saved under the seat lock, so a seat the check grants is taken
-  // before the lock is released.
   if (newEmails.length > 0 || pendingStudentEmails.length > 0) {
-    await db.transaction(async (tx) => {
-      if (newEmails.length + renewedSeats > 0) {
-        studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, newEmails.length + renewedSeats, tx, {
-          deferNotification: true
-        });
-      }
+    try {
+      await db.transaction(async (tx) => {
+        if (newEmails.length + renewedSeats > 0) {
+          studentMilestoneNotification = await assertStudentCapacityOrThrow(
+            orgId,
+            newEmails.length + renewedSeats,
+            tx,
+            { deferNotification: true }
+          );
+        }
 
-      if (newEmails.length > 0) {
-        insertedMembers = await createOrganizationMembers(
-          newEmails.map((email) => ({ organizationId: orgId, email, roleId: ROLE.STUDENT, verified: false })),
-          tx
-        );
-      }
+        if (newEmails.length > 0) {
+          insertedMembers = await createOrganizationMembers(
+            newEmails.map((email) => ({ organizationId: orgId, email, roleId: ROLE.STUDENT, verified: false })),
+            tx
+          );
+        }
 
-      renewedInvites = await createStudentOrgInvites(renewalInput, tx);
-    });
+        renewedInvites = await createStudentOrgInvites({ ...inviteInput, emails: pendingStudentEmails }, tx);
+      });
+    } catch (error) {
+      const conflict = membershipConflictError(error);
+      if (conflict) throw conflict;
+      throw error;
+    }
   }
 
   if (studentMilestoneNotification) {
@@ -706,80 +818,35 @@ export async function importAudienceMembers(
     });
   }
 
-  if (newEmails.length > 0) {
-    for (const insertedMember of insertedMembers) {
-      await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, insertedMember, invitedByProfileId);
-    }
-
-    const insertedEmails = new Set(insertedMembers.map((member) => (member.email ?? '').toLowerCase()));
-    const addedEmails = newEmails.filter((email) => insertedEmails.has(email));
-    const addedConcurrently = new Set(newEmails.filter((email) => !insertedEmails.has(email)));
-
-    for (const row of rows) {
-      if (row.status === 'ready' && addedConcurrently.has(row.email)) {
-        row.status = 'already_member';
-      }
-    }
-
-    if (courseIds.length > 0) {
-      const courseGroupMappings = await getCourseGroupIds(courseIds);
-      const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
-
-      if (validGroupIds.length > 0) {
-        const profiles = await getProfilesByEmails(addedEmails);
-        if (profiles.length > 0) {
-          const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
-          const enrolledMembers = await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
-          await invalidateOrgStats(orgId);
-          captureLearnersEnrolled(enrolledMembers, 'audience', source);
-          await ensureComplianceEnrollmentRecordsForProfiles(
-            courseIds,
-            profiles.map((profile) => profile.id)
-          );
-        }
-      }
-    }
-
-    if (cohortIds.length > 0) {
-      const profiles = await getProfilesByEmails(addedEmails);
-      if (profiles.length > 0) {
-        await enrollAudienceStudentProfilesInCohorts(
-          organization,
-          orgId,
-          profiles.map((profile) => profile.id),
-          cohortIds,
-          false,
-          source,
-          invitedByProfileId
-        );
-      }
-    }
-
-    const inviteOutcome = await createStudentOrgInvitesAndSendEmails({
-      orgId,
-      organization,
-      emails: addedEmails,
-      courseIds,
-      cohortIds,
-      accessNamesLabel,
-      invitedByProfileId,
-      shouldSendEmail: data.sendEmail,
-      fullnamesByEmail
-    });
-    imported = addedEmails.length;
-    importEmailsSent = inviteOutcome.emailsSent;
-    importEmailsFailed = inviteOutcome.emailsFailed;
+  for (const insertedMember of insertedMembers) {
+    await emitOrganizationMemberWebhookEvent('organization.member.added', orgId, insertedMember, invitedByProfileId);
   }
 
-  let pendingEmailsSent = 0;
-  let pendingEmailsFailed = 0;
-  if (pendingStudentEmails.length > 0) {
-    const pendingOutcome = await sendStudentOrgInvites(
-      { ...renewalInput, organization, accessNamesLabel, shouldSendEmail: data.sendEmail },
-      renewedInvites
-    );
-    pendingEmailsSent = pendingOutcome.emailsSent;
-    pendingEmailsFailed = pendingOutcome.emailsFailed;
+  const insertedEmails = new Set(insertedMembers.map((member) => (member.email ?? '').toLowerCase()));
+  const addedEmails = newEmails.filter((email) => insertedEmails.has(email));
+  for (const row of rows) {
+    if (row.status === 'ready' && newEmails.includes(row.email) && !insertedEmails.has(row.email)) {
+      row.status = 'already_member';
+    }
+  }
+
+  const imported = await createStudentOrgInvitesAndSendEmails({ ...inviteInput, emails: addedEmails });
+  const renewed = await sendStudentOrgInvites({ ...inviteInput, emails: pendingStudentEmails }, renewedInvites);
+
+  for (const invites of [imported.invites, renewedInvites]) {
+    if (!invites) continue;
+
+    for (const row of rows) {
+      const invite = invites.inviteByEmail.get(row.email);
+      if (!invite) continue;
+
+      row.inviteId = invite.id;
+      const token = invites.tokenByEmail.get(row.email);
+      if (token && options.includeInviteLinks) row.inviteLink = buildInviteLink(token, organization);
+      if (row.status === 'invite_resent' && invites.unchanged.some((unchanged) => unchanged.id === invite.id)) {
+        row.status = 'already_invited';
+      }
+    }
   }
 
   captureLearnerInvited({
@@ -787,30 +854,31 @@ export async function importAudienceMembers(
     orgId,
     target: cohortIds.length > 0 ? 'cohort' : 'org',
     inviteType: 'email',
-    count: imported + pendingStudentEmails.length,
+    count: addedEmails.length + pendingStudentEmails.length,
     cohortId: cohortIds.length === 1 ? cohortIds[0] : undefined,
     source
   });
 
   return {
     ...buildImportResult(rows, {
-      imported,
+      imported: addedEmails.length,
       enrolled: assignedToCourses.assigned + assignedToCohorts.assigned,
-      emailsSent: assignedToCourses.emailsSent + assignedToCohorts.emailsSent + importEmailsSent + pendingEmailsSent,
-      emailsFailed: importEmailsFailed + pendingEmailsFailed
+      emailsSent:
+        assignedToCourses.emailsSent + assignedToCohorts.emailsSent + imported.emailsSent + renewed.emailsSent,
+      emailsFailed: imported.emailsFailed + renewed.emailsFailed
     }),
-    // Kept for the existing snackbar, which reads these directly.
     assigned: assignedToCourses.assigned + assignedToCohorts.assigned,
     alreadyEnrolledInCourses: assignedToCourses.alreadyEnrolled,
     alreadyEnrolledInCohorts: assignedToCohorts.alreadyEnrolled,
-    pendingInvitesRenewed: pendingStudentEmails.length,
+    pendingInvitesRenewed: renewedInvites ? (renewedInvites as TStudentOrgInvites).created.length : 0,
+    emailFailures: [...imported.emailFailures, ...renewed.emailFailures],
     truncated: parsed.truncated
   };
 }
 
 /** One row per submitted recipient, in order, with the outcome for each. */
 function buildImportResult(
-  rows: (ParsedImportRow & { status: TAudienceImportRowStatus })[],
+  rows: TImportRow[],
   totals: { imported: number; enrolled: number; emailsSent: number; emailsFailed: number }
 ): AudienceImportResult {
   return {
@@ -818,11 +886,18 @@ function buildImportResult(
     rows: rows.map((row) => ({
       email: row.email,
       name: row.name,
-      status: row.status
+      status: row.status,
+      ...(row.inviteId ? { inviteId: row.inviteId } : {}),
+      ...(row.inviteLink ? { inviteLink: row.inviteLink } : {}),
+      ...(row.enrollment ? { enrollment: row.enrollment } : {})
     }))
   };
 }
 
+/**
+ * Sends a pending member a fresh link for their live (or expired) student invite, keeping every course and cohort it
+ * carries. Renewing an expired invite takes a seat again.
+ */
 export async function resendAudienceInvite(orgId: string, data: TAudienceInviteByEmail, invitedByProfileId: string) {
   const organization = await getOrganizationById(orgId);
   if (!organization || !organization.siteName) {
@@ -838,63 +913,31 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
   }
 
   const emailToUse = member.email.toLowerCase().trim();
-
-  const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, emailToUse);
-  const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
-  const previousFullname = parseFullnameFromInviteMetadata(latestInvite?.metadata);
-  const courseIdsFromMetadata = meta.courseIds?.filter(Boolean) ?? [];
-  const cohortIdsFromMetadata = meta.cohortIds?.filter(Boolean) ?? [];
-
-  let courseIds: string[] = [];
-  let courseNames: string[] = [];
-  if (courseIdsFromMetadata.length > 0) {
-    const courses = await getOrgCourses({ orgId, courseIds: courseIdsFromMetadata });
-    courseIds = courses.items.map((c) => c.id);
-    courseNames = courses.items.map((c) => c.title).filter(Boolean);
-  }
-
-  let cohortIds: string[] = [];
-  let cohortNames: string[] = [];
-  if (cohortIdsFromMetadata.length > 0) {
-    const cohorts = await getCohortsByOrg(orgId, cohortIdsFromMetadata);
-    cohortIds = cohorts.map((cohort) => cohort.id);
-    cohortNames = cohorts.map((cohort) => cohort.name).filter(Boolean);
-  }
-
-  const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
-  const token = generateToken();
-  const accessNames = [...courseNames, ...cohortNames];
-  const accessNamesLabel = accessNames.length > 0 ? accessNames.join(', ') : undefined;
+  const inviteInput: StudentOrgInviteInput = {
+    orgId,
+    organization,
+    emails: [emailToUse],
+    courseIds: [],
+    cohortIds: [],
+    invitedByProfileId,
+    shouldSendEmail: true,
+    reissue: 'always',
+    source: 'AUDIENCE_RESEND'
+  };
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
-
-  const invite = await db.transaction(async (tx) => {
+  const invites = await db.transaction(async (tx) => {
     const needsSeat = await hasLapsedStudentInvite(orgId, member.id, tx);
     if (needsSeat) {
       studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, { deferNotification: true });
     }
 
-    await revokeActiveOrganizationInvitesByEmails(orgId, [emailToUse], invitedByProfileId, tx);
-
-    return createOrganizationInvite(
-      {
-        organizationId: orgId,
-        roleId: ROLE.STUDENT,
-        email: emailToUse,
-        tokenHash: hashToken(token),
-        createdByProfileId: invitedByProfileId,
-        expiresAt,
-        isRevoked: false,
-        metadata: {
-          source: 'AUDIENCE_RESEND',
-          courseIds: courseIds.length > 0 ? courseIds : undefined,
-          cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
-          fullname: previousFullname
-        }
-      },
-      tx
-    );
+    return createStudentOrgInvites(inviteInput, tx);
   });
+
+  if (!invites?.tokenByEmail.has(emailToUse)) {
+    throw new AppError('Audience member cannot receive a student invite', ErrorCodes.VALIDATION_ERROR, 400, 'email');
+  }
 
   if (studentMilestoneNotification) {
     notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
@@ -902,75 +945,93 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     });
   }
 
-  await recordOrganizationInviteAudits([
-    {
+  const sent = await sendStudentOrgInvites(inviteInput, invites);
+
+  return { emailSent: sent.emailsSent > 0 };
+}
+
+export type TRevokeInviteAccessInput = { email: string; courseId?: string; cohortId?: string };
+
+/**
+ * Removes one course or cohort from a pending member's student invite and keeps the rest. The invite is replaced
+ * without an email (the old link resolves to the replacement), or revoked outright when nothing is left on it.
+ */
+export async function revokeAudienceInviteAccess(
+  orgId: string,
+  data: TRevokeInviteAccessInput,
+  revokedByProfileId: string
+): Promise<{ revoked: boolean; inviteRevoked: boolean; inviteId: string | null }> {
+  const organization = await getOrganizationById(orgId);
+  if (!organization) {
+    throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
+  }
+
+  const member = await getStudentOrganizationMemberByOrgAndEmail(orgId, data.email);
+  if (!member) {
+    throw new AppError('Audience member not found', ErrorCodes.VALIDATION_ERROR, 404, 'email');
+  }
+  if (member.profileId) {
+    throw new AppError('Member has already joined', ErrorCodes.VALIDATION_ERROR, 400, 'email');
+  }
+
+  const emailToUse = member.email.toLowerCase().trim();
+  const field = data.courseId ? 'courseId' : 'cohortId';
+  const live = await listLiveStudentOrgInvitesForEmail(orgId, emailToUse);
+  const covering = live.filter((invite) =>
+    data.courseId
+      ? parseCourseIdsFromInviteMetadata(invite.metadata).includes(data.courseId)
+      : !!data.cohortId && parseCohortIdsFromInviteMetadata(invite.metadata).includes(data.cohortId)
+  );
+  if (covering.length === 0) {
+    throw new AppError('No live invitation covers this access', ErrorCodes.VALIDATION_ERROR, 404, field);
+  }
+
+  const superseded = await db.transaction(async (tx) =>
+    supersedeStudentOrgInvites(tx, {
+      orgId,
+      emails: [emailToUse],
+      removeCourseIds: data.courseId ? [data.courseId] : [],
+      removeCohortIds: data.cohortId ? [data.cohortId] : [],
+      invitedByProfileId: revokedByProfileId,
+      source: data.courseId ? 'AUDIENCE_REVOKE_COURSE' : 'AUDIENCE_REVOKE_COHORT'
+    })
+  );
+
+  const successor = superseded.created[0] ?? null;
+  const revokedAccess = data.courseId ? { revokedCourseId: data.courseId } : { revokedCohortId: data.cohortId };
+  await recordOrganizationInviteAudits(
+    superseded.revoked.map((invite) => ({
       inviteId: invite.id,
       organizationId: orgId,
-      eventType: 'CREATED',
-      actorProfileId: invitedByProfileId,
+      eventType: 'REVOKED' as const,
+      actorProfileId: revokedByProfileId,
       targetEmail: emailToUse,
       ipAddress: null,
       userAgent: null,
-      metadata: {
-        roleId: ROLE.STUDENT,
-        roleName: 'Student',
-        expiresAt,
-        courseIds,
-        cohortIds
-      }
-    }
-  ]);
+      metadata: successor
+        ? { reason: 'superseded', supersededBy: successor.id, ...revokedAccess }
+        : { reason: 'revoked_for_access', ...revokedAccess }
+    }))
+  );
 
-  let emailSent = false;
-  try {
-    const inviteLink = buildInviteLink(token, organization);
-    await enqueueTransactionalEmail('studentOrgInvite', {
-      to: emailToUse,
-      fields: {
-        email: emailToUse,
-        orgName: organization.name,
-        inviteLink,
-        expiresAt: getExpiryLabel(expiresAt),
-        courseNames: accessNamesLabel,
-        branding: buildEmailBranding(organization)
-      },
-      from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-      organizationId: orgId,
-      idempotencyKey: `student-org-invite:${invite.id}`
-    });
+  await sendStudentOrgInvites(
+    {
+      orgId,
+      organization,
+      emails: [emailToUse],
+      courseIds: [],
+      cohortIds: [],
+      invitedByProfileId: revokedByProfileId,
+      shouldSendEmail: false
+    },
+    superseded
+  );
 
-    emailSent = true;
-    // Optimistic EMAIL_SENT — worker handles retries; final failure flips
-    // email_delivery to `failed` for operator follow-up.
-    await recordOrganizationInviteAudits([
-      {
-        inviteId: invite.id,
-        organizationId: orgId,
-        eventType: 'EMAIL_SENT',
-        actorProfileId: invitedByProfileId,
-        targetEmail: emailToUse,
-        ipAddress: null,
-        userAgent: null,
-        metadata: {}
-      }
-    ]);
-  } catch (emailError) {
-    const message = emailError instanceof Error ? emailError.message : 'Unknown email error';
-    await recordOrganizationInviteAudits([
-      {
-        inviteId: invite.id,
-        organizationId: orgId,
-        eventType: 'EMAIL_FAILED',
-        actorProfileId: invitedByProfileId,
-        targetEmail: emailToUse,
-        ipAddress: null,
-        userAgent: null,
-        metadata: { error: message }
-      }
-    ]);
-  }
-
-  return { emailSent };
+  return {
+    revoked: superseded.revoked.length > 0,
+    inviteRevoked: !successor,
+    inviteId: successor?.id ?? null
+  };
 }
 
 export async function revokeAudiencePendingInvite(
@@ -1014,6 +1075,25 @@ export async function revokeAudiencePendingInvite(
   return { revoked: true };
 }
 
+export type TAudienceEnrollmentOutcome = {
+  profileId: string;
+  status: Extract<TAssignAudienceCourseDetail['status'], 'enrolled' | 'already_enrolled'>;
+};
+
+export type TAudienceEnrollResult = {
+  assigned: number;
+  alreadyEnrolled: number;
+  emailsSent: number;
+  outcomes: TAudienceEnrollmentOutcome[];
+};
+
+export type TAssignAudienceCourseDetail = {
+  profileId?: string | null;
+  memberId?: number | null;
+  email?: string | null;
+  status: 'enrolled' | 'already_enrolled' | 'invited' | 'is_staff' | 'archived' | 'over_seat_limit' | 'not_found';
+};
+
 export async function assignAudienceToCourses(
   orgId: string,
   data: TAssignAudienceCourses,
@@ -1028,8 +1108,10 @@ export async function assignAudienceToCourses(
   const courseIds = data.courseIds ?? [];
   const cohortIds = data.cohortIds ?? [];
 
-  let assignedToCourses = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
-  let assignedToCohorts = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+  const { joinedProfileIds, pendingEmails, details } = await resolveAssignAudienceLearners(orgId, data);
+
+  let assignedToCourses: TAudienceEnrollResult = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, outcomes: [] };
+  let assignedToCohorts: TAudienceEnrollResult = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, outcomes: [] };
 
   if (courseIds.length > 0) {
     const courseGroups = await getOrgCourseGroups(orgId, courseIds);
@@ -1040,7 +1122,7 @@ export async function assignAudienceToCourses(
     assignedToCourses = await enrollAudienceStudentProfilesInCourses(
       orgId,
       organization,
-      data.profileIds,
+      joinedProfileIds,
       courseIds,
       data.sendEmail,
       source
@@ -1056,7 +1138,7 @@ export async function assignAudienceToCourses(
     assignedToCohorts = await enrollAudienceStudentProfilesInCohorts(
       organization,
       orgId,
-      data.profileIds,
+      joinedProfileIds,
       cohortIds,
       data.sendEmail,
       source,
@@ -1064,10 +1146,231 @@ export async function assignAudienceToCourses(
     );
   }
 
+  for (const outcome of [...assignedToCourses.outcomes, ...assignedToCohorts.outcomes]) {
+    const existing = details.find((detail) => detail.profileId === outcome.profileId);
+    if (existing) {
+      if (outcome.status === 'enrolled') existing.status = 'enrolled';
+    } else {
+      details.push({ profileId: outcome.profileId, status: outcome.status });
+    }
+  }
+
+  const invited = await invitePendingAssignAudienceLearners(
+    orgId,
+    organization,
+    pendingEmails,
+    courseIds,
+    cohortIds,
+    data.sendEmail,
+    actorProfileId
+  );
+
+  for (const email of invited.invitedEmails) {
+    details.push({ email, status: 'invited' });
+  }
+
+  for (const skipped of invited.skippedEmails) {
+    details.push({ email: skipped, status: 'over_seat_limit' });
+  }
+
   return {
     assigned: assignedToCourses.assigned + assignedToCohorts.assigned,
     alreadyEnrolled: assignedToCourses.alreadyEnrolled + assignedToCohorts.alreadyEnrolled,
-    emailsSent: assignedToCourses.emailsSent + assignedToCohorts.emailsSent
+    invited: invited.invited,
+    emailsSent: assignedToCourses.emailsSent + assignedToCohorts.emailsSent + invited.emailsSent,
+    details
+  };
+}
+
+/**
+ * Splits an assign-courses request into joined profiles (enrol directly) and
+ * pending emails (merge into their org invite). Staff rows report `is_staff`,
+ * archived rows report `archived`, and unknown ids/emails report `not_found`.
+ */
+async function resolveAssignAudienceLearners(
+  orgId: string,
+  data: TAssignAudienceCourses
+): Promise<{
+  joinedProfileIds: string[];
+  pendingEmails: { email: string; hasLapsedInvite: boolean }[];
+  details: TAssignAudienceCourseDetail[];
+}> {
+  const joinedProfileIds: string[] = [];
+  const pendingEmails: { email: string; hasLapsedInvite: boolean }[] = [];
+  const details: TAssignAudienceCourseDetail[] = [];
+  const seenProfiles = new Set<string>();
+  const seenEmails = new Set<string>();
+
+  const addJoined = (profileId: string) => {
+    if (seenProfiles.has(profileId)) return;
+    seenProfiles.add(profileId);
+    joinedProfileIds.push(profileId);
+  };
+
+  const requestedEmails = [...new Set((data.emails ?? []).map((email) => email.trim().toLowerCase()).filter(Boolean))];
+  const emailMembers =
+    requestedEmails.length > 0 ? await getOrganizationMembersByNormalizedEmails(orgId, requestedEmails) : [];
+  const emailMemberByEmail = new Map(emailMembers.map((m) => [m.normalizedEmail, m]));
+
+  const requestedMemberIds = [...new Set(data.memberIds ?? [])];
+  const memberRows = requestedMemberIds.length > 0 ? await getBulkAudienceMembersByIds(orgId, requestedMemberIds) : [];
+  const memberRowById = new Map(memberRows.map((row) => [row.id, row]));
+  const memberEmails = [...new Set(memberRows.map((row) => (row.email ?? '').trim().toLowerCase()).filter(Boolean))];
+  const memberEmailMembers =
+    memberEmails.length > 0 ? await getOrganizationMembersByNormalizedEmails(orgId, memberEmails) : [];
+  const memberEmailMemberByEmail = new Map(memberEmailMembers.map((m) => [m.normalizedEmail, m]));
+
+  for (const profileId of data.profileIds ?? []) {
+    addJoined(profileId);
+  }
+
+  for (const memberId of requestedMemberIds) {
+    const row = memberRowById.get(memberId);
+    if (!row?.email) {
+      details.push({ memberId, status: 'not_found' });
+      continue;
+    }
+
+    const member = memberEmailMemberByEmail.get(row.email.trim().toLowerCase());
+    if (!member) {
+      details.push({ memberId, email: row.email, status: 'not_found' });
+      continue;
+    }
+
+    classifyAssignAudienceMember(member, { memberId }, addJoined, pendingEmails, seenEmails, details);
+  }
+
+  for (const email of requestedEmails) {
+    const member = emailMemberByEmail.get(email);
+    if (!member) {
+      details.push({ email, status: 'not_found' });
+      continue;
+    }
+
+    classifyAssignAudienceMember(member, { email }, addJoined, pendingEmails, seenEmails, details);
+  }
+
+  return { joinedProfileIds, pendingEmails, details };
+}
+
+function classifyAssignAudienceMember(
+  member: {
+    normalizedEmail: string;
+    profileId: string | null;
+    roleId: number;
+    status: string;
+    hasLapsedInvite: boolean;
+  },
+  identity: { memberId?: number; email?: string },
+  addJoined: (profileId: string) => void,
+  pendingEmails: { email: string; hasLapsedInvite: boolean }[],
+  seenEmails: Set<string>,
+  details: TAssignAudienceCourseDetail[]
+): void {
+  if (member.roleId !== ROLE.STUDENT) {
+    details.push({ profileId: member.profileId, ...identity, email: member.normalizedEmail, status: 'is_staff' });
+    return;
+  }
+
+  if (member.status === 'ARCHIVED') {
+    details.push({ profileId: member.profileId, ...identity, email: member.normalizedEmail, status: 'archived' });
+    return;
+  }
+
+  if (member.profileId) {
+    addJoined(member.profileId);
+    return;
+  }
+
+  if (seenEmails.has(member.normalizedEmail)) return;
+  seenEmails.add(member.normalizedEmail);
+  pendingEmails.push({ email: member.normalizedEmail, hasLapsedInvite: member.hasLapsedInvite });
+}
+
+/**
+ * Merges courses/cohorts into each pending learner's org invitation,
+ * taking a seat for lapsed invites and reporting the rest per row.
+ */
+async function invitePendingAssignAudienceLearners(
+  orgId: string,
+  organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>,
+  pendingEmails: { email: string; hasLapsedInvite: boolean }[],
+  courseIds: string[],
+  cohortIds: string[],
+  shouldSendEmail: boolean,
+  actorProfileId: string | null
+): Promise<{ invited: number; emailsSent: number; invitedEmails: string[]; skippedEmails: string[] }> {
+  if (pendingEmails.length === 0) {
+    return { invited: 0, emailsSent: 0, invitedEmails: [], skippedEmails: [] };
+  }
+
+  if (!actorProfileId) {
+    throw new AppError('Pending members can only be assigned by a signed-in inviter', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  let seatsLeft = await getRemainingStudentSeats(orgId);
+  const takers: typeof pendingEmails = [];
+  const skipped: typeof pendingEmails = [];
+  for (const pending of pendingEmails) {
+    if (pending.hasLapsedInvite) {
+      if (seatsLeft <= 0) {
+        skipped.push(pending);
+        continue;
+      }
+      seatsLeft -= 1;
+    }
+    takers.push(pending);
+  }
+
+  let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+  const created = await db.transaction(async (tx) => {
+    const lapsedCount = takers.filter((taker) => taker.hasLapsedInvite).length;
+    if (lapsedCount > 0) {
+      studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, lapsedCount, tx, {
+        deferNotification: true
+      });
+    }
+
+    return createStudentOrgInvites(
+      {
+        orgId,
+        emails: takers.map((taker) => taker.email),
+        courseIds,
+        cohortIds,
+        invitedByProfileId: actorProfileId
+      },
+      tx
+    );
+  });
+
+  if (studentMilestoneNotification) {
+    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
+  }
+
+  if (!created) {
+    return { invited: 0, emailsSent: 0, invitedEmails: [], skippedEmails: skipped.map((row) => row.email) };
+  }
+
+  const sent = await sendStudentOrgInvites(
+    {
+      orgId,
+      organization,
+      emails: takers.map((taker) => taker.email),
+      courseIds,
+      cohortIds,
+      invitedByProfileId: actorProfileId,
+      shouldSendEmail
+    },
+    created
+  );
+
+  return {
+    invited: created.inviteByEmail.size,
+    emailsSent: sent.emailsSent,
+    invitedEmails: [...created.inviteByEmail.keys()],
+    skippedEmails: skipped.map((row) => row.email)
   };
 }
 
@@ -1111,42 +1414,49 @@ export async function updatePendingAudienceMemberEmail(
     }
   }
 
+  const previousInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
+  const carriedInvite = previousInvite && !previousInvite.isRevoked ? previousInvite : null;
+
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
 
-  const updatedMember = await db.transaction(async (tx) => {
-    if (await hasLapsedStudentInvite(orgId, memberId, tx)) {
-      studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, { deferNotification: true });
-    }
+  let updatedMember;
+  try {
+    updatedMember = await db.transaction(async (tx) => {
+      if (await hasLapsedStudentInvite(orgId, memberId, tx)) {
+        studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, { deferNotification: true });
+      }
 
-    await revokeActiveOrganizationInvitesByEmails(orgId, [currentEmail, normalizedEmail], invitedByProfileId, tx);
+      await revokeActiveOrganizationInvitesByEmails(orgId, [currentEmail, normalizedEmail], invitedByProfileId, tx);
 
-    const updated = await updateOrganizationAudienceMember(
-      orgId,
-      memberId,
-      { email: normalizedEmail, verified: false },
-      tx
-    );
+      const updated = await updateOrganizationAudienceMember(
+        orgId,
+        memberId,
+        { email: normalizedEmail, verified: false },
+        tx
+      );
 
-    if (!updated) {
-      throw new AppError('Audience member not found', ErrorCodes.NOT_FOUND, 404);
-    }
+      if (!updated) {
+        throw new AppError('Audience member not found', ErrorCodes.NOT_FOUND, 404);
+      }
 
-    return updated;
-  });
+      return updated;
+    });
+  } catch (error) {
+    const conflict = membershipConflictError(error);
+    if (conflict) throw conflict;
+    throw error;
+  }
 
-  const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
-  const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
   const fullnamesByEmail = new Map<string, string>();
-  const previousFullname = parseFullnameFromInviteMetadata(latestInvite?.metadata);
+  const previousFullname = parseFullnameFromInviteMetadata(previousInvite?.metadata);
   if (previousFullname) fullnamesByEmail.set(normalizedEmail, previousFullname);
 
   await createStudentOrgInvitesAndSendEmails({
     orgId,
     organization,
     emails: [normalizedEmail],
-    courseIds: meta.courseIds?.filter(Boolean) ?? [],
-    cohortIds: meta.cohortIds?.filter(Boolean) ?? [],
-    accessNamesLabel: undefined,
+    courseIds: parseCourseIdsFromInviteMetadata(carriedInvite?.metadata),
+    cohortIds: parseCohortIdsFromInviteMetadata(carriedInvite?.metadata),
     invitedByProfileId,
     shouldSendEmail: data.sendEmail,
     fullnamesByEmail

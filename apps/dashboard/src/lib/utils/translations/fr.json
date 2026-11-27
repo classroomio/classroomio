@@ -592,9 +592,9 @@
     "any_course": "Tout cours que vous terminez sera affiché ici",
     "find_courses": "Trouver des cours",
     "pending_invites": {
-      "title": "Vous avez des invitations à des cours en attente",
       "description": "Acceptez-les pour commencer à apprendre.",
-      "review": "Consulter les invitations"
+      "review": "Consulter les invitations",
+      "title": "Vous avez des invitations en attente"
     }
   },
   "certificates": {
@@ -700,7 +700,8 @@
       "revoke": "Révoquer l'invitation en attente",
       "resend_snackbar_success": "E-mail d'invitation envoyé",
       "resend_snackbar_email_failed": "L'invitation a été renouvelée mais l'e-mail n'a pas pu être envoyé",
-      "revoke_snackbar_success": "Invitation en attente révoquée"
+      "revoke_snackbar_success": "Invitation en attente révoquée",
+      "revoke_course_snackbar_success": "Accès au cours révoqué"
     },
     "assign": {
       "title": "Attribuer aux cours",
@@ -759,7 +760,9 @@
         "duplicate_in_file": "Duplicata dans le fichier",
         "over_seat_limit": "Plus de places disponibles",
         "missing_email": "Pas d'email",
-        "is_staff": "Personnel non étudiant"
+        "is_staff": "Personnel non étudiant",
+        "archived": "Membre archivé",
+        "already_invited": "Déjà invité"
       },
       "submit_count": "Importer {count} étudiants",
       "result_heading": "{count} étudiants importés",
@@ -1218,7 +1221,8 @@
           "members_only": "Seuls les membres de cette organisation peuvent s'inscrire. Demandez une invitation à un administrateur.",
           "invite_restricted_email": "Cette invitation a été envoyée à {inviteEmail}, mais vous êtes connecté en tant que {currentEmail}. Déconnectez-vous et continuez avec l'adresse e-mail invitée.",
           "invite_restricted": "Cette invitation est réservée à un autre compte. Déconnectez-vous et continuez avec le compte invité.",
-          "switch_account": "Se déconnecter et changer de compte"
+          "switch_account": "Se déconnecter et changer de compte",
+          "invite_replaced": "Cette invitation a été remplacée. Vérifiez votre dernier e-mail."
         },
         "pricing_section": {
           "free": "Gratuit",
@@ -1580,7 +1584,16 @@
             "multi_use_30d": "Multi-usage (30 jours)",
             "custom": "Personnalisé"
           },
-          "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants."
+          "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants.",
+          "revoke_course_access": "Révoquer l'accès à ce cours",
+          "outcomes": {
+            "title": "Résultats",
+            "enrolled": "Ajouté au cours",
+            "already_enrolled": "Déjà dans ce cours",
+            "invited": "Invité",
+            "archived": "Membre archivé",
+            "not_found": "Aucun membre correspondant"
+          }
         },
         "learner": "Étudiant",
         "views": {
@@ -1607,13 +1620,15 @@
           "in_progress": "En cours",
           "completed": "Terminé",
           "membership": "Adhésion",
-          "joined": "Rejoint",
-          "invited": "Invité, pas encore de compte",
+          "joined": "Inscrit",
+          "invited": "Invité",
           "certificate": "Certificat",
           "earned": "Gagné",
           "not_earned": "Non gagné",
           "no_login_since": "Pas de connexion depuis",
-          "joined_within": "Rejoint au sein"
+          "joined_within": "Rejoint au sein",
+          "status": "Statut",
+          "all_statuses": "Tous"
         }
       },
       "marks": {
@@ -5097,17 +5112,27 @@
       "join_failed": "Impossible de rejoindre l'organisation",
       "joined": "Organisation rejointe"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "Vous avez été invité à un cours",
-        "description": "Acceptez une invitation pour ajouter le cours à votre apprentissage.",
-        "accept": "Accepter",
-        "later": "Plus tard"
+        "title": "Vous avez été invité(e)",
+        "description": "Rejoignez une académie pour accepter ses cours et ses cohortes."
       },
+      "join_org": "Rejoindre {orgName}",
+      "joined_button": "Membre",
+      "later": "Plus tard",
+      "pending_courses": "Vous avez été invité(e) aux cours de {orgName}.",
+      "courses_count": "{count, plural, one {# cours} other {# cours}}",
+      "untitled_course": "Cours sans titre",
+      "joined_title": "C'est parti ! Commencez à apprendre :",
       "messages": {
-        "joined": "Vous avez rejoint le cours.",
-        "join_failed": "Impossible d'accepter l'invitation. Veuillez réessayer."
-      }
+        "joined": "Vous avez rejoint l'académie.",
+        "join_failed": "Impossible de rejoindre l'académie. Veuillez réessayer."
+      },
+      "invitation_team": "Vous avez été invité sur {orgName} en tant que {role}.",
+      "verify_to_accept": "Vérifiez votre adresse e-mail pour accepter cette invitation.",
+      "send_verification": "Envoyer un e-mail de vérification",
+      "verification_sent": "E-mail de vérification envoyé",
+      "untitled_cohort": "Cohorte sans titre"
     }
   },
   "automation": {
@@ -6771,7 +6796,12 @@
         "students": "Étudiants",
         "pending_invites": "Invitations en attente",
         "never_logged_in": "Jamais connecté"
-      }
+      },
+      "invite_revoked": "Cohorte supprimée de l'invitation",
+      "resend_invite": "Renvoyer l'invitation",
+      "revoke_invite": "Supprimer de l'invitation",
+      "remove_member": "Supprimer de la cohorte",
+      "invite_new_students_description": "Invitez de nouvelles personnes dans votre organisation avec cette cohorte sur leur invitation. Ils créent un compte, acceptent l'invitation et rejoignent la cohorte et ses cours."
     },
     "courses": {
       "add": "Ajouter un cours",

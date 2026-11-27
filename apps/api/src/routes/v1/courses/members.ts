@@ -34,7 +34,7 @@ export const v1CourseMembersRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List everyone with access to a course, students and tutors alike, with role and progress; ${COURSE_TEAM_RULE}.`,
+      description: `List a course's students and tutors with role and progress, then people invited who have not joined; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         200: jsonResponse(
@@ -88,7 +88,10 @@ export const v1CourseMembersRouter = new Hono()
         403: forbiddenResponse,
         429: mcpRateLimitResponse,
         404: { description: 'Course not found, or the profileId or email is not in your organization' },
-        409: { description: 'Already a member of this course' }
+        409: {
+          description:
+            'COURSE_MEMBER_EXISTS when already in the course; MEMBER_NOT_JOINED for a pending member, who needs enroll_course_student'
+        }
       }
     }),
     validator('param', ZPublicApiCourseParam),

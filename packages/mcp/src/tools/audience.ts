@@ -76,7 +76,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'assign_audience_courses',
-    `Enroll existing students (by profileId) in one or more courses or cohorts, skipping those already enrolled; ${ORG_ADMIN_RULE}.`,
+    `Enroll joined students (by profileId, memberId or email) in one or more courses or cohorts, skipping those already enrolled; pending members get the access added to their organization invite instead. Returns assigned, alreadyEnrolled, invited and per-learner details; ${ORG_ADMIN_RULE}.`,
     assignAudienceCoursesShape,
     WRITE,
     async (args) => {

@@ -97,6 +97,9 @@
     if (data.invite && inviteStatus === 'USED_UP') {
       return 'This invite link has reached its usage limit.';
     }
+    if (data.invite?.replaced) {
+      return t.get('course.navItem.landing_page.enroll_page.invite_replaced');
+    }
     if (data.invite && inviteStatus === 'REVOKED') {
       return 'This invite link has been revoked.';
     }

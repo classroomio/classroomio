@@ -592,9 +592,9 @@
     "any_course": "Qualquer curso que você concluir será exibido aqui",
     "find_courses": "Encontre cursos",
     "pending_invites": {
-      "title": "Você tem convites para cursos pendentes",
       "description": "Aceite-os para começar a aprender.",
-      "review": "Ver convites"
+      "review": "Ver convites",
+      "title": "Você tem convites pendentes"
     }
   },
   "certificates": {
@@ -700,7 +700,8 @@
       "revoke": "Revogar convite pendente",
       "resend_snackbar_success": "E-mail de convite enviado",
       "resend_snackbar_email_failed": "O convite foi renovado, mas não foi possível enviar o e-mail",
-      "revoke_snackbar_success": "Convite pendente revogado"
+      "revoke_snackbar_success": "Convite pendente revogado",
+      "revoke_course_snackbar_success": "Acesso ao curso revogado"
     },
     "assign": {
       "title": "Atribuir a cursos",
@@ -759,7 +760,9 @@
         "duplicate_in_file": "Duplicado no arquivo",
         "over_seat_limit": "Sem vagas disponíveis",
         "missing_email": "Sem e-mail",
-        "is_staff": "Funcionário, não aluno"
+        "is_staff": "Funcionário, não aluno",
+        "archived": "Membro arquivado",
+        "already_invited": "Já convidado"
       },
       "submit_count": "Importar {count} alunos",
       "result_heading": "{count} alunos importados",
@@ -1218,7 +1221,8 @@
           "members_only": "Apenas membros desta organização podem se inscrever. Solicite um convite a um administrador.",
           "invite_restricted_email": "Este convite foi enviado para {inviteEmail}, mas você está conectado como {currentEmail}. Saia e continue com o e-mail convidado.",
           "invite_restricted": "Este convite é restrito a outra conta. Saia e continue com a conta convidada.",
-          "switch_account": "Sair e trocar de conta"
+          "switch_account": "Sair e trocar de conta",
+          "invite_replaced": "Este convite foi substituído. Verifique seu e-mail mais recente."
         },
         "pricing_section": {
           "free": "Grátis",
@@ -1580,7 +1584,16 @@
             "multi_use_30d": "Multiuso (30 dias)",
             "custom": "Personalizado"
           },
-          "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos."
+          "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos.",
+          "revoke_course_access": "Revogar o acesso a este curso",
+          "outcomes": {
+            "title": "Resultados",
+            "enrolled": "Adicionado ao curso",
+            "already_enrolled": "Já está neste curso",
+            "invited": "Convidado",
+            "archived": "Membro arquivado",
+            "not_found": "Nenhum membro correspondente"
+          }
         },
         "learner": "Aluno",
         "views": {
@@ -1607,13 +1620,15 @@
           "in_progress": "Em andamento",
           "completed": "Concluído",
           "membership": "Associação",
-          "joined": "Ingressou",
-          "invited": "Convidado, sem conta ainda",
+          "joined": "Inscrito",
+          "invited": "Convidado",
           "certificate": "Certificado",
           "earned": "Ganhou",
           "not_earned": "Não ganho",
           "no_login_since": "Sem login desde",
-          "joined_within": "Juntou-se dentro"
+          "joined_within": "Juntou-se dentro",
+          "status": "Estado",
+          "all_statuses": "Todos"
         }
       },
       "marks": {
@@ -5097,17 +5112,27 @@
       "join_failed": "Falha ao ingressar na organização",
       "joined": "Organização aderida"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "Você foi convidado para um curso",
-        "description": "Aceite um convite para adicionar o curso ao seu aprendizado.",
-        "accept": "Aceitar",
-        "later": "Mais tarde"
+        "title": "Você foi convidado",
+        "description": "Junte-se a uma academia para aceitar seus cursos e coortes."
       },
+      "join_org": "Entrar em {orgName}",
+      "joined_button": "Membro",
+      "later": "Mais tarde",
+      "pending_courses": "Você foi convidado para os cursos de {orgName}.",
+      "courses_count": "{count, plural, one {# curso} other {# cursos}}",
+      "untitled_course": "Curso sem título",
+      "joined_title": "Pronto! Comece a aprender:",
       "messages": {
-        "joined": "Você entrou no curso.",
-        "join_failed": "Não foi possível aceitar o convite. Tente novamente."
-      }
+        "joined": "Você entrou na academia.",
+        "join_failed": "Não foi possível entrar na academia. Tente novamente."
+      },
+      "invitation_team": "Você foi convidado para {orgName} como {role}.",
+      "verify_to_accept": "Verifique seu endereço de e-mail para aceitar este convite.",
+      "send_verification": "Enviar e-mail de verificação",
+      "verification_sent": "E-mail de verificação enviado",
+      "untitled_cohort": "Coorte sem título"
     }
   },
   "automation": {
@@ -6771,7 +6796,12 @@
         "students": "Alunos",
         "pending_invites": "Convites pendentes",
         "never_logged_in": "Nunca logado"
-      }
+      },
+      "invite_revoked": "Coorte removida do convite",
+      "resend_invite": "Reenviar convite",
+      "revoke_invite": "Remover do convite",
+      "remove_member": "Remover da coorte",
+      "invite_new_students_description": "Convide novas pessoas para sua organização com este grupo a convite. Eles criam uma conta, aceitam o convite e ingressam no grupo e em seus cursos."
     },
     "courses": {
       "add": "Adicionar curso",

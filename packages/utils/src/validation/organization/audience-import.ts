@@ -25,7 +25,9 @@ export const AudienceImportRowStatus = z.enum([
   'duplicate_in_file',
   'is_staff',
   'over_seat_limit',
-  'missing_email'
+  'missing_email',
+  'archived',
+  'already_invited'
 ]);
 export type TAudienceImportRowStatus = z.infer<typeof AudienceImportRowStatus>;
 
@@ -63,6 +65,12 @@ export type AudienceImportRowResult = {
   status: TAudienceImportRowStatus;
   /** Course values that matched nothing. Advisory — the row still imports. */
   unmatchedCourses?: string[];
+  /** The live organization invite for this email after the import, when it has one. */
+  inviteId?: string;
+  /** Accept link for an invite issued by this call; only returned when the caller asks for links. */
+  inviteLink?: string;
+  /** For a student who already joined: whether this call added them to a requested course or cohort. */
+  enrollment?: 'enrolled' | 'already_enrolled';
 };
 
 export type AudienceImportResult = {

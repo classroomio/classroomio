@@ -20,12 +20,21 @@
     query: ListCohortPeopleQuery;
     activeFilterCount: number;
     isLoading?: boolean;
+    showStatusFilter?: boolean;
     onFilterChange: (patch: Partial<ListCohortPeopleQuery>) => void;
     onClearFilters: () => void;
     onSortChange: (sortBy: ListCohortPeopleQuery['sortBy'], sortOrder: ListCohortPeopleQuery['sortOrder']) => void;
   }
 
-  let { query, activeFilterCount, isLoading = false, onFilterChange, onClearFilters, onSortChange }: Props = $props();
+  let {
+    query,
+    activeFilterCount,
+    isLoading = false,
+    showStatusFilter = false,
+    onFilterChange,
+    onClearFilters,
+    onSortChange
+  }: Props = $props();
 
   // SortPopover binds these, so the URL cannot be the only holder of them.
   let localSortKey = $state(query.sortBy);
@@ -62,6 +71,18 @@
         }))
       ]
     },
+    ...(showStatusFilter
+      ? [
+          {
+            label: $t('course.navItem.people.filter.status'),
+            options: [
+              { label: $t('course.navItem.people.filter.all_statuses'), patch: { membership: undefined } },
+              { label: $t('course.navItem.people.filter.joined'), patch: { membership: 'joined' as const } },
+              { label: $t('course.navItem.people.filter.invited'), patch: { membership: 'invited' as const } }
+            ]
+          }
+        ]
+      : []),
     {
       label: $t('course.navItem.people.filter.no_login_since'),
       options: activityWindows.map((window) => ({ label: window.label, patch: { lastLoginBefore: window.value } }))

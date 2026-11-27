@@ -72,6 +72,14 @@
       ]
     },
     {
+      label: $t('course.navItem.people.filter.status'),
+      options: [
+        { label: $t('course.navItem.people.filter.all_statuses'), patch: { membership: undefined } },
+        { label: $t('course.navItem.people.filter.joined'), patch: { membership: 'joined' as const } },
+        { label: $t('course.navItem.people.filter.invited'), patch: { membership: 'invited' as const } }
+      ]
+    },
+    {
       label: $t('course.navItem.people.filter.progress'),
       options: [
         { label: $t('course.navItem.people.not_started'), patch: { progress: 'not_started' as const } },

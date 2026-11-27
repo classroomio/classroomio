@@ -96,6 +96,11 @@ export const ZInviteStudentsToCohort = z.object({
 });
 export type TInviteStudentsToCohort = z.infer<typeof ZInviteStudentsToCohort>;
 
+export const ZCohortInviteByEmail = z.object({
+  email: z.email()
+});
+export type TCohortInviteByEmail = z.infer<typeof ZCohortInviteByEmail>;
+
 export const ZAssignExistingStudentsToCohort = z.object({
   profileIds: z.array(z.string().uuid()).min(1).max(500),
   sendEmail: z.boolean().default(true)

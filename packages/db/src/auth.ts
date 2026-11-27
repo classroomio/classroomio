@@ -27,6 +27,8 @@ import { trackLoginHook } from './auth/hooks/track-login';
 import { syncProfileEmailVerificationFromAuthUser } from './queries/auth/profile';
 
 export { mintLoginLinkToken } from './auth/login-link';
+export { getInviteBindingHandler, setInviteBindingHandler } from './auth/invite-binding-handler';
+export type { TInviteBindingHandler, TInviteBindingParams, TInviteBindingResult } from './auth/invite-binding-handler';
 
 /**
  * Cloud (multi-tenant) only. Routes OAuth/SSO callbacks to the canonical

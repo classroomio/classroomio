@@ -1,6 +1,20 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, desc, eq, ilike, inArray, isNotNull, or, sql, type SQL, type SQLWrapper } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  isNotNull,
+  isNull,
+  or,
+  sql,
+  type SQL,
+  type SQLWrapper
+} from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import {
@@ -384,6 +398,169 @@ export async function getExistingCohortMembers(
   }
 }
 
+function normalizeCohortEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+function hasCohortEmail(email: string | null | undefined): email is string {
+  return Boolean(email && email.trim());
+}
+
+export type TCohortEmailClaimResult = {
+  claimed: number;
+  removedDuplicates: number;
+  /** Cohorts where a STUDENT row was linked. */
+  claimedCohortIds: string[];
+};
+
+async function claimEmailOnlyCohortRows(
+  scope: SQL,
+  profileId: string,
+  email: string,
+  dbClient: DbOrTxClient
+): Promise<TCohortEmailClaimResult> {
+  const normalizedEmail = normalizeCohortEmail(email);
+  const emailOnlyRow = and(
+    scope,
+    isNull(schema.cohortMember.profileId),
+    eq(sql`lower(trim(${schema.cohortMember.email}))`, normalizedEmail)
+  );
+
+  const removed = await dbClient
+    .delete(schema.cohortMember)
+    .where(
+      and(
+        emailOnlyRow,
+        or(
+          sql`exists (select 1 from ${schema.cohortMember} as kept where kept.cohort_id = ${schema.cohortMember.cohortId} and kept.profile_id = ${profileId})`,
+          sql`exists (select 1 from ${schema.cohortMember} as kept where kept.cohort_id = ${schema.cohortMember.cohortId} and kept.profile_id is null and lower(trim(kept.email)) = ${normalizedEmail} and kept.id < ${schema.cohortMember.id})`
+        )
+      )
+    )
+    .returning({ id: schema.cohortMember.id });
+
+  const claimedRows = await dbClient
+    .update(schema.cohortMember)
+    .set({ profileId })
+    .where(emailOnlyRow)
+    .returning({ cohortId: schema.cohortMember.cohortId, roleId: schema.cohortMember.roleId });
+
+  return {
+    claimed: claimedRows.length,
+    removedDuplicates: removed.length,
+    claimedCohortIds: claimedRows.filter((row) => Number(row.roleId) === ROLE.STUDENT).map((row) => row.cohortId)
+  };
+}
+
+/**
+ * Links each user's email-only rows in these cohorts to their profile. Where the profile already has a row in a
+ * cohort, the email-only duplicate is deleted instead. Returns counts and the cohorts that gained a linked student row.
+ */
+export async function claimEmailOnlyCohortMembersForCohorts(
+  cohortIds: string[],
+  users: Array<{ profileId: string; email?: string | null }>,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortEmailClaimResult> {
+  const uniqueCohortIds = [...new Set(cohortIds)];
+  const claimableUsers = users.filter((user) => hasCohortEmail(user.email));
+
+  if (uniqueCohortIds.length === 0 || claimableUsers.length === 0) {
+    return { claimed: 0, removedDuplicates: 0, claimedCohortIds: [] };
+  }
+
+  try {
+    const scope = inArray(schema.cohortMember.cohortId, uniqueCohortIds);
+    let claimed = 0;
+    let removedDuplicates = 0;
+    const claimedCohortIds = new Set<string>();
+    for (const user of claimableUsers) {
+      const result = await claimEmailOnlyCohortRows(scope, user.profileId, user.email!, dbClient);
+      claimed += result.claimed;
+      removedDuplicates += result.removedDuplicates;
+      result.claimedCohortIds.forEach((cohortId) => claimedCohortIds.add(cohortId));
+    }
+
+    return { claimed, removedDuplicates, claimedCohortIds: [...claimedCohortIds] };
+  } catch (error) {
+    console.error('claimEmailOnlyCohortMembersForCohorts error:', error);
+    throw new Error(
+      `Failed to claim email-only cohort members: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Links every email-only cohort row for `email` in the organization to `profileId`, with the same duplicate rule as
+ * `claimEmailOnlyCohortMembersForCohorts`.
+ */
+export async function claimEmailOnlyCohortMembers(
+  orgId: string,
+  email: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortEmailClaimResult> {
+  if (!hasCohortEmail(email)) return { claimed: 0, removedDuplicates: 0, claimedCohortIds: [] };
+
+  try {
+    const scope = sql`${schema.cohortMember.cohortId} in (select ${schema.cohort.id} from ${schema.cohort} where ${schema.cohort.organizationId} = ${orgId})`;
+
+    return await claimEmailOnlyCohortRows(scope, profileId, email, dbClient);
+  } catch (error) {
+    console.error('claimEmailOnlyCohortMembers error:', error);
+    throw new Error(
+      `Failed to claim email-only cohort members: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Links every email-only program row for `email` in the organization to `profileId`. Where the profile already has
+ * a row in a program, the email-only duplicate is deleted instead.
+ */
+export async function claimEmailOnlyProgramMembers(
+  orgId: string,
+  email: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<{ claimed: number; removedDuplicates: number }> {
+  if (!hasCohortEmail(email)) return { claimed: 0, removedDuplicates: 0 };
+
+  try {
+    const normalizedEmail = normalizeCohortEmail(email);
+    const emailOnlyRow = and(
+      sql`${schema.programMember.programId} in (select ${schema.program.id} from ${schema.program} where ${schema.program.organizationId} = ${orgId})`,
+      isNull(schema.programMember.profileId),
+      eq(sql`lower(trim(${schema.programMember.email}))`, normalizedEmail)
+    );
+
+    const removed = await dbClient
+      .delete(schema.programMember)
+      .where(
+        and(
+          emailOnlyRow,
+          or(
+            sql`exists (select 1 from ${schema.programMember} as kept where kept.program_id = ${schema.programMember.programId} and kept.profile_id = ${profileId})`,
+            sql`exists (select 1 from ${schema.programMember} as kept where kept.program_id = ${schema.programMember.programId} and kept.profile_id is null and lower(trim(kept.email)) = ${normalizedEmail} and kept.id < ${schema.programMember.id})`
+          )
+        )
+      )
+      .returning({ id: schema.programMember.id });
+
+    const claimedRows = await dbClient
+      .update(schema.programMember)
+      .set({ profileId })
+      .where(emailOnlyRow)
+      .returning({ id: schema.programMember.id });
+
+    return { claimed: claimedRows.length, removedDuplicates: removed.length };
+  } catch (error) {
+    console.error('claimEmailOnlyProgramMembers error:', error);
+    throw new Error(
+      `Failed to claim email-only program members: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function updateCohort(cohortId: string, data: Partial<TNewCohort>): Promise<TCohort | null> {
   try {
     const [updated] = await db
@@ -454,7 +631,7 @@ export async function getCohortMemberByEmail(cohortId: string, email: string): P
       .where(
         and(
           eq(schema.cohortMember.cohortId, cohortId),
-          sql`lower(${schema.cohortMember.email}) = ${email.toLowerCase().trim()}`
+          sql`lower(trim(${schema.cohortMember.email})) = ${email.toLowerCase().trim()}`
         )
       )
       .limit(1);
@@ -509,6 +686,26 @@ export async function isOrgAdminByCohortId(cohortId: string, profileId: string):
 
 export async function addCohortMember(data: TNewCohortMember, dbClient: DbOrTxClient = db): Promise<TCohortMember> {
   try {
+    if (data.profileId) {
+      if (hasCohortEmail(data.email)) {
+        await claimEmailOnlyCohortMembersForCohorts(
+          [data.cohortId],
+          [{ profileId: data.profileId, email: data.email }],
+          dbClient
+        );
+      }
+
+      const [existing] = await dbClient
+        .select()
+        .from(schema.cohortMember)
+        .where(and(eq(schema.cohortMember.cohortId, data.cohortId), eq(schema.cohortMember.profileId, data.profileId)))
+        .limit(1);
+
+      if (existing) {
+        return existing;
+      }
+    }
+
     const [member] = await dbClient.insert(schema.cohortMember).values(data).returning();
     if (!member) throw new Error('Failed to add cohort member');
     return member;
@@ -527,6 +724,14 @@ export async function insertCohortMemberIfAbsent(
   dbClient: DbOrTxClient = db
 ): Promise<TCohortMember | null> {
   try {
+    if (data.profileId && hasCohortEmail(data.email)) {
+      await claimEmailOnlyCohortMembersForCohorts(
+        [data.cohortId],
+        [{ profileId: data.profileId, email: data.email }],
+        dbClient
+      );
+    }
+
     const [member] = await dbClient
       .insert(schema.cohortMember)
       .values(data)
@@ -656,6 +861,8 @@ export type PaginatedCohortPeopleOptions = {
   sortOrder: TCohortPeopleSortOrder;
   membership?: TCohortPeopleMembership;
   lastLoginBefore?: TCohortPeopleActivityWindow;
+  /** Row offset that overrides `page` when a caller pages across several lists. */
+  offset?: number;
 };
 
 export type PaginatedCohortPerson = TCohortMember & {
@@ -720,6 +927,119 @@ function buildCohortPeopleOrderBy(sortBy: TCohortPeopleSortBy, sortOrder: TCohor
   return [ordered(schema.cohortMember.createdAt), tiebreaker];
 }
 
+export type TInvitedCohortPersonKind = 'org_invite' | 'email_only_member';
+
+export type TInvitedCohortPersonRow = {
+  kind: TInvitedCohortPersonKind;
+  email: string | null;
+  cohortMemberId: string | null;
+  orgInviteId: string | null;
+  roleId: number | null;
+  memberCreatedAt: string | null;
+  inviteCreatedAt: string | null;
+  inviteExpiresAt: string | null;
+  courseIds: string[];
+  cohortIds: string[];
+};
+
+/**
+ * People invited to a cohort who have not joined: pending organization members whose latest open student invite
+ * carries this cohort (expired ones included so they can be resent), and legacy email-only cohort rows. One row per
+ * email; the invite wins over a legacy row.
+ */
+export async function getPaginatedInvitedCohortPeople(
+  cohortId: string,
+  options: { page: number; limit: number; search?: string; roleId?: number; offset?: number },
+  client: DbOrTxClient = db
+): Promise<{ items: TInvitedCohortPersonRow[]; total: number }> {
+  const searchTerm = options.search?.trim() ? `%${options.search.trim()}%` : null;
+  const filters = [
+    ...(searchTerm ? [sql`deduped.email ILIKE ${searchTerm}`] : []),
+    ...(options.roleId ? [sql`deduped."roleId" = ${options.roleId}`] : [])
+  ];
+  const offset = options.offset ?? (options.page - 1) * options.limit;
+  const invitedUnion = sql`
+    SELECT DISTINCT ON (lower(email)) *
+    FROM (
+      SELECT
+        'org_invite'::text AS kind,
+        om.email AS email,
+        NULL::uuid AS "cohortMemberId",
+        oi.id AS "orgInviteId",
+        oi.role_id::int AS "roleId",
+        NULL::timestamptz AS "memberCreatedAt",
+        oi.created_at AS "inviteCreatedAt",
+        oi.expires_at AS "inviteExpiresAt",
+        COALESCE(ARRAY(SELECT jsonb_array_elements_text(oi.metadata->'courseIds')), '{}') AS "courseIds",
+        COALESCE(ARRAY(SELECT jsonb_array_elements_text(oi.metadata->'cohortIds')), '{}') AS "cohortIds",
+        1 AS priority
+      FROM cohort co
+      JOIN organizationmember om ON om.organization_id = co.organization_id
+      JOIN organization_invite oi
+        ON oi.organization_id = om.organization_id
+        AND lower(oi.email) = lower(om.email)
+        AND oi.role_id = ${ROLE.STUDENT}
+        AND oi.is_revoked = false
+        AND oi.accepted_at IS NULL
+        AND NOT EXISTS (
+          SELECT 1
+          FROM organization_invite newer
+          WHERE newer.organization_id = oi.organization_id
+            AND lower(newer.email) = lower(oi.email)
+            AND newer.role_id = oi.role_id
+            AND newer.is_revoked = false
+            AND newer.accepted_at IS NULL
+            AND newer.created_at > oi.created_at
+        )
+      WHERE co.id = ${cohortId}
+        AND om.profile_id IS NULL
+        AND om.email IS NOT NULL
+        AND (oi.metadata->'cohortIds') ? ${cohortId}
+      UNION ALL
+      SELECT
+        'email_only_member'::text AS kind,
+        cm.email AS email,
+        cm.id AS "cohortMemberId",
+        NULL::uuid AS "orgInviteId",
+        cm.role_id::int AS "roleId",
+        cm.created_at AS "memberCreatedAt",
+        NULL::timestamptz AS "inviteCreatedAt",
+        NULL::timestamptz AS "inviteExpiresAt",
+        '{}'::text[] AS "courseIds",
+        '{}'::text[] AS "cohortIds",
+        2 AS priority
+      FROM cohort_member cm
+      WHERE cm.cohort_id = ${cohortId}
+        AND cm.profile_id IS NULL
+        AND cm.email IS NOT NULL
+    ) AS u
+    ORDER BY lower(email), priority, "inviteCreatedAt" DESC NULLS LAST
+  `;
+  const searchFilter = filters.length > 0 ? sql`WHERE ${sql.join(filters, sql` AND `)}` : sql``;
+
+  try {
+    const [countRow] = await client.execute(sql`
+      SELECT COUNT(*)::int AS total FROM (${invitedUnion}) AS deduped ${searchFilter}
+    `);
+    const rows = await client.execute(sql`
+      SELECT * FROM (${invitedUnion}) AS deduped
+      ${searchFilter}
+      ORDER BY deduped."inviteCreatedAt" DESC NULLS LAST, deduped."memberCreatedAt" DESC NULLS LAST, lower(deduped.email)
+      LIMIT ${options.limit} OFFSET ${offset}
+    `);
+
+    return {
+      items: rows.map((row) => row as unknown as TInvitedCohortPersonRow),
+      total: Number((countRow as unknown as { total: number } | undefined)?.total ?? 0)
+    };
+  } catch (error) {
+    console.error('getPaginatedInvitedCohortPeople error:', error);
+    throw new Error(
+      `Failed to get invited cohort people for "${cohortId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function getPaginatedCohortPeople(
   cohortId: string,
   options: PaginatedCohortPeopleOptions,
@@ -766,7 +1086,7 @@ export async function getPaginatedCohortPeople(
       .where(whereClause)
       .orderBy(...buildCohortPeopleOrderBy(options.sortBy, options.sortOrder))
       .limit(options.limit)
-      .offset(toOffset(options));
+      .offset(options.offset ?? toOffset(options));
 
     const countQuery = client
       .select({ count: count(schema.cohortMember.id) })
@@ -1326,5 +1646,34 @@ export async function getCohortNewsfeedCommentById(commentId: number): Promise<T
     throw new Error(
       `Failed to get cohort newsfeed comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * The cohorts among `cohortIds` that `profileId` is not a member of, with their organization.
+ */
+export async function getUnjoinedCohortsByIds(
+  cohortIds: string[],
+  profileId: string
+): Promise<{ id: string; organizationId: string; name: string | null }[]> {
+  if (cohortIds.length === 0) return [];
+
+  try {
+    return await db
+      .select({ id: schema.cohort.id, organizationId: schema.cohort.organizationId, name: schema.cohort.name })
+      .from(schema.cohort)
+      .where(
+        and(
+          inArray(schema.cohort.id, cohortIds),
+          sql`NOT EXISTS (
+            SELECT 1 FROM ${schema.cohortMember}
+            WHERE ${schema.cohortMember.cohortId} = ${schema.cohort.id}
+              AND ${schema.cohortMember.profileId} = ${profileId}
+          )`
+        )
+      );
+  } catch (error) {
+    console.error('getUnjoinedCohortsByIds error:', error);
+    throw new Error(`Failed to load invitation cohorts: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

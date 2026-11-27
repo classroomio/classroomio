@@ -10,11 +10,13 @@
   import * as Table from '@cio/ui/base/table';
   import { Search } from '@cio/ui/custom/search';
   import { Chip } from '@cio/ui/custom/chip';
-  import { IconButton } from '@cio/ui/custom/icon-button';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import ArrowDownIcon from '@lucide/svelte/icons/arrow-down';
   import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
   import CheckIcon from '@lucide/svelte/icons/check';
   import CopyIcon from '@lucide/svelte/icons/copy';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import MailOpenIcon from '@lucide/svelte/icons/mail-open';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import UserIcon from '@lucide/svelte/icons/user';
@@ -34,6 +36,7 @@
   import PeopleViewSwitcher from '$features/cohort/components/people-view-switcher.svelte';
   import { cohortApi } from '$features/cohort/api';
   import { formatPeopleShortDate } from '$features/course/utils/people-utils';
+  import { canRevokeAudienceInvite, statusBadgeVariant, statusLabelKey } from '$features/audience/utils/audience-utils';
   import {
     applyCohortPeopleView,
     clearCohortPeopleFilters,
@@ -223,6 +226,35 @@
     }
   }
 
+  async function reloadPeople() {
+    loadedQueryKey = null;
+    await loadPeople(data.cohortId, query);
+  }
+
+  function getInvitedStatus(person: CohortPerson) {
+    return person.invitation?.status ?? 'pending';
+  }
+
+  async function resendInvite(person: CohortPerson) {
+    const email = getEmail(person);
+    if (!email) return;
+
+    const result = await cohortApi.resendInvite(data.cohortId, email);
+    if (result?.success) {
+      await reloadPeople();
+    }
+  }
+
+  async function revokeInvite(person: CohortPerson) {
+    const email = getEmail(person);
+    if (!email) return;
+
+    const result = await cohortApi.revokeInvite(data.cohortId, email);
+    if (result?.success) {
+      await reloadPeople();
+    }
+  }
+
   function openInviteModal() {
     const searchParams = new URLSearchParams(page.url.searchParams);
     const pendingSearch = search.takePending();
@@ -268,6 +300,7 @@
             {query}
             {activeFilterCount}
             isLoading={isLoadingPeople}
+            showStatusFilter={canManageMembers}
             onFilterChange={handleFilterChange}
             onClearFilters={handleClearFilters}
             onSortChange={handleSortChange}
@@ -385,10 +418,9 @@
                               </Button>
                             {/if}
 
-                            <Chip
-                              value={$t('course.navItem.people.pending')}
-                              className="bg-yellow-200 text-yellow-700"
-                            />
+                            <Badge variant={statusBadgeVariant(getInvitedStatus(person))}>
+                              {$t(statusLabelKey(getInvitedStatus(person)))}
+                            </Badge>
                           </div>
                         </div>
                       {/if}
@@ -414,16 +446,44 @@
 
                     <Table.Cell class="w-1/6">
                       {#if canManageMembers && person.profileId !== $profile.id}
-                        <div class="hidden space-x-2 sm:flex sm:items-center">
-                          <IconButton
-                            onclick={() => {
-                              memberToDelete = person;
-                              isDeleteModalOpen = true;
-                            }}
+                        <DropdownMenu.Root>
+                          <DropdownMenu.Trigger
+                            class="ui:hover:bg-muted flex items-center justify-center rounded-md p-1"
+                            aria-label={$t('audience.invite.row_actions_aria')}
                           >
-                            <TrashIcon size={16} />
-                          </IconButton>
-                        </div>
+                            <EllipsisVerticalIcon size={16} />
+                          </DropdownMenu.Trigger>
+                          <DropdownMenu.Content align="end">
+                            {#if !person.profileId}
+                              <DropdownMenu.Item onclick={() => void resendInvite(person)}>
+                                <MailOpenIcon class="mr-2 size-4" />
+                                {$t('cohorts.people.resend_invite')}
+                              </DropdownMenu.Item>
+                            {/if}
+                            {#if person.invitation?.kind === 'org_invite'}
+                              {#if canRevokeAudienceInvite(getInvitedStatus(person))}
+                                <DropdownMenu.Item
+                                  class="ui:text-destructive ui:focus:text-destructive"
+                                  onclick={() => void revokeInvite(person)}
+                                >
+                                  <TrashIcon class="mr-2 size-4" />
+                                  {$t('cohorts.people.revoke_invite')}
+                                </DropdownMenu.Item>
+                              {/if}
+                            {:else}
+                              <DropdownMenu.Item
+                                class="ui:text-destructive ui:focus:text-destructive"
+                                onclick={() => {
+                                  memberToDelete = person;
+                                  isDeleteModalOpen = true;
+                                }}
+                              >
+                                <TrashIcon class="mr-2 size-4" />
+                                {$t('cohorts.people.remove_member')}
+                              </DropdownMenu.Item>
+                            {/if}
+                          </DropdownMenu.Content>
+                        </DropdownMenu.Root>
                       {/if}
                     </Table.Cell>
                   </Table.Row>

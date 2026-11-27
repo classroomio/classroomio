@@ -9,3 +9,4 @@ export * from './automation-usage';
 export * from './automation-change';
 export * from './student-email-template';
 export * from './early-adopter-claim';
+export * from './email-only-memberships';

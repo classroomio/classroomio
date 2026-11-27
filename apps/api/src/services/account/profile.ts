@@ -26,6 +26,7 @@ import type { TUpdateProfile } from '@cio/utils/validation/account';
 import { countOrgTemplates } from '@cio/db/queries/course';
 import { env } from '@cio/core/config/env';
 import { getLicenseStatus } from '@cio/core/services/license';
+import { bindProfileInOrg, runBindingSideEffects } from '@api/services/organization/invite-binding';
 
 function isOrgStaff(roleId?: number) {
   return roleId === ROLE.ADMIN || roleId === ROLE.TUTOR;
@@ -95,6 +96,32 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
 
       if (membershipEnsured) {
         organizations = await getOrganizationByProfileId(userId);
+      }
+
+      const selfHostedOrgId = createdMember?.organizationId ?? organizations[0]?.id;
+      if (membershipEnsured && selfHostedOrgId && profile.email) {
+        const normalizedEmail = profile.email.toLowerCase().trim();
+        const bindResult = await db.transaction(async (tx) =>
+          bindProfileInOrg(tx, {
+            orgId: selfHostedOrgId,
+            profileId: userId,
+            email: normalizedEmail,
+            trigger: 'self-hosted',
+            identityProven: profile.isEmailVerified === true,
+            roleForNewMember: ROLE.STUDENT
+          })
+        );
+
+        await runBindingSideEffects(bindResult, {
+          orgId: selfHostedOrgId,
+          profileId: userId,
+          email: normalizedEmail,
+          trigger: 'self-hosted'
+        });
+
+        if (bindResult.createdMember) {
+          organizations = await getOrganizationByProfileId(userId);
+        }
       }
     }
   }

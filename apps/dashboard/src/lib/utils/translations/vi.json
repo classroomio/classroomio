@@ -592,9 +592,9 @@
     "any_course": "Bất kỳ khóa học nào bạn hoàn thành sẽ được hiển thị ở đây",
     "find_courses": "Tìm khóa học",
     "pending_invites": {
-      "title": "Bạn có lời mời khóa học đang chờ",
       "description": "Hãy chấp nhận để bắt đầu học.",
-      "review": "Xem lời mời"
+      "review": "Xem lời mời",
+      "title": "Bạn có lời mời đang chờ xử lý"
     }
   },
   "certificates": {
@@ -700,7 +700,8 @@
       "revoke": "Thu hồi lời mời đang chờ xử lý",
       "resend_snackbar_success": "Đã gửi email mời",
       "resend_snackbar_email_failed": "Lời mời đã được gia hạn nhưng không thể gửi email",
-      "revoke_snackbar_success": "Đã thu hồi lời mời đang chờ xử lý"
+      "revoke_snackbar_success": "Đã thu hồi lời mời đang chờ xử lý",
+      "revoke_course_snackbar_success": "Đã thu hồi quyền truy cập khóa học"
     },
     "assign": {
       "title": "Chỉ định cho các khóa học",
@@ -759,7 +760,9 @@
         "duplicate_in_file": "Trùng lặp trong tệp",
         "over_seat_limit": "Không còn chỗ trống",
         "missing_email": "Không có email",
-        "is_staff": "Nhân viên, không phải học viên"
+        "is_staff": "Nhân viên, không phải học viên",
+        "archived": "thành viên đã lưu trữ",
+        "already_invited": "Đã được mời"
       },
       "submit_count": "Nhập {count} học viên",
       "result_heading": "{count} học viên đã được nhập",
@@ -1218,7 +1221,8 @@
           "members_only": "Chỉ thành viên của tổ chức này mới có thể đăng ký. Hãy yêu cầu quản trị viên gửi lời mời.",
           "invite_restricted_email": "Lời mời này được gửi đến {inviteEmail}, nhưng bạn đang đăng nhập với {currentEmail}. Hãy đăng xuất và tiếp tục với email được mời.",
           "invite_restricted": "Lời mời này chỉ dành cho một tài khoản khác. Hãy đăng xuất và tiếp tục với tài khoản được mời.",
-          "switch_account": "Đăng xuất và đổi tài khoản"
+          "switch_account": "Đăng xuất và đổi tài khoản",
+          "invite_replaced": "Lời mời này đã được thay thế. Kiểm tra email mới nhất của bạn."
         },
         "pricing_section": {
           "free": "miễn phí",
@@ -1580,7 +1584,16 @@
             "multi_use_30d": "Sử dụng nhiều lần (30 ngày)",
             "custom": "tùy chỉnh"
           },
-          "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên."
+          "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên.",
+          "revoke_course_access": "Thu hồi quyền truy cập khóa học này",
+          "outcomes": {
+            "title": "Kết quả",
+            "enrolled": "Đã thêm vào khóa học",
+            "already_enrolled": "Đã tham gia khóa học này",
+            "invited": "Được mời",
+            "archived": "Thành viên đã lưu trữ",
+            "not_found": "Không tìm thấy thành viên"
+          }
         },
         "learner": "Học viên",
         "views": {
@@ -1608,12 +1621,14 @@
           "completed": "Đã hoàn thành",
           "membership": "Tư cách thành viên",
           "joined": "Đã tham gia",
-          "invited": "Đã được mời, chưa có tài khoản",
+          "invited": "Được mời",
           "certificate": "Giấy chứng nhận",
           "earned": "kiếm được",
           "not_earned": "Không kiếm được",
           "no_login_since": "Không đăng nhập kể từ đó",
-          "joined_within": "Đã tham gia bên trong"
+          "joined_within": "Đã tham gia bên trong",
+          "status": "Trạng thái",
+          "all_statuses": "Tất cả"
         }
       },
       "marks": {
@@ -5097,17 +5112,27 @@
       "join_failed": "Không thể tham gia tổ chức",
       "joined": "Đã tham gia tổ chức"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "Bạn đã được mời tham gia một khóa học",
-        "description": "Chấp nhận lời mời để thêm khóa học vào quá trình học của bạn.",
-        "accept": "Chấp nhận",
-        "later": "Để sau"
+        "title": "Bạn đã được mời",
+        "description": "Tham gia học viện để chấp nhận các khóa học và nhóm của học viện."
       },
+      "join_org": "Tham gia {orgName}",
+      "joined_button": "Đã tham gia",
+      "later": "Để sau",
+      "pending_courses": "Bạn đã được mời tham gia các khóa học tại {orgName}.",
+      "courses_count": "{count} khóa học",
+      "untitled_course": "Khóa học chưa có tiêu đề",
+      "joined_title": "Xong! Bắt đầu học:",
       "messages": {
-        "joined": "Bạn đã tham gia khóa học.",
-        "join_failed": "Không thể chấp nhận lời mời. Vui lòng thử lại."
-      }
+        "joined": "Bạn đã tham gia học viện.",
+        "join_failed": "Không thể tham gia học viện. Vui lòng thử lại."
+      },
+      "invitation_team": "Bạn đã được mời tham gia {orgName} với tư cách là {role}.",
+      "verify_to_accept": "Xác minh địa chỉ email của bạn để chấp nhận lời mời này.",
+      "send_verification": "Gửi email xác minh",
+      "verification_sent": "Đã gửi email xác minh",
+      "untitled_cohort": "Nhóm thuần tập không có tiêu đề"
     }
   },
   "automation": {
@@ -6771,7 +6796,12 @@
         "students": "Sinh viên",
         "pending_invites": "Lời mời đang chờ xử lý",
         "never_logged_in": "Chưa bao giờ đăng nhập"
-      }
+      },
+      "invite_revoked": "Nhóm thuần tập đã bị xóa khỏi lời mời",
+      "resend_invite": "Gửi lại lời mời",
+      "revoke_invite": "Xóa khỏi lời mời",
+      "remove_member": "Xóa khỏi nhóm thuần tập",
+      "invite_new_students_description": "Mời những người mới vào tổ chức của bạn với nhóm thuần tập này trên lời mời của họ. Họ tạo một tài khoản, chấp nhận lời mời và tham gia nhóm cũng như các khóa học của nhóm."
     },
     "courses": {
       "add": "Thêm khóa học",

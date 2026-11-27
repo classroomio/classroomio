@@ -4097,7 +4097,16 @@
           "snackbar_failed_load_audit": "Impossibile caricare il controllo dell'invito",
           "snackbar_metadata_copied": "Metadati dell'invito copiati",
           "snackbar_email_invites_success": "Creato {count} invito(i). Inviato {sent}, fallito {failed}. Saltato {duplicates} duplicato(i).",
-          "select_at_least_one_student": "Seleziona almeno uno studente esistente"
+          "select_at_least_one_student": "Seleziona almeno uno studente esistente",
+          "revoke_course_access": "Revoca l'accesso a questo corso",
+          "outcomes": {
+            "title": "Risultati",
+            "enrolled": "Aggiunto al corso",
+            "already_enrolled": "Già in questo corso",
+            "invited": "Invitato",
+            "archived": "Membro archiviato",
+            "not_found": "Nessun membro corrispondente"
+          }
         },
         "delete_confirmation": {
           "title": "Eliminare",
@@ -4172,7 +4181,11 @@
           "earned": "Guadagnato",
           "not_earned": "Non guadagnato",
           "no_login_since": "Nessun accesso da allora",
-          "joined_within": "Uniti all'interno"
+          "joined_within": "Uniti all'interno",
+          "status": "Stato",
+          "all_statuses": "Tutti",
+          "joined": "Iscritto",
+          "invited": "Invitato"
         },
         "window": {
           "7d": "7 giorni",
@@ -4393,7 +4406,8 @@
           "members_only": "Solo i membri di questa organizzazione possono iscriversi. Chiedi un invito a un amministratore.",
           "invite_restricted_email": "Questo invito è stato inviato a {inviteEmail}, ma hai effettuato l'accesso come {currentEmail}. Esci e continua con l'indirizzo e-mail invitato.",
           "invite_restricted": "Questo invito è limitato a un altro account. Esci e continua con l'account invitato.",
-          "switch_account": "Esci e cambia account"
+          "switch_account": "Esci e cambia account",
+          "invite_replaced": "Questo invito è stato sostituito. Controlla la tua ultima email."
         },
         "course_content": "Contenuto del corso",
         "modules": "moduli",
@@ -4814,7 +4828,9 @@
         "duplicate_in_file": "Duplicato nel file",
         "is_staff": "Personale, non studente",
         "over_seat_limit": "Nessun posto rimasto",
-        "missing_email": "Nessuna e-mail"
+        "missing_email": "Nessuna e-mail",
+        "archived": "Membro archiviato",
+        "already_invited": "Già invitato"
       }
     },
     "assign": {
@@ -4835,7 +4851,8 @@
       "revoke": "Revocare l'invito in sospeso",
       "resend_snackbar_success": "E-mail di invito inviata",
       "resend_snackbar_email_failed": "L'invito è stato rinnovato ma non è stato possibile inviare l'e-mail",
-      "revoke_snackbar_success": "Invito in sospeso revocato"
+      "revoke_snackbar_success": "Invito in sospeso revocato",
+      "revoke_course_snackbar_success": "Accesso al corso revocato"
     },
     "never": "Mai",
     "progress": "Progressi",
@@ -5858,9 +5875,9 @@
     "any_course": "Tutti i corsi completati verranno visualizzati qui",
     "find_courses": "Trova corsi",
     "pending_invites": {
-      "title": "Hai inviti a corsi in sospeso",
       "description": "Accettali per iniziare a imparare.",
-      "review": "Rivedi gli inviti"
+      "review": "Rivedi gli inviti",
+      "title": "Hai inviti in sospeso"
     }
   },
   "certificates": {
@@ -6299,17 +6316,27 @@
       "join_failed": "Impossibile aderire all'organizzazione",
       "joined": "Organizzazione unita"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "Sei stato invitato a un corso",
-        "description": "Accetta un invito per aggiungere il corso al tuo apprendimento.",
-        "accept": "Accetta",
-        "later": "Più tardi"
+        "title": "Sei stato invitato",
+        "description": "Unisciti a un'accademia per accettare i suoi corsi e le sue coorti."
       },
+      "join_org": "Unisciti a {orgName}",
+      "joined_button": "Iscritto",
+      "later": "Più tardi",
+      "pending_courses": "Sei stato invitato ai corsi di {orgName}.",
+      "courses_count": "{count, plural, one {# corso} other {# corsi}}",
+      "untitled_course": "Corso senza titolo",
+      "joined_title": "Ci sei! Inizia a imparare:",
       "messages": {
-        "joined": "Ti sei iscritto al corso.",
-        "join_failed": "Non è stato possibile accettare l'invito. Riprova."
-      }
+        "joined": "Ti sei unito all'accademia.",
+        "join_failed": "Non è stato possibile unirsi all'accademia. Riprova."
+      },
+      "invitation_team": "Sei stato invitato a {orgName} come {role}.",
+      "verify_to_accept": "Verifica il tuo indirizzo email per accettare questo invito.",
+      "send_verification": "Invia e-mail di verifica",
+      "verification_sent": "E-mail di verifica inviata",
+      "untitled_cohort": "Coorte senza titolo"
     }
   },
   "content": {
@@ -6833,7 +6860,12 @@
         "students": "Studenti",
         "pending_invites": "Inviti in sospeso",
         "never_logged_in": "Mai effettuato l'accesso"
-      }
+      },
+      "invite_revoked": "Coorte rimossa dall'invito",
+      "resend_invite": "Invia nuovamente l'invito",
+      "revoke_invite": "Rimuovi dall'invito",
+      "remove_member": "Rimuovere dalla coorte",
+      "invite_new_students_description": "Invita nuove persone nella tua organizzazione con questo gruppo sul loro invito. Creano un account, accettano l'invito e si uniscono al gruppo e ai suoi corsi."
     },
     "lms": {
       "empty_title": "Ancora nessuna coorte",

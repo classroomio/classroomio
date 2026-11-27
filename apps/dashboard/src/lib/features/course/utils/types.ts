@@ -509,6 +509,11 @@ export type RevokeStudentInviteResponse = InferResponseType<RevokeStudentInviteR
 export type RevokeStudentInviteSuccess = Extract<RevokeStudentInviteResponse, { success: true }>;
 export type RevokeStudentInviteData = RevokeStudentInviteSuccess['data'];
 
+export type ResendCourseInviteRequest = (typeof classroomio.course)[':courseId']['invites']['resend']['$post'];
+export type ResendCourseInviteResponse = InferResponseType<ResendCourseInviteRequest>;
+export type ResendCourseInviteSuccess = Extract<ResendCourseInviteResponse, { success: true }>;
+export type ResendCourseInviteData = ResendCourseInviteSuccess['data'];
+
 export type GetStudentInviteAuditRequest =
   (typeof classroomio.course)[':courseId']['invites'][':inviteId']['audit']['$get'];
 export type GetStudentInviteAuditResponse = InferResponseType<GetStudentInviteAuditRequest>;

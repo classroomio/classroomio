@@ -16,18 +16,24 @@ import { COURSE_TEAM_RULE, inviteRateLimitUnavailableResponse } from './docs';
 export const v1CourseEnrollmentsRouter = new Hono().post(
   '/',
   describeRoute({
-    description: `Enroll a student by email, inviting them first when they are new, and change nothing on repeat calls; ${COURSE_TEAM_RULE}.`,
+    description: `Enroll a student by email, or add the course to their organization invite if they have not joined; repeat calls change nothing; ${COURSE_TEAM_RULE}.`,
     tags: ['Course Members'],
     responses: {
       200: jsonResponse(
-        'status says whether the student was enrolled, invited, or already was',
+        'status says whether the student was enrolled, invited, or already was; inviteId is the organization invite that carries the course',
         itemResponse(ZPublicApiEnrollCourseStudentResponse)
       ),
       400: errorResponses.badRequest,
       401: errorResponses.unauthorized,
-      403: { description: 'The token lacks the course:member:write scope, or the actor cannot manage this course' },
+      403: {
+        description:
+          'The token lacks the course:member:write scope, the actor cannot manage this course, or the student limit is reached (UPGRADE_REQUIRED)'
+      },
       404: { description: 'Course not found' },
-      409: { description: 'The email belongs to an admin or tutor (code STAFF_CANNOT_ENROLL)' },
+      409: {
+        description:
+          'The email belongs to an admin or tutor (code STAFF_CANNOT_ENROLL) or an archived member (code ORG_MEMBER_ARCHIVED)'
+      },
       429: {
         description:
           'This student needed a new invite, but the key creator already made 60 invite requests for this course in the past hour; or an MCP key hit its rate limit'

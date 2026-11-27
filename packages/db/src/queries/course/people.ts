@@ -4,6 +4,7 @@ import { TGroupmember, TNewGroupmember } from '@db/types';
 import { and, asc, count, desc, eq, ilike, isNotNull, isNull, or, sql, type SQL } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import type { TInvitedPersonStatus } from '@cio/utils/functions/invite-metadata';
 import {
   COURSE_PEOPLE_WINDOW_DAYS,
   type TCoursePeopleActivityWindow,
@@ -16,6 +17,7 @@ import {
 import { db } from '@db/drizzle';
 import { isExerciseCompletedSql } from '@db/queries/course/progression';
 import { deleteStudentCourseProgress } from '@db/queries/course/reset-progress';
+import { claimEmailOnlyGroupMembersForGroups } from '@db/queries/group';
 
 export type CourseMemberWithProfile = TGroupmember & {
   profile: {
@@ -40,6 +42,8 @@ export interface PaginatedCourseMembersOptions {
   membership?: TCoursePeopleMembership;
   enrolledWithin?: TCoursePeopleEnrolledWindow;
   lastLoginBefore?: TCoursePeopleActivityWindow;
+  /** Row offset that overrides `page` when a caller pages across several lists. */
+  offset?: number;
 }
 
 export type PaginatedCourseMember = CourseMemberWithProfile & {
@@ -47,6 +51,17 @@ export type PaginatedCourseMember = CourseMemberWithProfile & {
   progressBucket: TCoursePeopleProgress | null;
   lastLoginAt: string | null;
   enrolledAt: string | null;
+  membership: 'joined' | 'invited';
+  invitation: {
+    kind: TInvitedCourseMemberKind;
+    status: TInvitedPersonStatus;
+    groupMemberId: string | null;
+    orgInviteId: string | null;
+    courseInviteId: string | null;
+    expiresAt: string | null;
+    courseIds: string[];
+    cohortIds: string[];
+  } | null;
 };
 
 export interface PaginatedCourseMembersResult {
@@ -327,7 +342,7 @@ export async function getPaginatedCourseMembers(
       .where(whereClause)
       .orderBy(...buildPeopleOrderBy(progress, sortOrder ?? 'asc'))
       .limit(limit)
-      .offset((page - 1) * limit);
+      .offset(options.offset ?? (page - 1) * limit);
 
     return {
       items: rows.map((row) => ({
@@ -336,7 +351,9 @@ export async function getPaginatedCourseMembers(
         progressPercent: Number(row.progressPercent ?? 0),
         progressBucket: (row.progressBucket as TCoursePeopleProgress | null) ?? null,
         lastLoginAt: row.lastLoginAt ?? null,
-        enrolledAt: row.enrolledAt ?? null
+        enrolledAt: row.enrolledAt ?? null,
+        membership: 'joined' as const,
+        invitation: null
       })),
       page,
       limit,
@@ -347,6 +364,176 @@ export async function getPaginatedCourseMembers(
     console.error('getPaginatedCourseMembers error:', error);
     throw new Error(
       `Failed to get paginated course members: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export type TInvitedCourseMemberKind = 'email_only_member' | 'org_invite' | 'course_invite';
+
+export interface TInvitedCourseMemberRow {
+  kind: TInvitedCourseMemberKind;
+  email: string | null;
+  groupMemberId: string | null;
+  orgInviteId: string | null;
+  courseInviteId: string | null;
+  roleId: number | null;
+  memberCreatedAt: string | null;
+  inviteCreatedAt: string | null;
+  inviteExpiresAt: string | null;
+  courseIds: string[];
+  cohortIds: string[];
+}
+
+export interface PaginatedInvitedCourseMembersOptions {
+  page: number;
+  limit: number;
+  search?: string;
+  roleId?: number;
+  /** Row offset that overrides `page` when a caller pages across several lists. */
+  offset?: number;
+}
+
+export interface PaginatedInvitedCourseMembersResult {
+  items: TInvitedCourseMemberRow[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+/**
+ * People invited to a course but not yet joined, from three sources:
+ * legacy email-only group rows (and staff email-only rows), pending org members
+ * whose latest open student org invite names this course, and unused
+ * single-recipient course invites. Expired invites are included so they can be
+ * resent. One row per email; an org invitation wins over a course invite, which
+ * wins over a legacy row.
+ */
+export async function getPaginatedInvitedCourseMembers(
+  courseId: string,
+  options: PaginatedInvitedCourseMembersOptions
+): Promise<PaginatedInvitedCourseMembersResult> {
+  const { page, limit, search, roleId } = options;
+  const searchTerm = search?.trim() ? `%${search.trim()}%` : null;
+  const filters = [
+    ...(searchTerm ? [sql`deduped.email ILIKE ${searchTerm}`] : []),
+    ...(roleId ? [sql`deduped."roleId" = ${roleId}`] : [])
+  ];
+  const filter = filters.length > 0 ? sql`WHERE ${sql.join(filters, sql` AND `)}` : sql``;
+  const offset = options.offset ?? (page - 1) * limit;
+
+  const invitedUnion = sql`
+    SELECT DISTINCT ON (lower(email)) *
+    FROM (
+      SELECT
+        'org_invite'::text AS kind,
+        om.email AS email,
+        NULL::uuid AS "groupMemberId",
+        oi.id AS "orgInviteId",
+        NULL::uuid AS "courseInviteId",
+        oi.role_id::int AS "roleId",
+        NULL::timestamptz AS "memberCreatedAt",
+        oi.created_at AS "inviteCreatedAt",
+        oi.expires_at AS "inviteExpiresAt",
+        COALESCE(ARRAY(SELECT jsonb_array_elements_text(oi.metadata->'courseIds')), '{}') AS "courseIds",
+        COALESCE(ARRAY(SELECT jsonb_array_elements_text(oi.metadata->'cohortIds')), '{}') AS "cohortIds",
+        1 AS priority
+      FROM organizationmember om
+      JOIN organization_invite oi
+        ON oi.organization_id = om.organization_id
+        AND lower(oi.email) = lower(om.email)
+        AND oi.role_id = 3
+        AND oi.is_revoked = false
+        AND oi.accepted_at IS NULL
+        AND NOT EXISTS (
+          SELECT 1
+          FROM organization_invite newer
+          WHERE newer.organization_id = oi.organization_id
+            AND lower(newer.email) = lower(oi.email)
+            AND newer.role_id = oi.role_id
+            AND newer.is_revoked = false
+            AND newer.accepted_at IS NULL
+            AND newer.created_at > oi.created_at
+        )
+      JOIN "group" g ON g.organization_id = om.organization_id
+      JOIN course c ON c.group_id = g.id AND c.id = ${courseId}
+      WHERE om.profile_id IS NULL
+        AND om.email IS NOT NULL
+        AND (oi.metadata->'courseIds') ? ${courseId}
+      UNION ALL
+      SELECT
+        'course_invite'::text AS kind,
+        ci.allowed_emails[1] AS email,
+        NULL::uuid AS "groupMemberId",
+        NULL::uuid AS "orgInviteId",
+        ci.id AS "courseInviteId",
+        ci.role_id::int AS "roleId",
+        NULL::timestamptz AS "memberCreatedAt",
+        ci.created_at AS "inviteCreatedAt",
+        ci.expires_at AS "inviteExpiresAt",
+        ARRAY[ci.course_id::text] AS "courseIds",
+        '{}'::text[] AS "cohortIds",
+        2 AS priority
+      FROM course_invite ci
+      JOIN course c ON c.id = ci.course_id
+      WHERE ci.course_id = ${courseId}
+        AND ci.role_id = 3
+        AND ci.is_revoked = false
+        AND ci.used_count < ci.max_uses
+        AND cardinality(ci.allowed_emails) = 1
+        AND NOT EXISTS (
+          SELECT 1
+          FROM groupmember joined
+          JOIN profile p ON p.id = joined.profile_id
+          WHERE joined.group_id = c.group_id
+            AND lower(p.email) = lower(ci.allowed_emails[1])
+        )
+      UNION ALL
+      SELECT
+        'email_only_member'::text AS kind,
+        gm.email AS email,
+        gm.id AS "groupMemberId",
+        NULL::uuid AS "orgInviteId",
+        NULL::uuid AS "courseInviteId",
+        gm.role_id::int AS "roleId",
+        gm.created_at AS "memberCreatedAt",
+        NULL::timestamptz AS "inviteCreatedAt",
+        NULL::timestamptz AS "inviteExpiresAt",
+        '{}'::text[] AS "courseIds",
+        '{}'::text[] AS "cohortIds",
+        3 AS priority
+      FROM groupmember gm
+      JOIN course c ON c.group_id = gm.group_id AND c.id = ${courseId}
+      WHERE gm.profile_id IS NULL
+    ) AS u
+    ORDER BY lower(email), priority, "inviteCreatedAt" DESC NULLS LAST
+  `;
+
+  try {
+    const [countResult] = await db.execute(sql`
+      SELECT COUNT(*)::int AS total FROM (${invitedUnion}) AS deduped
+      ${filter}
+    `);
+    const total = Number((countResult as unknown as { total: number })?.total ?? 0);
+
+    const result = await db.execute(sql`
+      SELECT * FROM (${invitedUnion}) AS deduped
+      ${filter}
+      ORDER BY deduped."inviteCreatedAt" DESC NULLS LAST, deduped."memberCreatedAt" DESC NULLS LAST, lower(deduped.email)
+      LIMIT ${limit} OFFSET ${offset}
+    `);
+
+    return {
+      items: result.map((row) => row as unknown as TInvitedCourseMemberRow),
+      page,
+      limit,
+      total,
+      totalPages: total === 0 ? 0 : Math.ceil(total / limit)
+    };
+  } catch (error) {
+    console.error('getPaginatedInvitedCourseMembers error:', error);
+    throw new Error(
+      `Failed to get paginated invited course members: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -480,16 +667,54 @@ export async function getCourseTeachers(options: {
  * Adds a course member (person) to a course
  * @param courseId Course ID
  * @param memberData Member data (profileId, roleId, email)
- * @returns Created member
+ * @returns The member row, and `created: false` when the profile was already in the course. Linking an email-only
+ *   placeholder for that profile counts as created.
  */
 export async function addCourseMember(
   courseId: string,
   memberData: { profileId?: string; roleId: number; email?: string }
-): Promise<TGroupmember> {
+): Promise<{ member: TGroupmember; created: boolean }> {
   try {
     const groupId = await getCourseGroupId(courseId);
     if (!groupId) {
       throw new Error('Course group not found');
+    }
+
+    if (memberData.profileId) {
+      const profileId = memberData.profileId;
+      const findLinkedRow = async () => {
+        const [row] = await db
+          .select()
+          .from(schema.groupmember)
+          .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, profileId)))
+          .limit(1);
+
+        return row;
+      };
+
+      const existing = await findLinkedRow();
+      if (existing) {
+        return { member: existing, created: false };
+      }
+
+      if (memberData.email) {
+        await claimEmailOnlyGroupMembersForGroups([groupId], [{ profileId, email: memberData.email }], db);
+
+        const claimed = await findLinkedRow();
+        if (claimed && Number(claimed.roleId) === Number(memberData.roleId)) {
+          return { member: claimed, created: true };
+        }
+
+        if (claimed) {
+          const [withRequestedRole] = await db
+            .update(schema.groupmember)
+            .set({ roleId: memberData.roleId })
+            .where(eq(schema.groupmember.id, claimed.id))
+            .returning();
+
+          return { member: withRequestedRole ?? claimed, created: true };
+        }
+      }
     }
 
     const [newMember] = await db
@@ -506,7 +731,7 @@ export async function addCourseMember(
       throw new Error('Failed to create course member');
     }
 
-    return newMember;
+    return { member: newMember, created: true };
   } catch (error) {
     console.error('addCourseMember error:', error);
     const message = `Failed to add course member: ${error instanceof Error ? error.message : 'Unknown error'}`;

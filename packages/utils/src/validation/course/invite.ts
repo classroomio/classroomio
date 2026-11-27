@@ -51,3 +51,9 @@ export const ZCreateCourseInvite = z
     { message: 'recipientEmails or recipientCsv is required', path: ['recipientEmails'] }
   );
 export type TCreateCourseInvite = z.infer<typeof ZCreateCourseInvite>;
+
+export const ZResendCourseInvite = z.object({
+  email: z.email(),
+  sendEmail: z.boolean().default(true)
+});
+export type TResendCourseInvite = z.infer<typeof ZResendCourseInvite>;

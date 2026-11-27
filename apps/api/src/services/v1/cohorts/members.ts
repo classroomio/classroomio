@@ -11,8 +11,10 @@ import {
   addCohortMembersSettled,
   listPaginatedCohortPeople,
   removeCohortMemberService,
-  updateCohortMemberService
+  updateCohortMemberService,
+  type TCohortInviteStatus
 } from '@api/services/cohort/cohort';
+import { scopeCohortPeopleQueryToViewer } from '@api/services/cohort/invite';
 import {
   assertCohortBelongsToOrganization,
   assertCohortMemberOrOrgAdmin,
@@ -29,8 +31,9 @@ export async function listPublicApiCohortMembersService(
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
+  const scopedQuery = await scopeCohortPeopleQueryToViewer(params.cohortId, actorId!, query);
 
-  return listPaginatedCohortPeople(params.cohortId, query);
+  return listPaginatedCohortPeople(params.cohortId, scopedQuery);
 }
 
 export async function addPublicApiCohortMembersService(
@@ -49,10 +52,21 @@ export async function addPublicApiCohortMembersService(
   const results = await addCohortMembersSettled(params.cohortId, payload, source, actorId);
 
   const added: unknown[] = [];
+  const invited: { index: number; email: string; status: TCohortInviteStatus; inviteId: string | null }[] = [];
   const errors: { index: number; email: string | null; profileId: string | null; code: string; message: string }[] = [];
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
-      added.push(result.value);
+      if (result.value.kind === 'added') {
+        added.push(result.value.member);
+      } else {
+        invited.push({
+          index,
+          email: result.value.email,
+          status: result.value.status,
+          inviteId: result.value.inviteId
+        });
+      }
+
       return;
     }
     const member = payload.members[index]!;
@@ -70,7 +84,7 @@ export async function addPublicApiCohortMembersService(
     });
   });
 
-  return { added, errors };
+  return { added, invited, errors };
 }
 
 export async function updatePublicApiCohortMemberService(

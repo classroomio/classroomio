@@ -22,17 +22,18 @@ For plan features and current prices, see [Compare plans and feature limits](/ge
 
 ClassroomIO counts every non-archived organization member whose role is **Student**, except people who never joined and whose latest invitation was revoked or has expired. The count is organization-wide rather than the sum of course enrollments, so the same student in several courses occupies one plan seat.
 
-Pending invitations count too. Anyone invited by email, from **Audience → Import Users**, a course's **People** page, a cohort, the API, or MCP, holds a seat from the moment the invitation is created. The seat is freed when the invitation is revoked or expires, 7 days after it was created or last renewed. One exception: a course invitation created through the API or MCP, by email or link, takes a seat only when someone outside the organization accepts it, and acceptance is blocked if no seat is free.
+Pending invitations count too. Anyone invited by email, from **Audience → Import Users**, a course's **People** page, a cohort, the API, or MCP, holds a seat from the moment the invitation is created. The seat is freed when the invitation is revoked or expires, 7 days after it was created or last renewed. One exception: a reusable course invite link takes a seat only when someone outside the organization joins through it, and joining is blocked if no seat is free. Email invitations sent through the API or MCP hold a seat from the moment they are sent, like every other email invitation.
 
 Member and invitation changes affect seats differently:
 
-| Action                                 | Access result                             | Plan seat result         |
-| -------------------------------------- | ----------------------------------------- | ------------------------ |
-| **Archive**                            | The student loses access until unarchived | The seat is freed        |
-| **Unarchive**                          | The student regains access                | A seat is required again |
-| **Revoke pending invite**              | The invitation link stops working         | The seat is freed        |
-| Invitation expires                     | The invitation link stops working         | The seat is freed        |
-| **Resend invite** (expired or revoked) | A new invitation link is sent             | A seat is required again |
+| Action                                                                           | Access result                             | Plan seat result         |
+| -------------------------------------------------------------------------------- | ----------------------------------------- | ------------------------ |
+| **Archive**                                                                      | The student loses access until unarchived | The seat is freed        |
+| **Unarchive**                                                                    | The student regains access                | A seat is required again |
+| **Revoke pending invite**                                                        | The invitation link stops working         | The seat is freed        |
+| **Revoke access to this course** or **Remove from invitation** (last item on it) | The invitation link stops working         | The seat is freed        |
+| Invitation expires                                                               | The invitation link stops working         | The seat is freed        |
+| **Resend invite** (expired or revoked)                                           | A new invitation link is sent             | A seat is required again |
 
 ClassroomIO checks capacity before direct additions, invitations that create a student, self-enrollment, course joins, cohort assignments, imports, moving archived students out of **Archived** (unarchive or undoing an archive), and resending, re-importing, or correcting the email of an invitation that was revoked or has expired. An action can fill the final available seat, but an action that would exceed the limit is blocked. An import adds students up to the limit and marks the rows that don't fit **No seats left**. Invalid emails and existing members keep their own statuses.
 

@@ -87,3 +87,22 @@ The GitHub Action runs on:
 - ✅ PR previews and artifacts
 - ✅ Error handling and logging
 - ✅ CLI help with `--help` flag
+
+# Claim email-only memberships
+
+`claim-email-only-memberships.ts` links email-only course, cohort and program rows to the active joined organization member with the same email. It runs the same claim step as the accept, SSO and token sign-in, and join paths: a row the profile already has wins and the email-only duplicate is dropped, claimed cohort students are enrolled in the cohort's courses, and compliance records are created through the shared compliance service. It does not accept invitations and sends no webhooks or emails. Rows with no active joined member for their email are reported as pending and left alone. That covers people who have not joined yet, whose rows are linked when they join, and archived members. The script loads `apps/api/.env`, so run it with the API's database settings in place.
+
+Dry run (counts claimable and pending rows; changes nothing):
+
+```bash
+pnpm --filter @cio/api claim:email-only-memberships
+```
+
+Apply, optionally for one organization:
+
+```bash
+pnpm --filter @cio/api claim:email-only-memberships -- --execute
+pnpm --filter @cio/api claim:email-only-memberships -- --execute --org=<orgId>
+```
+
+Only members that still have claimable rows are visited, in batches of 500, with progress printed about every 30 seconds. Re-running is safe and finds nothing to do. Run it once in production after deploying the invites-and-membership changes.

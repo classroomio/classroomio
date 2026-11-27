@@ -7,20 +7,13 @@ export type PendingOrgInviteItem = PendingOrgInvites[number];
 
 export type AcceptOrgInviteRequest = (typeof classroomio.invite.organization)[':inviteId']['accept-by-id']['$post'];
 
-/**
- * Minimum an invite needs for the accept modal. Structural on purpose: both the
- * account-scoped notification list and the org-scoped tenant-site flow satisfy it.
- */
-export type AcceptableOrgInvite = {
-  id: string;
-  email: string | null;
-  roleId: number;
-  roleLabel: string;
-  organization: { name: string; siteName: string };
-};
+export type GetPendingInvitationsRequest = typeof classroomio.account.invitations.$get;
+type GetPendingInvitationsResponse = Extract<InferResponseType<GetPendingInvitationsRequest>, { success: true }>;
+export type PendingInvitationGroups = GetPendingInvitationsResponse['data'];
+export type PendingInvitationGroup = PendingInvitationGroups[number];
+export type PendingInvitationCourse = PendingInvitationGroup['courses'][number];
+export type PendingInvitationCohort = PendingInvitationGroup['cohorts'][number];
 
-export type GetPendingCourseInvitesRequest = (typeof classroomio.account)['course-invites']['$get'];
-type GetPendingCourseInvitesResponse = Extract<InferResponseType<GetPendingCourseInvitesRequest>, { success: true }>;
-export type PendingCourseInviteItem = GetPendingCourseInvitesResponse['data'][number];
-
-export type AcceptCourseInviteRequest = (typeof classroomio.invite.student)[':inviteId']['accept-by-id']['$post'];
+export type GetPendingTenantInviteRequest = typeof classroomio.invite.organization.pending.$get;
+type GetPendingTenantInviteResponse = Extract<InferResponseType<GetPendingTenantInviteRequest>, { success: true }>;
+export type PendingTenantInvite = NonNullable<GetPendingTenantInviteResponse['data']>;

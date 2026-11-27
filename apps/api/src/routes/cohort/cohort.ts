@@ -17,7 +17,8 @@ import {
   ZUpdateCohortNewsfeed,
   ZUpdateCohortReaction,
   ZCohortPeopleParam,
-  ZCohortPeopleQuery
+  ZCohortPeopleQuery,
+  ZCohortInviteByEmail
 } from '@cio/utils/validation/cohort';
 import {
   addCourseToCohortService,
@@ -43,7 +44,13 @@ import {
   updateCohortNewsfeedReactionService,
   updateCohortNewsfeedService
 } from '@api/services/cohort/cohort';
-import { assignExistingStudentsToCohort, inviteStudentsToCohort } from '@api/services/cohort/invite';
+import {
+  scopeCohortPeopleQueryToViewer,
+  assignExistingStudentsToCohort,
+  inviteStudentsToCohort,
+  resendCohortInvite,
+  revokeCohortInvite
+} from '@api/services/cohort/invite';
 import {
   fetchInviteLinkForResource,
   getOrCreateInviteLinkForResource,
@@ -229,7 +236,9 @@ export const cohortRouter = new Hono()
     async (c) => {
       try {
         const { cohortId } = c.req.valid('param');
-        const result = await listPaginatedCohortPeople(cohortId, c.req.valid('query'));
+        const requestedQuery = c.req.valid('query');
+        const query = await scopeCohortPeopleQueryToViewer(cohortId, c.get('user')!.id, requestedQuery);
+        const result = await listPaginatedCohortPeople(cohortId, query);
 
         return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
       } catch (error) {
@@ -326,6 +335,52 @@ export const cohortRouter = new Hono()
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to invite students to cohort');
+      }
+    }
+  )
+
+  /**
+   * POST /cohort/:cohortId/invite/resend
+   * Sends one email a fresh link to their organization invite with this cohort on it.
+   */
+  .post(
+    '/:cohortId/invite/resend',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    zValidator('param', ZCohortParam),
+    zValidator('json', ZCohortInviteByEmail),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { cohortId } = c.req.valid('param');
+        const { email } = c.req.valid('json');
+        const result = await resendCohortInvite(cohortId, email, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to resend cohort invite');
+      }
+    }
+  )
+
+  /**
+   * POST /cohort/:cohortId/invite/revoke
+   * Removes this cohort from a pending student's organization invite.
+   */
+  .post(
+    '/:cohortId/invite/revoke',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    zValidator('param', ZCohortParam),
+    zValidator('json', ZCohortInviteByEmail),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { cohortId } = c.req.valid('param');
+        const { email } = c.req.valid('json');
+        const result = await revokeCohortInvite(cohortId, email, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to revoke cohort invite');
       }
     }
   )

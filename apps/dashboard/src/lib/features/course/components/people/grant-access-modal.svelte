@@ -5,8 +5,9 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
-  import { courseApi } from '$features/course/api';
-  import { orgApi } from '$features/org/api/org.svelte';
+  import InviteOutcomeList from '$features/course/components/people/invite-outcome-list.svelte';
+  import { courseApi, peopleApi } from '$features/course/api';
+  import { COURSE_INVITE_OUTCOME_LABEL_KEYS } from '$features/course/components/people/invite-utils';
   import { profile } from '$lib/utils/store/user';
   import { isStudentLimitReached } from '$lib/utils/store/org';
   import { UpgradeBanner } from '$features/ui';
@@ -25,8 +26,10 @@
   const isOpen = $derived(Boolean(studentEmail));
 
   let isSubmitting = $state(false);
+  let outcome = $state<{ email: string; labelKey: string } | null>(null);
 
   function closeModal() {
+    outcome = null;
     const nextParams = new URLSearchParams(page.url.search);
     nextParams.delete(GRANT_ACCESS_PARAM);
     const query = nextParams.toString();
@@ -42,19 +45,26 @@
     isSubmitting = true;
 
     try {
-      const response = await orgApi.importAudienceMembers({
-        recipientCsv: studentEmail,
-        courseIds: [courseId],
+      const invite = await peopleApi.createStudentInvite(courseId, {
+        recipientEmails: [studentEmail],
         sendEmail: true
       });
-
-      if (!response) {
+      const recipient = invite?.recipients[0];
+      if (!recipient) {
         return;
       }
 
-      await courseApi.refreshCourse(courseId, $profile.id);
-      onMembersChanged?.();
-      closeModal();
+      if (recipient.status === 'invited' || recipient.status === 'enrolled') {
+        await courseApi.refreshCourse(courseId, $profile.id);
+        onMembersChanged?.();
+        closeModal();
+        return;
+      }
+
+      outcome = {
+        email: recipient.email,
+        labelKey: COURSE_INVITE_OUTCOME_LABEL_KEYS[recipient.status] ?? COURSE_INVITE_OUTCOME_LABEL_KEYS.invited
+      };
     } finally {
       isSubmitting = false;
     }
@@ -79,6 +89,10 @@
       <UpgradeBanner removeParams={[GRANT_ACCESS_PARAM]}>
         {$t('course.navItem.people.invite_modal.student_limit_reached')}
       </UpgradeBanner>
+    {/if}
+
+    {#if outcome}
+      <InviteOutcomeList titleKey="course.navItem.people.invite_modal.outcomes.title" items={[outcome]} />
     {/if}
 
     <div class="flex justify-end gap-2">

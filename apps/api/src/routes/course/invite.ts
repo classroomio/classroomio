@@ -2,13 +2,15 @@ import {
   ZCourseInviteAuditParam,
   ZCourseInviteParam,
   ZCourseInviteRevokeParam,
-  ZCreateCourseInvite
+  ZCreateCourseInvite,
+  ZResendCourseInvite
 } from '@cio/utils/validation/course/invite';
 import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
 import {
   createStudentInvite,
   getStudentInviteAuditTrail,
   listStudentInvites,
+  resendCourseInvitation,
   revokeStudentInvite
 } from '@api/services/course/invite';
 import {
@@ -143,8 +145,37 @@ export const invitesRouter = new Hono()
     }
   )
   /**
+   * POST /course/:courseId/invites/resend
+   * Sends one email a fresh link to their organization invite with this course on it.
+   */
+  .post(
+    '/resend',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZCourseInviteParam),
+    zValidator('json', ZResendCourseInvite),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const { email, sendEmail } = c.req.valid('json');
+        const user = c.get('user')!;
+        const resent = await resendCourseInvitation(courseId, user.id, email, sendEmail);
+
+        return c.json(
+          {
+            success: true,
+            data: resent
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to resend invite');
+      }
+    }
+  )
+  /**
    * POST /course/:courseId/invites/:inviteId/revoke
-   * Revokes a secure invite (team/admin only)
+   * Revokes a course invite, or removes this course from an organization invite (team/admin only)
    */
   .post(
     '/:inviteId/revoke',
