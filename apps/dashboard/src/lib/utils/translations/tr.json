@@ -3356,6 +3356,18 @@
                 "heading_3": "Uygulamaya geçirmek",
                 "body_3": "Öğrencilerin az önce gördüklerini nasıl uyguladığını gösterin."
               }
+            },
+            "all_blocks": "Tüm bloklar",
+            "search_blocks": "Blok ara",
+            "no_blocks_found": "Eşleşen blok yok",
+            "new_badge": "Yeni",
+            "coming_soon": "Yakında",
+            "upcoming": {
+              "audio": "Ses",
+              "poll": "Anket",
+              "timeline": "Zaman çizelgesi",
+              "code": "Kod",
+              "embed": "Yerleştirme"
             }
           }
         },

@@ -5,7 +5,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isBlockType, type TBlockType } from '@cio/utils/validation/block';
   import { aiPromptRequests, getAiShortcut } from '../utils/ai-prompt-request';
-  import { getAddBlockChoices } from '../utils/block-choices';
+  import { getAddBlockChoices, getDockBlockChoices, getUpcomingBlockChoices } from '../utils/block-choices';
   import BlockAiPrompt from './block-ai-prompt.svelte';
 
   interface Props {
@@ -16,7 +16,8 @@
 
   const isMac = $derived(browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform));
 
-  const choices = $derived<AddBlockChoice[]>(getAddBlockChoices());
+  const choices = $derived<AddBlockChoice[]>(getDockBlockChoices());
+  const moreChoices = $derived<AddBlockChoice[]>([...getAddBlockChoices(), ...getUpcomingBlockChoices()]);
 
   let aiPanelOpen = $state(false);
 
@@ -42,7 +43,13 @@
 
 <AddBlock.Row
   {choices}
+  {moreChoices}
   addLabel={t.get('course.navItem.lessons.materials.blocks.add_content')}
+  moreLabel={$t('course.navItem.lessons.materials.blocks.all_blocks')}
+  searchLabel={$t('course.navItem.lessons.materials.blocks.search_blocks')}
+  noResultsLabel={$t('course.navItem.lessons.materials.blocks.no_blocks_found')}
+  newLabel={$t('course.navItem.lessons.materials.blocks.new_badge')}
+  comingSoonLabel={$t('course.navItem.lessons.materials.blocks.coming_soon')}
   aiLabel={$t('ai_assistant.ask_ai')}
   aiPanelLabel={$t('course.navItem.lessons.materials.blocks.ai.title')}
   aiShortcut={getAiShortcut(isMac)}
@@ -51,6 +58,7 @@
   toolbarTestId="block-add-toolbar"
   aiTriggerTestId="block-ai-trigger"
   aiPanelTestId="block-ai-panel"
+  moreTestId="block-all-blocks"
   onSelect={handleSelect}
   onAiTrigger={() => (aiPanelOpen = true)}
 >

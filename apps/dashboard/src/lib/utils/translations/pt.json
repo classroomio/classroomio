@@ -2901,6 +2901,18 @@
                 "heading_3": "Colocando em prática",
                 "body_3": "Mostre como os alunos aplicam o que acabaram de ver."
               }
+            },
+            "all_blocks": "Todos os blocos",
+            "search_blocks": "Pesquisar blocos",
+            "no_blocks_found": "Nenhum bloco corresponde",
+            "new_badge": "Novo",
+            "coming_soon": "Em breve",
+            "upcoming": {
+              "audio": "Áudio",
+              "poll": "Enquete",
+              "timeline": "Linha do tempo",
+              "code": "Código",
+              "embed": "Incorporar"
             }
           }
         },

@@ -171,6 +171,7 @@
   addLabel={t.get('course.navItem.lessons.materials.blocks.add_content')}
   addAiLabel={t.get('course.navItem.lessons.materials.blocks.ask_ai_instead')}
   addAiShortcut={getAiShortcut(isMac)}
+  addNewLabel={t.get('course.navItem.lessons.materials.blocks.new_badge')}
   gapTestId="block-gap-add"
   emptyTitle={t.get('course.navItem.lessons.materials.blocks.empty_title')}
   emptyDescription={t.get('course.navItem.lessons.materials.blocks.empty_description')}

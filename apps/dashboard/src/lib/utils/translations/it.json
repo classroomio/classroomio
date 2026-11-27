@@ -3348,6 +3348,18 @@
                 "heading_3": "Metterlo in pratica",
                 "body_3": "Mostra come i partecipanti applicano ciò che hanno appena visto."
               }
+            },
+            "all_blocks": "Tutti i blocchi",
+            "search_blocks": "Cerca blocchi",
+            "no_blocks_found": "Nessun blocco corrisponde",
+            "new_badge": "Nuovo",
+            "coming_soon": "In arrivo",
+            "upcoming": {
+              "audio": "Audio",
+              "poll": "Sondaggio",
+              "timeline": "Cronologia",
+              "code": "Codice",
+              "embed": "Incorpora"
             }
           }
         },

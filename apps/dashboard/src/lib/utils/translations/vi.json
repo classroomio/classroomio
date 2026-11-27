@@ -2901,6 +2901,18 @@
                 "heading_3": "Áp dụng vào thực tế",
                 "body_3": "Cho thấy người học áp dụng những gì họ vừa xem như thế nào."
               }
+            },
+            "all_blocks": "Tất cả khối",
+            "search_blocks": "Tìm khối",
+            "no_blocks_found": "Không có khối phù hợp",
+            "new_badge": "Mới",
+            "coming_soon": "Sắp ra mắt",
+            "upcoming": {
+              "audio": "Âm thanh",
+              "poll": "Bình chọn",
+              "timeline": "Dòng thời gian",
+              "code": "Mã",
+              "embed": "Nhúng"
             }
           }
         },

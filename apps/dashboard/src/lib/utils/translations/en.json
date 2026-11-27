@@ -3354,6 +3354,18 @@
                 "heading_3": "Putting it to use",
                 "body_3": "Show how learners apply what they have just seen."
               }
+            },
+            "all_blocks": "All blocks",
+            "search_blocks": "Search blocks",
+            "no_blocks_found": "No blocks match",
+            "new_badge": "New",
+            "coming_soon": "Coming soon",
+            "upcoming": {
+              "audio": "Audio",
+              "poll": "Poll",
+              "timeline": "Timeline",
+              "code": "Code",
+              "embed": "Embed"
             }
           }
         },

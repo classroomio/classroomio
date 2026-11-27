@@ -227,8 +227,8 @@ The add-content empty state is only visible in Edit. In Preview, an empty lesson
 ## Add content menu
 
 * **Between blocks.** The "+" between two blocks opens a menu of all ten block types as tiles, plus **"Ask AI instead"** (shortcut Cmd/Ctrl + I). The new block is inserted exactly at that spot. The menu closes when the admin picks a tile, presses Escape, or clicks elsewhere. Only one menu is open at a time.
-* **End of lesson.** A floating bar at the bottom of the canvas has the same ten types in one row, plus **Ask AI**. It always adds to the **end** of the lesson, never into a tab.
-* Both lists show the same ten types in the same order.
+* **End of lesson.** A floating bar at the bottom of the canvas pins five types (Note, Video, Image, HTML, Multiple Choice), plus **Ask AI** and an **All blocks** button that opens a searchable grid of every type. That grid also shows planned types (Audio, Poll, Timeline, Code, Embed) as disabled **Coming soon** tiles. The bar always adds to the **end** of the lesson, never into a tab.
+* Chart, Flashcards, Tabs, Multiple Choice, Process and HTML carry a **New** badge in every list.
 
 ---
 
@@ -279,7 +279,7 @@ The AI assistant can create and edit all five new blocks, the same way it writes
 
 ### Shared
 
-- [ ] Chart, Flashcards, Tabs, Multiple Choice and Process each appear in the empty-state grid, the "+" menu between blocks, and the floating add bar, in that order after Note, Video, Slides, Document and Image.
+- [ ] Chart, Flashcards, Tabs, Multiple Choice and Process each appear in the empty-state grid, the "+" menu between blocks, and the floating bar's **All blocks** grid, in that order after Note, Video, Slides, Document and Image.
 - [ ] Adding any of the five inserts a ready-made, working example.
 - [ ] Each can be reordered by drag handle and move up/down, and removed from its "..." menu, like any v1 block.
 - [ ] Every edit autosaves and survives a page reload.

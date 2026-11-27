@@ -2901,6 +2901,18 @@
                 "heading_3": "Anwenden",
                 "body_3": "Zeige, wie Lernende das gerade Gesehene anwenden."
               }
+            },
+            "all_blocks": "Alle Blöcke",
+            "search_blocks": "Blöcke suchen",
+            "no_blocks_found": "Keine passenden Blöcke",
+            "new_badge": "Neu",
+            "coming_soon": "Demnächst",
+            "upcoming": {
+              "audio": "Audio",
+              "poll": "Umfrage",
+              "timeline": "Zeitleiste",
+              "code": "Code",
+              "embed": "Einbettung"
             }
           }
         },

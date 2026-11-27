@@ -41,6 +41,7 @@
   <AddBlock.Grid
     choices={getAddBlockChoices()}
     label={t.get('course.navItem.lessons.materials.blocks.add_content')}
+    newLabel={$t('course.navItem.lessons.materials.blocks.new_badge')}
     testId="block-empty-grid"
     onSelect={handleSelect}
   />

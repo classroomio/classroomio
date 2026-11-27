@@ -13,6 +13,7 @@
     addLabel?: string;
     aiLabel?: string;
     aiShortcut?: AddBlockShortcut | null;
+    newLabel?: string;
     testId?: string;
     onToggle: () => void;
     onClose: () => void;
@@ -26,6 +27,7 @@
     addLabel = 'Add content',
     aiLabel,
     aiShortcut = null,
+    newLabel,
     testId,
     onToggle,
     onClose,
@@ -138,7 +140,14 @@
       onclick={(event) => event.stopPropagation()}
       onkeydown={(event) => event.stopPropagation()}
     >
-      <Grid {choices} label={addLabel} size="sm" testId={testId ? `${testId}-grid` : undefined} onSelect={select} />
+      <Grid
+        {choices}
+        label={addLabel}
+        size="sm"
+        {newLabel}
+        testId={testId ? `${testId}-grid` : undefined}
+        onSelect={select}
+      />
       {#if onAi && aiLabel}
         <AiButton
           label={aiLabel}

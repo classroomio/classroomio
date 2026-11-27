@@ -18,6 +18,7 @@
     addLabel?: string;
     addAiLabel?: string;
     addAiShortcut?: AddBlockShortcut | null;
+    addNewLabel?: string;
     gapTestId?: string;
     emptyTitle?: string;
     emptyDescription?: string;
@@ -46,6 +47,7 @@
     addChoices = [],
     addLabel = 'Add content',
     addAiLabel,
+    addNewLabel,
     addAiShortcut = null,
     gapTestId,
     emptyTitle = 'No content',
@@ -390,6 +392,7 @@
                     {addLabel}
                     aiLabel={addAiLabel}
                     aiShortcut={addAiShortcut}
+                    newLabel={addNewLabel}
                     onAi={onAddAi}
                     testId={gapTestId}
                     onToggle={() => {

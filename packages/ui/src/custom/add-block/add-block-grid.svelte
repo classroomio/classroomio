@@ -6,11 +6,13 @@
     choices: AddBlockChoice[];
     label: string;
     size?: 'lg' | 'sm';
+    newLabel?: string;
+    comingSoonLabel?: string;
     testId?: string;
     onSelect: (type: string) => void;
   }
 
-  let { choices, label, size = 'lg', testId, onSelect }: Props = $props();
+  let { choices, label, size = 'lg', newLabel, comingSoonLabel, testId, onSelect }: Props = $props();
 
   const isLarge = $derived(size === 'lg');
 </script>
@@ -30,11 +32,17 @@
       <button
         type="button"
         class={cn(
-          'ui:border-border ui:bg-card ui:text-foreground ui:flex ui:cursor-pointer ui:flex-col ui:items-center ui:justify-center ui:border ui:text-center ui:transition-[border-color,background-color,transform] ui:outline-none',
+          'ui:border-border ui:bg-card ui:text-foreground ui:relative ui:flex ui:flex-col ui:items-center ui:justify-center ui:border ui:text-center ui:transition-[border-color,background-color,transform] ui:outline-none',
           isLarge
-            ? 'ui:hover:border-primary/55 ui:hover:bg-primary/5 ui:focus-visible:border-primary/55 ui:focus-visible:bg-primary/5 ui:min-h-[88px] ui:gap-2 ui:rounded-lg ui:px-1.5 ui:py-3.5 ui:shadow-2xs ui:active:scale-[.98]'
-            : 'ui:hover:border-primary ui:hover:bg-primary/8 ui:focus-visible:border-primary ui:focus-visible:bg-primary/8 ui:min-h-[58px] ui:gap-[5px] ui:rounded-lg ui:px-0.5 ui:py-2'
+            ? 'ui:min-h-[88px] ui:gap-2 ui:rounded-lg ui:px-1.5 ui:py-3.5 ui:shadow-2xs'
+            : 'ui:min-h-[58px] ui:gap-[5px] ui:rounded-lg ui:px-0.5 ui:py-2',
+          choice.comingSoon
+            ? 'ui:cursor-not-allowed ui:opacity-60'
+            : isLarge
+              ? 'ui:hover:border-primary/55 ui:hover:bg-primary/5 ui:focus-visible:border-primary/55 ui:focus-visible:bg-primary/5 ui:cursor-pointer ui:active:scale-[.98]'
+              : 'ui:hover:border-primary ui:hover:bg-primary/8 ui:focus-visible:border-primary ui:focus-visible:bg-primary/8 ui:cursor-pointer'
         )}
+        disabled={choice.comingSoon}
         data-testid={testId ? `${testId}-${choice.type}` : undefined}
         onclick={() => onSelect(choice.type)}
       >
@@ -48,6 +56,17 @@
         >
           {choice.label}
         </span>
+        {#if choice.comingSoon && comingSoonLabel}
+          <span
+            class="ui:bg-muted ui:text-muted-foreground ui:rounded-full ui:px-1.5 ui:text-[9px] ui:leading-[14px] ui:font-semibold"
+            >{comingSoonLabel}</span
+          >
+        {:else if choice.isNew && newLabel}
+          <span
+            class="ui:bg-primary/10 ui:text-primary ui:absolute ui:top-1 ui:right-1 ui:rounded-full ui:px-1.5 ui:text-[9px] ui:leading-[14px] ui:font-semibold"
+            >{newLabel}</span
+          >
+        {/if}
       </button>
     {/each}
   </div>

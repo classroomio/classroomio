@@ -7,9 +7,12 @@
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import VideoIcon from '@lucide/svelte/icons/video';
   import XIcon from '@lucide/svelte/icons/x';
+  import AudioLinesIcon from '@lucide/svelte/icons/audio-lines';
+  import CodeIcon from '@lucide/svelte/icons/code';
   import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
   import * as AddBlock from '@cio/ui/custom/add-block';
+  import { ALL_CHOICES } from './choices';
   import { FIELDS } from './row-fields';
 
   const addChoices: AddBlock.AddBlockChoice[] = [
@@ -19,6 +22,16 @@
     { type: 'document', label: 'Document', icon: FileTextIcon },
     { type: 'image', label: 'Image', icon: ImageIcon }
   ];
+
+  const NEW_TYPES = ['chart', 'flashcards', 'tabs', 'multiple_choice', 'process', 'html'];
+  const allChoices = ALL_CHOICES.map((choice) => ({ ...choice, isNew: NEW_TYPES.includes(choice.type) }));
+  const upcomingChoices = [
+    { type: 'upcoming_audio', label: 'Audio', icon: AudioLinesIcon, comingSoon: true },
+    { type: 'upcoming_code', label: 'Code', icon: CodeIcon, comingSoon: true }
+  ];
+  const dockChoices = ['note', 'video', 'image', 'html', 'multiple_choice'].flatMap((type) =>
+    allChoices.filter((choice) => choice.type === type)
+  );
 
   const macShortcut: AddBlock.AddBlockShortcut = { modifier: '⌘', key: 'J' };
 
@@ -155,6 +168,26 @@
           </div>
         {/snippet}
       </AddBlock.Row>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="WithAllBlocks">
+  {#snippet template()}
+    <div class="mx-auto flex min-h-[460px] w-full max-w-2xl items-end justify-center">
+      <AddBlock.Row
+        choices={dockChoices}
+        moreChoices={[...allChoices, ...upcomingChoices]}
+        addLabel="Add content"
+        aiLabel="Ask AI"
+        aiShortcut={macShortcut}
+        moreLabel="All blocks"
+        searchLabel="Search blocks"
+        noResultsLabel="No blocks match"
+        newLabel="New"
+        comingSoonLabel="Coming soon"
+        onSelect={(type) => console.log('add', type)}
+      />
     </div>
   {/snippet}
 </Story>

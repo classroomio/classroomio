@@ -2901,6 +2901,18 @@
                 "heading_3": "Mise en pratique",
                 "body_3": "Montrez comment les apprenants appliquent ce qu’ils viennent de voir."
               }
+            },
+            "all_blocks": "Tous les blocs",
+            "search_blocks": "Rechercher des blocs",
+            "no_blocks_found": "Aucun bloc ne correspond",
+            "new_badge": "Nouveau",
+            "coming_soon": "Bientôt disponible",
+            "upcoming": {
+              "audio": "Audio",
+              "poll": "Sondage",
+              "timeline": "Chronologie",
+              "code": "Code",
+              "embed": "Intégration"
             }
           }
         },

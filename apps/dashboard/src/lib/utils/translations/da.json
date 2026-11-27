@@ -2901,6 +2901,18 @@
                 "heading_3": "Brug det i praksis",
                 "body_3": "Vis, hvordan deltagerne anvender det, de lige har set."
               }
+            },
+            "all_blocks": "Alle blokke",
+            "search_blocks": "Søg i blokke",
+            "no_blocks_found": "Ingen blokke matcher",
+            "new_badge": "Ny",
+            "coming_soon": "Kommer snart",
+            "upcoming": {
+              "audio": "Lyd",
+              "poll": "Afstemning",
+              "timeline": "Tidslinje",
+              "code": "Kode",
+              "embed": "Indlejring"
             }
           }
         },

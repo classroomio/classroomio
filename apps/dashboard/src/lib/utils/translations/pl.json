@@ -2901,6 +2901,18 @@
                 "heading_3": "Zastosowanie w praktyce",
                 "body_3": "Pokaż, jak uczestnicy stosują to, co właśnie zobaczyli."
               }
+            },
+            "all_blocks": "Wszystkie bloki",
+            "search_blocks": "Szukaj bloków",
+            "no_blocks_found": "Brak pasujących bloków",
+            "new_badge": "Nowy",
+            "coming_soon": "Wkrótce",
+            "upcoming": {
+              "audio": "Audio",
+              "poll": "Ankieta",
+              "timeline": "Oś czasu",
+              "code": "Kod",
+              "embed": "Osadzenie"
             }
           }
         },
