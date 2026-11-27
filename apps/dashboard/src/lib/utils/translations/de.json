@@ -5126,7 +5126,8 @@
       "joined_title": "Du bist dabei! Lege mit dem Lernen los:",
       "messages": {
         "joined": "Du bist der Akademie beigetreten.",
-        "join_failed": "Der Akademie konnte nicht beigetreten werden. Bitte versuche es erneut."
+        "join_failed": "Der Akademie konnte nicht beigetreten werden. Bitte versuche es erneut.",
+        "refresh_failed": "Du bist beigetreten, aber diese Seite konnte nicht aktualisiert werden. Lade sie neu, um deine neue Akademie zu sehen."
       },
       "invitation_team": "Sie wurden als {role} zu {orgName} eingeladen.",
       "verify_to_accept": "Bestätigen Sie Ihre E-Mail-Adresse, um diese Einladung anzunehmen.",

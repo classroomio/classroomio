@@ -90,7 +90,7 @@ The GitHub Action runs on:
 
 # Claim email-only memberships
 
-`claim-email-only-memberships.ts` links email-only course, cohort and program rows to the active joined organization member with the same email. It runs the same claim step as the accept, SSO and token sign-in, and join paths: a row the profile already has wins and the email-only duplicate is dropped, claimed cohort students are enrolled in the cohort's courses, and compliance records are created through the shared compliance service. It does not accept invitations and sends no webhooks or emails. Rows with no active joined member for their email are reported as pending and left alone. That covers people who have not joined yet, whose rows are linked when they join, and archived members. The script loads `apps/api/.env`, so run it with the API's database settings in place.
+`claim-email-only-memberships.ts` links email-only course, cohort and program rows to the active joined organization member with the same email, when that member's email is verified. It runs the same claim step as the accept, SSO and token sign-in, and join paths: a row the profile already has wins and the email-only duplicate is dropped, claimed cohort students are enrolled in the cohort's courses, and compliance records are created through the shared compliance service. It does not accept invitations and sends no webhooks or emails. Rows with no active joined member for their email are reported as pending and left alone. That covers people who have not joined yet, whose rows are linked when they join and prove the email is theirs (a verified address, the organization's SSO, a signed token or their own email invite), members whose email is not verified yet, and archived members. The script loads `apps/api/.env`, so run it with the API's database settings in place.
 
 Dry run (counts claimable and pending rows; changes nothing):
 
@@ -105,4 +105,4 @@ pnpm --filter @cio/api claim:email-only-memberships -- --execute
 pnpm --filter @cio/api claim:email-only-memberships -- --execute --org=<orgId>
 ```
 
-Only members that still have claimable rows are visited, in batches of 500, with progress printed about every 30 seconds. Re-running is safe and finds nothing to do. Run it once in production after deploying the invites-and-membership changes.
+Only members that still have claimable rows are visited, in batches of 500, with progress printed about every 30 seconds. A member archived or relinked after their batch was read is skipped and counted as skipped (no longer active) in the summary. Re-running is safe and finds nothing to do. Run it once in production after deploying the invites-and-membership changes.

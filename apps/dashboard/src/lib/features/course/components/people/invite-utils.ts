@@ -84,6 +84,21 @@ export const COURSE_INVITE_OUTCOME_LABEL_KEYS: Record<string, string> = {
   duplicate: 'audience.import.status.duplicate_in_file'
 };
 
+/** Emails whose invitation email could not be queued, lowercased for matching against recipients. */
+export function getFailedDeliveryEmails(delivery: { failures: { email: string }[] }): Set<string> {
+  return new Set(delivery.failures.map((failure) => failure.email.toLowerCase()));
+}
+
+/** Translation key for one course email-invite recipient, reporting a failed email over the recipient status. */
+export function getCourseInviteOutcomeLabelKey(
+  recipient: { email: string; status: string },
+  failedEmails: Set<string>
+): string {
+  if (failedEmails.has(recipient.email.toLowerCase())) return 'course.navItem.people.invite_modal.email_failed';
+
+  return COURSE_INVITE_OUTCOME_LABEL_KEYS[recipient.status] ?? COURSE_INVITE_OUTCOME_LABEL_KEYS.invited;
+}
+
 /** Translation key for one audience-import row outcome when people are invited to a course or cohort. */
 export function getImportOutcomeLabelKey(row: {
   status: string;

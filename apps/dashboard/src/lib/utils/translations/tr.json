@@ -6350,7 +6350,8 @@
       "joined_title": "Katıldın! Öğrenmeye başla:",
       "messages": {
         "joined": "Akademiye katıldın.",
-        "join_failed": "Akademiye katılınamadı. Lütfen tekrar dene."
+        "join_failed": "Akademiye katılınamadı. Lütfen tekrar dene.",
+        "refresh_failed": "Katıldınız, ancak bu sayfa güncellenemedi. Yeni akademinizi görmek için sayfayı yeniden yükleyin."
       },
       "invitation_team": "{orgName}'a {role} olarak davet edildiniz.",
       "verify_to_accept": "Bu daveti kabul etmek için e-posta adresinizi doğrulayın.",

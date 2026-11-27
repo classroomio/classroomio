@@ -454,7 +454,7 @@ type TCohortMemberPlan =
   | { kind: 'direct'; profileId: string | null; email: string | null; roleId: number }
   | { kind: 'invite'; email: string };
 
-export type TCohortInviteStatus = 'invited' | 'already_invited' | 'enrolled';
+export type TCohortInviteStatus = 'invited' | 'already_invited' | 'enrolled' | 'already_enrolled';
 
 export type TCohortMemberAddOutcome =
   | { kind: 'added'; member: Awaited<ReturnType<typeof addCohortMember>> }
@@ -463,7 +463,8 @@ export type TCohortMemberAddOutcome =
 /**
  * Decides how one entry joins the cohort. Staff entries and students who already joined the organization are added
  * directly; every other student is invited through their organization invite, so nobody joins the organization or
- * gets an email-only student row without accepting.
+ * gets an email-only student row without accepting. An entry whose `profileId` and `email` name different people, or
+ * a student entry for an organization admin or tutor, is refused.
  */
 async function planCohortMember(
   cohortId: string,
@@ -474,6 +475,11 @@ async function planCohortMember(
   const normalizedEmail = (member.email ?? profileEmail)?.trim().toLowerCase() || null;
   if (!member.profileId && !normalizedEmail) {
     throw new AppError('Either profileId or email must be provided for each member', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  const normalizedProfileEmail = profileEmail?.trim().toLowerCase() ?? null;
+  if (member.profileId && member.email && normalizedProfileEmail && normalizedProfileEmail !== normalizedEmail) {
+    throw new AppError('profileId and email identify different people', ErrorCodes.VALIDATION_ERROR, 400, 'email');
   }
 
   const [organizationMember] = normalizedEmail
@@ -501,6 +507,10 @@ async function planCohortMember(
       ErrorCodes.ORG_MEMBER_ARCHIVED,
       409
     );
+  }
+
+  if (organizationMember && organizationMember.roleId !== ROLE.STUDENT) {
+    throw new AppError('This email belongs to an admin or tutor', ErrorCodes.STAFF_CANNOT_ENROLL, 409);
   }
 
   if (organizationMember?.profileId) {
@@ -570,7 +580,12 @@ function toCohortInviteOutcome(email: string, row: AudienceImportRowResult | und
     case 'already_invited':
       return { kind: 'invited', email, status: 'already_invited', inviteId: row.inviteId ?? null };
     case 'already_member':
-      return { kind: 'invited', email, status: 'enrolled', inviteId: null };
+      return {
+        kind: 'invited',
+        email,
+        status: row.enrollment === 'already_enrolled' ? 'already_enrolled' : 'enrolled',
+        inviteId: null
+      };
     case 'is_staff':
       throw new AppError('This email belongs to an admin or tutor', ErrorCodes.STAFF_CANNOT_ENROLL, 409);
     case 'archived':
@@ -610,21 +625,26 @@ export async function addCohortMembersSettled(
     ];
 
     let inviteRows = new Map<string, AudienceImportRowResult>();
+    let inviteError: unknown = null;
     if (inviteEmails.length > 0 && actorProfileId) {
-      const imported = await importAudienceMembers(
-        cohort.organizationId,
-        {
-          recipients: inviteEmails.map((email) => ({ email })),
-          cohortIds: [cohortId],
-          allCourses: false,
-          allCohorts: false,
-          sendEmail: true
-        },
-        actorProfileId,
-        source,
-        { reissue: 'when-changed', inviteSource: 'COHORT_ADD' }
-      );
-      inviteRows = new Map(imported.rows.map((row) => [row.email, row]));
+      try {
+        const imported = await importAudienceMembers(
+          cohort.organizationId,
+          {
+            recipients: inviteEmails.map((email) => ({ email })),
+            cohortIds: [cohortId],
+            allCourses: false,
+            allCohorts: false,
+            sendEmail: true
+          },
+          actorProfileId,
+          source,
+          { reissue: 'when-changed', inviteSource: 'COHORT_ADD' }
+        );
+        inviteRows = new Map(imported.rows.map((row) => [row.email, row]));
+      } catch (error) {
+        inviteError = error;
+      }
     }
 
     return await Promise.allSettled(
@@ -635,6 +655,7 @@ export async function addCohortMembersSettled(
           if (!actorProfileId) {
             throw new AppError('Only a signed-in user can invite new students', ErrorCodes.VALIDATION_ERROR, 400);
           }
+          if (inviteError) throw inviteError;
 
           return toCohortInviteOutcome(plan.value.email, inviteRows.get(plan.value.email));
         }

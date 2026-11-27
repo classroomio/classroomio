@@ -53,6 +53,7 @@ import {
   getOrgMembersByProfileIds,
   getOrganizationById,
   getOrganizationMembersByNormalizedEmails,
+  getOrganizationMembersByProfileIds,
   getStudentOrganizationMemberByOrgAndEmail,
   hasActiveOrganizationInviteForEmail,
   hasLapsedStudentInvite,
@@ -252,15 +253,13 @@ async function enrollAudienceStudentProfilesInCourses(
     await Promise.all(emailPromises);
   }
 
-  return {
-    assigned: toInsert.length,
-    alreadyEnrolled,
-    emailsSent,
-    outcomes: validProfiles.map((profileId) => ({
-      profileId,
-      status: toInsert.some((p) => p.profileId === profileId) ? ('enrolled' as const) : ('already_enrolled' as const)
-    }))
-  };
+  const insertedProfileIds = new Set(toInsert.map((pair) => pair.profileId));
+  const outcomes = validProfiles.map((profileId) => ({
+    profileId,
+    status: insertedProfileIds.has(profileId) ? ('enrolled' as const) : ('already_enrolled' as const)
+  }));
+
+  return { assigned: toInsert.length, alreadyEnrolled, emailsSent, outcomes };
 }
 
 async function enrollAudienceStudentProfilesInCohorts(
@@ -375,17 +374,13 @@ async function enrollAudienceStudentProfilesInCohorts(
     );
   }
 
-  return {
-    assigned: toInsert.length,
-    alreadyEnrolled,
-    emailsSent,
-    outcomes: validProfiles.map((profileId) => ({
-      profileId,
-      status: toInsert.some((pair) => pair.profileId === profileId)
-        ? ('enrolled' as const)
-        : ('already_enrolled' as const)
-    }))
-  };
+  const insertedProfileIds = new Set(toInsert.map((pair) => pair.profileId));
+  const outcomes = validProfiles.map((profileId) => ({
+    profileId,
+    status: insertedProfileIds.has(profileId) ? ('enrolled' as const) : ('already_enrolled' as const)
+  }));
+
+  return { assigned: toInsert.length, alreadyEnrolled, emailsSent, outcomes };
 }
 
 type StudentOrgInviteInput = {
@@ -404,7 +399,7 @@ type StudentOrgInviteInput = {
 async function createStudentOrgInvitesAndSendEmails(
   input: StudentOrgInviteInput
 ): Promise<TStudentOrgInviteSendResult & { invites: TStudentOrgInvites | null }> {
-  const invites = await createStudentOrgInvites(input);
+  const invites = await db.transaction((tx) => createStudentOrgInvites(input, tx));
   const sent = await sendStudentOrgInvites(input, invites);
 
   return { ...sent, invites };
@@ -419,13 +414,13 @@ type TStudentOrgInviteSendResult = {
   emailFailures: { email: string; error: string }[];
 };
 
-/** Merges the resources into each email's live student invite. Pass a transaction to save under the seat lock. */
+/** Merges the resources into each email's live student invite, inside the caller's transaction. */
 async function createStudentOrgInvites(
   input: Pick<
     StudentOrgInviteInput,
     'orgId' | 'emails' | 'courseIds' | 'cohortIds' | 'invitedByProfileId' | 'fullnamesByEmail' | 'reissue' | 'source'
   >,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient
 ): Promise<TStudentOrgInvites | null> {
   if (input.emails.length === 0) return null;
 
@@ -474,8 +469,25 @@ function accessLabelForInvite(invite: TOrganizationInvite, names: Map<string, st
 }
 
 /**
+ * Import row status for an address another request added to the organization first: only a pending (unjoined)
+ * active student still gets an invite carrying the requested access.
+ */
+function classifyRacedMember(member: {
+  roleId: number | null;
+  status: string | null;
+  profileId: string | null;
+}): TAudienceImportRowStatus {
+  if (member.roleId !== ROLE.STUDENT) return 'is_staff';
+  if (member.status === 'ARCHIVED') return 'archived';
+  if (member.profileId) return 'already_member';
+
+  return 'ready';
+}
+
+/**
  * Emits `course.invite.created` / `course.invite.revoked` for courses added to or removed from a person's
- * organization invite, with the org invite id as `inviteId`.
+ * organization invite. `inviteId` is the invite that now carries an added course, and for a removed course the
+ * replaced invite that carried it (preferred over other invites retired in the same call, such as expired ones).
  */
 async function emitCourseInviteChanges(invites: TStudentOrgInvites, actorProfileId: string): Promise<void> {
   for (const [email, courseIds] of invites.addedCourseIdsByEmail) {
@@ -493,10 +505,15 @@ async function emitCourseInviteChanges(invites: TStudentOrgInvites, actorProfile
   }
 
   for (const [email, courseIds] of invites.removedCourseIdsByEmail) {
-    const invite = invites.inviteByEmail.get(email) ?? invites.revoked.find((row) => row.email === email);
-    if (!invite) continue;
+    const revokedForEmail = invites.revoked.filter((row) => (row.email ?? '').toLowerCase() === email);
 
     for (const courseId of courseIds) {
+      const carryingInvite = revokedForEmail.find((row) =>
+        parseCourseIdsFromInviteMetadata(row.metadata).includes(courseId)
+      );
+      const invite = carryingInvite ?? revokedForEmail[0] ?? invites.inviteByEmail.get(email);
+      if (!invite) continue;
+
       await emitCourseWebhookEvent(courseId, 'course.invite.revoked', {
         inviteId: invite.id,
         inviteLinkId: null,
@@ -527,8 +544,6 @@ async function sendStudentOrgInvites(
     return { created: 0, emailsSent: 0, emailsFailed: 0, emailFailures: [] };
   }
 
-  const names = await resolveInviteAccessNames(orgId, issued);
-
   await recordOrganizationInviteAudits(
     issued.map((invite) => ({
       inviteId: invite.id,
@@ -552,11 +567,12 @@ async function sendStudentOrgInvites(
     return { created: issued.length, emailsSent: 0, emailsFailed: 0, emailFailures: [] };
   }
 
+  const names = await resolveInviteAccessNames(orgId, issued);
   const emailOutcomes = await mapWithConcurrency(issued, EMAIL_SEND_CONCURRENCY, async (invite) => {
     const email = (invite.email ?? '').toLowerCase();
     const token = invites.tokenByEmail.get(email)!;
     try {
-      await enqueueTransactionalEmail('studentOrgInvite', {
+      const { jobIds } = await enqueueTransactionalEmail('studentOrgInvite', {
         to: email,
         fields: {
           email,
@@ -570,6 +586,9 @@ async function sendStudentOrgInvites(
         organizationId: orgId,
         idempotencyKey: `student-org-invite:${invite.id}`
       });
+      if (jobIds.length === 0) {
+        return { inviteId: invite.id, email, success: false as const, error: 'The email was not queued' };
+      }
 
       return { inviteId: invite.id, email, success: true as const, error: undefined as string | undefined };
     } catch (emailError) {
@@ -824,13 +843,24 @@ export async function importAudienceMembers(
 
   const insertedEmails = new Set(insertedMembers.map((member) => (member.email ?? '').toLowerCase()));
   const addedEmails = newEmails.filter((email) => insertedEmails.has(email));
-  for (const row of rows) {
-    if (row.status === 'ready' && newEmails.includes(row.email) && !insertedEmails.has(row.email)) {
-      row.status = 'already_member';
-    }
-  }
+  const racedEmails = newEmails.filter((email) => !insertedEmails.has(email));
+  const racedMembers = racedEmails.length > 0 ? await getOrganizationMembersByNormalizedEmails(orgId, racedEmails) : [];
+  const racedStatusByEmail = new Map(
+    racedMembers.map((member) => [member.normalizedEmail, classifyRacedMember(member)])
+  );
+  const racedPendingEmails = racedEmails.filter((email) => racedStatusByEmail.get(email) === 'ready');
 
-  const imported = await createStudentOrgInvitesAndSendEmails({ ...inviteInput, emails: addedEmails });
+  const imported = await createStudentOrgInvitesAndSendEmails({
+    ...inviteInput,
+    emails: [...addedEmails, ...racedPendingEmails]
+  });
+  for (const row of rows) {
+    if (row.status !== 'ready' || !racedEmails.includes(row.email)) continue;
+
+    const racedStatus = racedStatusByEmail.get(row.email) ?? 'already_member';
+    const invited = imported.invites?.inviteByEmail.has(row.email) ?? false;
+    row.status = racedStatus === 'ready' && !invited ? 'already_member' : racedStatus;
+  }
   const renewed = await sendStudentOrgInvites({ ...inviteInput, emails: pendingStudentEmails }, renewedInvites);
 
   for (const invites of [imported.invites, renewedInvites]) {
@@ -1184,8 +1214,9 @@ export async function assignAudienceToCourses(
 
 /**
  * Splits an assign-courses request into joined profiles (enrol directly) and
- * pending emails (merge into their org invite). Staff rows report `is_staff`,
- * archived rows report `archived`, and unknown ids/emails report `not_found`.
+ * pending emails (merge into their org invite). Profile ids, member ids and emails all go through the same
+ * classification: staff rows report `is_staff`, archived rows report `archived`, and unknown ids/emails report
+ * `not_found`.
  */
 async function resolveAssignAudienceLearners(
   orgId: string,
@@ -1220,8 +1251,19 @@ async function resolveAssignAudienceLearners(
     memberEmails.length > 0 ? await getOrganizationMembersByNormalizedEmails(orgId, memberEmails) : [];
   const memberEmailMemberByEmail = new Map(memberEmailMembers.map((m) => [m.normalizedEmail, m]));
 
-  for (const profileId of data.profileIds ?? []) {
-    addJoined(profileId);
+  const requestedProfileIds = [...new Set(data.profileIds ?? [])];
+  const profileMembers =
+    requestedProfileIds.length > 0 ? await getOrganizationMembersByProfileIds(orgId, requestedProfileIds) : [];
+  const profileMemberById = new Map(profileMembers.map((member) => [member.profileId, member]));
+
+  for (const profileId of requestedProfileIds) {
+    const member = profileMemberById.get(profileId);
+    if (!member) {
+      details.push({ profileId, status: 'not_found' });
+      continue;
+    }
+
+    classifyAssignAudienceMember(member, {}, addJoined, pendingEmails, seenEmails, details);
   }
 
   for (const memberId of requestedMemberIds) {

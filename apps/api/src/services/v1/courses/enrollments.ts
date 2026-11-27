@@ -16,6 +16,11 @@ import { reserveCourseInviteCreation } from '@api/services/course/invite-rate-li
 import { addCourseMemberService } from './members';
 import { assertAutomationActor, assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin } from '../shared';
 
+type TInviteToCourseResult = {
+  recipient: TCourseEmailInviteRecipient;
+  emailFailed: boolean;
+};
+
 /**
  * Enrolls `email` as a student. A student who already joined the organization is added directly; anyone else gets
  * the course on their single organization invite (a new email becomes a pending member and takes a seat). Repeating
@@ -81,14 +86,14 @@ export async function enrollCourseStudentService(
   }
 
   const releaseInviteBudget = await reserveInviteBudgetUnlessInvited(orgId, actorId, params.courseId, email);
-  let recipient: TCourseEmailInviteRecipient;
+  let invited: TInviteToCourseResult;
   try {
-    recipient = await inviteToCourse(params.courseId, actorId, email, payload.sendEmail, source, 'when-changed');
+    invited = await inviteToCourse(params.courseId, actorId, email, payload.sendEmail, source, 'when-changed');
 
-    if (recipient.status === 'already_invited' && payload.sendEmail && recipient.inviteId) {
-      const emailQueued = await hasOrganizationInviteEmailBeenSent(recipient.inviteId);
+    if (invited.recipient.status === 'already_invited' && payload.sendEmail && invited.recipient.inviteId) {
+      const emailQueued = await hasOrganizationInviteEmailBeenSent(invited.recipient.inviteId);
       if (!emailQueued) {
-        recipient = await inviteToCourse(params.courseId, actorId, email, true, source, 'always');
+        invited = await inviteToCourse(params.courseId, actorId, email, true, source, 'always');
       }
     }
   } catch (error) {
@@ -96,8 +101,13 @@ export async function enrollCourseStudentService(
     throw error;
   }
 
+  const { recipient } = invited;
   if (recipient.status !== 'invited') {
     await releaseInviteBudget();
+  }
+
+  if (invited.emailFailed) {
+    throw new AppError('Failed to send the course invitation email', ErrorCodes.INTERNAL_ERROR, 500, 'email');
   }
 
   if (recipient.status === 'enrolled' || recipient.status === 'already_enrolled') {
@@ -159,7 +169,7 @@ async function inviteToCourse(
   sendEmail: boolean,
   source: TEventSource,
   reissue: 'always' | 'when-changed'
-): Promise<TCourseEmailInviteRecipient> {
+): Promise<TInviteToCourseResult> {
   const { recipients, emailsFailed } = await inviteStudentsToCourseByEmail(courseId, actorId, [email], {
     sendEmail,
     reissue,
@@ -172,11 +182,7 @@ async function inviteToCourse(
     throw new AppError('Failed to invite this student', ErrorCodes.INTERNAL_ERROR, 500, 'email');
   }
 
-  if (sendEmail && emailsFailed > 0) {
-    throw new AppError('Failed to send the course invitation email', ErrorCodes.INTERNAL_ERROR, 500, 'email');
-  }
-
-  return recipient;
+  return { recipient, emailFailed: sendEmail && emailsFailed > 0 };
 }
 
 function toEnrollmentResult(recipient: TCourseEmailInviteRecipient, email: string) {

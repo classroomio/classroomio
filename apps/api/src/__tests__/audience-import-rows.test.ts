@@ -60,7 +60,7 @@ vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
 }));
 
 vi.mock('@api/services/jobs', () => ({
-  enqueueTransactionalEmail: vi.fn().mockResolvedValue(undefined)
+  enqueueTransactionalEmail: vi.fn().mockResolvedValue({ jobIds: ['job-1'] })
 }));
 
 vi.mock('@api/services/organization/student-limit', () => ({
@@ -340,19 +340,45 @@ describe('importAudienceMembers — seat limit', () => {
     expect(result.rows.filter((row) => row.status === 'over_seat_limit')).toHaveLength(980);
   });
 
-  it('does not re-invite an address another request added first', async () => {
+  function raceOn(email: string, racedMember: { profileId: string | null; roleId: number; status: string }) {
     vi.mocked(createOrganizationMembers).mockImplementationOnce(
-      async (rows) => rows.filter((row) => row.email !== 'b@test.dev') as never
+      async (rows) => rows.filter((row) => row.email !== email) as never
     );
+    vi.mocked(getOrganizationMembersByNormalizedEmails)
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ normalizedEmail: email, ...racedMember }] as never);
+  }
+
+  it('still records the requested access for a pending address another request added first', async () => {
+    raceOn('b@test.dev', { profileId: null, roleId: ROLE.STUDENT, status: 'ACTIVE' });
+
+    const result = await importAudienceMembers(ORG, csv('email', 'a@test.dev', 'b@test.dev'), ACTOR);
+
+    expect(result.rows.map((row) => row.status)).toEqual(['ready', 'ready']);
+    expect(createOrganizationInvites).toHaveBeenCalledWith(
+      [expect.objectContaining({ email: 'a@test.dev' }), expect.objectContaining({ email: 'b@test.dev' })],
+      expect.anything()
+    );
+  });
+
+  it('does not invite an address that joined or became staff while the import ran', async () => {
+    raceOn('b@test.dev', { profileId: 'profile-b', roleId: ROLE.STUDENT, status: 'ACTIVE' });
 
     const result = await importAudienceMembers(ORG, csv('email', 'a@test.dev', 'b@test.dev'), ACTOR);
 
     expect(result.rows.map((row) => row.status)).toEqual(['ready', 'already_member']);
-    expect(result.imported).toBe(1);
     expect(createOrganizationInvites).toHaveBeenCalledWith(
       [expect.objectContaining({ email: 'a@test.dev' })],
       expect.anything()
     );
+  });
+
+  it('reports a raced staff address as staff', async () => {
+    raceOn('b@test.dev', { profileId: 'profile-b', roleId: ROLE.TUTOR, status: 'ACTIVE' });
+
+    const result = await importAudienceMembers(ORG, csv('email', 'a@test.dev', 'b@test.dev'), ACTOR);
+
+    expect(result.rows.map((row) => row.status)).toEqual(['ready', 'is_staff']);
   });
 
   it('checks capacity and inserts members in the same transaction', async () => {

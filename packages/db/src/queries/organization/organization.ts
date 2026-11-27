@@ -437,61 +437,66 @@ export const hasOrgMemberByProfileIdOrEmail = async (
 };
 
 /**
- * Creates a self-hosted student membership only while the organization table
- * contains exactly one row. The table lock makes the singleton check and insert
- * atomic with concurrent organization inserts.
+ * Adds the person as a student of the single self-hosted organization, only while the organization table contains
+ * exactly one row; the table lock makes the singleton check and insert atomic with concurrent organization inserts.
+ * Runs on `dbClient` when given (so the caller can bind in the same transaction), otherwise in its own transaction.
+ * @returns `ensured` false when there is no single organization; `createdMember` set only when this call created the
+ * membership; `organizationId` of the single organization, also when the person already had a pending row there
  */
-/**
- * Adds the person as a student of the single self-hosted organization. `ensured` is false when there is no
- * single organization; `createdMember` is set only when this call created the membership.
- */
-export async function ensureSelfHostedStudentMembership({
-  profileId,
-  email
-}: {
-  profileId: string;
-  email: string | null | undefined;
-}): Promise<{ ensured: boolean; createdMember: TOrganizationmember | null }> {
+export async function ensureSelfHostedStudentMembership(
+  {
+    profileId,
+    email
+  }: {
+    profileId: string;
+    email: string | null | undefined;
+  },
+  dbClient?: DbOrTxClient
+): Promise<{ ensured: boolean; createdMember: TOrganizationmember | null; organizationId: string | null }> {
+  const ensure = async (tx: DbOrTxClient) => {
+    await tx.execute(sql`LOCK TABLE "organization" IN SHARE ROW EXCLUSIVE MODE`);
+
+    const organizations = await tx
+      .select({ id: schema.organization.id })
+      .from(schema.organization)
+      .orderBy(schema.organization.createdAt)
+      .limit(2);
+
+    if (organizations.length !== 1) {
+      return { ensured: false, createdMember: null, organizationId: null };
+    }
+
+    const organizationId = organizations[0].id;
+    const normalizedEmail = email?.toLowerCase().trim();
+    const profileOrEmailMatch = or(
+      eq(schema.organizationmember.profileId, profileId),
+      ...(normalizedEmail ? [eq(sql`lower(${schema.organizationmember.email})`, normalizedEmail)] : [])
+    );
+    const [existingMember] = await tx
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(and(eq(schema.organizationmember.organizationId, organizationId), profileOrEmailMatch))
+      .limit(1);
+
+    if (existingMember) {
+      return { ensured: true, createdMember: null, organizationId };
+    }
+
+    const memberData: TNewOrganizationmember = {
+      organizationId,
+      profileId,
+      roleId: ROLE.STUDENT,
+      verified: true
+    };
+    const createdMember = await createOrganizationMember(memberData, tx);
+
+    return { ensured: true, createdMember, organizationId };
+  };
+
   try {
-    return await db.transaction(async (tx) => {
-      await tx.execute(sql`LOCK TABLE "organization" IN SHARE ROW EXCLUSIVE MODE`);
+    if (dbClient) return await ensure(dbClient);
 
-      const organizations = await tx
-        .select({ id: schema.organization.id })
-        .from(schema.organization)
-        .orderBy(schema.organization.createdAt)
-        .limit(2);
-
-      if (organizations.length !== 1) {
-        return { ensured: false, createdMember: null };
-      }
-
-      const organizationId = organizations[0].id;
-      const normalizedEmail = email?.toLowerCase().trim();
-      const profileOrEmailMatch = or(
-        eq(schema.organizationmember.profileId, profileId),
-        ...(normalizedEmail ? [eq(schema.organizationmember.email, normalizedEmail)] : [])
-      );
-      const [existingMember] = await tx
-        .select({ id: schema.organizationmember.id })
-        .from(schema.organizationmember)
-        .where(and(eq(schema.organizationmember.organizationId, organizationId), profileOrEmailMatch))
-        .limit(1);
-
-      if (existingMember) {
-        return { ensured: true, createdMember: null };
-      }
-
-      const memberData: TNewOrganizationmember = {
-        organizationId,
-        profileId,
-        roleId: ROLE.STUDENT,
-        verified: true
-      };
-      const createdMember = await createOrganizationMember(memberData, tx);
-
-      return { ensured: true, createdMember };
-    });
+    return await db.transaction(ensure);
   } catch (error) {
     console.error('ensureSelfHostedStudentMembership error:', error);
     throw new Error('Failed to ensure self-hosted student membership');
@@ -1678,6 +1683,52 @@ export async function getOrganizationMembersByNormalizedEmails(
     console.error('getOrganizationMembersByNormalizedEmails error:', error);
     throw new Error(
       `Failed to get organization members by emails: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Organization members for the given profile ids, in the same shape as `getOrganizationMembersByNormalizedEmails`,
+ * so callers can classify staff, archived and joined members the same way whichever identifier they received.
+ */
+export async function getOrganizationMembersByProfileIds(
+  orgId: string,
+  profileIds: string[]
+): Promise<TOrganizationMemberByEmail[]> {
+  const uniqueProfileIds = [...new Set(profileIds.filter(Boolean))];
+  if (uniqueProfileIds.length === 0) return [];
+
+  try {
+    const rows = await db
+      .select({
+        roleId: schema.organizationmember.roleId,
+        profileId: schema.organizationmember.profileId,
+        status: schema.organizationmember.status,
+        matchEmail: sql<string>`lower(trim(coalesce(${schema.profile.email}, ${schema.organizationmember.email})))`.as(
+          'matchEmail'
+        ),
+        inviteHoldsSeat: inviteHoldsSeatSql.as('inviteHoldsSeat')
+      })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          inArray(schema.organizationmember.profileId, uniqueProfileIds)
+        )
+      );
+
+    return rows.map((row) => ({
+      normalizedEmail: row.matchEmail,
+      profileId: row.profileId,
+      roleId: row.roleId,
+      status: row.status,
+      hasLapsedInvite: row.roleId === ROLE.STUDENT && row.status !== 'ARCHIVED' && !row.inviteHoldsSeat
+    }));
+  } catch (error) {
+    console.error('getOrganizationMembersByProfileIds error:', error);
+    throw new Error(
+      `Failed to get organization members by profile ids: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

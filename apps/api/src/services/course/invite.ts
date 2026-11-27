@@ -796,7 +796,8 @@ const RESEND_REFUSALS: Partial<Record<TCourseEmailInviteStatus, () => AppError>>
 
 /**
  * Sends `email` a fresh link to their organization invite with this course on it, and retires any older
- * single-recipient course invite for the same course and email so its link reports that it was replaced.
+ * single-recipient course invite for the same course and email so its link reports that it was replaced. Throws
+ * before retiring anything when the email could not be queued, so the older link keeps working.
  */
 export async function resendCourseInvitation(
   courseId: string,
@@ -809,14 +810,23 @@ export async function resendCourseInvitation(
     throw RESEND_REFUSALS.invalid_email!();
   }
 
-  const { recipients } = await inviteStudentsToCourseByEmail(courseId, createdByProfileId, [normalizedEmail], {
-    sendEmail,
-    reissue: 'always',
-    inviteSource: 'COURSE_RESEND'
-  });
+  const { recipients, emailsFailed } = await inviteStudentsToCourseByEmail(
+    courseId,
+    createdByProfileId,
+    [normalizedEmail],
+    {
+      sendEmail,
+      reissue: 'always',
+      inviteSource: 'COURSE_RESEND'
+    }
+  );
   const [recipient] = recipients;
   const refusal = recipient ? RESEND_REFUSALS[recipient.status] : RESEND_REFUSALS.invalid_email;
   if (refusal) throw refusal();
+
+  if (sendEmail && emailsFailed > 0) {
+    throw new AppError('Failed to send the course invitation email', ErrorCodes.INTERNAL_ERROR, 500, 'email');
+  }
 
   if (recipient.inviteId) {
     const retired = await revokeLiveEmailBoundCourseInvitesForCourse(
@@ -932,6 +942,11 @@ export async function enrollInCourse(
       identityProven: user.emailVerified === true,
       roleForNewMember: ROLE.STUDENT
     });
+
+    const memberIdAfterBinding = await getGroupMemberIdByGroupAndProfile(groupId, user.id, tx);
+    if (memberIdAfterBinding) {
+      return { bindResult, selfEnrolledMember: null };
+    }
 
     const [member] = await addGroupMember(
       {

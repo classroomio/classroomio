@@ -5126,7 +5126,8 @@
       "joined_title": "Du er med! Start med at lære:",
       "messages": {
         "joined": "Du er blevet medlem af akademiet.",
-        "join_failed": "Kunne ikke blive medlem af akademiet. Prøv igen."
+        "join_failed": "Kunne ikke blive medlem af akademiet. Prøv igen.",
+        "refresh_failed": "Du er blevet medlem, men siden kunne ikke opdateres. Genindlæs for at se dit nye akademi."
       },
       "invitation_team": "Du er blevet inviteret til {orgName} som {role}.",
       "verify_to_accept": "Bekræft din e-mailadresse for at acceptere denne invitation.",

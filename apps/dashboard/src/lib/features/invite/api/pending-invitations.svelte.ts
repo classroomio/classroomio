@@ -9,16 +9,13 @@ import { snackbar } from '$features/ui/snackbar/store';
 import type {
   AcceptOrgInviteRequest,
   GetPendingInvitationsRequest,
+  JoinedCourseLink,
+  JoinedOrgResult,
   PendingInvitationCourse,
   PendingInvitationGroup,
   PendingTenantInvite
 } from '../utils/types';
-import { buildJoinedCourseLinks, getJoinTarget, type JoinedCourseLink } from '../utils/invitations-utils';
-
-export type JoinedOrgResult = {
-  organizationId: string;
-  courses: JoinedCourseLink[];
-};
+import { buildJoinedCourseLinks, getJoinTarget } from '../utils/invitations-utils';
 
 class PendingInvitationsApi extends BaseApiWithErrors {
   groups = $state<PendingInvitationGroup[]>([]);
@@ -33,6 +30,7 @@ class PendingInvitationsApi extends BaseApiWithErrors {
   private hasRequested = false;
   private requestedWhileVerified = false;
   private preferredOrgId: string | null = null;
+  private latestFetchId = 0;
 
   get count() {
     return this.groups.filter((group) => !this.joinedByOrg.has(group.organization.id)).length;
@@ -53,19 +51,24 @@ class PendingInvitationsApi extends BaseApiWithErrors {
     await this.fetchPendingInvitations();
   }
 
+  /** Loads the account's invitations; a response from an older request than the latest one is ignored. */
   async fetchPendingInvitations() {
+    this.latestFetchId += 1;
+    const fetchId = this.latestFetchId;
+    const isLatest = () => fetchId === this.latestFetchId;
+
     await this.execute<GetPendingInvitationsRequest>({
       requestFn: () => classroomio.account.invitations.$get(),
       logContext: 'fetching pending invitations',
       onSuccess: (response) => {
-        this.groups = response.data ?? [];
+        if (isLatest()) this.groups = response.data ?? [];
       },
       onError: () => {
-        this.groups = [];
+        if (isLatest()) this.groups = [];
       }
     });
 
-    this.hasLoaded = true;
+    if (isLatest()) this.hasLoaded = true;
   }
 
   /**
@@ -119,6 +122,23 @@ class PendingInvitationsApi extends BaseApiWithErrors {
   closeModal() {
     this.preferredOrgId = null;
     this.isModalOpen = false;
+  }
+
+  /** Clears account-scoped invitation state so the next account to sign in loads its own invitations. */
+  reset() {
+    this.latestFetchId += 1;
+    this.groups = [];
+    this.joinedByOrg.clear();
+    this.joinedCoursesByOrg = {};
+    this.hasLoaded = false;
+    this.isModalOpen = false;
+    this.joiningOrgId = null;
+    this.unverifiedInvite = null;
+    this.isSendingVerification = false;
+    this.verificationSent = false;
+    this.hasRequested = false;
+    this.requestedWhileVerified = false;
+    this.preferredOrgId = null;
   }
 
   /** Groups with the preferred org first, joined groups last. */

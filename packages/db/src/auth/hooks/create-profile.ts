@@ -25,7 +25,7 @@ async function isSelfHostedFirstSignup(): Promise<boolean> {
  *
  * Self-hosted first signup: auto-verify email (no orgs exist yet, this user will create the only org).
  */
-export const createProfileHook = async (user: User, _request?: Request) => {
+export const createProfileHook = async (user: User, ssoProviderId: string | null = null) => {
   console.log('[auth] createProfileHook: running', { userId: user.id });
 
   const existingProfile = await db.select().from(schema.profile).where(eq(schema.profile.id, user.id)).limit(1);
@@ -79,7 +79,7 @@ export const createProfileHook = async (user: User, _request?: Request) => {
     console.debug('newProfile', newProfile);
 
     // Run SSO provisioning hook for JIT org membership (email-domain match)
-    await ssoProvisioningHook(user);
+    await ssoProvisioningHook(user, { emailVerified: isEmailVerified, ssoProviderId });
   } catch (error) {
     console.error('Error creating profile for user:', error);
   }

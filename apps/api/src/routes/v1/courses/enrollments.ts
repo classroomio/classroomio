@@ -16,7 +16,7 @@ import { COURSE_TEAM_RULE, inviteRateLimitUnavailableResponse } from './docs';
 export const v1CourseEnrollmentsRouter = new Hono().post(
   '/',
   describeRoute({
-    description: `Enroll a student by email, or add the course to their organization invite if they have not joined; repeat calls change nothing; ${COURSE_TEAM_RULE}.`,
+    description: `Enroll a student by email, or add the course to their organization invite if not joined; a repeat only sends an invite email not yet sent; ${COURSE_TEAM_RULE}.`,
     tags: ['Course Members'],
     responses: {
       200: jsonResponse(
@@ -38,6 +38,7 @@ export const v1CourseEnrollmentsRouter = new Hono().post(
         description:
           'This student needed a new invite, but the key creator already made 60 invite requests for this course in the past hour; or an MCP key hit its rate limit'
       },
+      500: { description: 'The invite was saved but its email could not be queued; retry to send it' },
       503: inviteRateLimitUnavailableResponse
     }
   }),

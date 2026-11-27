@@ -416,8 +416,16 @@ describe('enrollCourseStudentService', () => {
       expect(releaseInviteBudget).toHaveBeenCalledTimes(1);
     });
 
-    it('fails with 500 and gives the budget back when the invitation email cannot be queued', async () => {
+    it('fails with 500 but keeps the budget spent when the invite was created and only its email failed', async () => {
       vi.mocked(inviteStudentsToCourseByEmail).mockResolvedValue(inviteResult('invited', { emailsFailed: 1 }));
+
+      await expect(enroll()).rejects.toMatchObject({ statusCode: 500, field: 'email' });
+      expect(releaseInviteBudget).not.toHaveBeenCalled();
+    });
+
+    it('fails with 500 and gives the budget back when an existing invite was kept and its email failed', async () => {
+      vi.mocked(inviteStudentsToCourseByEmail).mockResolvedValue(inviteResult('already_invited', { emailsFailed: 1 }));
+      vi.mocked(hasOrganizationInviteEmailBeenSent).mockResolvedValue(true);
 
       await expect(enroll()).rejects.toMatchObject({ statusCode: 500, field: 'email' });
       expect(releaseInviteBudget).toHaveBeenCalledTimes(1);

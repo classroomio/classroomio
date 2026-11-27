@@ -7,7 +7,10 @@
   import { t } from '$lib/utils/functions/translations';
   import InviteOutcomeList from '$features/course/components/people/invite-outcome-list.svelte';
   import { courseApi, peopleApi } from '$features/course/api';
-  import { COURSE_INVITE_OUTCOME_LABEL_KEYS } from '$features/course/components/people/invite-utils';
+  import {
+    getCourseInviteOutcomeLabelKey,
+    getFailedDeliveryEmails
+  } from '$features/course/components/people/invite-utils';
   import { profile } from '$lib/utils/store/user';
   import { isStudentLimitReached } from '$lib/utils/store/org';
   import { UpgradeBanner } from '$features/ui';
@@ -54,16 +57,22 @@
         return;
       }
 
-      if (recipient.status === 'invited' || recipient.status === 'enrolled') {
+      const failedEmails = getFailedDeliveryEmails(invite.delivery);
+      const emailFailed = failedEmails.has(recipient.email.toLowerCase());
+      const accessChanged = recipient.status === 'invited' || recipient.status === 'enrolled';
+      if (accessChanged) {
         await courseApi.refreshCourse(courseId, $profile.id);
         onMembersChanged?.();
+      }
+
+      if (accessChanged && !emailFailed) {
         closeModal();
         return;
       }
 
       outcome = {
         email: recipient.email,
-        labelKey: COURSE_INVITE_OUTCOME_LABEL_KEYS[recipient.status] ?? COURSE_INVITE_OUTCOME_LABEL_KEYS.invited
+        labelKey: getCourseInviteOutcomeLabelKey(recipient, failedEmails)
       };
     } finally {
       isSubmitting = false;

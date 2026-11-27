@@ -720,7 +720,7 @@ export async function acceptLinkInvite(token: string, user: TAuthUser, context: 
       profileId: user.id,
       email: normalizedEmail,
       trigger: 'org-invite',
-      identityProven: false,
+      identityProven: user.emailVerified === true,
       roleForNewMember: row.invite.roleId,
       inviteRoleId: row.invite.roleId
     });

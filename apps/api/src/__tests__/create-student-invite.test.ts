@@ -8,10 +8,11 @@ vi.mock('@cio/db/queries/course/invite', () => ({
   revokeLiveEmailBoundCourseInvitesForCourse: vi.fn().mockResolvedValue([])
 }));
 
-vi.mock('@cio/db/drizzle', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@cio/db/drizzle')>()),
-  db: { transaction: vi.fn() }
-}));
+vi.mock('@cio/db/drizzle', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/db/drizzle')>();
+
+  return { ...original, db: { transaction: vi.fn() } };
+});
 
 vi.mock('@cio/db/queries/course', () => ({
   getCourseById: vi.fn(),

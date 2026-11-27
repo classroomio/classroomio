@@ -7,9 +7,10 @@ import {
   getLatestOrganizationInviteRowsByEmails,
   getStaffEmailsInOrganization,
   listLiveStudentOrgInvitesForEmail,
+  lockOrganizationForUpdate,
   lockOrganizationMemberEmail,
   markOrganizationInvitesSuperseded,
-  revokeActiveOrganizationInvitesByEmails
+  revokeOpenStudentOrgInvitesForEmail
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import {
@@ -42,11 +43,11 @@ function uniqueIds(ids: string[] | undefined): string[] {
 }
 
 function readResources(metadata: unknown): TInviteResources {
-  return {
-    courseIds: parseCourseIdsFromInviteMetadata(metadata),
-    cohortIds: parseCohortIdsFromInviteMetadata(metadata),
-    pathIds: parsePathIdsFromInviteMetadata(metadata)
-  };
+  const courseIds = parseCourseIdsFromInviteMetadata(metadata);
+  const cohortIds = parseCohortIdsFromInviteMetadata(metadata);
+  const pathIds = parsePathIdsFromInviteMetadata(metadata);
+
+  return { courseIds, cohortIds, pathIds };
 }
 
 function readFullname(metadata: unknown): string | undefined {
@@ -80,11 +81,11 @@ function isEmpty(resources: TInviteResources): boolean {
 }
 
 function mergeResources(sources: TInviteResources[]): TInviteResources {
-  return {
-    courseIds: mergeInviteIdLists(...sources.map((resources) => resources.courseIds)),
-    cohortIds: mergeInviteIdLists(...sources.map((resources) => resources.cohortIds)),
-    pathIds: mergeInviteIdLists(...sources.map((resources) => resources.pathIds))
-  };
+  const courseIds = mergeInviteIdLists(...sources.map((resources) => resources.courseIds));
+  const cohortIds = mergeInviteIdLists(...sources.map((resources) => resources.cohortIds));
+  const pathIds = mergeInviteIdLists(...sources.map((resources) => resources.pathIds));
+
+  return { courseIds, cohortIds, pathIds };
 }
 
 /**
@@ -125,9 +126,11 @@ export type TSupersedeStudentOrgInvitesResult = {
 };
 
 /**
- * Keeps one live student invite per (org, email) on `dbClient`. Adds and removes resources against the live invite
- * (renewing an expired one), replaces it with a fresh token, and records the successor on the replaced rows so their
- * links still resolve. Removing the last resource revokes the invite without a replacement. Staff emails are skipped.
+ * Keeps one live student invite per (org, email) on `dbClient`, which must be a transaction so the locks hold until
+ * commit. Adds and removes resources against the live invite (renewing an expired one), replaces it with a fresh
+ * token, and records the successor on the replaced rows so their links still resolve. Removing the last resource
+ * revokes the invite without a replacement. Staff emails are skipped. Locks the organization, then each email in
+ * sorted order, the same order as identity binding.
  */
 export async function supersedeStudentOrgInvites(
   dbClient: DbOrTxClient,
@@ -161,7 +164,8 @@ export async function supersedeStudentOrgInvites(
     const isRemoval = removeCourseIds.size > 0 || removeCohortIds.size > 0;
     const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
 
-    for (const email of eligible) {
+    await lockOrganizationForUpdate(params.orgId, dbClient);
+    for (const email of [...eligible].sort()) {
       await lockOrganizationMemberEmail(dbClient, params.orgId, email);
     }
 
@@ -191,15 +195,16 @@ export async function supersedeStudentOrgInvites(
       );
 
       const liveInvite = live[0];
-      if (liveInvite && live.length === 1 && params.reissue === 'when-changed' && sameResources(before, merged)) {
+      const liveInviteCoversAll = liveInvite ? sameResources(readResources(liveInvite.metadata), merged) : false;
+      if (liveInvite && live.length === 1 && params.reissue === 'when-changed' && liveInviteCoversAll) {
         result.unchanged.push(liveInvite);
         result.inviteByEmail.set(email, liveInvite);
         continue;
       }
 
-      const revoked = await revokeActiveOrganizationInvitesByEmails(
+      const revoked = await revokeOpenStudentOrgInvitesForEmail(
         params.orgId,
-        [email],
+        email,
         params.invitedByProfileId,
         dbClient
       );

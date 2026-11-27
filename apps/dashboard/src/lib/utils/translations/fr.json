@@ -5126,7 +5126,8 @@
       "joined_title": "C'est parti ! Commencez à apprendre :",
       "messages": {
         "joined": "Vous avez rejoint l'académie.",
-        "join_failed": "Impossible de rejoindre l'académie. Veuillez réessayer."
+        "join_failed": "Impossible de rejoindre l'académie. Veuillez réessayer.",
+        "refresh_failed": "Vous avez rejoint l'académie, mais cette page n'a pas pu se mettre à jour. Rechargez pour voir votre nouvelle académie."
       },
       "invitation_team": "Vous avez été invité sur {orgName} en tant que {role}.",
       "verify_to_accept": "Vérifiez votre adresse e-mail pour accepter cette invitation.",

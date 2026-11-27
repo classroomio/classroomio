@@ -118,7 +118,7 @@ export async function exchangeToken(
     await linkTokenAuthIdentity(orgId, sub, user.id);
   }
 
-  await ensureOrgMembership(user.id, user.email ?? emailLower, orgId, undefined, 'token-auth');
+  await ensureOrgMembership(user.id, user.email ?? emailLower, orgId, undefined, 'token-auth', true);
 
   // Only on a user we just created — never overwrite an existing user's avatar from a token.
   if (avatar && createdNewUser) {

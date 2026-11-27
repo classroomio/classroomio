@@ -14,7 +14,7 @@ import {
   type TCoursePeopleSortBy,
   type TCoursePeopleSortOrder
 } from '@cio/utils/validation/course';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 import { isExerciseCompletedSql } from '@db/queries/course/progression';
 import { deleteStudentCourseProgress } from '@db/queries/course/reset-progress';
 import { claimEmailOnlyGroupMembersForGroups } from '@db/queries/group';
@@ -404,14 +404,15 @@ export interface PaginatedInvitedCourseMembersResult {
 /**
  * People invited to a course but not yet joined, from three sources:
  * legacy email-only group rows (and staff email-only rows), pending org members
- * whose latest open student org invite names this course, and unused
- * single-recipient course invites. Expired invites are included so they can be
- * resent. One row per email; an org invitation wins over a course invite, which
- * wins over a legacy row.
+ * whose latest open student org invite carries this course directly or through
+ * a cohort that contains it, and unused single-recipient course invites.
+ * Expired invites are included so they can be resent. One row per email; an org
+ * invitation wins over a course invite, which wins over a legacy row.
  */
 export async function getPaginatedInvitedCourseMembers(
   courseId: string,
-  options: PaginatedInvitedCourseMembersOptions
+  options: PaginatedInvitedCourseMembersOptions,
+  dbClient: DbOrTxClient = db
 ): Promise<PaginatedInvitedCourseMembersResult> {
   const { page, limit, search, roleId } = options;
   const searchTerm = search?.trim() ? `%${search.trim()}%` : null;
@@ -454,12 +455,29 @@ export async function getPaginatedInvitedCourseMembers(
             AND newer.is_revoked = false
             AND newer.accepted_at IS NULL
             AND newer.created_at > oi.created_at
+            AND (
+              (newer.metadata->'courseIds') ? ${courseId}
+              OR EXISTS (
+                SELECT 1
+                FROM cohort_course newer_cc
+                WHERE newer_cc.course_id = ${courseId}
+                  AND (newer.metadata->'cohortIds') ? newer_cc.cohort_id::text
+              )
+            )
         )
       JOIN "group" g ON g.organization_id = om.organization_id
       JOIN course c ON c.group_id = g.id AND c.id = ${courseId}
       WHERE om.profile_id IS NULL
         AND om.email IS NOT NULL
-        AND (oi.metadata->'courseIds') ? ${courseId}
+        AND (
+          (oi.metadata->'courseIds') ? ${courseId}
+          OR EXISTS (
+            SELECT 1
+            FROM cohort_course cc
+            WHERE cc.course_id = ${courseId}
+              AND (oi.metadata->'cohortIds') ? cc.cohort_id::text
+          )
+        )
       UNION ALL
       SELECT
         'course_invite'::text AS kind,
@@ -510,13 +528,13 @@ export async function getPaginatedInvitedCourseMembers(
   `;
 
   try {
-    const [countResult] = await db.execute(sql`
+    const [countResult] = await dbClient.execute(sql`
       SELECT COUNT(*)::int AS total FROM (${invitedUnion}) AS deduped
       ${filter}
     `);
     const total = Number((countResult as unknown as { total: number })?.total ?? 0);
 
-    const result = await db.execute(sql`
+    const result = await dbClient.execute(sql`
       SELECT * FROM (${invitedUnion}) AS deduped
       ${filter}
       ORDER BY deduped."inviteCreatedAt" DESC NULLS LAST, deduped."memberCreatedAt" DESC NULLS LAST, lower(deduped.email)

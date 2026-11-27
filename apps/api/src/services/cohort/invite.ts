@@ -133,7 +133,8 @@ const COHORT_RESEND_REFUSALS: Partial<Record<TAudienceImportRowStatus, () => App
 
 /**
  * Sends `email` a fresh link to their organization invite with this cohort on it.
- * Throws when nothing was sent: staff, archived members, no free student seat, or an invalid email.
+ * Throws when nothing was sent: staff, archived members, no free student seat, an invalid email, or an email that
+ * could not be queued (the renewed invite stays, so the resend can be retried).
  */
 export async function resendCohortInvite(cohortId: string, email: string, invitedByProfileId: string) {
   const cohort = await getCohortOrThrow(cohortId);
@@ -154,6 +155,10 @@ export async function resendCohortInvite(cohortId: string, email: string, invite
   const status = row?.status ?? 'invalid_email';
   const refusal = COHORT_RESEND_REFUSALS[status];
   if (refusal) throw refusal();
+
+  if (result.emailsFailed > 0) {
+    throw new AppError('The invitation was renewed but its email could not be sent', ErrorCodes.INTERNAL_ERROR, 500);
+  }
 
   return { email: row?.email ?? email, status, inviteId: row?.inviteId ?? null };
 }

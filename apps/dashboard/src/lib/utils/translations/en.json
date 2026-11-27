@@ -6406,7 +6406,8 @@
       "joined_title": "You're in! Start learning:",
       "messages": {
         "joined": "You've joined the academy.",
-        "join_failed": "Failed to join the academy."
+        "join_failed": "Failed to join the academy.",
+        "refresh_failed": "You joined, but this page could not update. Reload to see your new academy."
       },
       "invitation_team": "You've been invited to {orgName} as {role}.",
       "verify_to_accept": "Verify your email address to accept this invitation.",

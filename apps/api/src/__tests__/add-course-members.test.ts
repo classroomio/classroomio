@@ -124,7 +124,7 @@ describe('adding a course member who is already in the course with the same role
     vi.mocked(enqueueTransactionalEmail).mockResolvedValue([] as never);
   });
 
-  it('addMembers skips the existing membership without a webhook or welcome email', async () => {
+  it('addMembers skips the existing membership without a webhook or welcome email but still ensures compliance', async () => {
     const addedMembers = await addMembers('course-1', [
       { roleId: ROLE.STUDENT, profileId: 'profile-1', email: 'student@example.com' }
     ]);
@@ -132,7 +132,7 @@ describe('adding a course member who is already in the course with the same role
     expect(addedMembers).toEqual([]);
     expect(emitCourseMemberAddedWebhookEvent).not.toHaveBeenCalled();
     expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
-    expect(ensureComplianceEnrollmentRecordsForProfiles).not.toHaveBeenCalled();
+    expect(ensureComplianceEnrollmentRecordsForProfiles).toHaveBeenCalledWith(['course-1'], ['profile-1']);
   });
 
   it('addMembers with rejectExisting returns 409 COURSE_MEMBER_EXISTS', async () => {

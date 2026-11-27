@@ -5,11 +5,11 @@ exports[`public API cohort request contract > ZPublicApiAddCohortMembers keeps i
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "members": {
-      "description": "People to add by profileId or email, each once. No invite email is sent; use POST /cohorts/{cohortId}/invite for that.",
+      "description": "People to add by profileId or email, each once. Students who have not joined are emailed an organization invite; tutors are added directly.",
       "items": {
         "properties": {
           "email": {
-            "description": "A student who already joined your organization is added directly; anyone else is sent an organization invite that carries this cohort.",
+            "description": "A joined student is added directly; one who has not joined is emailed an organization invite carrying this cohort. Staff emails fail with STAFF_CANNOT_ENROLL.",
             "format": "email",
             "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
             "type": "string",

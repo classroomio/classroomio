@@ -7,6 +7,7 @@ import {
   deleteOrganizationMemberById,
   hasLapsedStudentInvite,
   listLiveStudentOrgInvitesForEmail,
+  lockOrganizationForUpdate,
   lockOrganizationMemberEmail,
   selectOrganizationMemberByOrgAndNormalizedEmail,
   selectOrganizationMemberByOrgAndProfile,
@@ -168,10 +169,22 @@ async function resolveOrganizationMember(
       await deleteOrganizationMemberById(tx, byEmail.id);
     }
 
-    return { member: byProfile, createdMember: false, linkedPendingMember: false, seatCheck: null };
+    const becomesStudent = params.inviteRoleId === ROLE.STUDENT && Number(byProfile.roleId) !== ROLE.STUDENT;
+    const seatCheck = becomesStudent ? await assertSeatForNewStudent(orgId, tx) : null;
+
+    return { member: byProfile, createdMember: false, linkedPendingMember: false, seatCheck };
   }
 
   if (byEmail) {
+    if (!params.identityProven) {
+      throw new AppError(
+        'Verify your email address to accept the access waiting for it',
+        ErrorCodes.EMAIL_NOT_VERIFIED,
+        403,
+        'email'
+      );
+    }
+
     const finalRoleId = params.inviteRoleId ?? Number(byEmail.roleId);
     const needsSeat = finalRoleId === ROLE.STUDENT && (await hasLapsedStudentInvite(orgId, byEmail.id, tx));
     const seatCheck = needsSeat ? await assertSeatForNewStudent(orgId, tx) : null;
@@ -215,8 +228,8 @@ export type TEmailOnlyClaim = { claimed: TBindClaimed; enrollment: TInviteEnroll
 
 /**
  * Links the email-only course, cohort and program rows in the org to `profileId`, then enrols the profile in the
- * courses of every claimed cohort and creates compliance records for the claimed and cohort courses. Nothing here
- * fulfils an invitation, so it needs no proof of identity beyond an active membership.
+ * courses of every claimed cohort and creates compliance records for the claimed and cohort courses. Callers must
+ * only claim for a proven identity: the binding passes `identityProven`, and the backfill only visits joined members.
  */
 export async function claimEmailOnlyMemberships(
   tx: DbOrTxClient,
@@ -324,10 +337,11 @@ async function fulfilSameOrgStudentInvites(
 
 /**
  * Binds a profile to an email in an organization inside `tx`: links or creates the org membership, applies the
- * accepted invite's role, links email-only course/cohort/program rows, and, when identity is proven and the member is
- * an active student, accepts every other live same-org student invitation for that email. Writes only; the caller
- * runs audits, webhooks and stats after commit. Throws 409 when the email belongs to another account and 403 when a
- * new student seat is not available.
+ * accepted invite's role and, for a proven identity, links email-only course/cohort/program rows and (for an active
+ * student) accepts every other live same-org student invitation for that email. Locks the organization before the
+ * email, the same order as invite acceptance. Writes only; the caller runs audits, webhooks and stats after commit.
+ * Throws 409 when the email belongs to another account, 403 `EMAIL_NOT_VERIFIED` when an unproven identity would take
+ * over a pending membership, and 403 when a new student seat is not available.
  */
 export async function bindProfileToOrgEmail(
   tx: DbOrTxClient,
@@ -339,14 +353,16 @@ export async function bindProfileToOrgEmail(
     throw new AppError('Organization, profile and email are required', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
+  await lockOrganizationForUpdate(params.orgId, tx);
   await lockOrganizationMemberEmail(tx, params.orgId, email);
 
   const resolved = await resolveOrganizationMember(tx, params, email);
   const member = await applyInviteRole(tx, resolved.member, params.inviteRoleId, email);
   const isActive = member.status === 'ACTIVE';
-  const claim = isActive
-    ? await claimEmailOnlyMemberships(tx, { orgId: params.orgId, email, profileId: params.profileId }, deps)
-    : null;
+  const claim =
+    isActive && params.identityProven
+      ? await claimEmailOnlyMemberships(tx, { orgId: params.orgId, email, profileId: params.profileId }, deps)
+      : null;
   const mayFulfil = params.identityProven && isActive && Number(member.roleId) === ROLE.STUDENT;
   const { fulfilled, enrollment } = mayFulfil
     ? await fulfilSameOrgStudentInvites(tx, params, email, deps)

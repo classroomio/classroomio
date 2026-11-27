@@ -5126,7 +5126,8 @@
       "joined_title": "¡Ya estás dentro! Empieza a aprender:",
       "messages": {
         "joined": "Te has unido a la academia.",
-        "join_failed": "No pudimos unirte a la academia. Inténtalo de nuevo."
+        "join_failed": "No pudimos unirte a la academia. Inténtalo de nuevo.",
+        "refresh_failed": "Te has unido, pero esta página no se pudo actualizar. Recarga para ver tu nueva academia."
       },
       "invitation_team": "Te han invitado a {orgName} como {role}.",
       "verify_to_accept": "Verifique su dirección de correo electrónico para aceptar esta invitación.",

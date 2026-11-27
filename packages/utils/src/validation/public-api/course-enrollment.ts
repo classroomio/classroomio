@@ -10,7 +10,7 @@ export const ZPublicApiEnrollCourseStudent = z.object({
     .boolean()
     .default(true)
     .describe(
-      'Send the organization invite email when the invite is new or changed, or the welcome email when they already joined your organization. Default: true.'
+      'Send the organization invite email when the invite is new, changed or never emailed, or the welcome email when they already joined. Default: true.'
     )
 });
 export type TPublicApiEnrollCourseStudent = z.infer<typeof ZPublicApiEnrollCourseStudent>;

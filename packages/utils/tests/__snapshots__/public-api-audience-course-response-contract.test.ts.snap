@@ -4168,6 +4168,8 @@ exports[`public API audience and course response contract > ZPublicApiCreateAudi
               "is_staff",
               "over_seat_limit",
               "missing_email",
+              "archived",
+              "already_invited",
             ],
             "type": "string",
           },

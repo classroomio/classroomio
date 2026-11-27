@@ -46,7 +46,9 @@ export const ZPublicApiCreateAudienceResponse = z.object({
           'duplicate_in_file',
           'is_staff',
           'over_seat_limit',
-          'missing_email'
+          'missing_email',
+          'archived',
+          'already_invited'
         ])
         .describe('What happened to this address')
     })

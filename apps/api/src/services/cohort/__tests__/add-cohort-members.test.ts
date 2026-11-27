@@ -146,6 +146,7 @@ describe('addCohortMembersSettled', () => {
       ACTOR_ID
     );
 
+    expect(importAudienceMembers).toHaveBeenCalledTimes(1);
     expect(vi.mocked(importAudienceMembers).mock.calls[0][1]).toMatchObject({
       recipients: [{ email: 'pending@example.com' }]
     });
@@ -242,6 +243,37 @@ describe('addCohortMembersSettled', () => {
     );
     expect(importAudienceMembers).not.toHaveBeenCalled();
     expect(result).toMatchObject({ status: 'fulfilled', value: { kind: 'added' } });
+  });
+
+  it('refuses a profileId and email that belong to different people', async () => {
+    vi.mocked(getProfileById).mockResolvedValue({ id: 'profile-1', email: 'p1@example.com' } as never);
+
+    const [result] = await addCohortMembersSettled(
+      COHORT_ID,
+      { members: [{ profileId: 'profile-1', email: 'someone-else@example.com', roleId: ROLE.STUDENT }] },
+      'dashboard',
+      ACTOR_ID
+    );
+
+    expect(result).toMatchObject({ status: 'rejected', reason: { code: 'VALIDATION_ERROR', field: 'email' } });
+    expect(addCohortMember).not.toHaveBeenCalled();
+    expect(importAudienceMembers).not.toHaveBeenCalled();
+  });
+
+  it('refuses an organization tutor submitted as a student instead of enrolling them', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'tutor@example.com', profileId: 'profile-2', roleId: ROLE.TUTOR, status: 'ACTIVE' }
+    ] as never);
+
+    const [result] = await addCohortMembersSettled(
+      COHORT_ID,
+      { members: [{ email: 'tutor@example.com', roleId: ROLE.STUDENT }] },
+      'dashboard',
+      ACTOR_ID
+    );
+
+    expect(result).toMatchObject({ status: 'rejected', reason: { code: 'STAFF_CANNOT_ENROLL' } });
+    expect(addCohortMember).not.toHaveBeenCalled();
   });
 
   it('checks by profileId, not email, when the entry names a profile', async () => {

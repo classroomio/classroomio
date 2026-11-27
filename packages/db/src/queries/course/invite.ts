@@ -532,8 +532,9 @@ export type TPendingCourseInviteListItem = {
 };
 
 /**
- * Student course invites addressed to this exact email that can still be accepted:
- * unrevoked, unexpired, with uses left, on an active published course the profile has not joined.
+ * Student course invites whose recipient list includes this email (case-insensitively), single- or multi-recipient,
+ * that can still be accepted: unrevoked, unexpired, with uses left, on an active published course the profile has
+ * not joined. Auto-fulfilment uses the stricter single-recipient set instead.
  */
 export async function getActivePendingCourseInvitesForEmail(
   email: string,
@@ -567,8 +568,7 @@ export async function getActivePendingCourseInvitesForEmail(
       .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
       .where(
         and(
-          sql`cardinality(${schema.courseInvite.allowedEmails}) = 1`,
-          eq(sql`lower((${schema.courseInvite.allowedEmails})[1])`, normalized),
+          sql`exists (select 1 from unnest(${schema.courseInvite.allowedEmails}) as recipient where lower(recipient) = ${normalized})`,
           eq(schema.courseInvite.roleId, ROLE.STUDENT),
           eq(schema.courseInvite.isRevoked, false),
           gt(schema.courseInvite.expiresAt, sql`NOW()`),
@@ -669,7 +669,8 @@ export async function optimisticIncrementCourseInviteUsedCount(
         and(
           eq(schema.courseInvite.id, inviteId),
           eq(schema.courseInvite.usedCount, priorUsedCount),
-          eq(schema.courseInvite.isRevoked, false)
+          eq(schema.courseInvite.isRevoked, false),
+          sql`(${schema.courseInvite.expiresAt} IS NULL OR ${schema.courseInvite.expiresAt} > clock_timestamp())`
         )
       )
       .returning({
@@ -791,6 +792,7 @@ export async function listLiveEmailBoundCourseInvitesInOrg(
           gt(schema.courseInvite.expiresAt, sql`NOW()`),
           lt(schema.courseInvite.usedCount, schema.courseInvite.maxUses),
           sql`cardinality(${schema.courseInvite.allowedEmails}) = 1`,
+          sql`coalesce(cardinality(${schema.courseInvite.allowedDomains}), 0) = 0`,
           eq(sql`lower((${schema.courseInvite.allowedEmails})[1])`, normalized),
           eq(schema.course.status, 'ACTIVE'),
           eq(schema.course.isPublished, true)
@@ -830,9 +832,9 @@ export async function fulfillCourseInvite(
 }
 
 /**
- * Revokes every live single-recipient STUDENT invite for `(courseId, email)` and records `supersededBy` (the
- * organization invite that now carries the course) in each row's metadata. Multi-recipient and shareable-link
- * invites stay live.
+ * Revokes every live single-recipient STUDENT invite for `(courseId, email)` with no domain restriction and records
+ * `supersededBy` (the organization invite that now carries the course) in each row's metadata. Multi-recipient,
+ * domain-restricted and shareable-link invites stay live.
  */
 export async function revokeLiveEmailBoundCourseInvitesForCourse(
   courseId: string,
@@ -852,6 +854,7 @@ export async function revokeLiveEmailBoundCourseInvitesForCourse(
       gt(schema.courseInvite.expiresAt, sql`NOW()`),
       lt(schema.courseInvite.usedCount, schema.courseInvite.maxUses),
       sql`cardinality(${schema.courseInvite.allowedEmails}) = 1`,
+      sql`coalesce(cardinality(${schema.courseInvite.allowedDomains}), 0) = 0`,
       eq(sql`lower((${schema.courseInvite.allowedEmails})[1])`, normalized)
     ];
 

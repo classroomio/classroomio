@@ -24,22 +24,35 @@ export async function createGroup(values: TNewGroup, dbClient: DbOrTxClient = db
   }
 }
 
+/**
+ * Adds one group member. A profile that already has a row keeps it; an email-only row for the same email is linked
+ * to the profile and given the requested role, so linking never grants a role the caller did not ask for.
+ */
 export async function addGroupMember(values: TNewGroupmember, dbClient: DbOrTxClient = db) {
   try {
     if (values.profileId) {
-      if (!isMissingEmail(values.email)) {
-        await claimEmailOnlyGroupMembersForGroups(
-          [values.groupId],
-          [{ profileId: values.profileId, email: values.email }],
-          dbClient
-        );
-      }
+      const claim = isMissingEmail(values.email)
+        ? null
+        : await claimEmailOnlyGroupMembersForGroups(
+            [values.groupId],
+            [{ profileId: values.profileId, email: values.email }],
+            dbClient
+          );
 
       const [existing] = await dbClient
         .select()
         .from(schema.groupmember)
         .where(and(eq(schema.groupmember.groupId, values.groupId), eq(schema.groupmember.profileId, values.profileId)))
         .limit(1);
+
+      const linkedNow = Boolean(claim && claim.claimed > 0);
+      if (existing && linkedNow && values.roleId !== undefined && Number(existing.roleId) !== Number(values.roleId)) {
+        return dbClient
+          .update(schema.groupmember)
+          .set({ roleId: values.roleId })
+          .where(eq(schema.groupmember.id, existing.id))
+          .returning();
+      }
 
       if (existing) {
         return [existing];
@@ -53,20 +66,35 @@ export async function addGroupMember(values: TNewGroupmember, dbClient: DbOrTxCl
   }
 }
 
+/**
+ * Links email-only rows for exactly the requested (group, profile) pairs, never a user's rows in another group of
+ * the batch.
+ */
+async function claimEmailOnlyRowsForPairs(values: TNewGroupmember[], dbClient: DbOrTxClient): Promise<void> {
+  const usersByGroup = new Map<string, Array<{ profileId: string; email?: string | null }>>();
+  for (const value of values) {
+    if (!value.profileId || isMissingEmail(value.email)) continue;
+
+    const users = usersByGroup.get(value.groupId) ?? [];
+    users.push({ profileId: value.profileId, email: value.email });
+    usersByGroup.set(value.groupId, users);
+  }
+
+  for (const [groupId, users] of usersByGroup) {
+    await claimEmailOnlyGroupMembersForGroups([groupId], users, dbClient);
+  }
+}
+
+function insertGroupMemberRows(values: TNewGroupmember[], dbClient: DbOrTxClient) {
+  return dbClient.insert(schema.groupmember).values(values).onConflictDoNothing().returning();
+}
+
 export async function addGroupMembers(values: TNewGroupmember[], dbClient: DbOrTxClient = db) {
   if (values.length === 0) return [];
   try {
-    const claimableUsers = values
-      .filter((value) => value.profileId && !isMissingEmail(value.email))
-      .map((value) => ({ profileId: value.profileId!, email: value.email }));
+    await claimEmailOnlyRowsForPairs(values, dbClient);
 
-    await claimEmailOnlyGroupMembersForGroups(
-      values.map((value) => value.groupId),
-      claimableUsers,
-      dbClient
-    );
-
-    return dbClient.insert(schema.groupmember).values(values).onConflictDoNothing().returning();
+    return insertGroupMemberRows(values, dbClient);
   } catch (error) {
     console.error('addGroupMembers error:', error);
     throw new Error(`Failed to bulk add group members: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -267,8 +295,9 @@ export async function enrollUsersInCourseGroups(
       profileId: p.profileId,
       email: emailByProfile.get(p.profileId) ?? undefined
     }));
+  if (toInsert.length === 0) return [];
 
-  return addGroupMembers(toInsert, dbClient);
+  return insertGroupMemberRows(toInsert, dbClient);
 }
 
 /**
@@ -665,17 +694,9 @@ export async function insertGroupMembersOnConflictDoNothing(
   if (values.length === 0) return [];
 
   try {
-    const claimableUsers = values
-      .filter((value) => value.profileId && !isMissingEmail(value.email))
-      .map((value) => ({ profileId: value.profileId!, email: value.email }));
+    await claimEmailOnlyRowsForPairs(values, dbClient);
 
-    await claimEmailOnlyGroupMembersForGroups(
-      values.map((value) => value.groupId),
-      claimableUsers,
-      dbClient
-    );
-
-    return await dbClient.insert(schema.groupmember).values(values).onConflictDoNothing().returning();
+    return await insertGroupMemberRows(values, dbClient);
   } catch (error) {
     console.error('insertGroupMembersOnConflictDoNothing error:', error);
     throw new Error(`Failed to insert group members: ${error instanceof Error ? error.message : 'Unknown error'}`);

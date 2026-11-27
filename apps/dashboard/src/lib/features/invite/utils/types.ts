@@ -17,3 +17,13 @@ export type PendingInvitationCohort = PendingInvitationGroup['cohorts'][number];
 export type GetPendingTenantInviteRequest = typeof classroomio.invite.organization.pending.$get;
 type GetPendingTenantInviteResponse = Extract<InferResponseType<GetPendingTenantInviteRequest>, { success: true }>;
 export type PendingTenantInvite = NonNullable<GetPendingTenantInviteResponse['data']>;
+
+export type JoinedCourseLink = {
+  id: string;
+  title: string | null;
+};
+
+export type JoinedOrgResult = {
+  organizationId: string;
+  courses: JoinedCourseLink[];
+};

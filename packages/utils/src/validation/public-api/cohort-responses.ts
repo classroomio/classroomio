@@ -67,9 +67,9 @@ export const ZPublicApiAddCohortMembersResponse = z.object({
         index: z.number().describe('Position of the entry in the request members array'),
         email: z.string(),
         status: z
-          .enum(['invited', 'already_invited', 'enrolled'])
+          .enum(['invited', 'already_invited', 'enrolled', 'already_enrolled'])
           .describe(
-            'invited: the cohort is on their organization invite (a new email uses a seat); already_invited: it already was; enrolled: they had already joined'
+            'invited: now on their org invite (a new email uses a seat); already_invited: it already was; enrolled: joined and added; already_enrolled: already in it'
           ),
         inviteId: z.string().uuid().nullable().describe('The organization invite that carries the cohort')
       })

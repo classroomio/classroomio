@@ -120,9 +120,9 @@ Status `503`, with `code` `RATE_LIMIT_UNAVAILABLE`. Creating course invites is r
 
 ### Staff can't be enrolled
 
-Status `409`, with `code` `STAFF_CANNOT_ENROLL`, from `POST /courses/{courseId}/enrollments` when the email belongs to an admin or tutor in your organization.
+Status `409`, with `code` `STAFF_CANNOT_ENROLL`, from `POST /courses/{courseId}/enrollments` when the email belongs to an admin or tutor in your organization. `POST /cohorts/{cohortId}/members` reports the same code for that entry in its `errors[]` list when a student entry's email or profile belongs to an admin or tutor.
 
-**Fix:** Add admins and tutors to the course from the dashboard.
+**Fix:** Add admins and tutors to the course from the dashboard, or to the cohort with the tutor role.
 
 ### Rate limit unavailable
 

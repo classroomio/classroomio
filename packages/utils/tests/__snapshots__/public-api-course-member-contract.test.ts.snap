@@ -151,7 +151,7 @@ exports[`public API course member request contract > ZPublicApiCourseMembersQuer
       "type": "integer",
     },
     "membership": {
-      "description": "Omit to list joined members, then invited people. invited = the invite has not been accepted yet.",
+      "description": "Omit for joined members, then invited people; a filter only joined members match lists joined only. invited = the invite has not been accepted yet.",
       "enum": [
         "joined",
         "invited",

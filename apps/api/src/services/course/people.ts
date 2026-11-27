@@ -74,8 +74,8 @@ async function addMemberStages(courseId: string, members: PaginatedCourseMember[
 /**
  * Gets one filtered, sorted page of course members for a course.
  * @param courseId Course ID
- * @param query Page, page size, search term, filters and sort
- * With no membership filter, invited people follow the joined members unless a filter only joined members can match is set.
+ * @param query Page, page size, search term, filters and sort. With no membership filter, invited people follow the
+ * joined members, unless a filter only joined members can match is set, which lists joined members only.
  * @returns One page of course members with profile, progress and stage data, plus pagination totals
  */
 export async function listPaginatedCourseMembers(courseId: string, query: PaginatedCourseMembersOptions) {
@@ -88,7 +88,8 @@ export async function listPaginatedCourseMembers(courseId: string, query: Pagina
       return listJoinedThenInvitedCourseMembers(courseId, query);
     }
 
-    const result = await getPaginatedCourseMembers(courseId, query);
+    const joinedQuery = { ...query, membership: query.membership ?? ('joined' as const) };
+    const result = await getPaginatedCourseMembers(courseId, joinedQuery);
     const items = await addMemberStages(courseId, result.items);
 
     return {
@@ -191,7 +192,8 @@ async function listInvitedCourseMembers(courseId: string, query: PaginatedCourse
     getPaginatedInvitedCourseMembers(courseId, {
       page: query.page,
       limit: query.limit,
-      search: query.search
+      search: query.search,
+      roleId: query.roleId
     })
   ]);
   const items = await addMemberStages(
@@ -331,6 +333,7 @@ export async function addMembers(
     // Add members sequentially so partial failures still invalidate stats for successful inserts.
     const addedMembers: TGroupmember[] = [];
     const addedInputs: TAddCourseMembers = [];
+    const existingStudentProfileIds: string[] = [];
     let addedStudentMember = false;
 
     try {
@@ -342,6 +345,9 @@ export async function addMembers(
             throw new AppError('Already a member of this course', ErrorCodes.COURSE_MEMBER_EXISTS, 409);
           }
 
+          if (member.roleId === ROLE.STUDENT && addedMember.profileId) {
+            existingStudentProfileIds.push(addedMember.profileId);
+          }
           continue;
         }
 
@@ -364,9 +370,10 @@ export async function addMembers(
       captureLearnersEnrolled(addedMembers, 'admin', source);
     }
 
-    const studentProfileIds = addedInputs
+    const addedStudentProfileIds = addedInputs
       .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
       .map((member) => member.profileId!);
+    const studentProfileIds = [...new Set([...addedStudentProfileIds, ...existingStudentProfileIds])];
 
     if (studentProfileIds.length > 0) {
       await ensureComplianceEnrollmentRecordsForProfiles([courseId], studentProfileIds);

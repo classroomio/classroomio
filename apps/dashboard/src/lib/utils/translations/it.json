@@ -6330,7 +6330,8 @@
       "joined_title": "Ci sei! Inizia a imparare:",
       "messages": {
         "joined": "Ti sei unito all'accademia.",
-        "join_failed": "Non è stato possibile unirsi all'accademia. Riprova."
+        "join_failed": "Non è stato possibile unirsi all'accademia. Riprova.",
+        "refresh_failed": "Ti sei unito, ma questa pagina non è stata aggiornata. Ricarica per vedere la tua nuova accademia."
       },
       "invitation_team": "Sei stato invitato a {orgName} come {role}.",
       "verify_to_accept": "Verifica il tuo indirizzo email per accettare questo invito.",

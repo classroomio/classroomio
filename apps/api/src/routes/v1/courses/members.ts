@@ -90,7 +90,7 @@ export const v1CourseMembersRouter = new Hono()
         404: { description: 'Course not found, or the profileId or email is not in your organization' },
         409: {
           description:
-            'COURSE_MEMBER_EXISTS when already in the course; MEMBER_NOT_JOINED for a pending member, who needs enroll_course_student'
+            'COURSE_MEMBER_EXISTS when already in the course; MEMBER_NOT_JOINED for a pending member: use POST /courses/{courseId}/enrollments'
         }
       }
     }),

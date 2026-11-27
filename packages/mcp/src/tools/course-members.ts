@@ -100,7 +100,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'enroll_course_student',
-    `Enroll a student by email — the idempotent grant for anyone, joined or pending — and change nothing on repeat calls; ${COURSE_TEAM_RULE}. Anyone who has not joined gets the course on their single organization invite (a new email becomes a pending member and uses a student seat) and joins the course when they accept. Fails with 409 for an admin, tutor or archived member email; new invites count toward the create_course_invite hourly limit.`,
+    `Enroll a student by email — the idempotent grant for anyone, joined or pending; a repeat changes nothing except sending an invite email that was never sent; ${COURSE_TEAM_RULE}. Anyone who has not joined gets the course on their single organization invite (a new email becomes a pending member and uses a student seat) and joins the course when they accept. Fails with 409 for an admin, tutor or archived member email; new invites count toward the create_course_invite hourly limit.`,
     enrollCourseStudentShape,
     WRITE,
     async (args) => {
@@ -188,7 +188,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'create_course_invite',
-    `Invite one or more people to a course by email or CSV; ${COURSE_TEAM_RULE}. Each person who has not joined gets the course added to their single organization invite (a new email becomes a pending member and uses a student seat) and people who already joined are enrolled; recipients reports a status per email. Requires recipientEmails or recipientCsv and is limited to 60 requests per hour per key creator per course (shared with enroll_course_student). Re-inviting sends a fresh link; older links still open the newest invite.`,
+    `Invite one or more people to a course by email or CSV; ${COURSE_TEAM_RULE}. Each person who has not joined gets the course added to their single organization invite (a new email becomes a pending member and uses a student seat); students who already joined are enrolled, and admins and tutors come back as is_staff; recipients reports a status per email. Requires recipientEmails or recipientCsv and is limited to 60 requests per hour per key creator per course (shared with enroll_course_student). Re-inviting sends a fresh link; older links still open the newest invite.`,
     createCourseInviteShape,
     WRITE,
     async (args) => {

@@ -133,7 +133,7 @@
 
   <PendingInvitationsModal
     onJoinedOrg={async () => {
-      await appInitApi.refreshAfterJoin();
+      await appInitApi.refreshAfterJoin(appOrgParams);
     }}
   />
 

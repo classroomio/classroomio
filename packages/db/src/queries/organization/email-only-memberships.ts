@@ -36,8 +36,8 @@ function orgFilter(column: ReturnType<typeof sql.raw>, orgId: string | null) {
 }
 
 /**
- * Active joined organization members that still have email-only course, cohort or program rows in their own
- * organization, ordered by (organization, member id) and paged by keyset after `after`.
+ * Active joined organization members with a verified email that still have email-only course, cohort or program
+ * rows in their own organization, ordered by (organization, member id) and paged by keyset after `after`.
  */
 export async function listEmailOnlyClaimCandidates(
   options: { orgId: string | null; after: { organizationId: string; memberId: number } | null; limit: number },
@@ -54,6 +54,7 @@ export async function listEmailOnlyClaimCandidates(
       WHERE om.profile_id IS NOT NULL
         AND om.email IS NOT NULL
         AND om.status = 'ACTIVE'
+        AND EXISTS (SELECT 1 FROM profile p WHERE p.id = om.profile_id AND p.is_email_verified = true)
         AND (om.organization_id, om.id) > (${afterOrg}::uuid, ${afterId}::bigint)
         ${orgFilter(sql.raw('om.organization_id'), options.orgId)}
         AND EXISTS (
@@ -79,8 +80,39 @@ export async function listEmailOnlyClaimCandidates(
 }
 
 /**
- * Email-only course, cohort and program rows, split into claimable (an active joined member has that email in the
- * same organization) and pending (nobody with that email has joined yet).
+ * Locks a claim candidate's organization member row and reports whether it is still the same active joined member
+ * (same profile and email, email still verified). Call it inside the claim's transaction so an archival that commits first is seen and one
+ * that starts later waits for the claim.
+ */
+export async function lockActiveEmailOnlyClaimCandidate(
+  candidate: TEmailOnlyClaimCandidate,
+  dbClient: DbOrTxClient
+): Promise<boolean> {
+  try {
+    const rows = await dbClient.execute(sql`
+      SELECT om.id
+      FROM organizationmember om
+      WHERE om.id = ${candidate.memberId}
+        AND om.organization_id = ${candidate.organizationId}
+        AND om.profile_id = ${candidate.profileId}
+        AND om.status = 'ACTIVE'
+        AND lower(trim(om.email)) = ${candidate.email}
+        AND EXISTS (SELECT 1 FROM profile p WHERE p.id = om.profile_id AND p.is_email_verified = true)
+      FOR UPDATE OF om
+    `);
+
+    return rows.length > 0;
+  } catch (error) {
+    console.error('lockActiveEmailOnlyClaimCandidate error:', error);
+    throw new Error(
+      `Failed to lock the email-only claim candidate: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Email-only course, cohort and program rows, split into claimable (an active joined member with a verified email
+ * has that email in the same organization) and pending (nobody with that verified email has joined yet).
  */
 export async function countEmailOnlyMemberships(
   orgId: string | null,
@@ -99,6 +131,7 @@ export async function countEmailOnlyMemberships(
           AND lower(trim(om.email)) = email_only.email
           AND om.profile_id IS NOT NULL
           AND om.status = 'ACTIVE'
+          AND EXISTS (SELECT 1 FROM profile p WHERE p.id = om.profile_id AND p.is_email_verified = true)
         LIMIT 1
       ) AS joined ON true
       WHERE true ${orgFilter(sql.raw('email_only.organization_id'), orgId)}

@@ -9,8 +9,17 @@ export const IMPORT_ROW_STATUS_LABEL: Record<TAudienceImportRowStatus, string> =
   duplicate_in_file: 'audience.import.status.duplicate_in_file',
   is_staff: 'audience.import.status.is_staff',
   over_seat_limit: 'audience.import.status.over_seat_limit',
-  missing_email: 'audience.import.status.missing_email'
+  missing_email: 'audience.import.status.missing_email',
+  archived: 'audience.import.status.archived',
+  already_invited: 'audience.import.status.already_invited'
 };
+
+const ALREADY_LISTED_STATUSES: ReadonlySet<TAudienceImportRowStatus> = new Set([
+  'already_member',
+  'invite_resent',
+  'duplicate_in_file',
+  'already_invited'
+]);
 
 export function summariseImportRows(rows: Pick<ParsedImportRow, 'status'>[]) {
   let ready = 0;
@@ -19,8 +28,7 @@ export function summariseImportRows(rows: Pick<ParsedImportRow, 'status'>[]) {
 
   for (const row of rows) {
     if (row.status === 'ready') ready += 1;
-    else if (row.status === 'already_member' || row.status === 'invite_resent' || row.status === 'duplicate_in_file')
-      alreadyListed += 1;
+    else if (ALREADY_LISTED_STATUSES.has(row.status)) alreadyListed += 1;
     else invalid += 1;
   }
 

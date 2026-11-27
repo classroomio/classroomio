@@ -1,9 +1,9 @@
 /**
- * Links email-only course, cohort and program rows to the active joined organization member with the same email,
+ * Links email-only course, cohort and program rows to the active joined organization member with the same verified email,
  * using the same claim step as every sign-in and accept path (`claimEmailOnlyMemberships`): duplicates the profile
  * already has are dropped, claimed cohort students are enrolled in the cohort's courses, and compliance records are
- * created for the claimed and cohort courses through the shared compliance service. Invitations are not fulfilled
- * (nothing here proves identity) and no webhooks or emails are sent.
+ * created for the claimed and cohort courses through the shared compliance service. Members whose email is not
+ * verified are left alone, like the sign-in paths. Invitations are not fulfilled and no webhooks or emails are sent.
  *
  * Only members that still have claimable rows are visited. Idempotent: a second run finds nothing to do.
  *
@@ -18,6 +18,7 @@ import { db } from '@cio/db/drizzle';
 import {
   countEmailOnlyMemberships,
   listEmailOnlyClaimCandidates,
+  lockActiveEmailOnlyClaimCandidate,
   type TEmailOnlyClaimCandidate,
   type TEmailOnlyMembershipCounts
 } from '@cio/db/queries/organization';
@@ -44,17 +45,21 @@ function printCounts(label: string, counts: TEmailOnlyMembershipCounts) {
   console.log(`    pending:   groups=${pending.groups} cohorts=${pending.cohorts} programs=${pending.programs}`);
 }
 
+/** Claims one candidate's rows, or returns null when the member was archived or relinked since the batch was read. */
 async function claimForCandidate(candidate: TEmailOnlyClaimCandidate) {
-  return db.transaction((tx) =>
-    claimEmailOnlyMemberships(
+  return db.transaction(async (tx) => {
+    const stillEligible = await lockActiveEmailOnlyClaimCandidate(candidate, tx);
+    if (!stillEligible) return null;
+
+    return claimEmailOnlyMemberships(
       tx,
       { orgId: candidate.organizationId, email: candidate.email, profileId: candidate.profileId },
       {
         ensureComplianceEnrollmentRecords: (courseIds, profileIds, dbClient) =>
           ensureComplianceEnrollmentRecordsForProfiles(courseIds, profileIds, dbClient ?? tx)
       }
-    )
-  );
+    );
+  });
 }
 
 async function main() {
@@ -68,7 +73,14 @@ async function main() {
     return;
   }
 
-  const totals = { members: 0, claimed: 0, removedDuplicates: 0, cohortCourseEnrolments: 0, complianceRecords: 0 };
+  const totals = {
+    members: 0,
+    skipped: 0,
+    claimed: 0,
+    removedDuplicates: 0,
+    cohortCourseEnrolments: 0,
+    complianceRecords: 0
+  };
   let after: { organizationId: string; memberId: number } | null = null;
   let lastProgress = Date.now();
 
@@ -77,7 +89,13 @@ async function main() {
     if (batch.length === 0) break;
 
     for (const candidate of batch) {
-      const { claimed, enrollment } = await claimForCandidate(candidate);
+      const result = await claimForCandidate(candidate);
+      if (!result) {
+        totals.skipped += 1;
+        continue;
+      }
+
+      const { claimed, enrollment } = result;
       totals.members += 1;
       totals.claimed += claimed.groups + claimed.cohorts + claimed.programs;
       totals.removedDuplicates += claimed.removedDuplicates;
@@ -95,7 +113,8 @@ async function main() {
   }
 
   console.log(
-    `Done: ${totals.members} member(s), ${totals.claimed} row(s) linked, ${totals.removedDuplicates} duplicate(s) ` +
+    `Done: ${totals.members} member(s), ${totals.skipped} skipped (no longer active), ${totals.claimed} row(s) ` +
+      `linked, ${totals.removedDuplicates} duplicate(s) ` +
       `dropped, ${totals.cohortCourseEnrolments} cohort course enrolment(s), ${totals.complianceRecords} compliance ` +
       'record(s) created.'
   );

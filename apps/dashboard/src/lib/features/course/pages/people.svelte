@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { SvelteSet } from 'svelte/reactivity';
   import { page } from '$app/state';
   import { afterNavigate, goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
@@ -194,14 +195,21 @@
     }
   }
 
+  const resendingEmails = new SvelteSet<string>();
+
   async function resendInvitation(person: CourseMember) {
     const courseId = courseApi.course?.id;
     const email = getEmail(person);
-    if (!courseId || !email) return;
+    if (!courseId || !email || resendingEmails.has(email)) return;
 
-    const resent = await peopleApi.resendCourseInvite(courseId, email);
-    if (resent) {
-      await loadMembers(courseId, query);
+    resendingEmails.add(email);
+    try {
+      const resent = await peopleApi.resendCourseInvite(courseId, email);
+      if (resent) {
+        await loadMembers(courseId, query);
+      }
+    } finally {
+      resendingEmails.delete(email);
     }
   }
 
@@ -211,9 +219,15 @@
     if (!courseId || !inviteId) return;
 
     const revoked = await peopleApi.revokePersonInvitation(courseId, inviteId);
-    if (revoked) {
-      await loadMembers(courseId, query);
+    if (!revoked) return;
+
+    const emptiedLastPage = memberRows.length === 1 && query.page > 1;
+    if (emptiedLastPage) {
+      await navigatePeople({ ...query, page: query.page - 1, search: search.takePending() || undefined });
+      return;
     }
+
+    await loadMembers(courseId, query);
   }
 
   function getInvitedStatus(person: CourseMember) {
@@ -568,6 +582,7 @@
                             </DropdownMenu.Item>
                           {:else}
                             <DropdownMenu.Item
+                              disabled={resendingEmails.has(getEmail(person) ?? '')}
                               onclick={(event) => {
                                 event.stopPropagation();
                                 void resendInvitation(person);
@@ -576,7 +591,7 @@
                               <MailOpenIcon class="mr-2 size-4" />
                               {$t('audience.invite.resend')}
                             </DropdownMenu.Item>
-                            {#if person.invitation?.kind === 'org_invite' && canRevokeAudienceInvite(getInvitedStatus(person))}
+                            {#if person.invitation?.kind === 'org_invite' && person.invitation.courseIds.includes(courseApi.course?.id ?? '') && canRevokeAudienceInvite(getInvitedStatus(person))}
                               <DropdownMenu.Item
                                 onclick={(event) => {
                                   event.stopPropagation();

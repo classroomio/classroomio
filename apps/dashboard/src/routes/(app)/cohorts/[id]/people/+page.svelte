@@ -21,6 +21,7 @@
   import TrashIcon from '@lucide/svelte/icons/trash';
   import UserIcon from '@lucide/svelte/icons/user';
   import { onDestroy, untrack } from 'svelte';
+  import { SvelteSet } from 'svelte/reactivity';
   import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { shortenName } from '$lib/utils/functions/string';
@@ -235,13 +236,20 @@
     return person.invitation?.status ?? 'pending';
   }
 
+  const resendingEmails = new SvelteSet<string>();
+
   async function resendInvite(person: CohortPerson) {
     const email = getEmail(person);
-    if (!email) return;
+    if (!email || resendingEmails.has(email)) return;
 
-    const result = await cohortApi.resendInvite(data.cohortId, email);
-    if (result?.success) {
-      await reloadPeople();
+    resendingEmails.add(email);
+    try {
+      const result = await cohortApi.resendInvite(data.cohortId, email);
+      if (result?.success) {
+        await reloadPeople();
+      }
+    } finally {
+      resendingEmails.delete(email);
     }
   }
 
@@ -250,9 +258,15 @@
     if (!email) return;
 
     const result = await cohortApi.revokeInvite(data.cohortId, email);
-    if (result?.success) {
-      await reloadPeople();
+    if (!result?.success) return;
+
+    const emptiedLastPage = peopleRows.length <= 1 && query.page > 1;
+    if (emptiedLastPage) {
+      await navigatePeople({ ...query, page: query.page - 1, search: search.takePending() || undefined });
+      return;
     }
+
+    await reloadPeople();
   }
 
   function openInviteModal() {
@@ -455,7 +469,10 @@
                           </DropdownMenu.Trigger>
                           <DropdownMenu.Content align="end">
                             {#if !person.profileId}
-                              <DropdownMenu.Item onclick={() => void resendInvite(person)}>
+                              <DropdownMenu.Item
+                                disabled={resendingEmails.has(getEmail(person))}
+                                onclick={() => void resendInvite(person)}
+                              >
                                 <MailOpenIcon class="mr-2 size-4" />
                                 {$t('cohorts.people.resend_invite')}
                               </DropdownMenu.Item>

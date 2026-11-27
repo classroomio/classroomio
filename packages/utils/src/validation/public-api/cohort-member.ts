@@ -43,7 +43,7 @@ export const ZPublicApiAddCohortMembers = z.object({
           .email()
           .optional()
           .describe(
-            'A student who already joined your organization is added directly; anyone else is sent an organization invite that carries this cohort.'
+            'A joined student is added directly; one who has not joined is emailed an organization invite carrying this cohort. Staff emails fail with STAFF_CANNOT_ENROLL.'
           ),
         name: z.string().optional(),
         roleId: ZPublicApiCohortMemberRole
@@ -61,7 +61,7 @@ export const ZPublicApiAddCohortMembers = z.object({
       { message: 'Each profileId or email may appear only once per request' }
     )
     .describe(
-      'People to add by profileId or email, each once. No invite email is sent; use POST /cohorts/{cohortId}/invite for that.'
+      'People to add by profileId or email, each once. Students who have not joined are emailed an organization invite; tutors are added directly.'
     )
 });
 export type TPublicApiAddCohortMembers = z.infer<typeof ZPublicApiAddCohortMembers>;

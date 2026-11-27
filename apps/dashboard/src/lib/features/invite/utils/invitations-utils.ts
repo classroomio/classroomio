@@ -1,4 +1,4 @@
-import type { PendingInvitationGroup } from './types';
+import type { JoinedCourseLink, PendingInvitationGroup } from './types';
 
 export type InvitationJoinTarget = { kind: 'org'; inviteId: string } | { kind: 'course'; inviteId: string } | null;
 
@@ -19,11 +19,6 @@ export function getJoinTarget(group: PendingInvitationGroup): InvitationJoinTarg
 
   return null;
 }
-
-export type JoinedCourseLink = {
-  id: string;
-  title: string | null;
-};
 
 type FulfilledSummary = {
   courses?: { id: string; title: string | null }[] | null;

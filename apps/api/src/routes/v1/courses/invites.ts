@@ -88,7 +88,7 @@ export const v1CourseInvitesRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Invite people to a course by email or CSV. Joined members are enrolled; others get the course on their organization invite; ${COURSE_TEAM_RULE}.`,
+      description: `Invite by email or CSV: joined students are enrolled, staff come back as is_staff, others get the course on their organization invite; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Invites'],
       responses: {
         201: jsonResponse('Course invite created successfully', itemResponse(ZPublicApiCreateCourseInviteResponse)),

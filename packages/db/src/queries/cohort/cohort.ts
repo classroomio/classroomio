@@ -662,6 +662,9 @@ export async function getCohortMemberRole(cohortId: string, profileId: string): 
   }
 }
 
+/**
+ * Whether the profile is an active admin of the cohort's organization; archived or deactivated admins are not.
+ */
 export async function isOrgAdminByCohortId(cohortId: string, profileId: string): Promise<boolean> {
   try {
     const result = await db
@@ -672,7 +675,8 @@ export async function isOrgAdminByCohortId(cohortId: string, profileId: string):
         and(
           eq(schema.organizationmember.organizationId, schema.cohort.organizationId),
           eq(schema.organizationmember.profileId, profileId),
-          eq(schema.organizationmember.roleId, ROLE.ADMIN)
+          eq(schema.organizationmember.roleId, ROLE.ADMIN),
+          eq(schema.organizationmember.status, 'ACTIVE')
         )
       )
       .where(eq(schema.cohort.id, cohortId))
@@ -717,19 +721,42 @@ export async function addCohortMember(data: TNewCohortMember, dbClient: DbOrTxCl
 
 /**
  * Inserts a cohort member if absent, relying on the unique constraint rather than a
- * read-then-write. Returns null when the membership already existed.
+ * read-then-write. An email-only row for the same email is linked instead, given the requested role, and returned as
+ * the new membership.
+ * Returns null only when the membership already existed before this call.
  */
 export async function insertCohortMemberIfAbsent(
   data: TNewCohortMember,
   dbClient: DbOrTxClient = db
 ): Promise<TCohortMember | null> {
   try {
-    if (data.profileId && hasCohortEmail(data.email)) {
-      await claimEmailOnlyCohortMembersForCohorts(
-        [data.cohortId],
-        [{ profileId: data.profileId, email: data.email }],
-        dbClient
-      );
+    const claim =
+      data.profileId && hasCohortEmail(data.email)
+        ? await claimEmailOnlyCohortMembersForCohorts(
+            [data.cohortId],
+            [{ profileId: data.profileId, email: data.email }],
+            dbClient
+          )
+        : null;
+
+    if (claim && claim.claimed > 0 && data.profileId) {
+      const [linked] = await dbClient
+        .select()
+        .from(schema.cohortMember)
+        .where(and(eq(schema.cohortMember.cohortId, data.cohortId), eq(schema.cohortMember.profileId, data.profileId)))
+        .limit(1);
+      const keepsRole = !linked || data.roleId === undefined || Number(linked.roleId) === Number(data.roleId);
+      if (linked && keepsRole) return linked;
+
+      if (linked) {
+        const [relinked] = await dbClient
+          .update(schema.cohortMember)
+          .set({ roleId: data.roleId })
+          .where(eq(schema.cohortMember.id, linked.id))
+          .returning();
+
+        return relinked ?? linked;
+      }
     }
 
     const [member] = await dbClient
@@ -990,6 +1017,7 @@ export async function getPaginatedInvitedCohortPeople(
             AND newer.is_revoked = false
             AND newer.accepted_at IS NULL
             AND newer.created_at > oi.created_at
+            AND (newer.metadata->'cohortIds') ? ${cohortId}
         )
       WHERE co.id = ${cohortId}
         AND om.profile_id IS NULL

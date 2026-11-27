@@ -240,7 +240,7 @@ A student is invited to a course: a course is added to their organization invite
 
 A student accepts an email invite or joins through a course invite link, and enrolls.
 
-`inviteId` is set when an email invite is accepted, and `inviteLinkId` is set when someone joins through a course invite link. Exactly one of them is non-null. The event also fires once for each course on an organization invite when that invite is accepted, including when SSO or token sign-in, joining the academy, self-enrolling or a reusable invite link fulfils it automatically. `inviteId` is then the organization invite id, and `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount` and `allowedDomains` are `null`.
+`inviteId` is set when an email invite is accepted, and `inviteLinkId` is set when someone joins through a course invite link. Exactly one of them is non-null. The event also fires once for each course on an organization invite when that invite is accepted, including when SSO or token sign-in, joining the academy, self-enrolling or a reusable invite link fulfils it automatically. `inviteId` is then the organization invite id, and `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount` and `allowedDomains` are `null`. Those paths fulfil invites only when they prove the person owns the email: a verified address, a sign-in through the organization's own SSO provider, or a signed token.
 
 ```json
 {
@@ -287,7 +287,7 @@ A student accepts an email invite or joins through a course invite link, and enr
 
 #### `course.invite.revoked`
 
-A student invite is revoked. It also fires when the course is removed from a student's organization invite, from the course **People** page or `POST /public-api/v1/courses/{id}/invites/{inviteId}/revoke` with an organization invite id. `inviteId` is then the replacement organization invite id when the student keeps other access, or the revoked invite's id when nothing is left on it.
+A student invite is revoked. It also fires when the course is removed from a student's organization invite, from the course **People** page or `POST /public-api/v1/courses/{id}/invites/{inviteId}/revoke` with an organization invite id. `inviteId` is then the organization invite that carried the course. When the student keeps other access, that invite is replaced and the replacement fires `organization.invite.created`.
 
 ```json
 {

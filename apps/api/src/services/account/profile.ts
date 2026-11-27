@@ -80,48 +80,50 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
     const isTeamMember = Object.values(orgRoles).some((roleId) => roleId === ROLE.ADMIN || roleId === ROLE.TUTOR);
 
     if (!isTeamMember) {
-      const { ensured: membershipEnsured, createdMember } = await ensureSelfHostedStudentMembership({
-        profileId: userId,
-        email: profile.email
+      const normalizedEmail = profile.email?.toLowerCase().trim() ?? '';
+      const identityProven = profile.isEmailVerified === true;
+      const { membership, bindResult } = await db.transaction(async (tx) => {
+        const ensuredMembership = await ensureSelfHostedStudentMembership(
+          { profileId: userId, email: profile.email },
+          tx
+        );
+        const orgId = ensuredMembership.organizationId;
+        if (!orgId || !normalizedEmail || !identityProven) {
+          return { membership: ensuredMembership, bindResult: null };
+        }
+
+        const binding = await bindProfileInOrg(tx, {
+          orgId,
+          profileId: userId,
+          email: normalizedEmail,
+          trigger: 'self-hosted',
+          identityProven,
+          roleForNewMember: ROLE.STUDENT
+        });
+
+        return { membership: ensuredMembership, bindResult: binding };
       });
 
-      if (createdMember) {
+      if (membership.createdMember) {
         await emitOrganizationMemberWebhookEvent(
           'organization.member.added',
-          createdMember.organizationId,
-          createdMember,
+          membership.createdMember.organizationId,
+          membership.createdMember,
           userId
         );
       }
 
-      if (membershipEnsured) {
-        organizations = await getOrganizationByProfileId(userId);
-      }
-
-      const selfHostedOrgId = createdMember?.organizationId ?? organizations[0]?.id;
-      if (membershipEnsured && selfHostedOrgId && profile.email) {
-        const normalizedEmail = profile.email.toLowerCase().trim();
-        const bindResult = await db.transaction(async (tx) =>
-          bindProfileInOrg(tx, {
-            orgId: selfHostedOrgId,
-            profileId: userId,
-            email: normalizedEmail,
-            trigger: 'self-hosted',
-            identityProven: profile.isEmailVerified === true,
-            roleForNewMember: ROLE.STUDENT
-          })
-        );
-
+      if (bindResult && membership.organizationId) {
         await runBindingSideEffects(bindResult, {
-          orgId: selfHostedOrgId,
+          orgId: membership.organizationId,
           profileId: userId,
           email: normalizedEmail,
           trigger: 'self-hosted'
         });
+      }
 
-        if (bindResult.createdMember) {
-          organizations = await getOrganizationByProfileId(userId);
-        }
+      if (membership.ensured) {
+        organizations = await getOrganizationByProfileId(userId);
       }
     }
   }

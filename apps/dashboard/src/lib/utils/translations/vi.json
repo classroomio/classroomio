@@ -5126,7 +5126,8 @@
       "joined_title": "Xong! Bắt đầu học:",
       "messages": {
         "joined": "Bạn đã tham gia học viện.",
-        "join_failed": "Không thể tham gia học viện. Vui lòng thử lại."
+        "join_failed": "Không thể tham gia học viện. Vui lòng thử lại.",
+        "refresh_failed": "Bạn đã tham gia, nhưng trang này không thể cập nhật. Hãy tải lại để xem học viện mới của bạn."
       },
       "invitation_team": "Bạn đã được mời tham gia {orgName} với tư cách là {role}.",
       "verify_to_accept": "Xác minh địa chỉ email của bạn để chấp nhận lời mời này.",

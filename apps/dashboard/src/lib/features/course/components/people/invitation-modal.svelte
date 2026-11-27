@@ -15,6 +15,8 @@
   import {
     ASSIGN_OUTCOME_LABEL_KEYS,
     COURSE_INVITE_OUTCOME_LABEL_KEYS,
+    getCourseInviteOutcomeLabelKey,
+    getFailedDeliveryEmails,
     type InviteOutcomeRow
   } from '$features/course/components/people/invite-utils';
   import { orgApi } from '$features/org/api/org.svelte';
@@ -160,12 +162,10 @@
       return false;
     }
 
-    const failedEmails = new Set(invite.delivery.failures.map((failure) => failure.email.toLowerCase()));
+    const failedEmails = getFailedDeliveryEmails(invite.delivery);
     const recipientOutcomes = invite.recipients.map((recipient) => ({
       email: recipient.email,
-      labelKey: failedEmails.has(recipient.email.toLowerCase())
-        ? 'course.navItem.people.invite_modal.email_failed'
-        : (COURSE_INVITE_OUTCOME_LABEL_KEYS[recipient.status] ?? COURSE_INVITE_OUTCOME_LABEL_KEYS.invited)
+      labelKey: getCourseInviteOutcomeLabelKey(recipient, failedEmails)
     }));
     const duplicateOutcomes = invite.duplicatesSkipped.map((email) => ({
       email,

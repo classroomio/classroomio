@@ -5126,7 +5126,8 @@
       "joined_title": "Udało się! Zacznij się uczyć:",
       "messages": {
         "joined": "Dołączono do akademii.",
-        "join_failed": "Nie udało się dołączyć do akademii. Spróbuj ponownie."
+        "join_failed": "Nie udało się dołączyć do akademii. Spróbuj ponownie.",
+        "refresh_failed": "Dołączono, ale nie udało się odświeżyć tej strony. Załaduj ją ponownie, aby zobaczyć nową akademię."
       },
       "invitation_team": "Zostałeś zaproszony do organizacji {orgName} jako {role}.",
       "verify_to_accept": "Aby zaakceptować to zaproszenie, zweryfikuj swój adres e-mail.",

@@ -11,6 +11,7 @@ import type { TUser } from '@cio/db/types';
 import { authClient } from '$lib/utils/services/auth/client';
 import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
 import { pendingInvitationsApi } from '$features/invite/api/pending-invitations.svelte';
+import { snackbar } from '$features/ui/snackbar/store';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { activateLocale, handleLocaleChange } from '$lib/utils/functions/translations';
@@ -480,20 +481,30 @@ class AppInitApi extends BaseApi {
   }
 
   /**
-   * Refreshes the session and account after a join from the invitations modal.
-   * Joins no longer reload the page, but the session's org roles and the org
-   * list are stale until refetched.
+   * Refreshes the session and account after a join from the invitations modal, keeping the URL's tenant as the
+   * current org. Joins do not reload the page, so the session's org roles and the org list are stale until refetched.
+   * Returns false, after telling the user to reload, when the account could not be refetched.
    */
-  async refreshAfterJoin(): Promise<void> {
+  async refreshAfterJoin(params: AppSetupParams): Promise<boolean> {
     this.pendingOrgInvite = null;
 
-    await authClient.getSession({ query: { disableCookieCache: true } });
+    try {
+      await authClient.getSession({ query: { disableCookieCache: true } });
 
-    const response = await classroomio.account.$get();
-    const accountData = (await response.json()) as AccountResponse;
-    if (accountData?.success) {
+      const response = await classroomio.account.$get();
+      const accountData = (await response.json()) as AccountResponse;
+      if (!accountData?.success) {
+        snackbar.error('invite.invitations.messages.refresh_failed');
+        return false;
+      }
+
       this.data = accountData;
-      this.setupStores();
+      this.setupStores(params);
+      return true;
+    } catch (error) {
+      console.error('refreshAfterJoin error:', error);
+      snackbar.error('invite.invitations.messages.refresh_failed');
+      return false;
     }
   }
 

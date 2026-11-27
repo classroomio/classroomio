@@ -164,6 +164,17 @@ describe('acceptLinkInvite course-role reconciliation', () => {
     expect(callOrder).toEqual(['transaction:committed', 'reconcile:scheduled']);
   });
 
+  it.each([
+    [true, true],
+    [false, false],
+    [undefined, false]
+  ])('treats the identity as proven only for a verified email (emailVerified=%s)', async (emailVerified, proven) => {
+    await acceptLinkInvite('token-1', { ...USER, emailVerified } as never);
+
+    expect(bindProfileToOrgEmail).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(bindProfileToOrgEmail).mock.calls[0][1]).toMatchObject({ identityProven: proven });
+  });
+
   it('does not schedule reconciliation from inside the transaction', async () => {
     await acceptLinkInvite('token-1', USER as never);
 

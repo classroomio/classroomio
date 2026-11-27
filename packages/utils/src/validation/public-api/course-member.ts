@@ -37,7 +37,7 @@ export const ZPublicApiCourseMembersQuery = ZPublicApiPaginationQuery.extend({
     'Joined students only; tutors, admins and pending invites never match.'
   ),
   membership: CoursePeopleMembership.optional().describe(
-    'Omit to list joined members, then invited people. invited = the invite has not been accepted yet.'
+    'Omit for joined members, then invited people; a filter only joined members match lists joined only. invited = the invite has not been accepted yet.'
   ),
   enrolledWithin: CoursePeopleEnrolledWindow.optional().describe('Added to the course within the last N days.'),
   lastLoginBefore: CoursePeopleActivityWindow.optional().describe(

@@ -124,6 +124,43 @@ export async function revokeActiveOrganizationInvitesByEmails(
 }
 
 /**
+ * Revokes every unaccepted, unrevoked STUDENT invite for `(organization, email)`, expired ones included, matching the
+ * email case-insensitively like `listLiveStudentOrgInvitesForEmail`. Staff invites are left alone.
+ */
+export async function revokeOpenStudentOrgInvitesForEmail(
+  organizationId: string,
+  email: string,
+  revokedByProfileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
+  const normalized = email.trim().toLowerCase();
+  if (!organizationId || !normalized) return [];
+
+  try {
+    const revokedAt = new Date().toISOString();
+
+    return await dbClient
+      .update(schema.organizationInvite)
+      .set({ isRevoked: true, revokedByProfileId, revokedAt, updatedAt: revokedAt })
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          eq(sql`lower(${schema.organizationInvite.email})`, normalized),
+          eq(schema.organizationInvite.roleId, ROLE.STUDENT),
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt)
+        )
+      )
+      .returning();
+  } catch (error) {
+    console.error('revokeOpenStudentOrgInvitesForEmail error:', error);
+    throw new Error(
+      `Failed to revoke student organization invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Updates every unaccepted invite for this email to the given role.
  */
 export async function updateActiveOrganizationInviteRoleByEmail(
@@ -569,6 +606,10 @@ export async function selectOrganizationInviteWithOrgByInviteId(
   }
 }
 
+/**
+ * The organization member whose email matches case-insensitively; a row linked to a profile wins over an unlinked
+ * case variant, so the caller sees an email that already belongs to another account.
+ */
 export async function selectOrganizationMemberByOrgAndNormalizedEmail(
   dbClient: DbOrTxClient,
   organizationId: string,
@@ -584,6 +625,7 @@ export async function selectOrganizationMemberByOrgAndNormalizedEmail(
           eq(sql`lower(${schema.organizationmember.email})`, normalizedEmail.trim().toLowerCase())
         )
       )
+      .orderBy(sql`${schema.organizationmember.profileId} IS NULL`)
       .limit(1);
 
     return row ?? null;
@@ -655,7 +697,8 @@ export async function claimPendingOrganizationInvite(
         and(
           eq(schema.organizationInvite.id, inviteId),
           eq(schema.organizationInvite.isRevoked, false),
-          isNull(schema.organizationInvite.acceptedAt)
+          isNull(schema.organizationInvite.acceptedAt),
+          sql`(${schema.organizationInvite.expiresAt} IS NULL OR ${schema.organizationInvite.expiresAt} > clock_timestamp())`
         )
       )
       .returning({
@@ -833,17 +876,15 @@ export async function getLatestOrganizationInviteRowsByEmails(
 ): Promise<TOrganizationInvite[]> {
   if (normalizedEmails.length === 0) return [];
 
+  const emailKey = sql`lower(${schema.organizationInvite.email})`;
+  const lowerEmails = normalizedEmails.map((email) => email.trim().toLowerCase());
+
   try {
     return await dbClient
-      .selectDistinctOn([schema.organizationInvite.email])
+      .selectDistinctOn([emailKey])
       .from(schema.organizationInvite)
-      .where(
-        and(
-          eq(schema.organizationInvite.organizationId, organizationId),
-          inArray(schema.organizationInvite.email, normalizedEmails)
-        )
-      )
-      .orderBy(schema.organizationInvite.email, desc(schema.organizationInvite.createdAt));
+      .where(and(eq(schema.organizationInvite.organizationId, organizationId), inArray(emailKey, lowerEmails)))
+      .orderBy(emailKey, desc(schema.organizationInvite.createdAt));
   } catch (error) {
     console.error('getLatestOrganizationInviteRowsByEmails error:', error);
     throw new Error(
