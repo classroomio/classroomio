@@ -4675,7 +4675,7 @@
     "ai_credits": {
       "sub_title": "Tín dụng AI",
       "page_subtitle": "Theo dõi việc sử dụng trợ lý AI, mức tiêu thụ của nhóm và mua các gói AI credits.",
-      "cost_note": "Việc sử dụng tín dụng được tính theo chi phí mô hình. Gemini 3.1 Flash Lite tính 1 đơn vị tín dụng mỗi token. GPT-5.4 Mini và Kimi K2.6 tính gấp 4 lần mỗi token. Claude Sonnet 4.6 tính gấp 11 lần mỗi token, phản ánh chi phí API cao hơn.",
+      "cost_note": "Việc sử dụng tín dụng được tính theo chi phí mô hình. Kimi K2.6 tính 1 đơn vị tín dụng mỗi token. Gemini 3.8 Flash tính gấp 2,7 lần mỗi token. GPT-5.4 Mini tính gấp 4 lần mỗi token. Claude Sonnet 4.6 tính gấp 11 lần mỗi token, phản ánh chi phí API cao hơn.",
       "included": {
         "title": "Mức sử dụng được bao gồm",
         "subtitle": "AI credits hàng tháng có trong gói của bạn.",

@@ -29,8 +29,8 @@ export interface AgentModelDescriptor {
 export const AGENT_MODELS: Record<AgentModelId, AgentModelDescriptor> = {
   'gemini-3.1-flash-lite': {
     provider: 'google',
-    label: 'Gemini 3.1 Flash Lite',
-    backendModelId: 'gemini-3.1-flash-lite',
+    label: 'Gemini 3.8 Flash',
+    backendModelId: 'gemini-3.8-flash',
     isFree: true,
     costTier: 'low',
     contextWindow: 1_048_576

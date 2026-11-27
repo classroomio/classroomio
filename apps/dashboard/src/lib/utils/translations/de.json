@@ -4675,7 +4675,7 @@
     "ai_credits": {
       "sub_title": "KI-Credits",
       "page_subtitle": "Verfolgen Sie die Nutzung des AI-Assistenten, den Teamverbrauch und den Kauf von AI credit packs.",
-      "cost_note": "Die Credit-Nutzung wird nach Modellkosten gewichtet. Gemini 3.1 Flash Lite zählt als 1 Credit-Einheit pro Token. GPT-5.4 Mini und Kimi K2.6 zählen als 4× pro Token. Claude Sonnet 4.6 zählt als 11× pro Token, was die höheren API-Kosten widerspiegelt.",
+      "cost_note": "Die Credit-Nutzung wird nach Modellkosten gewichtet. Kimi K2.6 zählt als 1 Credit-Einheit pro Token. Gemini 3.8 Flash zählt als 2,7× pro Token. GPT-5.4 Mini zählt als 4× pro Token. Claude Sonnet 4.6 zählt als 11× pro Token, was die höheren API-Kosten widerspiegelt.",
       "included": {
         "title": "Ihr inbegriffener Verbrauch",
         "subtitle": "Monatliche AI credits in Ihrem Plan enthalten.",

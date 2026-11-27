@@ -13,9 +13,9 @@ export const ZAgentImageUrl = z
   .describe('https URL of the image, exactly as the teacher or a tool gave it.');
 
 export const ZAgentKeepImage = z
-  .literal(true)
+  .boolean()
   .optional()
-  .describe('Present when the item already shows an image you cannot read. Send it back to keep that image.');
+  .describe('True when the item already shows an image you cannot read. Send it back as true to keep that image.');
 
 export function isAgentImageUrl(url: string): boolean {
   return ZAgentImageUrl.safeParse(url).success;
@@ -24,7 +24,7 @@ export function isAgentImageUrl(url: string): boolean {
 /**
  * The assistant's view of a stored image URL: https URLs as they are, any other URL as `keepImage`.
  */
-export function toAgentImageUrl(url: string | undefined): { imageUrl?: string; keepImage?: true } {
+export function toAgentImageUrl(url: string | undefined): { imageUrl?: string; keepImage?: boolean } {
   if (!url) return {};
 
   return isAgentImageUrl(url) ? { imageUrl: url } : { keepImage: true };
@@ -34,7 +34,7 @@ export function toAgentImageUrl(url: string | undefined): { imageUrl?: string; k
  * The stored image URL for the assistant's input: a URL it sent, or the previous one when it sent `keepImage`.
  */
 export function fromAgentImageUrl(
-  input: { imageUrl?: string; keepImage?: true },
+  input: { imageUrl?: string; keepImage?: boolean },
   previousUrl: string | undefined
 ): { imageUrl?: string } {
   if (input.imageUrl) return { imageUrl: input.imageUrl };
