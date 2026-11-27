@@ -69,6 +69,7 @@ import type {
   TPublicApiConnectCustomDomain,
   TPublicApiSetCourseLessonTranslation,
   TPublicApiUpdateCourseContentLock,
+  TPublicApiUpdateCourseSettings,
   TPublicApiUpdateCourseLessonComment,
   TPublicApiUpdateCourseSection,
   TPublicApiCreateAsset,
@@ -249,6 +250,14 @@ export class ClassroomIoApiClient {
     );
 
     return { ...rest, structure: draft };
+  }
+
+  async getCourseSettings(courseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/settings`, { method: 'GET' });
+  }
+
+  async updateCourseSettings(courseId: string, payload: TPublicApiUpdateCourseSettings) {
+    return this.request(`/public-api/v1/courses/${courseId}/settings`, { method: 'PATCH', body: payload });
   }
 
   async updateCourseLandingPage(courseId: string, payload: TCourseLandingPageUpdate) {
@@ -838,7 +847,7 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/content/reorder`, { method: 'PUT', body: payload });
   }
 
-  async setCourseContentUnlocked(courseId: string, payload: TPublicApiUpdateCourseContentLock) {
+  async setCourseContentReleased(courseId: string, payload: TPublicApiUpdateCourseContentLock) {
     return this.request(`/public-api/v1/courses/${courseId}/content`, { method: 'PATCH', body: payload });
   }
 

@@ -125,6 +125,8 @@ export async function updatePublicApiLessonService(
       isUnlocked: payload.isUnlocked,
       public: payload.public,
       lessonAt: payload.lessonAt,
+      completionPolicy: payload.completionPolicy,
+      videoWatchThreshold: payload.videoWatchThreshold,
       ...(videos ? { videos } : {})
     },
     { actorProfileId: actorId, ...attribution }

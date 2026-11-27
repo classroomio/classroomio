@@ -8,6 +8,8 @@ export const COURSE_PROGRESSION_MODES = ['free', 'sequential'] as const;
 
 export type CourseProgressionMode = (typeof COURSE_PROGRESSION_MODES)[number];
 
+export const LESSON_COMPLETION_POLICIES = ['manual', 'video_watch', 'none'] as const;
+
 export type ProgressionLockReason = 'teacher_locked' | 'progression_blocked';
 
 type NavigableCourseContent<T extends { order?: number | null }> = {

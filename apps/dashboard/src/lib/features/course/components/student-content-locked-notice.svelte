@@ -5,19 +5,26 @@
   import { t } from '$lib/utils/functions/translations';
   import type { StudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import {
-    getStudentContentLockDescriptionKey,
+    getStudentContentLockDescription,
     getStudentContentLockTitleKey
   } from '$features/course/utils/content-lock-utils';
 
   interface Props {
     reason: StudentContentLockReason;
     contentType: typeof ContentType.Lesson | typeof ContentType.Exercise;
+    blockingItemTitle?: string | null;
   }
 
-  let { reason, contentType }: Props = $props();
+  let { reason, contentType, blockingItemTitle = null }: Props = $props();
 
   const titleKey = $derived(getStudentContentLockTitleKey(reason));
-  const descriptionKey = $derived(getStudentContentLockDescriptionKey(reason, contentType));
+  const description = $derived(getStudentContentLockDescription(reason, contentType, blockingItemTitle));
 </script>
 
-<Empty title={$t(titleKey)} description={$t(descriptionKey)} icon={LockIcon} variant="page" class="text-center" />
+<Empty
+  title={$t(titleKey)}
+  description={$t(description.key, description.values)}
+  icon={LockIcon}
+  variant="page"
+  class="text-center"
+/>

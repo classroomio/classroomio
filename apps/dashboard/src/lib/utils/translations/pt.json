@@ -360,8 +360,8 @@
         "successful_integration": "Integração bem-sucedida",
         "successful_deletion": "Integração excluída",
         "update_successful": "Atualização bem-sucedida",
-        "unlocked_all_content": "Todos os itens do curso desbloqueados",
-        "all_content_already_unlocked": "Todo o conteúdo já está desbloqueado",
+        "unlocked_all_content": "Todos os itens do curso foram liberados",
+        "all_content_already_unlocked": "Todo o conteúdo já está liberado",
         "content_grouping_enabled": "Agrupamento de conteúdo ativado",
         "content_grouping_disabled": "Agrupamento de conteúdo desativado",
         "link_generated": "Link do curso atualizado com sucesso",
@@ -964,8 +964,8 @@
         "content_grouping_title": "Agrupamento de conteúdo",
         "content_grouping_description": "Aulas e exercícios em grupo por seção na lista de conteúdo.",
         "progression_mode_title": "Progressão do aluno",
-        "progression_mode_free": "Livre — conteúdo desbloqueado é acessível",
-        "progression_mode_sequential": "Sequencial — concluir itens anteriores para desbloquear o próximo",
+        "progression_mode_free": "Livre — os alunos podem abrir qualquer item liberado",
+        "progression_mode_sequential": "Sequencial — os alunos concluem cada item obrigatório antes que o próximo seja aberto",
         "comments": {
           "title": "Comentários das aulas",
           "description": "Permita que os alunos vejam e adicionem comentários nas aulas deste curso. Os comentários ainda podem ser desativados em aulas individuais.",
@@ -1020,7 +1020,7 @@
         },
         "callout": {
           "legend": "Chamada pública do curso",
-          "description": "Mostrado na parte inferior de cada lição e no lugar dos itens bloqueados. Use-o para direcionar os alunos ao seu site ou a um curso pago.",
+          "description": "Mostrado na parte inferior de cada lição e no lugar dos itens que você ainda não liberou. Use-o para direcionar os alunos ao seu site ou a um curso pago.",
           "title_label": "Título",
           "title_placeholder": "Quer se aprofundar nisso?",
           "description_label": "Descrição",
@@ -1050,10 +1050,10 @@
         "content_card_title": "Conteúdo",
         "access_card_title": "Acesso",
         "locked_content": {
-          "title": "{count} itens do curso estão bloqueados",
-          "description": "Os alunos inscritos não poderão fazer aulas ou exercícios bloqueados até que você os desbloqueie.",
-          "description_live": "Aulas e exercícios bloqueados permanecem ocultos aos alunos até que você os desbloqueie – o que é útil se você liberar conteúdo semana após semana.",
-          "unlock_all": "Desbloquear tudo"
+          "title": "{count} itens do curso ainda não foram liberados",
+          "description": "Os alunos matriculados não podem abrir estas lições ou exercícios até que você os libere.",
+          "description_live": "Os alunos não podem abrir lições e exercícios não liberados até que você os libere — útil se você libera conteúdo semana a semana.",
+          "unlock_all": "Liberar todos"
         },
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
         "go_to_certificate_settings": "Vá para configurações de certificado",
@@ -1099,9 +1099,9 @@
         "fix": "Corrigir",
         "save_changes_to_fix_questions": "Salve suas alterações não salvas antes de prosseguir para a seção de correção de perguntas.",
         "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
-        "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou se devem completar os itens em ordem. A conclusão da exibição do vídeo rastreia apenas os vídeos enviados.",
+        "progression_mode_description": "Controle se os alunos podem abrir qualquer item liberado ou devem concluir os itens em ordem. A conclusão por visualização de vídeo só acompanha vídeos enviados.",
         "allow_markdown_export": "Permitir que os alunos copiem as páginas das lições como Markdown",
-        "allow_markdown_export_description": "Quando ativado, as páginas públicas das lições mostram um botão Copiar página que exporta o conteúdo da lição (excluindo vídeos) como Markdown. Isso também publica um URL público de Markdown para cada lição desbloqueada.",
+        "allow_markdown_export_description": "Quando ativado, as páginas públicas das lições mostram um botão Copiar página que exporta o conteúdo da lição (excluindo vídeos) como Markdown. Isso também publica um URL público de Markdown para cada lição liberada.",
         "live_session_reminders": {
           "legend": "Lembretes de sessão por e-mail",
           "description": "Escolha quando os alunos inscritos recebem um e-mail com o link de participação antes de cada sessão ao vivo.",
@@ -1720,7 +1720,7 @@
         "add_content_lesson_title_placeholder": "por exemplo, Introdução às variáveis",
         "content_menu": {
           "label": "Opções de conteúdo",
-          "unlock_all": "Desbloquear todo o conteúdo",
+          "unlock_all": "Liberar todo o conteúdo",
           "enable_grouping": "Ativar agrupamento de conteúdo",
           "disable_grouping": "Desativar agrupamento de conteúdo"
         },
@@ -2729,9 +2729,11 @@
           "lesson_title": "Título da lição",
           "course_section_title": "Título da seção",
           "click_to": "Clique para",
-          "lock": "Bloquear",
-          "unlock": "Desbloquear",
+          "lock": "Reter",
+          "unlock": "Liberar",
           "all": "Todos",
+          "hold_back_all": "Reter todos",
+          "release_all": "Liberar todos",
           "fullname": "nome completo",
           "save": "Salvar",
           "edit": "Editar",
@@ -2747,12 +2749,14 @@
           "activate": "Ativar",
           "cancel": "Cancelar"
         },
-        "content_locked_title": "Este conteúdo está bloqueado",
-        "content_locked_description": "Seu instrutor ainda não desbloqueou este conteúdo. Conclua o conteúdo anterior ou volte mais tarde.",
+        "content_locked_title": "Ainda não liberado",
+        "content_locked_description": "Seu instrutor ainda não liberou este conteúdo. Volte mais tarde.",
         "content_progression_locked_title": "Conclua o conteúdo anterior primeiro",
         "content_progression_locked_description": "Este conteúdo é desbloqueado depois de concluir o item obrigatório anterior do curso.",
         "content_progression_locked_description_lesson": "Esta lição é desbloqueada depois de concluir o item obrigatório anterior do curso.",
         "content_progression_locked_description_exercise": "Este exercício é desbloqueado depois de concluir o item obrigatório anterior do curso.",
+        "content_progression_locked_description_named_lesson": "Conclua “{title}” para desbloquear esta lição.",
+        "content_progression_locked_description_named_exercise": "Conclua “{title}” para desbloquear este exercício.",
         "completion_policy": {
           "label": "Regra de conclusão",
           "manual_label": "Manual",
@@ -2786,7 +2790,9 @@
           },
           "access": {
             "title": "Acesso",
-            "description": "Os alunos não poderão abrir uma lição bloqueada até que você a desbloqueie."
+            "description": "Os alunos veem esta lição no índice do curso, mas não podem abri-la até que você a libere.",
+            "released": "Liberado",
+            "not_released": "Ainda não liberado"
           }
         },
         "watch_progress": {
@@ -6545,6 +6551,10 @@
       "x": "X",
       "instagram": "Instagram",
       "instagram_copied": "Ligação copiada. Cole-a no Instagram."
+    },
+    "not_released": {
+      "title": "Ainda não liberado",
+      "description": "O criador ainda não liberou este conteúdo. Volte mais tarde."
     }
   },
   "account": {
@@ -7748,7 +7758,7 @@
       },
       "failed": "Não foi possível carregar os alunos",
       "cells_failed": "Não foi possível carregar as pontuações dos exercícios",
-      "attempts_unavailable": "Não foi possível verificar quais exercícios têm tentativas, então alguns exercícios bloqueados podem estar ocultos."
+      "attempts_unavailable": "Não foi possível verificar quais exercícios têm tentativas, então alguns exercícios não liberados podem estar ocultos."
     },
     "empty": {
       "failed": "Não foi possível carregar este gráfico",

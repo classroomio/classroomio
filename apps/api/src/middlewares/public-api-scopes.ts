@@ -15,7 +15,7 @@ export function isPublicApiIdentityPath(path: string): boolean {
   return IDENTITY_PATH.test(path);
 }
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
-const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
+const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content|settings)(?:\/|$)/;
 const COURSE_CLONE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/clone\/?$/;
 const COURSE_STRUCTURE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/structure\/?$/;
 const COURSE_PUBLISH_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:publish|unpublish)\/?$/;

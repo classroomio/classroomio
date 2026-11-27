@@ -360,8 +360,8 @@
         "successful_integration": "Intégration réussie",
         "successful_deletion": "Intégration supprimée",
         "update_successful": "Mise à jour réussie",
-        "unlocked_all_content": "Tous les éléments de cours débloqués",
-        "all_content_already_unlocked": "Tout le contenu est déjà déverrouillé",
+        "unlocked_all_content": "Plus aucun élément du cours n'est retenu",
+        "all_content_already_unlocked": "Aucun contenu n'est retenu",
         "content_grouping_enabled": "Regroupement de contenu activé",
         "content_grouping_disabled": "Regroupement de contenu désactivé",
         "link_generated": "Lien du cours mis à jour avec succès",
@@ -964,8 +964,8 @@
         "content_grouping_title": "Regroupement de contenu",
         "content_grouping_description": "Cours collectifs et exercices par section dans la liste des contenus.",
         "progression_mode_title": "Progression des étudiants",
-        "progression_mode_free": "Libre — le contenu débloqué est accessible",
-        "progression_mode_sequential": "Séquentiel — terminer les éléments précédents pour débloquer le suivant",
+        "progression_mode_free": "Libre — les élèves peuvent ouvrir n'importe quel élément disponible",
+        "progression_mode_sequential": "Séquentiel — les élèves terminent chaque élément obligatoire avant que le suivant ne s'ouvre",
         "comments": {
           "title": "Commentaires des leçons",
           "description": "Autorisez les étudiants à consulter et ajouter des commentaires dans les leçons de ce cours. Les commentaires peuvent toujours être désactivés pour chaque leçon.",
@@ -1020,7 +1020,7 @@
         },
         "callout": {
           "legend": "Appel du cours public",
-          "description": "Affiché au bas de chaque leçon et à la place des éléments verrouillés. Utilisez-le pour diriger les étudiants vers votre site ou vers un cours payant.",
+          "description": "Affiché au bas de chaque leçon et à la place des éléments que vous n'avez pas encore rendus disponibles. Utilisez-le pour diriger les étudiants vers votre site ou vers un cours payant.",
           "title_label": "Titre",
           "title_placeholder": "Vous voulez approfondir ce sujet ?",
           "description_label": "Descriptif",
@@ -1050,10 +1050,10 @@
         "content_card_title": "Contenu",
         "access_card_title": "Accès",
         "locked_content": {
-          "title": "{count} éléments de cours sont verrouillés",
-          "description": "Les étudiants inscrits ne pourront pas suivre de leçons ou d'exercices verrouillés tant que vous ne les aurez pas déverrouillés.",
-          "description_live": "Les leçons et les exercices verrouillés restent cachés aux étudiants jusqu'à ce que vous les déverrouilliez, ce qui est utile si vous publiez du contenu semaine après semaine.",
-          "unlock_all": "Débloquez tout"
+          "title": "{count} éléments de cours ne sont pas encore disponibles",
+          "description": "Les élèves inscrits ne peuvent pas ouvrir ces leçons ou exercices tant que vous ne les avez pas rendus disponibles.",
+          "description_live": "Les élèves ne peuvent pas ouvrir les leçons et exercices non disponibles tant que vous ne les avez pas rendus disponibles — pratique si vous diffusez le contenu semaine après semaine.",
+          "unlock_all": "Tout rendre disponible"
         },
         "certificate_deadline_required": "Définir d'abord la date limite du certificat",
         "go_to_certificate_settings": "Accédez aux paramètres du certificat",
@@ -1099,9 +1099,9 @@
         "fix": "Corriger",
         "save_changes_to_fix_questions": "Enregistrez vos modifications non enregistrées avant de corriger les questions.",
         "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication.",
-        "progression_mode_description": "Contrôlez si les élèves peuvent accéder à tout le contenu déverrouillé ou doivent terminer les éléments dans l'ordre. La fin du visionnage de vidéos ne suit que les vidéos téléversées.",
+        "progression_mode_description": "Choisissez si les élèves peuvent ouvrir n'importe quel élément disponible ou doivent terminer les éléments dans l'ordre. La complétion par visionnage ne suit que les vidéos téléversées.",
         "allow_markdown_export": "Autoriser les apprenants à copier les pages de leçon en Markdown",
-        "allow_markdown_export_description": "Lorsque cette option est activée, les pages de leçon publiques affichent un bouton Copier la page qui exporte le contenu de la leçon (hors vidéos) en Markdown. Cela publie également une URL Markdown publique pour chaque leçon déverrouillée.",
+        "allow_markdown_export_description": "Lorsque cette option est activée, les pages de leçon publiques affichent un bouton Copier la page qui exporte le contenu de la leçon (hors vidéos) en Markdown. Cela publie également une URL Markdown publique pour chaque leçon disponible.",
         "live_session_reminders": {
           "legend": "Rappels de session par e-mail",
           "description": "Choisissez quand les étudiants inscrits reçoivent un e-mail avec le lien de participation avant chaque session en direct.",
@@ -1720,7 +1720,7 @@
         "add_content_lesson_title_placeholder": "par exemple, Premiers pas avec les variables",
         "content_menu": {
           "label": "Options de contenu",
-          "unlock_all": "Déverrouiller tout le contenu",
+          "unlock_all": "Rendre tout le contenu disponible",
           "enable_grouping": "Activer le regroupement de contenu",
           "disable_grouping": "Désactiver le regroupement de contenu"
         },
@@ -2729,9 +2729,11 @@
           "lesson_title": "Titre de la leçon",
           "course_section_title": "Titre de la section",
           "click_to": "Cliquez pour",
-          "lock": "Verrouiller",
-          "unlock": "Déverrouiller",
+          "lock": "Retenir",
+          "unlock": "Rendre disponible",
           "all": "Tout",
+          "hold_back_all": "Tout retenir",
+          "release_all": "Tout rendre disponible",
           "fullname": "nom complet",
           "save": "Enregistrer",
           "edit": "Modifier",
@@ -2747,12 +2749,14 @@
           "activate": "Activer",
           "cancel": "Annuler"
         },
-        "content_locked_title": "Ce contenu est verrouillé",
-        "content_locked_description": "Votre instructeur n'a pas encore débloqué ce contenu. Complétez le contenu précédent ou revenez plus tard.",
+        "content_locked_title": "Pas encore disponible",
+        "content_locked_description": "Votre formateur n'a pas encore rendu ce contenu disponible. Revenez plus tard.",
         "content_progression_locked_title": "Terminez d'abord le contenu précédent",
         "content_progression_locked_description": "Ce contenu se débloque après avoir terminé l'élément requis précédent du cours.",
         "content_progression_locked_description_lesson": "Cette leçon se débloque après avoir terminé l'élément requis précédent du cours.",
         "content_progression_locked_description_exercise": "Cet exercice se débloque après avoir terminé l'élément requis précédent du cours.",
+        "content_progression_locked_description_named_lesson": "Terminez « {title} » pour déverrouiller cette leçon.",
+        "content_progression_locked_description_named_exercise": "Terminez « {title} » pour déverrouiller cet exercice.",
         "completion_policy": {
           "label": "Règle d'achèvement",
           "manual_label": "Manuel",
@@ -2786,7 +2790,9 @@
           },
           "access": {
             "title": "Accès",
-            "description": "Les élèves ne peuvent pas ouvrir une leçon verrouillée tant que vous ne l'avez pas déverrouillée."
+            "description": "Les élèves voient cette leçon dans le plan du cours, mais ne peuvent pas l'ouvrir tant que vous ne l'avez pas rendue disponible.",
+            "released": "Disponible",
+            "not_released": "Pas encore disponible"
           }
         },
         "watch_progress": {
@@ -6545,6 +6551,10 @@
       "x": "X",
       "instagram": "Instagram",
       "instagram_copied": "Lien copié. Collez-le dans Instagram."
+    },
+    "not_released": {
+      "title": "Pas encore disponible",
+      "description": "Le créateur n'a pas encore rendu ce contenu disponible. Revenez plus tard."
     }
   },
   "account": {
@@ -7748,7 +7758,7 @@
       },
       "failed": "Impossible de charger les étudiants",
       "cells_failed": "Impossible de charger les scores des exercices",
-      "attempts_unavailable": "Impossible de vérifier quels exercices ont des tentatives ; certains exercices verrouillés peuvent donc être masqués."
+      "attempts_unavailable": "Impossible de vérifier quels exercices ont des tentatives ; certains exercices non disponibles peuvent donc être masqués."
     },
     "empty": {
       "failed": "Ce graphique n'a pas pu être chargé.",

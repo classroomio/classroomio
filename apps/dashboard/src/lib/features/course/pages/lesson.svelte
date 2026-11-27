@@ -53,6 +53,7 @@
 
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
+  import { getProgressionBlockingItemTitle } from '$features/course/utils/content-lock-utils';
   import LiveSessionCard from '$features/course/components/lesson/live-session-card.svelte';
   import { liveSessionClock } from '$features/course/utils/live-session-phase';
   import { getLiveSessionPhase, type LiveSessionPhase } from '@cio/utils/functions/live-session';
@@ -119,6 +120,11 @@
       (lessonApi.lesson?.commentsEnabled ?? true)
   );
   const contentLockReason = $derived(getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson));
+  const progressionBlockingItemTitle = $derived(
+    contentLockReason === 'progression_locked'
+      ? getProgressionBlockingItemTitle(courseApi.course, lessonId, ContentType.Lesson)
+      : null
+  );
   const isStudentLessonStateReady = $derived.by(() => {
     if (!$isCourseLearnerView) {
       return true;
@@ -477,7 +483,11 @@
           <Spinner />
         </div>
       {:else if $isCourseLearnerView && contentLockReason}
-        <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
+        <StudentContentLockedNotice
+          reason={contentLockReason}
+          contentType={ContentType.Lesson}
+          blockingItemTitle={progressionBlockingItemTitle}
+        />
       {:else if lessonApi.lesson && lessonBlockList.isReady}
         <div class={['pt-5', showBlockViewComments ? 'pb-12' : 'min-h-screen pb-20']} in:fade={{ delay: 300 }} out:fade>
           <LessonBlocks {mode} {courseId} {lessonId} learnerView={$isCourseLearnerView} />

@@ -271,7 +271,10 @@ export const ZPublicApiUpdateCourseExercise = z
     sectionId: z.string().uuid().optional(),
     lessonId: z.string().uuid().optional(),
     order: z.number().int().min(1).optional(),
-    isUnlocked: z.boolean().optional(),
+    isUnlocked: z
+      .boolean()
+      .optional()
+      .describe('false holds the exercise back from every student until it is released.'),
     dueBy: z.string().datetime({ offset: true }).optional(),
     allowMultipleAttempts: z.boolean().optional(),
     slug: ZSlug.optional(),
@@ -290,8 +293,17 @@ export const ZPublicApiUpdateCourseExercise = z
         'Same rules as questions; a new section may take a UUID you choose, so new questions can reference it by exerciseSectionId.'
       ),
     sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional(),
-    completionPolicy: z.enum(['submitted', 'passed', 'none']).optional(),
-    passThreshold: z.number().int().min(0).max(100).optional()
+    completionPolicy: z
+      .enum(['submitted', 'passed', 'none'])
+      .optional()
+      .describe('submitted: any submission. passed: a graded score of at least passThreshold. none: never required.'),
+    passThreshold: z
+      .number()
+      .int()
+      .min(0)
+      .max(100)
+      .optional()
+      .describe('Percent a graded submission needs when completionPolicy is passed; 100 when unset.')
   })
   .refine((data) => Object.values(data).some((value) => value !== undefined), {
     message: 'Send at least one field to update'

@@ -21,6 +21,8 @@ export const MCP_TOOL_CREDIT_COST = {
   unpublish_course: 1,
   set_course_private: 1,
   get_course_structure: 0,
+  get_course_settings: 0,
+  update_course_settings: 1,
   list_course_exercises: 0,
   get_course_exercise: 0,
   reorder_course_content: 1,
@@ -122,7 +124,7 @@ export const MCP_TOOL_CREDIT_COST = {
   move_lesson_block: 1,
   remove_lesson_block: 1,
   duplicate_lesson_block: 1,
-  set_course_content_unlocked: 1,
+  set_course_content_released: 1,
   delete_course_content: 1,
   list_course_submissions: 0,
   get_course_submission: 0,
@@ -251,6 +253,7 @@ export const MCP_AUTOMATION_LIMITS_BY_PLAN: Record<string, McpAutomationLimits> 
 export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsageCategory {
   if (
     toolName === 'get_course_structure' ||
+    toolName === 'get_course_settings' ||
     toolName === 'list_org_courses' ||
     toolName === 'list_related_courses' ||
     toolName === 'list_course_exercises' ||

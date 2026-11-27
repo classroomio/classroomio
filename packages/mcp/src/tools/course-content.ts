@@ -19,7 +19,7 @@ const COURSE_TEAM_RULE = 'the API key creator must be a course tutor/admin or an
 const courseId = ZPublicApiCourseParam.shape.courseId;
 
 export const ZReorderCourseContentToolInput = ZPublicApiReorderCourseContent.safeExtend({ courseId });
-export const ZSetCourseContentUnlockedToolInput = ZPublicApiUpdateCourseContentLock.safeExtend({ courseId });
+export const ZSetCourseContentReleasedToolInput = ZPublicApiUpdateCourseContentLock.safeExtend({ courseId });
 export const ZDeleteCourseContentToolInput = ZPublicApiDeleteCourseContent.safeExtend({ courseId }).safeExtend(
   ZPublicApiForceQuery.shape
 );
@@ -39,13 +39,13 @@ export function registerCourseContentTools(server: McpServer, apiClient: Classro
   );
 
   server.tool(
-    'set_course_content_unlocked',
-    `Lock (isUnlocked false) or unlock (isUnlocked true) lessons and exercises for students; ${COURSE_TEAM_RULE}.`,
-    shape(ZSetCourseContentUnlockedToolInput),
+    'set_course_content_released',
+    `Release lessons and exercises to students (isUnlocked true) or hold them back from every student (isUnlocked false); ${COURSE_TEAM_RULE}. This is a manual hold, not a way to make students finish earlier items first: use update_course_settings with progressionMode sequential for that.`,
+    shape(ZSetCourseContentReleasedToolInput),
     UPDATE,
     async (args) => {
-      const { courseId, ...payload } = ZSetCourseContentUnlockedToolInput.parse(args);
-      return jsonContent(await apiClient.setCourseContentUnlocked(courseId, payload));
+      const { courseId, ...payload } = ZSetCourseContentReleasedToolInput.parse(args);
+      return jsonContent(await apiClient.setCourseContentReleased(courseId, payload));
     }
   );
 

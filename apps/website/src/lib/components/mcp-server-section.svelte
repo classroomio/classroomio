@@ -35,6 +35,7 @@
     'create_course',
     'publish_course',
     'update_course_landing_page',
+    'update_course_settings',
     'create_course_exercise',
     'grade_course_submission',
     'update_course_exercise',
