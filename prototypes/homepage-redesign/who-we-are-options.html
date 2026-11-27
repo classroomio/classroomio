@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Who We Are Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css?v=55">
+<link rel="stylesheet" href="who-we-are-options.css?v=1">
+</head>
+<body>
+
+<div class="topbar">Prototype for review · "Who we are" concepts, not the live site <a href="about.html#who-we-are">Back to About →</a></div>
+
+<header class="wo-intro rails">
+  <span class="tag-sm">Who we are concepts</span>
+  <h1 class="h2">Five ways to show one sentence.</h1>
+  <p>Every option uses only the line already on the About page. Same palette, 10px corners and no shadows.</p>
+  <nav class="wo-jump" aria-label="Jump to option"><a href="#opt1">1 · Photo sentence</a><a href="#opt2">2 · Venn</a><a href="#opt3">3 · Bento</a><a href="#opt4">4 · Flow</a><a href="#opt5">5 · Product collage</a></nav>
+</header>
+
+<!-- 1 · PHOTO SENTENCE -->
+<section class="wo-opt" id="opt1">
+  <p class="wo-label rails"><b>Option 1</b> Photo sentence: small photos sit inside the sentence itself</p>
+  <div class="wo-frame rails">
+    <div class="w1">
+      <span class="wo-eyebrow">Who we are</span>
+      <p class="w1-line">ClassroomIO is a <span class="w1-ph"><img src="images/team-founder.jpg" alt=""></span> <mark>B2B</mark> customer education platform <span class="w1-ph w1-ph-wide"><img src="images/workshop.jpg" alt=""></span> that helps companies use <mark>education</mark> to <span class="w1-chip"><svg viewBox="0 0 40 20" aria-hidden="true"><path d="M2 17 L12 12 L20 14 L30 6 L38 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> grow their business.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · VENN -->
+<section class="wo-opt" id="opt2">
+  <p class="wo-label rails"><b>Option 2</b> Venn: ClassroomIO is where education meets business growth</p>
+  <div class="wo-frame rails">
+    <div class="w2">
+      <div class="w2-venn" aria-hidden="true">
+        <div class="w2-c w2-a"><span>Customer<br>education</span></div>
+        <div class="w2-c w2-b"><span>Business<br>growth</span></div>
+        <div class="w2-mid"><img src="images/logo.svg" alt=""><b>ClassroomIO</b></div>
+      </div>
+      <div class="w2-txt">
+        <span class="wo-eyebrow">Who we are</span>
+        <h2 class="h2">Who we are</h2>
+        <p>ClassroomIO is a B2B customer education platform that helps companies use education to grow their business.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · BENTO -->
+<section class="wo-opt" id="opt3">
+  <p class="wo-label rails"><b>Option 3</b> Bento: a photo mosaic with the sentence as one of the tiles</p>
+  <div class="wo-frame rails">
+    <div class="w3">
+      <div class="w3-t w3-tall"><img src="images/team-founder.jpg" alt=""></div>
+      <div class="w3-t w3-text">
+        <span class="wo-eyebrow">Who we are</span>
+        <p>ClassroomIO is a B2B customer education platform that helps companies use education to grow their business.</p>
+      </div>
+      <div class="w3-t"><img src="images/workshop.jpg" alt=""></div>
+      <div class="w3-t w3-word w3-navy"><b>B2B</b></div>
+      <div class="w3-t"><img src="images/team-laptops.jpg" alt=""></div>
+      <div class="w3-t w3-word w3-blue"><b>Education</b><svg viewBox="0 0 40 20" aria-hidden="true"><path d="M2 17 L12 12 L20 14 L30 6 L38 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Growth</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · FLOW -->
+<section class="wo-opt" id="opt4">
+  <p class="wo-label rails"><b>Option 4</b> Flow: the sentence drawn as a chain, from company to education to growth</p>
+  <div class="wo-frame rails">
+    <div class="w4">
+      <div class="w4-head">
+        <span class="wo-eyebrow">Who we are</span>
+        <p>ClassroomIO is a B2B customer education platform that helps companies use education to grow their business.</p>
+      </div>
+      <div class="w4-row">
+        <div class="w4-card">
+          <span class="w4-k">B2B</span>
+          <div class="w4-vis w4-co" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <b>Companies</b>
+        </div>
+        <span class="w4-arrow" aria-hidden="true"></span>
+        <div class="w4-card w4-on">
+          <span class="w4-k">ClassroomIO</span>
+          <div class="w4-vis w4-course" aria-hidden="true"><img src="images/onboarding.jpg" alt=""><div><em></em><em></em><span><s></s></span></div></div>
+          <b>Customer education</b>
+        </div>
+        <span class="w4-arrow" aria-hidden="true"></span>
+        <div class="w4-card">
+          <span class="w4-k">Outcome</span>
+          <div class="w4-vis w4-chart" aria-hidden="true"><i style="--h:30%"></i><i style="--h:42%"></i><i style="--h:55%"></i><i style="--h:70%"></i><i style="--h:88%"></i></div>
+          <b>Business growth</b>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · PRODUCT COLLAGE -->
+<section class="wo-opt" id="opt5">
+  <p class="wo-label rails"><b>Option 5</b> Product collage: the sentence in the middle, pieces of the product around it</p>
+  <div class="wo-frame rails">
+    <div class="w5">
+      <div class="w5-ui w5-course" aria-hidden="true"><img src="images/onboarding.jpg" alt=""><b>Getting started</b><span><s></s></span></div>
+      <div class="w5-ui w5-ring" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="#16224f" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#cddcfc" stroke-width="4" stroke-dasharray="70 100" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg><b>Progress</b></div>
+      <div class="w5-ui w5-quiz" aria-hidden="true"><i>✓</i><b>Quiz passed</b></div>
+      <div class="w5-ui w5-cert" aria-hidden="true"><img src="images/logo.svg" alt=""><b>Certificate</b><em></em><em></em></div>
+      <div class="w5-ui w5-chart" aria-hidden="true"><svg viewBox="0 0 80 36"><path d="M2 32 L18 24 L32 27 L48 14 L62 16 L78 4" fill="none" stroke="#0542cc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Growth</b></div>
+      <div class="w5-txt">
+        <span class="wo-eyebrow">Who we are</span>
+        <p>ClassroomIO is a B2B customer education platform that helps companies use education to grow their business.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wo-end"></div>
+</body>
+</html>

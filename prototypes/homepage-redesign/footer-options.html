@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Footer Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css?v=55">
+<link rel="stylesheet" href="footer-options.css?v=2">
+</head>
+<body>
+
+<div class="topbar">Prototype for review · footer concepts, not the live site <a href="index.html">Back to homepage →</a></div>
+
+<header class="fo-intro rails">
+  <span class="tag-sm">Footer concepts</span>
+  <h1 class="h2">Five ways to end the page.</h1>
+  <p>Same links, same palette, same 10px corners and no shadows. Each one borrows a pattern the homepage already uses.</p>
+  <nav class="fo-jump" aria-label="Jump to option"><a href="#opt1">1 · Syllabus</a><a href="#opt2">2 · Bento</a><a href="#opt3">3 · Terminal</a><a href="#opt4">4 · Isometric</a><a href="#opt5">5 · Ask bar</a></nav>
+</header>
+
+<!-- 1 · SYLLABUS -->
+<section class="fo-opt" id="opt1">
+  <p class="fo-label rails"><b>Option 1</b> Syllabus: the footer is the course outline for the site</p>
+  <footer class="f1 rails grid-bg">
+    <div class="f1-top">
+      <div class="f1-head">
+        <span class="f1-kicker"><i></i>Page complete</span>
+        <h2>You reached the end. <span>Here&rsquo;s the full course.</span></h2>
+      </div>
+      <div class="f1-cert">
+        <div class="f1-cert-top"><img src="images/logo.svg" width="22" height="16" alt=""><span>Certificate of completion</span></div>
+        <p>You scrolled the whole ClassroomIO homepage. Now teach your customers the same way.</p>
+        <div class="f1-cert-cta"><a class="btn btn-blue" href="https://classroomio.com/signup">Start for free</a><a class="btn btn-line" href="https://cal.com/classroomio/demo">Book a demo</a></div>
+      </div>
+    </div>
+    <div class="f1-mods" data-render="syllabus"></div>
+    <div class="f1-bot">
+      <div class="f1-prog"><span>Page progress</span><i><b></b></i><em>100%</em></div>
+      <span>© 2026 ClassroomIO · AGPL-3.0 · Cloud or self-hosted</span>
+    </div>
+  </footer>
+</section>
+
+<!-- 2 · BENTO -->
+<section class="fo-opt" id="opt2">
+  <p class="fo-label rails"><b>Option 2</b> Bento: the footer reuses the feature grid&rsquo;s cards</p>
+  <footer class="f2 rails">
+    <div class="f2-grid">
+      <div class="f2-card f2-cta">
+        <img src="images/logo.svg" width="28" height="20" alt="" class="f2-logo">
+        <h2>Teach customers your product.</h2>
+        <div class="f2-btns"><a class="btn f2-btn-w" href="https://classroomio.com/signup">Start for free</a><a class="btn f2-btn-o" href="https://cal.com/classroomio/demo">Book a demo</a></div>
+      </div>
+      <div class="f2-card f2-open">
+        <span class="f2-lbl">Open by default</span>
+        <ul><li><b>AGPL-3.0</b>licence</li><li><b>Cloud</b>or self-hosted</li><li><b>Free</b>plan</li><li><b>MCP</b>Claude, Cursor</li></ul>
+        <a class="f2-gh" href="https://classroomio.com/github">View on GitHub <span>→</span></a>
+      </div>
+      <div class="f2-card f2-links" data-render="bento-links"></div>
+      <div class="f2-card f2-compare">
+        <span class="f2-lbl">Compare platforms</span>
+        <div class="f2-chips" data-render="chips"></div>
+      </div>
+    </div>
+    <div class="f2-word" aria-hidden="true">ClassroomIO</div>
+    <div class="f2-bot"><span>© 2026 ClassroomIO</span><span>The open source customer education platform.</span></div>
+  </footer>
+</section>
+
+<!-- 3 · TERMINAL -->
+<section class="fo-opt" id="opt3">
+  <p class="fo-label rails"><b>Option 3</b> Terminal: the MCP demo becomes the site map, and you can type in it</p>
+  <footer class="f3">
+    <div class="f3-in rails">
+      <div class="f3-side">
+        <a class="f3-brand" href="index.html"><img src="images/logo.svg" width="26" height="19" alt=""><span>ClassroomIO</span></a>
+        <h2>Every page,<br><span>one command away.</span></h2>
+        <p>Works with Claude, Cursor and any MCP client. So does the footer.</p>
+        <div class="f3-btns"><a class="btn btn-blue" href="https://classroomio.com/signup">Start for free</a><a class="btn f3-btn-o" href="https://cal.com/classroomio/demo">Book a demo</a></div>
+      </div>
+      <div class="f3-term">
+        <div class="f3-bar"><i></i><i></i><i></i><span>classroomio ~ sitemap</span></div>
+        <label class="f3-prompt"><span class="f3-ps">$ cio open</span><input id="f3-input" type="text" autocomplete="off" spellcheck="false" aria-label="Filter footer links" placeholder=""><span class="f3-ghost" id="f3-ghost"></span></label>
+        <div class="f3-out" data-render="terminal"></div>
+        <p class="f3-count" id="f3-count"></p>
+      </div>
+    </div>
+    <div class="f3-bot rails"><span>© 2026 ClassroomIO</span><span>AGPL-3.0 · Cloud or self-hosted</span></div>
+  </footer>
+</section>
+
+<!-- 4 · ISOMETRIC -->
+<section class="fo-opt" id="opt4">
+  <p class="fo-label rails"><b>Option 4</b> Isometric: links sit above the same tiled plane as the pricing hero and final CTA</p>
+  <footer class="f4 rails">
+    <div class="f4-top">
+      <div class="f4-brand"><a class="logo" href="index.html"><img src="images/logo.svg" width="26" height="19" alt=""><span>ClassroomIO</span></a><p>The open source customer education platform.</p><a class="btn btn-blue" href="https://classroomio.com/signup">Start for free</a></div>
+      <div class="f4-cols" data-render="columns"></div>
+    </div>
+    <div class="f4-stage" aria-hidden="true">
+      <div class="f4-plane">
+        <div class="f4-tiles" data-render="tiles"></div>
+        <div class="f4-word">ClassroomIO</div>
+      </div>
+    </div>
+    <div class="f4-bot"><span>© 2026 ClassroomIO</span><span>AGPL-3.0 · Cloud or self-hosted · Free plan</span></div>
+  </footer>
+</section>
+
+<!-- 5 · ASK BAR -->
+<section class="fo-opt" id="opt5">
+  <p class="fo-label rails"><b>Option 5</b> Ask bar: the hero&rsquo;s AI prompt comes back as a way to find any page</p>
+  <footer class="f5 rails">
+    <div class="f5-ask">
+      <h2>Where to next?</h2>
+      <div class="f5-bar">
+        <span class="f5-spark">✦</span>
+        <span class="f5-type" id="f5-type"></span><span class="f5-caret"></span>
+        <a class="f5-go" id="f5-go" href="pricing.html" aria-label="Go">↵</a>
+      </div>
+      <div class="f5-sugg" id="f5-sugg"></div>
+    </div>
+    <div class="f5-rows" data-render="rows"></div>
+    <div class="f5-bot"><a class="logo" href="index.html"><img src="images/logo.svg" width="22" height="16" alt=""><span>ClassroomIO</span></a><span>© 2026 ClassroomIO · AGPL-3.0</span></div>
+  </footer>
+</section>
+
+<script src="footer-options.js?v=2"></script>
+</body>
+</html>

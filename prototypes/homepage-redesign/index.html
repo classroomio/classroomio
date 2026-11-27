@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClassroomIO Homepage Prototype</title>
+<meta name="description" content="ClassroomIO is the customer education platform for B2B SaaS. Create courses with AI, put them wherever your customers already are, and turn product knowledge into growth.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css?v=55">
+<link rel="stylesheet" href="mobile-menu.css?v=5">
+<link rel="stylesheet" href="site-footer.css?v=5">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+
+<div class="topbar">Prototype for review · not the live site <a href="v1/">See v1 →</a></div>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="logo" href="#top" aria-label="ClassroomIO home"><img src="images/logo.svg" width="26" height="19" alt=""><span>ClassroomIO</span></a>
+    <nav class="nav-links" aria-label="Main">
+      <div class="dd">
+        <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="product-menu">Product <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu" id="product-menu" hidden>
+          <a class="dd-item" href="ai-agents.html"><i class="dd-ic">✦</i><span><b>AI Agents</b><em>Connect Claude, Cursor or any MCP client</em></span></a>
+          <a class="dd-item" href="branded-academies.html"><i class="dd-ic">▣</i><span><b>Branded Academies</b><em>Your domain, your colours, your sign-in</em></span></a>
+          <a class="dd-item" href="analytics.html"><i class="dd-ic">◔</i><span><b>Analytics</b><em>Track progress, completion and engagement</em></span></a>
+          <a class="dd-item" href="integrations.html"><i class="dd-ic">⇄</i><span><b>Integrations</b><em>Connect Zapier and the tools your team uses</em></span></a>
+          <a class="dd-item" href="plugins.html"><i class="dd-ic">◈</i><span><b>Plugins</b><em>Add custom widgets to your platform</em></span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="pricing.html">Pricing</a>
+      <a class="nav-link" href="about.html">About</a>
+      <div class="dd">
+        <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="solutions-menu">Solutions <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu wide" id="solutions-menu" hidden>
+          <div class="dd-cols">
+            <div class="dd-col">
+              <p class="dd-h">By use case</p>
+          <a class="dd-item" href="https://classroomio.com/customer-education"><i class="dd-ic">☺</i><span><b>Customer Education</b><em>Help customers get more value from your product</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/partner-training"><i class="dd-ic">∞</i><span><b>Partner Training</b><em>Certify resellers and partners at scale</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/cohort-training"><i class="dd-ic">◎</i><span><b>Cohort Training</b><em>Run customers through a course together</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/certification-programs"><i class="dd-ic">✦</i><span><b>Certification Programs</b><em>Give customers and partners a certificate when they finish</em></span></a>
+            </div>
+            <div class="dd-col dd-ind">
+              <p class="dd-h">By industry</p>
+              <div class="dd-grid">
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">‹›</i><span><b>Software</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">⚙</i><span><b>Manufacturing</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">⌂</i><span><b>Public Sector</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">◫</i><span><b>Retail</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">▤</i><span><b>IT and Tech Services</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">$</i><span><b>Financial Services</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">✚</i><span><b>Healthcare</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">✎</i><span><b>Education</b></span></a>
+              </div>
+            </div>
+          </div>
+          <div class="dd-foot"><span>Not sure where to start?</span><a href="https://cal.com/classroomio/demo">Talk to our team →</a></div>
+        </div>
+      </div>
+      <div class="dd">
+        <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="resources-menu">Resources <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu end" id="resources-menu" hidden>
+          <a class="dd-item" href="customers.html"><i class="dd-ic">☺</i><span><b>Customer stories</b><em>See how teams use ClassroomIO</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/blog"><i class="dd-ic">✎</i><span><b>Blog</b><em>Articles from the ClassroomIO team</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/help"><i class="dd-ic">?</i><span><b>Help center</b><em>Guides for setting up and using ClassroomIO</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/changelog"><i class="dd-ic">◷</i><span><b>Changelog</b><em>What changed in each release</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/roadmap"><i class="dd-ic">→</i><span><b>Roadmap</b><em>What we are building next</em></span></a>
+        </div>
+      </div>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-line hide-sm" href="https://classroomio.com/login">Log in</a>
+      <a class="btn btn-blue" href="https://classroomio.com/signup">Start for free</a>
+      <button class="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sheet" id="burger"><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="sheet" id="sheet" hidden></div>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hs" id="hs">
+<div class="hs-stick" id="hs-stick">
+    <div class="hs-copy" id="hs-copy">
+  <h1 class="h1" data-split>Help customers <span class="tone">get more value from your&nbsp;product.</span></h1>
+  <p class="lede" data-in>ClassroomIO is a customer education platform that helps companies create, manage and deliver the courses that teach customers how to use their product.</p>
+  <div class="ctas" data-in>
+    <a class="btn btn-line btn-lg" href="https://cal.com/classroomio/demo">Book a demo</a>
+    <a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Start for free</a>
+  </div>
+  </div>
+
+  <div class="db-wrap" id="db-wrap" aria-label="The ClassroomIO course analytics screen">
+    <div class="db-tilt" id="db-tilt">
+      <div class="db-scale" id="db-scale">
+        <div class="db">
+          <span class="tcur" id="tcur" aria-hidden="true"><svg viewBox="0 0 16 20" width="20" height="25"><path d="M1.5 1.5l12 7.6-5.4 1.2-2.6 5.2z" fill="#0e0f13" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"/></svg><b>Amara</b></span>
+          <aside class="db-side">
+            <div class="db-course"><span class="db-ini">IN</span>Leadership Essentials</div>
+            <span class="db-exit">← Exit this course</span>
+            <span class="db-nav"><svg viewBox="0 0 16 16"><path d="M3 4.5h10v6.5H7l-3 2.5V11H3z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>News Feed</span>
+            <span class="db-nav"><svg viewBox="0 0 16 16"><rect x="3" y="2.5" width="10" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 6h5M5.5 8.5h5" stroke="currentColor" stroke-width="1.3"/></svg>Content <em class="db-badges"><b class="bb">3</b><b class="bg">3</b></em><span class="db-car">⌄</span></span>
+            <span class="db-grp">⌄ Leading yourself <em>3</em></span>
+            <span class="db-sub l">Set a direction</span>
+            <span class="db-sub e">Direction check</span>
+            <span class="db-sub l">Live coaching clinic</span>
+            <span class="db-grp">⌄ Leading a team <em>2</em></span>
+            <span class="db-sub e">Feedback practice</span>
+            <span class="db-sub l">Give useful feedback</span>
+            <span class="db-sub e top">Leadership reflection</span>
+            <span class="db-nav"><svg viewBox="0 0 16 16"><circle cx="8" cy="6" r="3.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M6 9.2L5 14l3-1.5 3 1.5-1-4.8" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Certificates</span>
+            <span class="db-nav on"><svg viewBox="0 0 16 16"><path d="M2.5 2.5v11h11M5 10l3-3 2 2 3.5-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Analytics</span>
+            <span class="db-nav"><svg viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 5v4M8 5v4M10.5 5v4" stroke="currentColor" stroke-width="1.3"/></svg>Submissions</span>
+            <span class="db-nav"><svg viewBox="0 0 16 16"><rect x="3" y="2.5" width="10" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Marks</span>
+            <span class="db-nav"><svg viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="9.5" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="9.5" y="9.5" width="4" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Landing Page</span>
+            <span class="db-nav"><svg viewBox="0 0 16 16"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M1.8 13.5c.6-2.4 2.2-3.6 4.2-3.6s3.6 1.2 4.2 3.6M10.5 3.6a2.5 2.5 0 010 4.8M12 10c1.2.4 2 1.6 2.3 3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>People</span>
+            <span class="db-nav"><svg viewBox="0 0 16 16"><rect x="3" y="5" width="10" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 2.5V5M6 9h.01M10 9h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>AI Tutor</span>
+            <span class="db-nav"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.8v2M8 12.2v2M1.8 8h2M12.2 8h2M3.6 3.6l1.4 1.4M11 11l1.4 1.4M3.6 12.4L5 11M11 5l1.4-1.4" stroke="currentColor" stroke-width="1.3"/></svg>Settings</span>
+            <span class="db-pow"><img src="images/logo.svg" width="14" height="10" alt="">Powered by <u>ClassroomIO</u></span>
+          </aside>
+          <div class="db-main">
+            <div class="db-top">
+              <span class="db-toggle"></span><b>Analytics</b><span class="db-pub">Published</span>
+              <span class="db-right"><span class="db-ai"><svg viewBox="0 0 16 16"><path d="M6 1.5l1.2 3.6L11 6.3 7.2 7.5 6 11.1 4.8 7.5 1 6.3l3.8-1.2zM12 9l.6 1.8 1.9.6-1.9.6L12 14l-.6-2-1.9-.6 1.9-.6z" fill="currentColor"/></svg>Assistant</span><span class="db-site">↗ View Course Site</span><span class="db-kebab">⋮</span></span>
+            </div>
+            <div class="db-body">
+              <div class="db-h"><b>Analytics</b><i class="live"></i>
+                <span class="db-range"><b>All time</b><span>Last 7 days</span><span>Last 30 days</span><span>Last 90 days</span></span><span class="db-ref">↻</span>
+              </div>
+              <div class="db-kpis">
+                <div class="kpi"><span>Enrolled</span><b data-count="29">29</b><em class="up">+2 this week</em></div>
+                <div class="kpi"><span>Completion rate</span><b data-count="21" data-suffix="%">21%</b><em class="up">+13 pts vs last week</em></div>
+                <div class="kpi"><span>Average grade</span><b data-count="80" data-suffix="%">80%</b><em>across exercises taken</em></div>
+                <div class="kpi"><span>Pass rate</span><b data-count="82" data-suffix="%">82%</b><em>of 26 who took a pass-mark exercise · 4 still to pass</em></div>
+                <div class="kpi"><span>Median days to finish</span><b data-count="40">40</b><em>enrolment to completion</em></div>
+              </div>
+              <div class="db-seg"><span>All students</span><b>By cohort (13)</b></div>
+              <div class="db-charts">
+                <div class="chart"><span class="pc-badge" aria-hidden="true"><i>AO</i><svg viewBox="0 0 16 20" width="16" height="20"><path d="M1.5 1.5l12 7.6-5.4 1.2-2.6 5.2z" fill="#0e0f13" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"/></svg></span>
+                  <div class="chart-h"><b>Scores by exercise, by cohort</b><span class="sel">Cohorts: 3 of 13 ⇕</span></div>
+                  <div class="line-wrap">
+                    <div class="yax"><span>100</span><span>80</span><span>60</span><span>40</span><span>20</span><span>0</span></div>
+                    <svg class="lines" viewBox="0 0 520 200" preserveAspectRatio="none" aria-hidden="true">
+                      <g class="grid"><path d="M0 0H520M0 40H520M0 80H520M0 120H520M0 160H520M0 200H520"/></g>
+                      <path class="ln ln-amber" d="M0 18 C 130 20, 200 24, 260 26 S 420 30, 520 30"/>
+                      <path class="ln ln-green" d="M0 30 C 120 28, 200 24, 260 22 S 420 16, 520 14"/>
+                      <path class="ln ln-grey" d="M0 38 C 120 34, 200 28, 260 30 S 420 34, 520 38"/>
+                      <path class="ln ln-blue" d="M0 58 C 120 52, 200 46, 260 44 S 420 52, 520 58"/>
+                      <line class="hover-line" id="hover-line" x1="260" x2="260" y1="0" y2="200"/>
+                    </svg>
+                    <div class="tip" id="chart-tip">
+                      <b id="tip-title">Feedback practice</b>
+                      <span><i class="d-amber"></i>Completed<em id="tv1">87</em></span>
+                      <span><i class="d-green"></i>Many courses<em id="tv2">89</em></span>
+                      <span><i class="d-grey"></i>Direct students<em id="tv3">85</em></span>
+                      <span><i class="d-blue"></i>Full data<em id="tv4">78</em></span>
+                    </div>
+                    <div class="xax"><span>Direction check</span><span>Feedback practice</span><span>Leadership reflection</span></div>
+                  </div>
+                </div>
+                <div class="chart">
+                  <div class="chart-h"><b>Score distribution, Feedback practice</b></div>
+                  <span class="sel wide">Feedback practice <i>⌄</i></span>
+                  <div class="bars">
+                    <div style="--h:9%"><i></i><span>&lt;50</span></div>
+                    <div style="--h:22%"><i></i><span>60s</span></div>
+                    <div style="--h:100%"><i></i><span>80s</span></div>
+                    <div style="--h:54%"><i></i><span>90+</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ask" aria-hidden="true">
+    <span class="ask-ic"><svg viewBox="0 0 16 16"><path d="M8 1.5l1.6 4.9L14.5 8l-4.9 1.6L8 14.5l-1.6-4.9L1.5 8l4.9-1.6z" fill="currentColor"/></svg></span>
+    <span class="ask-text"><span id="ask-typed"></span><i class="caret"></i></span>
+    <span class="ask-go">↑</span>
+    
+  </div>
+  <div class="hs-fade" aria-hidden="true"></div>
+</div>
+</section>
+<p class="real-note">Real course analytics screen from the ClassroomIO dashboard, with demo data.</p>
+
+<section class="facts rails" aria-label="At a glance">
+  <span>Open source under AGPL-3.0</span>
+  <span>Cloud or self-hosted</span>
+  <span>Free plan</span>
+  <span>Works with Claude, Cursor and any MCP client</span>
+</section>
+
+<!-- LOGOS -->
+<section class="logos" aria-label="Teams and tools that work with ClassroomIO">
+  <p class="logos-h">Customers and tools that work with ClassroomIO</p>
+  <div class="marq" id="marq">
+    <div class="marq-track">
+      <ul class="marq-list">
+        <li><img src="https://energis.cloud/wp-content/uploads/Energis-logo-new-color.svg" alt="Energis"></li>
+        <li><img class="mono" src="https://classroomio.com/customer-stories/sensorhubb/logo.png" alt="SensorHubb"></li>
+        <li><img src="https://okayo.fr/logo-sombre.png" alt="Okayo"></li>
+        <li><img src="https://quickeasy.business/wp-content/uploads/elementor/thumbs/QEBS-Logo-scaled-rpo4xlet0k5vfquff4ut3hpo08ojhrufsyof1wjofc.png" alt="QuickEasy Business Systems"></li>
+        <li><img src="https://assets.cdn.clsrio.com/www/home/cursor-logo.png" alt="Cursor"><span>Cursor</span></li>
+        <li><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt="Claude Code"><span>Claude Code</span></li>
+        <li><img src="https://assets.cdn.clsrio.com/www/home/codex-logo.png" alt="Codex"><span>Codex</span></li>
+        <li><img src="https://assets.cdn.clsrio.com/www/home/opencode-logo.svg" alt="OpenCode"><span>OpenCode</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CASE FOR AN ACADEMY -->
+<section class="block rails case" id="case">
+  <div class="sec-head center">
+    <span class="tag-sm"><i>◆</i> The case for an academy</span>
+    <h2 class="h2" data-split>Customers who learn the product, <span class="tone">stay.</span></h2>
+    <p class="sub" data-in>Numbers from teams who built one:</p>
+  </div>
+  <div class="stats3" data-in>
+    <div><b>+22%</b><span>Higher retention</span><em>Forrester · customer-education TEI</em></div>
+    <div><b>+38%</b><span>Product adoption</span><em>Intellum / Forrester benchmarks</em></div>
+    <div><b>−6.1%</b><span>Support costs</span><em>TSIA · education services impact</em></div>
+  </div>
+  <p class="stats-note">Industry benchmarks. Your mileage will vary.</p>
+</section>
+
+<!-- FLOAT (silencio) -->
+<section class="float" id="float" aria-label="Why customer education">
+  <div class="float-stick">
+    <div class="float-center">
+      <span class="float-mark">ClassroomIO® · Customer education</span>
+      <div class="float-lines">
+      <p class="float-line" data-step="0">Every SaaS product has to be <em>learned</em>.</p>
+      <p class="float-line" data-step="1">Most customers learn it <em>alone</em>.</p>
+      <p class="float-line" data-step="2">ClassroomIO <em>teaches them</em> for you.</p>
+      </div>
+      <div class="float-progress"><i></i><i></i><i></i></div>
+    </div>
+    <div class="orbit" id="orbit" aria-hidden="true">
+      <div class="ob" data-a="0" data-r="1" data-z="40">
+        <div class="ob-course"><span class="ob-cover"><b>API basics in 20&nbsp;minutes</b></span><span class="ob-cap">Free course · 5 lessons</span></div>
+      </div>
+      <div class="ob" data-a="52" data-r="0.9" data-z="-60">
+        <div class="ob-photo"><img src="https://images.unsplash.com/photo-1759903553692-8220b95cabbd?w=600&q=80&auto=format&fit=crop" alt=""><span class="ob-tag"><i></i>Lesson 3 of 8</span></div>
+      </div>
+      <div class="ob" data-a="104" data-r="1.05" data-z="10">
+        <div class="ob-cert"><span>Certificate of completion</span><b>Amara Okafor</b><i></i><em>Admin onboarding</em></div>
+      </div>
+      <div class="ob" data-a="156" data-r="0.95" data-z="70">
+        <div class="ob-quiz"><span>Which role can comment but not edit?</span><b class="on">Viewer <i>✓</i></b><b>Editor</b></div>
+      </div>
+      <div class="ob" data-a="208" data-r="1" data-z="-30">
+        <div class="ob-tutor"><span class="q">Do I need admin rights?</span><span class="a">Yes. Step 1 shows how to request access.</span></div>
+      </div>
+      <div class="ob" data-a="260" data-r="0.92" data-z="30">
+        <div class="ob-ring"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" class="tr"/><circle cx="20" cy="20" r="16" class="pr"/></svg><b>72%</b><span>Jonas · Admin onboarding</span></div>
+      </div>
+      <div class="ob" data-a="312" data-r="1.02" data-z="-70">
+        <div class="ob-photo sq"><img src="https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=600&q=80&auto=format&fit=crop" alt=""><span class="ob-tag"><i></i>Cohort · March admins</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES · bento -->
+<section class="block rails bx-sec" id="distribute" aria-label="Key features">
+  <div class="bx-head">
+    <h2 class="h2" data-split>Build an academy <span class="tone">that feels like yours.</span></h2>
+    <p class="sub" data-in>Put learning on your own domain, bring over the courses you already have, extend the platform where you need to, and connect it to the tools your team works in.</p>
+  </div>
+  <div class="bx-grid">
+
+    <article class="bx bx-5" id="bx-plugins" data-in data-bx="plug">
+      <div class="bx-vis">
+        <div class="bx-stage" data-w="400" data-h="300">
+          <div class="pi-plane">
+            <svg class="bx-lines" viewBox="0 0 300 300" width="300" height="300" aria-hidden="true">
+              <g class="bx-base"><path d="M48 82 V138 Q48 150 60 150 H106"/><path d="M218 48 H162 Q150 48 150 60 V106"/><path d="M82 252 H138 Q150 252 150 240 V194"/><path d="M252 218 V162 Q252 150 240 150 H194"/></g>
+              <g class="bx-flow"><path pathLength="100" d="M48 82 V138 Q48 150 60 150 H106"/><path pathLength="100" d="M218 48 H162 Q150 48 150 60 V106"/><path pathLength="100" d="M82 252 H138 Q150 252 150 240 V194"/><path pathLength="100" d="M252 218 V162 Q252 150 240 150 H194"/></g>
+              <g class="bx-hot"><path pathLength="100" d="M48 82 V138 Q48 150 60 150 H106"/><path pathLength="100" d="M218 48 H162 Q150 48 150 60 V106"/><path pathLength="100" d="M82 252 H138 Q150 252 150 240 V194"/><path pathLength="100" d="M252 218 V162 Q252 150 240 150 H194"/></g>
+            </svg>
+            <button type="button" class="pi-t" style="left:16px;top:16px" data-name="Custom widget" aria-label="Install a custom widget"><span>&lt;/&gt;</span></button>
+            <button type="button" class="pi-t" style="left:220px;top:16px" data-name="Custom report" aria-label="Install a custom report"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 19V11M10 19V6M15 19v-5M20 19V9"/></svg></button>
+            <button type="button" class="pi-t" style="left:16px;top:220px" data-name="Custom page" aria-label="Install a custom page"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M4 9h16M9 9v11"/></svg></button>
+            <button type="button" class="pi-t" style="left:220px;top:220px" data-name="Custom action" aria-label="Install a custom action"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 3L5.5 13.5h6L10.5 21l8-10.5h-6z"/></svg></button>
+            <span class="pi-core bx-ring"><img src="images/logo.svg" width="40" height="29" alt=""></span>
+          </div>
+          <span class="pi-chip"><i class="bx-tick"></i><b class="pi-name">Custom widget</b>&nbsp;added</span>
+        </div>
+      </div>
+      <div class="bx-txt">
+        <span class="bx-lbl">Plugins</span>
+        <h3>Extend your platform beyond the basics.</h3>
+        <p>Extend what ClassroomIO already does and add custom capabilities, without maintaining a separate version of the platform.</p>
+      </div>
+    </article>
+
+    <article class="bx bx-7" data-in data-bx="scorm">
+      <div class="bx-vis">
+        <div class="bx-stage" data-w="560" data-h="300">
+          <span class="sp-halo"></span>
+          <svg class="bx-lines" viewBox="0 0 560 300" width="560" height="300" aria-hidden="true">
+            <path class="sp-band" d="M22 166 L52 134 H508 L538 166 L508 198 H52 Z"/>
+            <g class="bx-base"><path d="M280 100 V116 Q280 128 268 128 H122 Q110 128 110 140 V149"/><path d="M280 100 V149"/><path d="M280 100 V116 Q280 128 292 128 H438 Q450 128 450 140 V149"/><path d="M110 183 V204 Q110 216 122 216 H268 Q280 216 280 228 V246"/><path d="M280 183 V246"/><path d="M450 183 V204 Q450 216 438 216 H292 Q280 216 280 228 V246"/></g>
+            <g class="bx-flow"><path pathLength="100" d="M280 100 V116 Q280 128 268 128 H122 Q110 128 110 140 V149"/><path pathLength="100" d="M280 100 V149"/><path pathLength="100" d="M280 100 V116 Q280 128 292 128 H438 Q450 128 450 140 V149"/><path pathLength="100" d="M110 183 V204 Q110 216 122 216 H268 Q280 216 280 228 V246"/><path pathLength="100" d="M280 183 V246"/><path pathLength="100" d="M450 183 V204 Q450 216 438 216 H292 Q280 216 280 228 V246"/></g>
+            <g class="bx-hot"><path pathLength="100" d="M280 100 V116 Q280 128 268 128 H122 Q110 128 110 140 V149"/><path pathLength="100" d="M280 100 V149"/><path pathLength="100" d="M280 100 V116 Q280 128 292 128 H438 Q450 128 450 140 V149"/><path pathLength="100" d="M110 183 V204 Q110 216 122 216 H268 Q280 216 280 228 V246"/><path pathLength="100" d="M280 183 V246"/><path pathLength="100" d="M450 183 V204 Q450 216 438 216 H292 Q280 216 280 228 V246"/></g>
+          </svg>
+          <button type="button" class="sp-node bx-ring" aria-label="Import the SCORM package again"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></button>
+          <span class="sp-file"><span class="sp-zip">ZIP</span><span><b>course-package.zip</b><em class="sp-src">From Articulate</em></span></span>
+          <span class="sp-pill" style="left:110px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 18l5-5 4 3 7-8"/></svg>Progress tracking<b class="sp-val" data-to="78" data-unit="%">0%</b></span>
+          <span class="sp-pill" style="left:280px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Scores<b class="sp-val" data-to="92" data-unit="%">0%</b></span>
+          <span class="sp-pill" style="left:450px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="M9 13.5L8 21l4-2 4 2-1-7.5"/></svg>Certificates<b class="sp-val" data-text="Issued">&mdash;</b></span>
+          <span class="sp-done"><i class="bx-tick"></i>Completion recorded</span>
+        </div>
+      </div>
+      <div class="bx-txt">
+        <span class="bx-lbl">SCORM</span>
+        <h3>Migrate your content without the stress.</h3>
+        <p>Import SCORM packages from Articulate, Captivate and iSpring, and keep tracking learner progress, scores and completions.</p>
+      </div>
+    </article>
+
+    <article class="bx bx-6" id="bx-academy" data-in data-bx="sso">
+      <div class="bx-vis">
+        <div class="bx-stage" data-w="520" data-h="300">
+          <span class="ss-ghost ss-ghost-l"></span>
+          <span class="ss-ghost ss-ghost-r"></span>
+          <div class="ss-win">
+            <div class="ss-bar"><i></i><i></i><i></i><span class="ss-url"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1.2"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg><b class="ss-domain"></b><em class="ss-caret"></em></span><b class="ss-ver">&#10003; Verified</b></div>
+            <div class="ss-body">
+              <div class="ss-form">
+                <span class="ss-logo">Y</span>
+                <strong>Sign in to Yourbrand Academy</strong>
+                <span class="ss-btn"><span class="ss-btn-t">Continue with SSO</span><span class="ss-spin"></span></span>
+                <span class="ss-sk">Continue with email</span>
+              </div>
+              <div class="ss-ok">
+                <span class="ss-check"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                <strong>Signed in securely</strong>
+                <span class="ss-courses"><i></i><i></i><i></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="ss-tool">
+            <span class="ss-lbl">Brand</span>
+            <span class="ss-sw" role="group" aria-label="Try a brand colour">
+              <button type="button" style="--c:#0542cc" aria-label="Blue" class="on"></button><button type="button" style="--c:#6d4aff" aria-label="Violet"></button><button type="button" style="--c:#0f9d63" aria-label="Green"></button><button type="button" style="--c:#ee5a24" aria-label="Orange"></button>
+            </span>
+            <span class="ss-div"></span>
+            <span class="ss-lbl">SSO</span>
+            <b class="ss-tog"><i></i></b>
+          </div>
+          <span class="bx-cur" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M3 2l11 6.2-4.8 1.3L7 14z" fill="#0e0f13" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"/></svg></span>
+        </div>
+      </div>
+      <div class="bx-txt">
+        <span class="bx-lbl">Branded SSO</span>
+        <h3>Easily customize your academy.</h3>
+        <p>Put your academy on your own domain with a branded sign-in, so customers, partners and employees get a familiar, seamless way in.</p>
+      </div>
+    </article>
+
+    <article class="bx bx-6" id="bx-integrations" data-in data-bx="zap">
+      <div class="bx-vis">
+        <div class="bx-stage" data-w="440" data-h="300">
+          <svg class="bx-lines" viewBox="0 0 440 300" width="440" height="300" aria-hidden="true">
+            <g class="bx-base"><path d="M204 122 V66 Q204 54 192 54 H156"/><path d="M236 122 V56 Q236 44 248 44 H316"/><path d="M250 150 H330"/><path d="M190 168 H120"/><path d="M206 180 V236"/><path d="M236 180 V222 Q236 234 248 234 H310"/></g>
+            <g class="bx-flow"><path pathLength="100" d="M204 122 V66 Q204 54 192 54 H156"/><path pathLength="100" d="M236 122 V56 Q236 44 248 44 H316"/><path pathLength="100" d="M250 150 H330"/><path pathLength="100" d="M190 168 H120"/><path pathLength="100" d="M206 180 V236"/><path pathLength="100" d="M236 180 V222 Q236 234 248 234 H310"/></g>
+            <g class="bx-hot"><path pathLength="100" d="M204 122 V66 Q204 54 192 54 H156"/><path pathLength="100" d="M236 122 V56 Q236 44 248 44 H316"/><path pathLength="100" d="M250 150 H330"/><path pathLength="100" d="M190 168 H120"/><path pathLength="100" d="M206 180 V236"/><path pathLength="100" d="M236 180 V222 Q236 234 248 234 H310"/></g>
+            <g class="zh-ends"><circle cx="156" cy="54" r="3"/><circle cx="316" cy="44" r="3"/><circle cx="330" cy="150" r="3"/><circle cx="120" cy="168" r="3"/><circle cx="206" cy="236" r="3"/><circle cx="310" cy="234" r="3"/></g>
+          </svg>
+          <button type="button" class="zh-core bx-ring" aria-label="Send the example event again"><img src="images/logo.svg" width="30" height="22" alt=""></button>
+          <span class="zh-evt">Course completed</span>
+          <button type="button" class="zh-chip zh-zap" style="left:62px;top:40px;width:94px"><span class="zh-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="#ff4f00" aria-hidden="true"><path d="M13.5 2L5 13.5h6L10 22l9-12h-6.2z"/></svg></span>Zapier</button>
+          <button type="button" class="zh-chip" style="left:316px;top:30px;width:80px"><span class="zh-ic">C</span>CRM</button>
+          <button type="button" class="zh-chip" style="left:330px;top:136px;width:86px"><span class="zh-ic">@</span>Email</button>
+          <button type="button" class="zh-chip" style="left:8px;top:154px;width:112px"><span class="zh-ic">&#9638;</span>Spreadsheet</button>
+          <button type="button" class="zh-chip" style="left:158px;top:236px;width:104px"><span class="zh-ic">#</span>Team chat</button>
+          <button type="button" class="zh-chip" style="left:310px;top:220px;width:98px"><span class="zh-ic">&#9635;</span>Calendar</button>
+        </div>
+      </div>
+      <div class="bx-txt">
+        <span class="bx-lbl">Integrations</span>
+        <h3>Work with your favourite tools.</h3>
+        <p>Automate ClassroomIO with thousands of apps through Zapier, and send course events to the tools your team already uses.</p>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- 03 INTELLIGENCE · numbered cards -->
+<section class="block rails grid-bg" id="intelligence">
+  <div class="intel-head">
+    <div>
+      <span class="tag-sm">AI-Powered Learning</span>
+      <h2 class="h2 big" data-split>Let AI do more of <span class="tone-blue">the heavy lifting.</span></h2>
+    </div>
+    <div class="intel-side" data-in>
+      <p>Create courses faster, make learning more interactive and give learners support whenever they need it.</p>
+      <a class="btn btn-line" href="https://classroomio.com/mcp-recipes">See MCP recipes</a>
+    </div>
+  </div>
+  <div class="ncards" id="ncards">
+    <article class="nc nc-t1 on" data-demo="course" data-dur="12500">
+      <span class="nc-bar"><i></i></span>
+      <span class="nc-art" aria-hidden="true"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid meet"><circle class="ring-in" style="--d:.3s" cx="60" cy="60" r="46" fill="none" stroke="#0542cc" stroke-opacity=".28" stroke-width="5" stroke-linecap="round" pathLength="160" stroke-dasharray="6 4"/><circle class="ring-in" style="--d:.18s" cx="60" cy="60" r="33" fill="none" stroke="#0542cc" stroke-opacity=".6" stroke-width="6" stroke-linecap="round" pathLength="100" stroke-dasharray="6 4"/><circle class="ring-in" style="--d:.06s" cx="60" cy="60" r="20" fill="none" stroke="#0542cc" stroke-width="7" stroke-linecap="round" pathLength="60" stroke-dasharray="6 4"/><circle class="pop" cx="60" cy="60" r="8" fill="#0542cc"/></svg></span>
+      <span class="nc-num" aria-hidden="true">01.</span>
+      <div class="nc-demo" aria-hidden="true">
+        <div class="nd-stage" data-w="600" data-h="300">
+          <div class="cw">
+            <div class="cw-bar"><i></i><i></i><i></i><span>app.classroomio.com</span></div>
+            <div class="cw-body">
+              <aside class="cw-side">
+                <img src="images/logo.svg" alt="">
+                <b class="on">Home</b><b>Courses</b><b>Audience</b><b>Analytics</b>
+              </aside>
+              <div class="cw-main">
+                <div class="cg-prompt">
+                  <span class="cg-q">What do you want to teach?</span>
+                  <div class="cg-box"><span class="cg-text"></span><i class="caret"></i></div>
+                  <div class="cg-row"><span class="cg-chip">Level · Beginner</span><span class="cg-go">✦ Generate</span></div>
+                </div>
+                <div class="cg-plan">
+                  <div class="cg-plan-h"><span>✦ Course plan</span><em class="cg-status">Drafting…</em></div>
+                  <ol class="cg-list">
+                    <li><span class="cg-n">1</span><b>Getting started</b><em>3 lessons</em><i class="ck"></i></li>
+                    <li><span class="cg-n">2</span><b>Inviting your team</b><em>2 lessons</em><i class="ck"></i></li>
+                    <li><span class="cg-n">3</span><b>Roles and permissions</b><em>3 lessons</em><i class="ck"></i></li>
+                    <li><span class="cg-n">✓</span><b>Check your knowledge</b><em>Quiz</em><i class="ck"></i></li>
+                  </ol>
+                  <div class="cg-foot"><span class="cg-impl">Implement plan</span><span class="cg-prog"><i></i></span><em class="cg-count"></em></div>
+                </div>
+                <div class="cg-course">
+                  <div class="cg-cover"><span>Admin onboarding</span><i></i><i></i><i></i></div>
+                  <b>Admin onboarding</b>
+                  <em>8 lessons · 1 quiz</em>
+                  <span class="cg-ready"><i></i>Ready to publish</span>
+                </div>
+                <div class="cg-spark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="nc-ic"><svg viewBox="0 0 16 16"><path d="M8 1.5l1.6 4.9L14.5 8l-4.9 1.6L8 14.5l-1.6-4.9L1.5 8l4.9-1.6z" fill="currentColor"/></svg></span>
+      <span class="nc-idx">01 / 04</span>
+      <h3>Create courses with AI</h3>
+      <p>Describe the course you want and AI drafts the plan. Approve it, and the lessons, slides and quizzes are built for you.</p>
+    </article>
+
+    <article class="nc nc-t2" data-demo="transcribe" data-dur="13000">
+      <span class="nc-bar"><i></i></span>
+      <span class="nc-art" aria-hidden="true"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid meet"><line class="pop" style="--d:0.000s" x1="60.00" y1="30.00" x2="60.00" y2="25.00" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.025s" x1="64.69" y1="30.37" x2="67.22" y2="14.44" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.050s" x1="69.27" y1="31.47" x2="71.74" y2="23.86" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.075s" x1="73.62" y1="33.27" x2="76.22" y2="28.17" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.100s" x1="77.63" y1="35.73" x2="83.03" y2="28.30" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.125s" x1="81.21" y1="38.79" x2="88.06" y2="31.94" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.150s" x1="84.27" y1="42.37" x2="98.41" y2="32.09" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.175s" x1="86.73" y1="46.38" x2="91.46" y2="43.97" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.200s" x1="88.53" y1="50.73" x2="101.21" y2="46.61" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.225s" x1="89.63" y1="55.31" x2="95.66" y2="54.35" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.250s" x1="90.00" y1="60.00" x2="97.96" y2="60.00" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.275s" x1="89.63" y1="64.69" x2="101.45" y2="66.57" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.300s" x1="88.53" y1="69.27" x2="98.90" y2="72.64" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.325s" x1="86.73" y1="73.62" x2="102.08" y2="81.44" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.350s" x1="84.27" y1="77.63" x2="88.72" y2="80.86" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.375s" x1="81.21" y1="81.21" x2="87.89" y2="87.89" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.400s" x1="77.63" y1="84.27" x2="81.00" y2="88.90" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.425s" x1="73.62" y1="86.73" x2="78.80" y2="96.89" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.450s" x1="69.27" y1="88.53" x2="73.52" y2="101.62" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line class="pop" style="--d:0.475s" x1="64.69" y1="89.63" x2="66.48" y2="100.90" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle class="pop" style="--d:0.500s" cx="60.00" cy="96.00" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.525s" cx="54.37" cy="95.56" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.550s" cx="48.88" cy="94.24" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.575s" cx="43.66" cy="92.08" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.600s" cx="38.84" cy="89.12" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.625s" cx="34.54" cy="85.46" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.650s" cx="30.88" cy="81.16" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.675s" cx="27.92" cy="76.34" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.700s" cx="25.76" cy="71.12" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.725s" cx="24.44" cy="65.63" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.750s" cx="24.00" cy="60.00" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.775s" cx="24.44" cy="54.37" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.800s" cx="25.76" cy="48.88" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.825s" cx="27.92" cy="43.66" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.850s" cx="30.88" cy="38.84" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.875s" cx="34.54" cy="34.54" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.900s" cx="38.84" cy="30.88" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.925s" cx="43.66" cy="27.92" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.950s" cx="48.88" cy="25.76" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" style="--d:0.975s" cx="54.37" cy="24.44" r="2" fill="#fff" fill-opacity=".65"/><circle class="pop" cx="60" cy="60" r="15" fill="#fff"/><path class="pop" style="--d:.15s" d="M56 53.5v13l11-6.5z" fill="#0542cc"/></svg></span>
+      <span class="nc-num" aria-hidden="true">02.</span>
+      <div class="nc-demo" aria-hidden="true">
+        <div class="nd-stage" data-w="600" data-h="300">
+          <div class="tv-player">
+            <img src="images/workshop.jpg" alt="">
+            <span class="tv-play"></span>
+            <div class="tv-wave"></div>
+            <div class="tv-ctrl"><span class="tv-track"><i></i></span><em class="tv-time">0:00</em></div>
+            <span class="tv-dots">⋯</span>
+          </div>
+          <div class="tv-menu"><span>Edit</span><span>Manage thumbnails</span><span class="tv-gen-item">✦ Generate transcription</span></div>
+          <div class="tv-panel">
+            <div class="tv-h"><b>Transcript</b><span class="tv-lang"><i>English</i></span></div>
+            <div class="tv-busy"><i class="spin"></i>Transcribing…</div>
+            <ol class="tv-segs">
+              <li><time>0:00</time><p></p></li>
+              <li><time>0:06</time><p></p></li>
+              <li><time>0:12</time><p></p></li>
+              <li><time>0:18</time><p></p></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <span class="nc-ic"><svg viewBox="0 0 16 16"><path d="M2 5.5h7.5v5H2zM9.5 7.2L14 5v6l-4.5-2.2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
+      <span class="nc-idx">02 / 04</span>
+      <h3>Video transcription</h3>
+      <p>Generate a timestamped transcript for any uploaded video, in the language it is spoken. Learners read along, and the AI Tutor uses it to answer questions.</p>
+    </article>
+
+    <article class="nc nc-t3" id="ncard-agents" data-demo="mcp" data-dur="13500">
+      <span class="nc-bar"><i></i></span>
+      <span class="nc-art" aria-hidden="true"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid meet"><circle cx="60" cy="60" r="44" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="1"/><line class="draw" style="--d:0.25s" x1="73.60" y1="18.15" x2="60" y2="60" stroke="#5b82ff" stroke-opacity=".6" stroke-width="1.6" stroke-linecap="round" pathLength="100"/><line class="zap" style="--z:0.33s" x1="73.60" y1="18.15" x2="60" y2="60" stroke="#fff" stroke-width="2.4" stroke-linecap="round" pathLength="100"/><circle class="pop" style="--d:0.00s" cx="73.60" cy="18.15" r="5" fill="#5b82ff"/><line class="draw" style="--d:0.35s" x1="104.00" y1="60.00" x2="60" y2="60" stroke="#5b82ff" stroke-opacity=".6" stroke-width="1.6" stroke-linecap="round" pathLength="100"/><line class="zap" style="--z:0.45s" x1="104.00" y1="60.00" x2="60" y2="60" stroke="#fff" stroke-width="2.4" stroke-linecap="round" pathLength="100"/><circle class="pop" style="--d:0.10s" cx="104.00" cy="60.00" r="4" fill="#5b82ff"/><line class="draw" style="--d:0.45s" x1="73.60" y1="101.85" x2="60" y2="60" stroke="#5b82ff" stroke-opacity=".6" stroke-width="1.6" stroke-linecap="round" pathLength="100"/><line class="zap" style="--z:0.59s" x1="73.60" y1="101.85" x2="60" y2="60" stroke="#fff" stroke-width="2.4" stroke-linecap="round" pathLength="100"/><circle class="pop" style="--d:0.20s" cx="73.60" cy="101.85" r="6" fill="#5b82ff"/><line class="draw" style="--d:0.55s" x1="24.40" y1="85.86" x2="60" y2="60" stroke="#5b82ff" stroke-opacity=".6" stroke-width="1.6" stroke-linecap="round" pathLength="100"/><line class="zap" style="--z:0.72s" x1="24.40" y1="85.86" x2="60" y2="60" stroke="#fff" stroke-width="2.4" stroke-linecap="round" pathLength="100"/><circle class="pop" style="--d:0.30s" cx="24.40" cy="85.86" r="4" fill="#5b82ff"/><line class="draw" style="--d:0.65s" x1="24.40" y1="34.14" x2="60" y2="60" stroke="#5b82ff" stroke-opacity=".6" stroke-width="1.6" stroke-linecap="round" pathLength="100"/><line class="zap" style="--z:0.85s" x1="24.40" y1="34.14" x2="60" y2="60" stroke="#fff" stroke-width="2.4" stroke-linecap="round" pathLength="100"/><circle class="pop" style="--d:0.40s" cx="24.40" cy="34.14" r="5" fill="#5b82ff"/><circle class="ring" cx="60" cy="60" r="16" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/><circle class="pop" style="--d:.7s" cx="60" cy="60" r="11" fill="#fff"/></svg></span>
+      <span class="nc-num" aria-hidden="true">03.</span>
+      <div class="nc-demo" aria-hidden="true">
+        <div class="nd-stage" data-w="600" data-h="300">
+          <div class="mc-term">
+            <div class="mc-tbar"><i></i><i></i><i></i><span>claude</span></div>
+            <div class="mc-lines"></div>
+          </div>
+          <div class="mc-link">
+            <span class="mc-node mc-claude"><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt=""></span>
+            <span class="mc-beam"><i class="mc-flow"></i></span>
+            <span class="mc-node mc-cio"><img src="images/logo.svg" alt=""></span>
+            <em class="mc-cap">Claude Code</em><em class="mc-cap r">ClassroomIO</em>
+          </div>
+          <div class="mc-auth">
+            <img src="images/logo.svg" alt="">
+            <b>Claude Code wants to access your workspace</b>
+            <span>Manage courses, lessons and members in Acme Academy.</span>
+            <div><em>Cancel</em><em class="mc-ok">Approve</em></div>
+          </div>
+          <div class="mc-course">
+            <div class="mc-ch"><b>SOC 2 Security Basics</b><span class="mc-pub">Published</span></div>
+            <ul>
+              <li>What SOC 2 covers</li>
+              <li>Access and passwords</li>
+              <li>Reporting an incident</li>
+            </ul>
+            <span class="mc-by"><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt="">Edited by Claude Code</span>
+          </div>
+        </div>
+      </div>
+      <span class="nc-ic"><svg viewBox="0 0 16 16"><path d="M5 4L1.5 8 5 12M11 4l3.5 4-3.5 4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></span>
+      <span class="nc-idx">03 / 04</span>
+      <h3>Connect your own AI agents</h3>
+      <p>Connect Claude Code, Cursor, Codex or any MCP client, then create, update and publish courses from the tools you already use.</p>
+    </article>
+
+    <article class="nc nc-t4" data-demo="tutor" data-dur="14000">
+      <span class="nc-bar"><i></i></span>
+      <span class="nc-art" aria-hidden="true"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid meet"><defs><mask id="tutorDone"><path class="sweep" d="M60 26a34 34 0 1 1-.01 0" fill="none" stroke="#fff" stroke-width="14" pathLength="100"/></mask></defs><circle cx="60" cy="60" r="34" fill="none" stroke="#0b1233" stroke-opacity=".18" stroke-width="9" pathLength="120" stroke-dasharray="1.3 1.7"/><circle cx="60" cy="60" r="34" fill="none" stroke="#0b1233" stroke-width="9" pathLength="120" stroke-dasharray="1.3 1.7" mask="url(#tutorDone)" class="done"/><circle class="pop" cx="60" cy="60" r="10" fill="#0b1233"/><g class="follow"><circle class="ring" cx="60" cy="26" r="9" fill="none" stroke="#0542cc" stroke-width="1.5"/><circle cx="60" cy="26" r="8" fill="#fff"/><circle cx="60" cy="26" r="5" fill="#0542cc"/></g></svg></span>
+      <span class="nc-num" aria-hidden="true">04.</span>
+      <div class="nc-demo" aria-hidden="true">
+        <div class="nd-stage" data-w="600" data-h="300">
+          <div class="tu-win">
+            <div class="cw-bar"><i></i><i></i><i></i><span>academy.acme.com</span></div>
+            <div class="tu-page">
+              <span class="tu-crumb">Lesson 3 of 8</span>
+              <b class="tu-title">Connect your first data source</b>
+              <p>Open <b>Settings → Integrations</b> and choose the source you want to connect.</p>
+              <p class="tu-hl">Every connection needs an API key. Create one under <b>Settings → API</b>.</p>
+              <span class="tu-sk"></span><span class="tu-sk s"></span>
+              <div class="tu-vid"><span></span><em>Video · 4:12</em></div>
+            </div>
+          </div>
+          <span class="tu-fab">✦ Ask AI</span>
+          <div class="tu-panel">
+            <div class="tu-ph"><b>✦ AI Tutor</b><span>This course</span></div>
+            <div class="tu-msgs"></div>
+            <div class="tu-input"><span class="tu-typed"></span><i class="caret"></i><em>↑</em></div>
+          </div>
+        </div>
+      </div>
+      <span class="nc-ic"><svg viewBox="0 0 16 16"><path d="M3 4h10v6.5H7.5L4.5 13v-2.5H3z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span>
+      <span class="nc-idx">04 / 04</span>
+      <h3>AI Lesson Tutor</h3>
+      <p>Learners ask questions while they study and get answers from your lessons and video transcripts, with a link to the lesson it came from.</p>
+    </article>
+  </div>
+</section>
+
+<!-- 04 JOURNEY · carousel -->
+<section class="block journey-sec" id="journey">
+  <div class="carousel-card">
+    <div class="sec-head center">
+      <h2 class="h2" data-split>Built around the customer&nbsp;journey.</h2>
+      <p class="sub" data-in>Customers need different things at different points. Teach prospects why, new customers how, and existing customers what&rsquo;s new.</p>
+    </div>
+    <div class="car" id="car">
+      <div class="car-track" id="car-track">
+        <article class="slide">
+          <figure class="sl-img">
+            <img src="https://images.unsplash.com/photo-1604933762021-54a5858c9832?w=1000&q=80&auto=format&fit=crop" alt="A woman watching a course on her laptop at a desk">
+            <span class="jf jf-pill" style="--x:6%;--y:9%;--d:.15s"><i class="jf-play"></i>Intro to your product<em>Free</em></span>
+            <span class="jf jf-card" style="--x:5%;--y:auto;--b:8%;--d:.3s"><small>Public course page</small><b>yourco.com/learn</b><span class="jf-btn">Enroll free</span></span>
+            <span class="jf jf-dot" style="--x:auto;--r:8%;--y:42%;--d:.45s"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+          </figure>
+          <div class="sl-body">
+            <span class="sl-k"><img src="images/logo.svg" width="18" height="13" alt="">01 · Marketing<i>→</i></span>
+            <h3>Educate prospects. <mark>Generate leads.</mark></h3>
+            <p>Create free courses that teach your audience about the problems your product solves. Host them on your own domain, attract potential customers, and use course analytics to understand what drives interest.</p>
+            <div class="sl-facts"><span><b>Free</b>courses</span><span><b>Custom</b>domain</span><span><b>Marketing</b>analytics</span></div>
+            <a class="sl-more" href="#distribute">Read more <i>→</i></a>
+          </div>
+        </article>
+        <article class="slide">
+          <figure class="sl-img">
+            <img src="https://images.unsplash.com/photo-1616587226960-4a03badbe8bf?w=1000&q=80&auto=format&fit=crop" alt="A man on a video call with a prospect">
+            <span class="jf jf-card" style="--x:6%;--y:9%;--d:.15s"><small>Course invite</small><b>team@prospect.com</b><span class="jf-sent">Invite sent</span></span>
+            <span class="jf jf-card jf-who" style="--x:auto;--r:6%;--y:auto;--b:9%;--d:.3s"><small>Who started</small><span class="jf-av"><i></i><i></i><i></i><i class="off"></i></span><span class="jf-bar"><i style="--w:60%"></i></span></span>
+            <span class="jf jf-dot" style="--x:8%;--y:auto;--b:14%;--d:.45s"><svg viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span>
+          </figure>
+          <div class="sl-body">
+            <span class="sl-k"><img src="images/logo.svg" width="18" height="13" alt="">02 · Sales<i>→</i></span>
+            <h3>Skip the basics <mark>on the demo</mark></h3>
+            <p>Send the buying team a short course before the call. They show up knowing the product, and you spend the hour on their questions.</p>
+            <div class="sl-facts"><span><b>Email</b>invites</span><span><b>Invite</b>links</span><span><b>Course</b>analytics</span></div>
+            <a class="sl-more" href="#distribute">Read more <i>→</i></a>
+          </div>
+        </article>
+        <article class="slide">
+          <figure class="sl-img">
+            <img src="https://images.unsplash.com/photo-1758873267345-535a381ea6be?w=1000&q=80&auto=format&fit=crop" alt="A new customer getting started on a laptop in an office">
+            <span class="jf jf-card jf-steps" style="--x:6%;--y:9%;--d:.15s"><small>Learning path</small><span class="done">Connect your account</span><span class="done">Invite your team</span><span class="now">Create your first project</span></span>
+            <span class="jf jf-pill" style="--x:auto;--r:6%;--y:auto;--b:10%;--d:.3s"><i class="jf-code">&lt;/&gt;</i>Embedded on your site</span>
+          </figure>
+          <div class="sl-body">
+            <span class="sl-k"><img src="images/logo.svg" width="18" height="13" alt="">03 · Onboarding<i>→</i></span>
+            <h3>Onboard them <mark>inside your product</mark></h3>
+            <p>Embed videos, slides and documents in your lessons, and put course widgets on your own site. Run a live cohort.</p>
+            <div class="sl-facts"><span><b>Media</b>embeds</span><span><b>Course</b>widgets</span><span><b>Live</b>cohorts</span></div>
+            <a class="sl-more" href="#distribute">Read more <i>→</i></a>
+          </div>
+        </article>
+        <article class="slide">
+          <figure class="sl-img">
+            <img src="https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=1000&q=80&auto=format&fit=crop" alt="Four coworkers exploring a new feature around a laptop">
+            <span class="jf jf-pill" style="--x:6%;--y:9%;--d:.15s"><i class="jf-new">New</i>Course: What's new in Reports</span>
+            <span class="jf jf-card jf-chat" style="--x:auto;--r:6%;--y:auto;--b:9%;--d:.3s"><small>AI Tutor</small><span class="q">How do I filter by team?</span><span class="a">Open Reports, then pick a team in Filters.</span></span>
+          </figure>
+          <div class="sl-body">
+            <span class="sl-k"><img src="images/logo.svg" width="18" height="13" alt="">04 · Adoption<i>→</i></span>
+            <h3>Ship the feature <mark>and the lesson</mark></h3>
+            <p>Build a launch course the same week you ship. Lessons, videos and quizzes live in one simple editor, and the AI Tutor answers follow-up questions inside the lesson.</p>
+            <div class="sl-facts"><span><b>Simple</b>course editor</span><span><b>Quizzes</b>built in</span><span><b>AI</b>Tutor</span></div>
+            <a class="sl-more" href="#intelligence">Read more <i>→</i></a>
+          </div>
+        </article>
+        <article class="slide">
+          <figure class="sl-img">
+            <img src="https://images.unsplash.com/photo-1758518731027-78a22c8852ec?w=1000&q=80&auto=format&fit=crop" alt="A man celebrating at his laptop after finishing a course">
+            <span class="jf jf-card jf-cert" style="--x:6%;--y:9%;--d:.15s"><span class="jf-seal"><img src="images/logo.svg" alt=""></span><span><small>Certificate</small><b>Course complete</b></span></span>
+            <span class="jf jf-card jf-chart" style="--x:auto;--r:6%;--y:auto;--b:9%;--d:.3s"><small>Progress by learner</small><span class="jf-cols"><i style="--h:90%"></i><i style="--h:70%"></i><i class="low" style="--h:22%"></i><i style="--h:80%"></i><i class="low" style="--h:30%"></i><i style="--h:100%"></i></span><span class="jf-sent">Reminder sent</span></span>
+          </figure>
+          <div class="sl-body">
+            <span class="sl-k"><img src="images/logo.svg" width="18" height="13" alt="">05 · Retention<i>→</i></span>
+            <h3>Know who&rsquo;s learning, <mark>and who isn&rsquo;t</mark></h3>
+            <p>See progress for every course and every learner. Remind the people who stalled, and reward the ones who finish with a certificate.</p>
+            <div class="sl-facts"><span><b>Learner</b>analytics</span><span><b>Email</b>reminders</span><span><b>Certificates</b>on completion</span></div>
+            <a class="sl-more" href="#top">Read more <i>→</i></a>
+          </div>
+        </article>
+      </div>
+      <button class="car-btn prev" type="button" aria-label="Previous stage" id="car-prev">‹</button>
+      <button class="car-btn next" type="button" aria-label="Next stage" id="car-next">›</button>
+    </div>
+    <div class="car-dots" id="car-dots" aria-hidden="true"></div>
+    <a class="btn btn-blue" href="https://cal.com/classroomio/demo">Book a demo</a>
+  </div>
+</section>
+<!-- 07 DEVELOPERS -->
+<section class="block rails" id="developers">
+  <div class="dev">
+    <div class="dev-copy">
+      <span class="tag-sm">For developers</span>
+      <h2 class="h2" data-split>API, Webhooks, <span class="tone">MCP.</span></h2>
+      <p class="sub" data-in>Connect ClassroomIO to your own application, the tools your team already uses, and your AI client.</p>
+      <ul class="dev-list" data-in>
+        <li><b>REST API</b>Let your own application make authenticated requests to your academy, using an API key that belongs to your organization.</li>
+        <li><b>Webhooks</b>Get a signed request at your own URL when something happens, like a student finishing a course. Failed deliveries are retried, and you can resend any of them.</li>
+        <li><b>MCP server</b>Connect Claude Code, Codex, Cursor, OpenCode, VS Code or Gemini CLI to create, edit and publish courses. It only gets the permissions you approve, and new courses start unpublished.</li>
+        <li><b>Self-hosting</b>AGPL-3.0, on GitHub. Run it on your own infrastructure.</li>
+      </ul>
+    </div>
+    <div class="dx" id="dx" data-in aria-label="Connecting ClassroomIO to your stack in four steps">
+      <div class="dx-steps"><span class="dx-line"><i></i></span><button type="button" class="dx-step on" data-step="0"><span class="dx-dot"><b>1</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.4l2.6 2.6L12 5.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dx-lb">API key</span></button><button type="button" class="dx-step" data-step="1"><span class="dx-dot"><b>2</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.4l2.6 2.6L12 5.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dx-lb">REST API</span></button><button type="button" class="dx-step" data-step="2"><span class="dx-dot"><b>3</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.4l2.6 2.6L12 5.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dx-lb">Webhooks</span></button><button type="button" class="dx-step" data-step="3"><span class="dx-dot"><b>4</b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.4l2.6 2.6L12 5.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dx-lb">MCP</span></button></div>
+      <div class="dx-card">
+        <span class="dx-notch" aria-hidden="true"></span>
+        <div class="dx-pane on" data-pane="0">
+          <span class="dx-h">Authorization</span>
+          <span class="dx-field mono"><span class="dx-type" style="--n:19">Bearer $CIO_API_KEY</span><em>Copy</em></span>
+          <span class="dx-h">Access</span>
+          <div class="dx-toggles"><span class="dx-tg" style="--t:.5s"><i></i>Enrollments</span><span class="dx-tg" style="--t:.9s"><i></i>Certificates</span></div>
+          <span class="dx-btn">Create key</span>
+        </div>
+        <div class="dx-pane" data-pane="1">
+          <span class="dx-h">Enroll a learner</span>
+          <span class="dx-field mono"><b class="dx-verb">POST</b><span class="dx-type" style="--n:15">/v1/enrollments</span></span>
+          <div class="dx-pair"><span class="dx-field mono sm"><em>courseId</em>crs_…</span><span class="dx-field mono sm"><em>userId</em>usr_…</span></div>
+          <span class="dx-btn">Send request</span>
+          <span class="dx-ok"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.4l2.6 2.6L12 5.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Learner enrolled</span>
+        </div>
+        <div class="dx-pane" data-pane="2">
+          <span class="dx-h">Events</span>
+          <div class="dx-toggles"><span class="dx-tg" style="--t:.3s"><i></i>Enrollment</span><span class="dx-tg" style="--t:.65s"><i></i>Completion</span><span class="dx-tg" style="--t:1s"><i></i>Certificate</span></div>
+          <span class="dx-h">Endpoint</span>
+          <span class="dx-field mono"><span class="dx-type" style="--n:24">yourapp.com/webhooks/cio</span><em>Signed</em></span>
+          <span class="dx-btn">Save webhook</span>
+        </div>
+        <div class="dx-pane" data-pane="3">
+          <span class="dx-h">Connect an agent</span>
+          <div class="dx-agents"><span style="--t:.2s"><img src="https://assets.cdn.clsrio.com/www/home/cursor-logo.png" alt="">Cursor</span><span style="--t:.45s"><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt="">Claude Code</span><span style="--t:.7s"><img src="https://assets.cdn.clsrio.com/www/home/codex-logo.png" alt="">Codex</span><span style="--t:.95s"><img src="https://assets.cdn.clsrio.com/www/home/opencode-logo.svg" alt="">OpenCode</span></div>
+          <span class="dx-h">Server</span>
+          <span class="dx-field mono"><span class="dx-type" style="--n:26">https://mcp.classroomio.com</span></span>
+          <span class="dx-btn">Connect</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY (tana quote) -->
+<section class="block rails" id="story">
+  <h2 class="h2 story-h" data-split>Meet the companies using <span class="tone">ClassroomIO.</span></h2>
+  <div class="ts" id="ts" data-in>
+    <div class="ts-tabs" role="tablist" aria-label="Customer stories">
+      <button class="ts-tab on" role="tab" aria-selected="true"><img class="mono" src="images/sensorhubb-logo.png" alt="SensorHubb"><i></i></button>
+      <button class="ts-tab" role="tab" aria-selected="false"><img src="https://quickeasy.business/wp-content/uploads/elementor/thumbs/QEBS-Logo-scaled-rpo4xlet0k5vfquff4ut3hpo08ojhrufsyof1wjofc.png" alt="QuickEasy Business Systems"><i></i></button>
+      <button class="ts-tab" role="tab" aria-selected="false"><span>dBlocked · Web3 boot camp</span><i></i></button>
+      <button class="ts-tab" role="tab" aria-selected="false"><span>Dr Ozzy · Academic programs</span><i></i></button>
+    </div>
+
+    <div class="ts-slides">
+      <div class="ts-slide on">
+        <div class="ts-card">
+          <div class="ts-photo">
+            <img src="images/sensorhubb-poster.webp" alt="Andrew Bedell of SensorHubb">
+            <span class="play" aria-hidden="true"></span>
+            <span class="story-len">Customer story · 1:39</span>
+          </div>
+          <div class="ts-body">
+            <blockquote>“I think my favorite part of using ClassroomIO, however, has been the extremely professional and prompt response from their team.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Andrew Bedell</b> · Strategy and Operations Intern</span>
+              <span class="ts-chip ts-logo"><img class="mono" src="images/sensorhubb-logo.png" alt="SensorHubb"></span>
+              <a class="ts-link" href="https://assets.cdn.clsrio.com/www/home/andrew-bedell-sensorhubb-website.mp4" target="_blank" rel="noopener">Watch the story <span>›</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>5 stars</b><span>What Andrew would give ClassroomIO</span></div>
+          <div><b>Recommended</b><span>For any SaaS platform that trains its customers</span></div>
+          <div><b>Self-paced</b><span>Customer training that teaches SensorHubb customers the product</span></div>
+        </div>
+      </div>
+
+      <div class="ts-slide">
+        <div class="ts-card">
+          <div class="ts-photo ts-portrait"><img src="images/jody.webp" alt="Jody Segers"></div>
+          <div class="ts-body">
+            <blockquote>“We love it because it helps us get training material out to clients, while clients can also monitor progress of their staff.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Jody Segers</b> · MD, QuickEasy Business Systems</span>
+              <span class="ts-chip ts-logo"><img src="https://quickeasy.business/wp-content/uploads/elementor/thumbs/QEBS-Logo-scaled-rpo4xlet0k5vfquff4ut3hpo08ojhrufsyof1wjofc.png" alt="QuickEasy Business Systems"></span>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>Paid and free</b><span>Training classes set up for their clients</span></div>
+          <div><b>Staff progress</b><span>Clients follow how their own teams are doing</span></div>
+          <div><b>Customised</b><span>ClassroomIO tailored to their needs with our team</span></div>
+        </div>
+      </div>
+
+      <div class="ts-slide">
+        <div class="ts-card">
+          <div class="ts-photo"><img src="https://assets.cdn.clsrio.com/blog/pranav-web3-bootcamp-hit-100students.png" alt="Pranav Singhal's Web3 boot camp on ClassroomIO"></div>
+          <div class="ts-body">
+            <blockquote>“ClassroomIO really helped me bootstrap my program. The dashboard is extremely intuitive. I could navigate most of it without any help.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Pranav Singhal</b> · Web3 instructor, dBlocked</span>
+              <a class="ts-link" href="https://classroomio.com/blog/pranav-hits-100-students">Read the story <span>›</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>100+</b><span>Students in his Web3 boot camp</span></div>
+          <div><b>One flat plan</b><span>Instead of paying for a site template and plugins</span></div>
+          <div><b>Self-serve</b><span>Found his way around the dashboard without support</span></div>
+        </div>
+      </div>
+
+      <div class="ts-slide">
+        <div class="ts-card">
+          <div class="ts-photo ts-portrait"><img src="images/drozzy.webp" alt="Dr Ozzy"></div>
+          <div class="ts-body">
+            <blockquote>“ClassroomIO helps me focus on the learning experience rather than getting caught up in a complicated platform.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Dr Ozzy</b> · Academic Programs Coordinator</span>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>Fast</b><span>And user friendly, in Dr Ozzy's words</span></div>
+          <div><b>Recommended</b><span>To friends and colleagues who deliver courses</span></div>
+          <div><b>Learner first</b><span>Time goes into the learning, not the platform</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING · content flows into ClassroomIO -->
+<section class="fx" id="create" aria-label="Ready to help customers get more from your product?">
+  <div class="fx-copy">
+    <h2 class="h2" data-split>Ready to help<br> customers get more<br> <span class="tone">from your product?</span></h2>
+    <p class="sub" data-in>Start free, or talk to us if you want a hand setting things up.</p>
+    <div class="fx-ctas" data-in><a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Start for free</a><a class="btn btn-line btn-lg" href="https://cal.com/classroomio/demo">Book a demo</a></div>
+  </div>
+  <div class="fx-stage" id="fx-stage" role="img" aria-label="Documents, videos, slides, images, SCORM packages and AI agents flowing into ClassroomIO and coming out as a course plan, lessons and quizzes, a branded academy and certificates">
+    <svg class="fx-svg" id="fx-svg" aria-hidden="true"></svg>
+    <span class="fx-tip" id="fx-tip"></span>
+  </div>
+</section>
+</main>
+
+<footer class="ft rails" id="about" data-site-footer></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="app.js?v=18"></script>
+<script src="iso.js?v=4"></script>
+<script src="mobile-menu.js?v=4"></script>
+<script src="site-footer.js?v=6"></script>
+<script src="flow.js?v=7"></script>
+<script src="dev.js?v=1"></script>
+</body>
+</html>
