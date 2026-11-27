@@ -26,7 +26,7 @@ export async function createGroup(values: TNewGroup, dbClient: DbOrTxClient = db
 
 /**
  * Adds one group member. A profile that already has a row keeps it; an email-only row for the same email is linked
- * to the profile and given the requested role, so linking never grants a role the caller did not ask for.
+ * to the profile and given the requested role, except that a student request never demotes a staff row.
  */
 export async function addGroupMember(values: TNewGroupmember, dbClient: DbOrTxClient = db) {
   try {
@@ -46,7 +46,9 @@ export async function addGroupMember(values: TNewGroupmember, dbClient: DbOrTxCl
         .limit(1);
 
       const linkedNow = Boolean(claim && claim.claimed > 0);
-      if (existing && linkedNow && values.roleId !== undefined && Number(existing.roleId) !== Number(values.roleId)) {
+      const demotesStaff = values.roleId === ROLE.STUDENT && Number(existing?.roleId) !== ROLE.STUDENT;
+      const changesRole = values.roleId !== undefined && Number(existing?.roleId) !== Number(values.roleId);
+      if (existing && linkedNow && changesRole && !demotesStaff) {
         return dbClient
           .update(schema.groupmember)
           .set({ roleId: values.roleId })
