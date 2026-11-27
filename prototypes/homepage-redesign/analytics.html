@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClassroomIO Analytics</title>
+<meta name="description" content="See how every learner is doing, click any number to find the people behind it, and send a reminder before anyone falls behind.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css?v=55">
+<link rel="stylesheet" href="mobile-menu.css?v=5">
+<link rel="stylesheet" href="site-footer.css?v=5">
+<link rel="stylesheet" href="sections.css?v=3">
+<link rel="stylesheet" href="analytics.css?v=7">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+
+<div class="topbar">Prototype for review · not the live site <a href="index.html">Back to homepage →</a></div>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="logo" href="index.html" aria-label="ClassroomIO home"><img src="images/logo.svg" width="26" height="19" alt=""><span>ClassroomIO</span></a>
+    <nav class="nav-links" aria-label="Main">
+      <div class="dd">
+        <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="product-menu">Product <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu" id="product-menu" hidden>
+          <a class="dd-item" href="ai-agents.html"><i class="dd-ic">✦</i><span><b>AI Agents</b><em>Connect Claude, Cursor or any MCP client</em></span></a>
+          <a class="dd-item" href="branded-academies.html"><i class="dd-ic">▣</i><span><b>Branded Academies</b><em>Your domain, your colours, your sign-in</em></span></a>
+          <a class="dd-item" href="analytics.html" aria-current="page"><i class="dd-ic">◔</i><span><b>Analytics</b><em>Track progress, completion and engagement</em></span></a>
+          <a class="dd-item" href="integrations.html"><i class="dd-ic">⇄</i><span><b>Integrations</b><em>Connect Zapier and the tools your team uses</em></span></a>
+          <a class="dd-item" href="plugins.html"><i class="dd-ic">◈</i><span><b>Plugins</b><em>Add custom widgets to your platform</em></span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="pricing.html">Pricing</a>
+      <a class="nav-link" href="about.html">About</a>
+      <div class="dd">
+        <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="solutions-menu">Solutions <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu wide" id="solutions-menu" hidden>
+          <div class="dd-cols">
+            <div class="dd-col">
+              <p class="dd-h">By use case</p>
+          <a class="dd-item" href="https://classroomio.com/customer-education"><i class="dd-ic">☺</i><span><b>Customer Education</b><em>Help customers get more value from your product</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/partner-training"><i class="dd-ic">∞</i><span><b>Partner Training</b><em>Certify resellers and partners at scale</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/cohort-training"><i class="dd-ic">◎</i><span><b>Cohort Training</b><em>Run customers through a course together</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/certification-programs"><i class="dd-ic">✦</i><span><b>Certification Programs</b><em>Give customers and partners a certificate when they finish</em></span></a>
+            </div>
+            <div class="dd-col dd-ind">
+              <p class="dd-h">By industry</p>
+              <div class="dd-grid">
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">‹›</i><span><b>Software</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">⚙</i><span><b>Manufacturing</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">⌂</i><span><b>Public Sector</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">◫</i><span><b>Retail</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">▤</i><span><b>IT and Tech Services</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">$</i><span><b>Financial Services</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">✚</i><span><b>Healthcare</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">✎</i><span><b>Education</b></span></a>
+              </div>
+            </div>
+          </div>
+          <div class="dd-foot"><span>Not sure where to start?</span><a href="https://cal.com/classroomio/demo">Talk to our team →</a></div>
+        </div>
+      </div>
+      <div class="dd">
+        <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="resources-menu">Resources <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu end" id="resources-menu" hidden>
+          <a class="dd-item" href="customers.html"><i class="dd-ic">☺</i><span><b>Customer stories</b><em>See how teams use ClassroomIO</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/blog"><i class="dd-ic">✎</i><span><b>Blog</b><em>Articles from the ClassroomIO team</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/help"><i class="dd-ic">?</i><span><b>Help center</b><em>Guides for setting up and using ClassroomIO</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/changelog"><i class="dd-ic">◷</i><span><b>Changelog</b><em>What changed in each release</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/roadmap"><i class="dd-ic">→</i><span><b>Roadmap</b><em>What we are building next</em></span></a>
+        </div>
+      </div>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-line hide-sm" href="https://classroomio.com/login">Log in</a>
+      <a class="btn btn-blue" href="https://classroomio.com/signup">Start for free</a>
+      <button class="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sheet" id="burger"><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="sheet" id="sheet" hidden></div>
+</header>
+<main id="top" class="an">
+
+<section class="an-hero" id="hero" aria-labelledby="an-title">
+  <div class="an-hero-copy">
+    <p class="an-eyebrow"><span class="an-live-dot"></span>Analytics</p>
+    <h1 class="an-title" id="an-title">
+      <span class="ln"><span>See who's learning,</span></span>
+      <span class="ln"><span><span class="tone">who's stuck, and why</span></span></span>
+    </h1>
+    <p class="an-sub">ClassroomIO keeps track of progress, scores and logins for every learner. Click any number to see the people behind it, so you know exactly who needs a hand.</p>
+    <div class="an-ctas">
+      <a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Start for free</a>
+      <a class="btn btn-line btn-lg" href="#how">See how it works <span aria-hidden="true">↓</span></a>
+    </div>
+  </div>
+
+  <div class="an-stage" id="an-stage">
+    <div class="an-dash" id="an-dash">
+      <div class="dz-top">
+        <div class="dz-title">
+          <span class="dz-crumb">Cohorts / Spring onboarding</span>
+          <b>Analytics <span class="dz-live" title="Updated a moment ago"><i></i>Live</span></b>
+        </div>
+        <div class="dz-range" role="group" aria-label="Time range">
+          <button type="button" data-range="all" aria-pressed="true">All time</button>
+          <button type="button" data-range="7" aria-pressed="false">7 days</button>
+          <button type="button" data-range="30" aria-pressed="false">30 days</button>
+          <button type="button" data-range="90" aria-pressed="false">90 days</button>
+        </div>
+      </div>
+
+      <div class="dz-kpis">
+        <div class="dz-kpi"><span class="dz-k" data-k="login">Logged in today</span><b data-v="login">0</b><em data-h="login"></em></div>
+        <div class="dz-kpi"><span class="dz-k">Average progress</span><b data-v="progress" data-suffix="%">0</b><em data-h="progress"></em></div>
+        <div class="dz-kpi"><span class="dz-k">Average score</span><b data-v="score" data-suffix="%">0</b><em data-h="score"></em></div>
+        <button type="button" class="dz-kpi dz-click is-red" data-drill="overdue"><span class="dz-k">Overdue <i class="dz-now">Now</i></span><b data-v="overdue">0</b><em>of 180 students</em><span class="dz-go" aria-hidden="true">View students →</span></button>
+        <button type="button" class="dz-kpi dz-click" data-drill="completed"><span class="dz-k">Completed</span><b data-v="completed">0</b><em data-h="completed"></em><span class="dz-go" aria-hidden="true">View students →</span></button>
+      </div>
+
+      <div class="dz-grid">
+        <div class="dz-card dz-line">
+          <div class="dz-ch"><b>Scores by exercise</b><span>Average, with the middle half of learners shaded</span></div>
+          <svg class="dz-svg" id="dz-line" viewBox="0 0 400 150" preserveAspectRatio="none" aria-hidden="true">
+            <g class="dz-gridlines"><line x1="0" y1="30" x2="400" y2="30"/><line x1="0" y1="75" x2="400" y2="75"/><line x1="0" y1="120" x2="400" y2="120"/></g>
+            <path class="dz-band" id="dz-band" d=""/>
+            <path class="dz-path" id="dz-path" d=""/>
+            <g id="dz-dots"></g>
+          </svg>
+          <div class="dz-xl"><span>Quiz 1</span><span>Quiz 2</span><span>Task 1</span><span>Quiz 3</span><span>Task 2</span><span>Final</span></div>
+        </div>
+
+        <div class="dz-card dz-donut">
+          <div class="dz-ch"><b>Students by status <i class="dz-now">Now</i></b><span>Click a slice to see who</span></div>
+          <div class="dz-donut-in">
+            <svg viewBox="0 0 120 120" aria-hidden="true" id="dz-ring" class="dz-ring">
+              <circle class="dz-ring-bg" cx="60" cy="60" r="46"/>
+            </svg>
+            <div class="dz-donut-c"><b id="dz-total">180</b><span>students</span></div>
+          </div>
+          <ul class="dz-legend" id="dz-legend"></ul>
+        </div>
+
+        <div class="dz-card dz-reasons">
+          <div class="dz-ch"><b>Needs attention, by reason <i class="dz-now">Now</i></b><span>Click a bar to see who</span></div>
+          <ul class="dz-bars" id="dz-bars"></ul>
+        </div>
+      </div>
+
+      <aside class="dz-sheet" id="dz-sheet" aria-hidden="true">
+        <div class="dz-sheet-h">
+          <div><b id="dz-sheet-title">12 students</b><span id="dz-sheet-sub">Overdue</span></div>
+          <button type="button" class="dz-x" id="dz-sheet-x" aria-label="Close list"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <ul class="dz-people" id="dz-people"></ul>
+        <div class="dz-sheet-f"><span>Export as CSV</span><span class="pri">Open in Students tab</span></div>
+      </aside>
+    </div>
+    <p class="an-hint" id="an-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2.5l15 8.2-6.6 1.6-3.1 6.2z"/></svg>Click any number, slice or bar to see who's behind it</p>
+  </div>
+</section>
+
+<section class="st" id="how" aria-labelledby="st-title">
+  <div class="st-head">
+    <p class="an-eyebrow plain" data-rv>How it works</p>
+    <h2 class="h2" id="st-title" data-rv style="--rv:1">From a number, to a name,<br><span class="tone">to a nudge</span></h2>
+    <p class="sub" data-rv style="--rv:2">Most dashboards stop at the number. ClassroomIO takes you from "something's wrong" to "here's who, and here's a reminder" in three clicks.</p>
+  </div>
+
+  <div class="st-grid">
+    <div class="st-stage-wrap">
+      <div class="st-stage" id="st-stage" data-state="0">
+        <div class="st-bar"><i></i><i></i><i></i><span>Spring onboarding · Analytics</span></div>
+
+        <div class="st-scene st-s0">
+          <div class="st-kpis">
+            <div class="st-kpi"><span>Average progress</span><b>64%</b></div>
+            <div class="st-kpi"><span>Average score</span><b>71%</b></div>
+            <div class="st-kpi st-red" id="st-overdue"><span>Overdue <i class="dz-now">Now</i></span><b><span class="st-count" data-to="12">12</span></b><em>7% of the cohort</em></div>
+            <div class="st-kpi"><span>Completed</span><b>38</b></div>
+          </div>
+          <div class="st-note"><span class="st-flag">!</span>The card turns red when more than one in twenty learners are behind.</div>
+          <span class="st-cursor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 2.5l15 8.2-6.6 1.6-3.1 6.2z"/></svg></span>
+        </div>
+
+        <div class="st-scene st-s1">
+          <div class="st-sheet-h"><b>12 students</b><span>Overdue</span></div>
+          <ul class="st-list">
+            <li><img src="images/av-a.jpg" alt=""><span><b>Amara Nwosu</b><em>Goal: Finish module 2 · 3 days late</em></span><i class="pill risk">At risk</i></li>
+            <li><img src="images/av-b.jpg" alt=""><span><b>Jide Musa</b><em>No login for 4 days</em></span><i class="pill risk">At risk</i></li>
+            <li><img src="images/av-c.jpg" alt=""><span><b>Kemi Ade</b><em>Average score 46%</em></span><i class="pill risk">At risk</i></li>
+            <li><img src="images/av-d.jpg" alt=""><span><b>Tomi Bello</b><em>Goal: Product quiz · 1 day late</em></span><i class="pill risk">At risk</i></li>
+            <li><img src="images/av-e.jpg" alt=""><span><b>Chen Li</b><em>Video attendance 52%</em></span><i class="pill lag">Lagging</i></li>
+          </ul>
+        </div>
+
+        <div class="st-scene st-s2">
+          <div class="st-sheet-h"><b>Overdue, with reminders</b><span>12 overdue</span></div>
+          <ul class="st-list st-remind">
+            <li><img src="images/av-a.jpg" alt=""><span><b>Amara Nwosu</b><em>Finish module 2 · 3 days late</em></span><i class="st-send">Send reminder</i></li>
+            <li><img src="images/av-d.jpg" alt=""><span><b>Tomi Bello</b><em>Product quiz · 1 day late</em></span><i class="st-send">Send reminder</i></li>
+            <li><img src="images/av-f.jpg" alt=""><span><b>Sofia Ruiz</b><em>Setup checklist · 2 days late</em></span><i class="st-send">Send reminder</i></li>
+            <li><img src="images/av-b.jpg" alt=""><span><b>Jide Musa</b><em>Finish module 1 · 5 days late</em></span><i class="st-send skip">Reminded today</i></li>
+          </ul>
+          <div class="st-all"><span class="st-all-btn">Remind all 12 overdue students</span><div class="st-toast"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Sent to 11 students. 1 skipped: already reminded today.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <ol class="st-steps" id="st-steps">
+      <li class="st-step on" data-step="0">
+        <span class="st-n">01</span>
+        <h3>Spot the problem</h3>
+        <p>Your summary cards show progress, scores, overdue work and completions for a course, a cohort or your whole academy. When more than one in twenty learners fall behind, the Overdue card turns red, so you notice without digging.</p>
+      </li>
+      <li class="st-step" data-step="1">
+        <span class="st-n">02</span>
+        <h3>See exactly who</h3>
+        <p>Click the number and a list opens with the learners behind it. You see why each one was flagged: no login for two days, a score under 50%, or work that's past its due date.</p>
+      </li>
+      <li class="st-step" data-step="2">
+        <span class="st-n">03</span>
+        <h3>Give them a nudge</h3>
+        <p>Email one learner a reminder, or remind everyone with an overdue goal in one click. If someone already had a reminder today, ClassroomIO skips them, so nobody gets spammed.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="sc" id="views" aria-labelledby="sc-title">
+  <div class="sc-head">
+    <p class="an-eyebrow plain" data-rv>Every view you need</p>
+    <h2 class="h2" id="sc-title" data-rv style="--rv:1">One place to see how<br><span class="tone">your whole academy is doing</span></h2>
+  </div>
+
+  <div class="sc-bento">
+    <article class="sc-tile sc-course" data-rv>
+      <div class="sc-copy"><span class="sc-tag">Course</span><h3>Find the lesson where learners give up</h3><p>See how many learners finish each lesson, and which exercises and questions trip them up most.</p></div>
+      <div class="sc-drop" id="sc-drop">
+        <div class="sc-drop-bars" id="sc-drop-bars"></div>
+        <p class="sc-drop-note" id="sc-drop-note">The steepest fall is between Lesson 4 and Lesson 5.</p>
+      </div>
+    </article>
+
+    <article class="sc-tile sc-academy" data-rv style="--rv:1">
+      <div class="sc-copy"><span class="sc-tag">Academy</span><h3>Every course and cohort at a glance</h3><p>Progress, completions and certificates across everything you teach.</p></div>
+      <div class="sc-big">
+        <div class="sc-stat"><span>Average progress</span><b><span data-count="64">0</span>%</b><em class="up">+6 this week</em></div>
+        <svg class="sc-spark" viewBox="0 0 200 54" preserveAspectRatio="none" aria-hidden="true"><path d="M0 46 L25 42 L50 44 L75 34 L100 36 L125 26 L150 22 L175 16 L200 10"/><path class="fill" d="M0 46 L25 42 L50 44 L75 34 L100 36 L125 26 L150 22 L175 16 L200 10 L200 54 L0 54Z"/></svg>
+        <div class="sc-mini"><span><b data-count="1240">0</b> completions</span><span><b data-count="980">0</b> certificates</span></div>
+      </div>
+    </article>
+
+    <article class="sc-tile sc-market" data-rv>
+      <div class="sc-copy"><span class="sc-tag">Marketing</span><h3>See how people find you</h3><p>Follow visitors from your home page to a course page, to signing up, to finishing.</p></div>
+      <ul class="sc-funnel">
+        <li style="--w:100%"><span>Home page views</span><b>4,820</b></li>
+        <li style="--w:62%"><span>Course page views</span><b>2,990</b></li>
+        <li style="--w:24%"><span>Enrollments</span><b>1,150</b></li>
+        <li style="--w:11%"><span>Completions</span><b>530</b></li>
+      </ul>
+    </article>
+
+    <article class="sc-tile sc-comp" data-rv style="--rv:1">
+      <div class="sc-copy"><span class="sc-tag">Compliance</span><h3>Know who's covered and who's expiring</h3><p>Filter by status and export the list when you need it for your records.</p></div>
+      <div class="sc-stack" id="sc-stack">
+        <i style="--w:58%;--c:#19a463" data-label="Compliant · 58%"></i><i style="--w:14%;--c:#f0a020" data-label="Expiring soon · 14%"></i><i style="--w:8%;--c:#8fb0ff" data-label="In grace period · 8%"></i><i style="--w:12%;--c:#e5484d" data-label="Non-compliant · 12%"></i><i style="--w:8%;--c:#d4d5da" data-label="Not started · 8%"></i>
+      </div>
+      <p class="sc-stack-l" id="sc-stack-l">Hover the bar to read each status</p>
+    </article>
+
+    <article class="sc-tile sc-ai" data-rv style="--rv:2">
+      <div class="sc-copy"><span class="sc-tag">AI assistant</span><h3>Or just ask</h3><p>Connect your AI assistant and ask about your numbers in plain English. <a href="ai-agents.html">See AI Agents →</a></p></div>
+      <div class="sc-chat">
+        <p class="q">Who in Spring onboarding is overdue?</p>
+        <p class="a" id="sc-answer"></p>
+      </div>
+    </article>
+  </div>
+
+  <ul class="sc-facts" data-rv>
+    <li><b>Updates on its own</b><span>Figures refresh in the background while the page is open.</span></li>
+    <li><b>Pick your time range</b><span>All time, or the last 7, 30 or 90 days.</span></li>
+    <li><b>Export any chart</b><span>Download the rows behind any chart as a CSV file.</span></li>
+    <li><b>Only your team sees it</b><span>Learners never see analytics.</span></li>
+  </ul>
+
+  <div class="sc-cta" data-rv>
+    <a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Start for free</a>
+    <a class="btn btn-line btn-lg" href="https://cal.com/classroomio/demo">Book a demo</a>
+  </div>
+</section>
+
+<section class="ab-sec" id="story" aria-label="Customer stories">
+  <h2 class="h2 story-h" data-rv>Meet the companies using <span class="tone">ClassroomIO.</span></h2>
+  <div class="ts" id="ts" data-rv>
+    <div class="ts-tabs" role="tablist" aria-label="Customer stories">
+      <button class="ts-tab on" role="tab" aria-selected="true"><img class="mono" src="images/sensorhubb-logo.png" alt="SensorHubb"><i></i></button>
+      <button class="ts-tab" role="tab" aria-selected="false"><img src="https://quickeasy.business/wp-content/uploads/elementor/thumbs/QEBS-Logo-scaled-rpo4xlet0k5vfquff4ut3hpo08ojhrufsyof1wjofc.png" alt="QuickEasy Business Systems"><i></i></button>
+      <button class="ts-tab" role="tab" aria-selected="false"><span>dBlocked · Web3 boot camp</span><i></i></button>
+      <button class="ts-tab" role="tab" aria-selected="false"><span>Dr Ozzy · Academic programs</span><i></i></button>
+    </div>
+
+    <div class="ts-slides">
+      <div class="ts-slide on">
+        <div class="ts-card">
+          <div class="ts-photo">
+            <img src="images/sensorhubb-poster.webp" alt="Andrew Bedell of SensorHubb">
+            <span class="play" aria-hidden="true"></span>
+            <span class="story-len">Customer story · 1:39</span>
+          </div>
+          <div class="ts-body">
+            <blockquote>“I think my favorite part of using ClassroomIO, however, has been the extremely professional and prompt response from their team.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Andrew Bedell</b> · Strategy and Operations Intern</span>
+              <span class="ts-chip ts-logo"><img class="mono" src="images/sensorhubb-logo.png" alt="SensorHubb"></span>
+              <a class="ts-link" href="https://assets.cdn.clsrio.com/www/home/andrew-bedell-sensorhubb-website.mp4" target="_blank" rel="noopener">Watch the story <span>›</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>5 stars</b><span>What Andrew would give ClassroomIO</span></div>
+          <div><b>Recommended</b><span>For any SaaS platform that trains its customers</span></div>
+          <div><b>Self-paced</b><span>Customer training that teaches SensorHubb customers the product</span></div>
+        </div>
+      </div>
+
+      <div class="ts-slide">
+        <div class="ts-card">
+          <div class="ts-photo ts-portrait"><img src="images/jody.webp" alt="Jody Segers"></div>
+          <div class="ts-body">
+            <blockquote>“We love it because it helps us get training material out to clients, while clients can also monitor progress of their staff.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Jody Segers</b> · MD, QuickEasy Business Systems</span>
+              <span class="ts-chip ts-logo"><img src="https://quickeasy.business/wp-content/uploads/elementor/thumbs/QEBS-Logo-scaled-rpo4xlet0k5vfquff4ut3hpo08ojhrufsyof1wjofc.png" alt="QuickEasy Business Systems"></span>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>Paid and free</b><span>Training classes set up for their clients</span></div>
+          <div><b>Staff progress</b><span>Clients follow how their own teams are doing</span></div>
+          <div><b>Customised</b><span>ClassroomIO tailored to their needs with our team</span></div>
+        </div>
+      </div>
+
+      <div class="ts-slide">
+        <div class="ts-card">
+          <div class="ts-photo"><img src="https://assets.cdn.clsrio.com/blog/pranav-web3-bootcamp-hit-100students.png" alt="Pranav Singhal's Web3 boot camp on ClassroomIO"></div>
+          <div class="ts-body">
+            <blockquote>“ClassroomIO really helped me bootstrap my program. The dashboard is extremely intuitive. I could navigate most of it without any help.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Pranav Singhal</b> · Web3 instructor, dBlocked</span>
+              <a class="ts-link" href="https://classroomio.com/blog/pranav-hits-100-students">Read the story <span>›</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>100+</b><span>Students in his Web3 boot camp</span></div>
+          <div><b>One flat plan</b><span>Instead of paying for a site template and plugins</span></div>
+          <div><b>Self-serve</b><span>Found his way around the dashboard without support</span></div>
+        </div>
+      </div>
+
+      <div class="ts-slide">
+        <div class="ts-card">
+          <div class="ts-photo ts-portrait"><img src="images/drozzy.webp" alt="Dr Ozzy"></div>
+          <div class="ts-body">
+            <blockquote>“ClassroomIO helps me focus on the learning experience rather than getting caught up in a complicated platform.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Dr Ozzy</b> · Academic Programs Coordinator</span>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>Fast</b><span>And user friendly, in Dr Ozzy's words</span></div>
+          <div><b>Recommended</b><span>To friends and colleagues who deliver courses</span></div>
+          <div><b>Learner first</b><span>Time goes into the learning, not the platform</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="fx" id="create" aria-label="Ready to help customers get more from your product?">
+  <div class="fx-copy">
+    <h2 class="h2" data-rv>Ready to help<br> customers get more<br> <span class="tone">from your product?</span></h2>
+    <p class="sub" data-rv>Start free, or talk to us if you want a hand setting things up.</p>
+    <div class="fx-ctas" data-rv><a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Start for free</a><a class="btn btn-line btn-lg" href="https://cal.com/classroomio/demo">Book a demo</a></div>
+  </div>
+  <div class="fx-stage" id="fx-stage" role="img" aria-label="Documents, videos, slides, images, SCORM packages and AI agents flowing into ClassroomIO and coming out as a course plan, lessons and quizzes, a branded academy and certificates">
+    <svg class="fx-svg" id="fx-svg" aria-hidden="true"></svg>
+    <span class="fx-tip" id="fx-tip"></span>
+  </div>
+</section>
+
+</main>
+
+<footer class="ft rails" data-site-footer></footer>
+
+<script src="mobile-menu.js?v=4"></script>
+<script src="site-footer.js?v=6"></script>
+<script src="analytics.js?v=3"></script>
+<script src="stories.js?v=2"></script>
+<script src="flow.js?v=7"></script>
+</body>
+</html>

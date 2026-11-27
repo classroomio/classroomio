@@ -19,10 +19,10 @@
       title: 'Product',
       links: [
         ['AI Agents', 'index.html#ncard-agents'],
-        ['Branded Academies', 'index.html#bx-academy'],
-        ['Analytics', 'index.html#hs'],
-        ['Integrations', 'index.html#bx-integrations'],
-        ['Plugins', 'index.html#bx-plugins'],
+        ['Branded Academies', 'branded-academies.html'],
+        ['Analytics', 'analytics.html'],
+        ['Integrations', 'integrations.html'],
+        ['Plugins', 'plugins.html'],
         ['Pricing', 'pricing.html']
       ]
     },

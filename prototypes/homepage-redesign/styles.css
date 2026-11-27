@@ -1,4 +1,5 @@
 :root {
+  --hero-title: clamp(40px, 6.6vw, 82px);
   --blue: #0542cc;
   --blue-h: #0233bd;
   --blue-t: #eaf0fd;
@@ -235,7 +236,7 @@ figure {
 /* type */
 .h1 {
   font-weight: 500;
-  font-size: clamp(40px, 6.6vw, 82px);
+  font-size: var(--hero-title);
   line-height: 1.02;
   letter-spacing: -0.045em;
   max-width: 16ch;

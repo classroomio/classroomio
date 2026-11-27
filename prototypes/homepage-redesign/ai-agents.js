@@ -65,17 +65,91 @@
   }
 
   const hero = document.getElementById('hero');
-  if (finePointer && hero) {
-    hero.addEventListener('pointermove', (event) => {
-      const bounds = hero.getBoundingClientRect();
-      hero.style.setProperty('--mx', `${event.clientX - bounds.left}px`);
-      hero.style.setProperty('--my', `${event.clientY - bounds.top}px`);
+  if (hero) {
+    const toggle = hero.querySelector('.ag-switch');
+    const askText = hero.querySelector('.ag-q-text');
+    const done = hero.querySelector('.ag-done');
+    const doneTool = done.querySelector('b');
+    const doneMessage = done.querySelector('span');
+    const asks = [
+      {
+        prompt: 'Turn our setup guide into a 4-lesson onboarding course',
+        tool: 'create_course',
+        result: 'Draft ready, still unpublished'
+      },
+      {
+        prompt: 'Invite the March sales hires to Product Onboarding',
+        tool: 'invite_students_to_cohort',
+        result: '18 invites sent'
+      },
+      {
+        prompt: 'How many learners finished SOC 2 this month?',
+        tool: 'get_course_analytics',
+        result: '87% have finished'
+      },
+      {
+        prompt: 'Add a 5-question quiz to the security lesson',
+        tool: 'add_exercise_question',
+        result: '5 questions added'
+      }
+    ];
+
+    const setConnected = (connected) => {
+      hero.classList.toggle('on', connected);
+      toggle.setAttribute('aria-checked', String(connected));
+      if (!connected) return;
+
+      hero.classList.remove('ripple');
+      void hero.offsetWidth;
+      hero.classList.add('ripple');
+    };
+    toggle.addEventListener('click', () => setConnected(!hero.classList.contains('on')));
+
+    if (finePointer && !reduceMotion) {
+      hero.addEventListener('pointermove', (event) => {
+        const bounds = hero.getBoundingClientRect();
+        hero.style.setProperty('--px', (((event.clientX - bounds.left) / bounds.width - 0.5) * 2).toFixed(3));
+        hero.style.setProperty('--py', (((event.clientY - bounds.top) / bounds.height - 0.5) * 2).toFixed(3));
+      });
+      hero.addEventListener('pointerleave', () => {
+        hero.style.setProperty('--px', '0');
+        hero.style.setProperty('--py', '0');
+      });
+    }
+
+    const playAsks = async () => {
+      for (let index = 0; ; index = (index + 1) % asks.length) {
+        const ask = asks[index];
+        done.classList.remove('show');
+        while (!hero.classList.contains('on')) await wait(300);
+
+        if (reduceMotion) {
+          askText.textContent = ask.prompt;
+        } else {
+          askText.textContent = '';
+          await wait(400);
+          for (const character of ask.prompt) {
+            askText.textContent += character;
+            await wait(34);
+          }
+        }
+        await wait(600);
+        doneTool.textContent = ask.tool;
+        doneMessage.textContent = ask.result;
+        done.classList.add('show');
+        await wait(3200);
+      }
+    };
+
+    whenVisible(hero, () => {
+      setTimeout(() => setConnected(true), reduceMotion ? 0 : 1100);
+      playAsks();
     });
   }
 
   if (finePointer && !reduceMotion) {
     document.querySelectorAll('[data-tilt]').forEach((element) => {
-      const maxTilt = element.classList.contains('ag-card') ? 7 : 5;
+      const maxTilt = 5;
       element.addEventListener('pointermove', (event) => {
         const bounds = element.getBoundingClientRect();
         const ratioX = (event.clientX - bounds.left) / bounds.width;
@@ -92,103 +166,6 @@
         element.style.setProperty('--ty', '0deg');
       });
     });
-  }
-
-  const cubes = document.getElementById('ag-cubes');
-  if (cubes) {
-    const cubeSpecs = [
-      { x: -44, y: 44, z: 44, kind: '', glyph: '/mcp' },
-      { x: 44, y: 44, z: 44, kind: 'glass', glyph: '✦' },
-      { x: -44, y: -44, z: 44, kind: 'grid', glyph: '' },
-      { x: -44, y: 44, z: -44, kind: '', glyph: '{ }' },
-      { x: 44, y: 44, z: -44, kind: 'grid', glyph: '' }
-    ];
-    cubeSpecs.forEach((spec, index) => {
-      const cube = document.createElement('div');
-      cube.className = `ag-cube ${spec.kind}`;
-      cube.style.cssText = `--x:${spec.x}px;--y:${spec.y}px;--z:${spec.z}px;--d:${index * -1.1}s`;
-      cube.innerHTML = '<i></i>'.repeat(6);
-      cube.querySelectorAll('i').forEach((face) => (face.textContent = spec.glyph));
-      cubes.append(cube);
-    });
-
-    const card = cubes.closest('.ag-card');
-    let pointerYaw = 0;
-    let pointerPitch = 0;
-    let spin = 0;
-    if (finePointer) {
-      card.addEventListener('pointermove', (event) => {
-        const bounds = card.getBoundingClientRect();
-        pointerYaw = ((event.clientX - bounds.left) / bounds.width - 0.5) * 50;
-        pointerPitch = ((event.clientY - bounds.top) / bounds.height - 0.5) * -24;
-      });
-      card.addEventListener('pointerleave', () => {
-        pointerYaw = 0;
-        pointerPitch = 0;
-      });
-    }
-    let currentYaw = -36;
-    let currentPitch = -24;
-    const animateCubes = () => {
-      if (!reduceMotion) spin += 0.12;
-      const targetYaw = -36 + Math.sin(spin / 40) * 14 + pointerYaw;
-      const targetPitch = -24 + pointerPitch;
-      currentYaw += (targetYaw - currentYaw) * 0.06;
-      currentPitch += (targetPitch - currentPitch) * 0.06;
-      cubes.style.setProperty('--ry', `${currentYaw}deg`);
-      cubes.style.setProperty('--rx', `${currentPitch}deg`);
-      requestAnimationFrame(animateCubes);
-    };
-    animateCubes();
-  }
-
-  const plateCard = document.querySelector('.ag-plates')?.closest('.ag-card');
-  if (plateCard) {
-    const steps = [...plateCard.querySelectorAll('.ag-plate-key li')];
-    const topPlate = plateCard.querySelector('.ag-plate.p1');
-    let activeStep = 0;
-    const tick = () => {
-      steps.forEach((step, index) => step.classList.toggle('on', index <= activeStep));
-      topPlate.classList.toggle('ok', activeStep === steps.length - 1);
-      activeStep = (activeStep + 1) % (steps.length + 1);
-      if (activeStep === steps.length) {
-        setTimeout(() => {
-          activeStep = 0;
-          steps.forEach((step) => step.classList.remove('on'));
-          topPlate.classList.remove('ok');
-        }, 1600);
-      }
-    };
-    whenVisible(plateCard, () => {
-      tick();
-      setInterval(() => {
-        if (activeStep < steps.length) tick();
-      }, 1100);
-    });
-  }
-
-  const heroChat = document.getElementById('ag-hero-chat');
-  if (heroChat) {
-    const [question, typing, answer] = heroChat.querySelectorAll('.ag-bub');
-    const playChat = async () => {
-      for (;;) {
-        [question, typing, answer].forEach((bubble) => bubble.classList.remove('show'));
-        await wait(700);
-        question.classList.add('show');
-        await wait(900);
-        typing.classList.add('show');
-        await wait(1500);
-        typing.classList.remove('show');
-        answer.classList.add('show');
-        await wait(5200);
-      }
-    };
-    if (reduceMotion) {
-      question.classList.add('show');
-      answer.classList.add('show');
-    } else {
-      whenVisible(heroChat.closest('.ag-card'), playChat);
-    }
   }
 
   const scenarios = [
@@ -404,51 +381,312 @@
     showCommand('claude');
   }
 
-  const storyRow = document.getElementById('ag-stories');
-  if (storyRow) {
-    const stories = [...storyRow.querySelectorAll('.ag-story')];
-    const segmentMs = 1800;
-    let active = 0;
+  const howGrid = document.getElementById('hw');
+  if (howGrid) {
+    const steps = [...howGrid.querySelectorAll('.hw-steps li')];
+    const panels = [...howGrid.querySelectorAll('.hw-panel')];
+    const pill = document.getElementById('hw-pill');
+    const labels = ['Connect your assistant', 'Approve the connection', 'Start working with your academy'];
+    const stepMs = 5000;
 
     const activate = (index) => {
-      active = index;
-      stories.forEach((story, storyIndex) => {
-        story.classList.toggle('on', storyIndex === index);
-        story.classList.toggle('done', storyIndex < index);
-        story.classList.remove('approved');
+      steps.forEach((step, stepIndex) => {
+        step.classList.remove('on');
+        step.classList.toggle('done', stepIndex < index);
       });
-      if (index === 1) setTimeout(() => stories[1].classList.add('approved'), 1500);
-      if (window.innerWidth <= 900 && storyRow.scrollWidth > storyRow.clientWidth) {
-        const target = stories[index];
-        storyRow.scrollTo({
-          left: target.offsetLeft - (storyRow.clientWidth - target.offsetWidth) / 2,
-          behavior: 'smooth'
-        });
-      }
+      void howGrid.offsetWidth;
+      steps[index].classList.add('on');
+      panels.forEach((panel, panelIndex) => panel.classList.toggle('on', panelIndex === index));
+      pill.textContent = labels[index];
     };
 
-    stories.forEach((story, index) => {
-      story.style.setProperty('--dur', `${segmentMs}ms`);
-      const lastBar = story.querySelector('.ag-bars i:last-child');
-      lastBar.addEventListener('animationend', () => {
-        if (story.classList.contains('on')) activate((index + 1) % stories.length);
+    steps.forEach((step, index) => {
+      step.style.setProperty('--dur', `${stepMs}ms`);
+      step.addEventListener('animationend', () => {
+        if (step.classList.contains('on')) activate((index + 1) % steps.length);
       });
-      story.addEventListener('click', () => activate(index));
-      story.addEventListener('keydown', (event) => {
+      step.addEventListener('click', () => activate(index));
+      step.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
           activate(index);
         }
       });
-      story.addEventListener('pointerenter', () => story.classList.add('paused'));
-      story.addEventListener('pointerleave', () => story.classList.remove('paused'));
+      step.addEventListener('pointerenter', () => step.classList.add('paused'));
+      step.addEventListener('pointerleave', () => step.classList.remove('paused'));
     });
 
-    stories.forEach((story) => story.classList.remove('on'));
     if (reduceMotion) {
-      stories.forEach((story) => story.classList.add('done'));
+      steps.forEach((step) => step.classList.remove('on'));
+      activate(0);
     } else {
-      whenVisible(storyRow, () => activate(0));
+      steps.forEach((step) => step.classList.remove('on'));
+      whenVisible(howGrid, () => activate(0));
+    }
+  }
+
+  function countUp(element, from, to, duration, suffix = '') {
+    if (reduceMotion || duration <= 0) {
+      element.textContent = `${to}${suffix}`;
+      return;
+    }
+
+    const start = performance.now();
+    const step = (now) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      element.textContent = `${Math.round(from + (to - from) * eased)}${suffix}`;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const opsBoard = document.getElementById('ops-board');
+  if (opsBoard) {
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const doneCounter = document.getElementById('ops-done');
+    const ticksSvg = document.getElementById('ops-ticks');
+    const percentLabel = document.getElementById('ops-g-pct');
+    const gaugeName = document.getElementById('ops-g-name');
+    const gaugeDue = document.getElementById('ops-g-due');
+    const gaugeSub = document.getElementById('ops-g-sub');
+    const toast = document.getElementById('ops-toast');
+    const autoToggle = document.getElementById('ops-auto');
+    const gaugeTabs = [...opsBoard.querySelectorAll('[data-g]')];
+    const rowList = document.getElementById('ops-rows');
+    const refreshButton = document.getElementById('ops-refresh');
+    const tiles = [...opsBoard.querySelectorAll('.ops-tile')];
+    const domainText = opsBoard.querySelector('.ops-type');
+    const seeAllButton = document.getElementById('ops-see');
+    const extraList = document.getElementById('ops-extra');
+    const widgets = [...opsBoard.querySelectorAll('.ops-w')];
+    const cohorts = [
+      { name: 'Product Onboarding cohort', percent: 72, goal: 80, due: 'Due in 12 days', reminders: 6 },
+      { name: 'Advanced Training cohort', percent: 91, goal: 90, due: 'Due in 3 days', reminders: 2 },
+      { name: 'Certification cohort', percent: 54, goal: 75, due: 'Due in 20 days', reminders: 9 }
+    ];
+    const tickCount = 46;
+    const centerX = 160;
+    const centerY = 166;
+    let doneTotal = 0;
+    let shownPercent = 0;
+    let activeCohort = 0;
+    let toastTimer;
+    let typeTimer;
+
+    const bumpDone = (change) => {
+      doneTotal = Math.max(0, doneTotal + change);
+      doneCounter.textContent = doneTotal;
+      doneCounter.classList.remove('bump');
+      void doneCounter.offsetWidth;
+      doneCounter.classList.add('bump');
+    };
+
+    const mix = (from, to, amount) => Math.round(from + (to - from) * amount);
+    const ticks = [];
+    for (let index = 0; index < tickCount; index++) {
+      const share = index / (tickCount - 1);
+      const angle = Math.PI + share * Math.PI;
+      const tick = document.createElementNS(svgNS, 'line');
+      tick.setAttribute('x1', (centerX + Math.cos(angle) * 124).toFixed(1));
+      tick.setAttribute('y1', (centerY + Math.sin(angle) * 124).toFixed(1));
+      tick.setAttribute('x2', (centerX + Math.cos(angle) * 150).toFixed(1));
+      tick.setAttribute('y2', (centerY + Math.sin(angle) * 150).toFixed(1));
+      tick.style.setProperty('--c', `rgb(${mix(190, 5, share)}, ${mix(207, 66, share)}, ${mix(255, 204, share)})`);
+      tick.style.setProperty('--k', index);
+      ticksSvg.append(tick);
+      ticks.push(tick);
+    }
+    for (let degrees = 180; degrees <= 360; degrees += 6) {
+      const angle = (degrees * Math.PI) / 180;
+      const dot = document.createElementNS(svgNS, 'circle');
+      dot.setAttribute('class', 'dot');
+      dot.setAttribute('cx', (centerX + Math.cos(angle) * 108).toFixed(1));
+      dot.setAttribute('cy', (centerY + Math.sin(angle) * 108).toFixed(1));
+      dot.setAttribute('r', degrees % 30 === 0 ? 1.8 : 1.1);
+      ticksSvg.append(dot);
+    }
+    const goalMarker = document.createElementNS(svgNS, 'g');
+    goalMarker.setAttribute('class', 'ops-goal');
+    goalMarker.innerHTML = `<line x1="${centerX - 116}" y1="${centerY}" x2="${centerX - 154}" y2="${centerY}"/><circle cx="${centerX - 158}" cy="${centerY}" r="5"/>`;
+    ticksSvg.append(goalMarker);
+
+    const showToast = (message) => {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    };
+
+    const setGauge = (index) => {
+      const cohort = cohorts[index];
+      const litCount = Math.round((cohort.percent / 100) * tickCount);
+      const previousLit = ticks.filter((tick) => tick.classList.contains('on')).length;
+      ticksSvg.classList.remove('alive');
+      ticks.forEach((tick, tickIndex) => {
+        const lit = tickIndex < litCount;
+        const order = lit ? tickIndex - previousLit : previousLit - 1 - tickIndex;
+        tick.style.transitionDelay = reduceMotion ? '0ms' : `${Math.max(0, order) * 22}ms`;
+        tick.classList.toggle('on', lit);
+        tick.classList.toggle('head', tickIndex === litCount - 1);
+      });
+      goalMarker.style.transform = `rotate(${(cohort.goal / 100) * 180}deg)`;
+      gaugeName.textContent = cohort.name;
+      gaugeDue.textContent = cohort.due;
+      gaugeSub.textContent =
+        cohort.percent >= cohort.goal ? `goal met · target ${cohort.goal}%` : `on track · target ${cohort.goal}%`;
+      countUp(percentLabel, shownPercent, cohort.percent, 1100, '%');
+      shownPercent = cohort.percent;
+      setTimeout(() => ticksSvg.classList.add('alive'), reduceMotion ? 0 : Math.abs(litCount - previousLit) * 22 + 600);
+    };
+
+    gaugeTabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => {
+        if (index === activeCohort) return;
+
+        activeCohort = index;
+        gaugeTabs.forEach((other, otherIndex) => other.setAttribute('aria-selected', String(otherIndex === index)));
+        setGauge(index);
+      });
+    });
+
+    autoToggle.addEventListener('click', () => {
+      const enabled = autoToggle.getAttribute('aria-checked') !== 'true';
+      autoToggle.setAttribute('aria-checked', String(enabled));
+      if (enabled) {
+        showToast(`${cohorts[activeCohort].reminders} reminders sent`);
+        bumpDone(1);
+        return;
+      }
+
+      showToast('Auto-remind paused');
+    });
+
+    rowList.querySelectorAll('button').forEach((row) => {
+      const action = row.querySelector('.ops-act');
+      if (!action) return;
+      row.addEventListener('click', () => {
+        const sent = row.getAttribute('aria-pressed') !== 'true';
+        row.setAttribute('aria-pressed', String(sent));
+        action.textContent = sent ? 'Reminder sent' : 'Remind';
+        bumpDone(sent ? 1 : -1);
+      });
+    });
+
+    const runRows = () => {
+      rowList.classList.remove('run');
+      void rowList.offsetWidth;
+      rowList.classList.add('run');
+    };
+    refreshButton.addEventListener('click', () => {
+      refreshButton.classList.remove('spin');
+      void refreshButton.offsetWidth;
+      refreshButton.classList.add('spin');
+      runRows();
+    });
+
+    const typeDomain = () => {
+      const fullText = domainText.dataset.text;
+      clearInterval(typeTimer);
+      if (reduceMotion) {
+        domainText.textContent = fullText;
+        return;
+      }
+
+      let typed = 0;
+      domainText.textContent = '';
+      domainText.classList.add('typing');
+      typeTimer = setInterval(() => {
+        typed += 1;
+        domainText.textContent = fullText.slice(0, typed);
+        if (typed < fullText.length) return;
+
+        clearInterval(typeTimer);
+        setTimeout(() => domainText.classList.remove('typing'), 900);
+      }, 60);
+    };
+
+    tiles.forEach((tile, index) => {
+      tile.addEventListener('click', () => {
+        if (tile.classList.contains('on')) return;
+
+        tiles.forEach((other) => {
+          const active = other === tile;
+          other.classList.toggle('on', active);
+          other.setAttribute('aria-pressed', String(active));
+        });
+        if (index === 0) typeDomain();
+        bumpDone(1);
+      });
+    });
+
+    seeAllButton.addEventListener('click', () => {
+      const open = extraList.hidden;
+      extraList.hidden = !open;
+      seeAllButton.setAttribute('aria-expanded', String(open));
+      seeAllButton.textContent = open ? 'Show less' : 'See all';
+    });
+
+    if (!reduceMotion) domainText.textContent = '';
+
+    const startBoard = () => {
+      opsBoard.classList.add('in');
+      if (reduceMotion) {
+        rowList.classList.add('run');
+        setGauge(0);
+        typeDomain();
+        doneTotal = 3;
+        doneCounter.textContent = doneTotal;
+        return;
+      }
+
+      setTimeout(runRows, 700);
+      setTimeout(() => bumpDone(1), 1500);
+      setTimeout(() => setGauge(0), 1000);
+      setTimeout(() => bumpDone(1), 2200);
+      setTimeout(typeDomain, 1300);
+      setTimeout(() => bumpDone(1), 2600);
+    };
+    const boardObserver = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) return;
+
+        boardObserver.disconnect();
+        startBoard();
+      },
+      { threshold: 0.12 }
+    );
+    boardObserver.observe(opsBoard);
+
+    const parallaxLayout = window.matchMedia('(min-width: 861px)');
+    if (!reduceMotion) {
+      const depths = widgets.map((widget) => parseFloat(widget.style.getPropertyValue('--depth')) || 0);
+      let frameRequested = false;
+      const updateParallax = () => {
+        frameRequested = false;
+        if (!parallaxLayout.matches) {
+          widgets.forEach((widget) => widget.style.setProperty('--pt', '0px'));
+          return;
+        }
+
+        const bounds = opsBoard.getBoundingClientRect();
+        const progress = Math.max(
+          -1,
+          Math.min(1, (bounds.top + bounds.height / 2 - window.innerHeight / 2) / window.innerHeight)
+        );
+        widgets.forEach((widget, index) =>
+          widget.style.setProperty('--pt', `${(progress * depths[index]).toFixed(1)}px`)
+        );
+      };
+      const requestParallax = () => {
+        if (frameRequested) return;
+
+        frameRequested = true;
+        requestAnimationFrame(updateParallax);
+      };
+      window.addEventListener('scroll', requestParallax, { passive: true });
+      window.addEventListener('resize', requestParallax);
+      updateParallax();
     }
   }
 })();

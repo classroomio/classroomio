@@ -8,10 +8,10 @@
       'Product',
       [
         ['AI Agents', 'ai-agents.html'],
-        ['Branded Academies', 'index.html#bx-academy'],
-        ['Analytics', 'index.html#hs'],
-        ['Integrations', 'index.html#bx-integrations'],
-        ['Plugins', 'index.html#bx-plugins'],
+        ['Branded Academies', 'branded-academies.html'],
+        ['Analytics', 'analytics.html'],
+        ['Integrations', 'integrations.html'],
+        ['Plugins', 'plugins.html'],
         ['Pricing', 'pricing.html']
       ]
     ],
@@ -62,6 +62,8 @@
     [
       'Company',
       [
+        ['About us', 'about.html'],
+        ['Home', 'index.html'],
         ['Roadmap', site + 'roadmap'],
         ['Support', site + 'help'],
         ['Privacy Policy', site + 'privacy'],

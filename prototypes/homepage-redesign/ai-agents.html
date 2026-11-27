@@ -8,11 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="styles.css?v=54">
+<link rel="stylesheet" href="styles.css?v=55">
 <link rel="stylesheet" href="mobile-menu.css?v=5">
 <link rel="stylesheet" href="site-footer.css?v=5">
 <link rel="stylesheet" href="sections.css?v=3">
-<link rel="stylesheet" href="ai-agents.css?v=3">
+<link rel="stylesheet" href="ai-agents.css?v=46">
 <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
@@ -27,10 +27,10 @@
         <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="product-menu">Product <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="dd-menu" id="product-menu" hidden>
           <a class="dd-item" href="ai-agents.html" aria-current="page"><i class="dd-ic">✦</i><span><b>AI Agents</b><em>Connect Claude, Cursor or any MCP client</em></span></a>
-          <a class="dd-item" href="index.html#bx-academy"><i class="dd-ic">▣</i><span><b>Branded Academies</b><em>Your domain, your colours, your sign-in</em></span></a>
-          <a class="dd-item" href="index.html#hs"><i class="dd-ic">◔</i><span><b>Analytics</b><em>Track progress, completion and engagement</em></span></a>
-          <a class="dd-item" href="index.html#bx-integrations"><i class="dd-ic">⇄</i><span><b>Integrations</b><em>Connect Zapier and the tools your team uses</em></span></a>
-          <a class="dd-item" href="index.html#bx-plugins"><i class="dd-ic">◈</i><span><b>Plugins</b><em>Add custom widgets to your platform</em></span></a>
+          <a class="dd-item" href="branded-academies.html"><i class="dd-ic">▣</i><span><b>Branded Academies</b><em>Your domain, your colours, your sign-in</em></span></a>
+          <a class="dd-item" href="analytics.html"><i class="dd-ic">◔</i><span><b>Analytics</b><em>Track progress, completion and engagement</em></span></a>
+          <a class="dd-item" href="integrations.html"><i class="dd-ic">⇄</i><span><b>Integrations</b><em>Connect Zapier and the tools your team uses</em></span></a>
+          <a class="dd-item" href="plugins.html"><i class="dd-ic">◈</i><span><b>Plugins</b><em>Add custom widgets to your platform</em></span></a>
         </div>
       </div>
       <a class="nav-link" href="pricing.html">Pricing</a>
@@ -86,182 +86,371 @@
 <main id="top" class="ag">
 
 <section class="ag-hero" id="hero" aria-labelledby="ag-title">
-  <div class="ag-hero-bg" aria-hidden="true"><i class="ag-grid"></i><i class="ag-glow"></i></div>
-  <span class="ab-pill" data-rv>AI Agents</span>
-  <h1 class="ag-title" id="ag-title" data-words>Run your academy from <span class="tone">the AI agent you already use</span></h1>
-  <p class="ag-sub" data-rv>Connect Claude, Cursor, Codex or any MCP client to ClassroomIO. Ask in plain English, and your agent builds courses, enrols learners and pulls reports, inside the permissions you approve.</p>
-  <div class="ag-ctas" data-rv>
-    <a class="btn btn-blue btn-lg" href="#connect">Connect your agent</a>
-    <a class="btn btn-line btn-lg" href="#ask">See it work</a>
+  <div class="ag-floats" aria-hidden="true">
+    <span class="ag-app a1" style="--r:-10deg;--depth:1.3;--d:0s"><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt=""><em>Claude</em></span>
+    <span class="ag-app a2" style="--r:8deg;--depth:1;--d:-2s"><svg viewBox="0 0 24 24"><path d="M12 2.5l8.5 4.9v9.2L12 21.5l-8.5-4.9V7.4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3.8 7.4L12 12l8.2-4.6M12 12v9.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><em>Cursor</em></span>
+    <span class="ag-app a3" style="--r:7deg;--depth:0.8;--d:-4s"><svg viewBox="0 0 24 24"><path d="M8.5 6.5L3 12l5.5 5.5M15.5 6.5L21 12l-5.5 5.5M13.6 4.5l-3.2 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><em>Codex</em></span>
+    <span class="ag-app a4" style="--r:-6deg;--depth:1.15;--d:-1s"><svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 10l3 2.5L7 15M12.5 15.5H17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><em>Any MCP client</em></span>
   </div>
 
-  <div class="ag-cards">
-    <article class="ag-card ag-dark" data-tilt data-rv style="--rv:0">
-      <span class="ag-glare" aria-hidden="true"></span>
-      <span class="ag-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M6 5L1.8 10 6 15M14 5l4.2 5L14 15M11.5 3.5l-3 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <h2>Works with the agent you already use</h2>
-      <div class="ag-cube-stage" aria-hidden="true"><div class="ag-cubes" id="ag-cubes"></div></div>
-      <ul class="ag-logos" aria-label="Supported clients">
-        <li><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt="">Claude</li>
-        <li><img src="https://assets.cdn.clsrio.com/www/home/cursor-logo.png" alt="">Cursor</li>
-        <li><img src="https://assets.cdn.clsrio.com/www/home/codex-logo.png" alt="">Codex</li>
-      </ul>
-    </article>
+  <div class="ag-hero-copy">
+    <h1 class="ag-title" id="ag-title" data-words>Switch on <button class="ag-switch" type="button" role="switch" aria-checked="false" aria-label="Connect ClassroomIO to your agent"><i></i></button> <span class="ag-brand">ClassroomIO</span><br>in your AI agent</h1>
+    <p class="ag-sub" data-rv>Connect Claude, Cursor, Codex or any MCP client to your academy, and let your agent build courses, enrol learners and pull reports for you.</p>
+    <div class="ag-hero-ctas" data-rv style="--rv:1">
+      <a class="btn btn-blue btn-lg" href="#connect">Connect your agent</a>
+    </div>
+  </div>
 
-    <article class="ag-card ag-photo" data-tilt data-rv style="--rv:1">
-      <img class="ag-photo-img" src="https://images.unsplash.com/photo-1759903553690-e29fdc8b1c68?w=900&q=80&auto=format&fit=crop" alt="A woman working on her laptop by a bright window">
-      <span class="ag-glare" aria-hidden="true"></span>
-      <span class="ag-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M3.5 4.5h13v8.5H9l-3.5 3v-3h-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-      <h2>Ask once.<br>Get a course draft back.</h2>
-      <div class="ag-chat" id="ag-hero-chat" aria-hidden="true">
-        <p class="ag-bub me">Turn our setup guide into a 4-lesson onboarding course.</p>
-        <p class="ag-bub typing"><i></i><i></i><i></i></p>
-        <p class="ag-bub ai"><b>Draft ready.</b> 4 lessons in Admin Onboarding. It stays unpublished until you publish it.</p>
-      </div>
-    </article>
-
-    <article class="ag-card ag-dark" data-tilt data-rv style="--rv:2">
-      <span class="ag-glare" aria-hidden="true"></span>
-      <span class="ag-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="4" y="9" width="12" height="8.5" rx="2" fill="currentColor"/><path d="M6.8 9V6.6a3.2 3.2 0 0 1 6.4 0V9" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></span>
-      <h2>It only gets the access you approve</h2>
-      <div class="ag-plates" aria-hidden="true">
-        <div class="ag-plate p3"><span class="pl-keys"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i></span></div>
-        <div class="ag-plate p2"><svg viewBox="0 0 48 48"><rect x="9" y="11" width="30" height="26" rx="5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M9 19h30M16 27h9M16 31h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></div>
-        <div class="ag-plate p1"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="14" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M17.5 24.5l4.5 4.5 9-10" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      </div>
-      <ol class="ag-plate-key" aria-label="How access works"><li>Sign in</li><li>Pick a workspace</li><li>Approve</li></ol>
-    </article>
+  <div class="ag-rings">
+    <i class="ag-ring r1" aria-hidden="true"></i><i class="ag-ring r2" aria-hidden="true"></i><i class="ag-ring r3" aria-hidden="true"></i>
+    <span class="ag-ripple" aria-hidden="true"></span>
+    <div class="ag-q" aria-live="polite">
+      <img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt="">
+      <span class="ag-q-text">Ask your agent anything about your academy</span><i class="ag-q-caret" aria-hidden="true"></i>
+      <span class="ag-q-send" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </div>
+    <p class="ag-done" aria-live="polite"><b></b><span></span></p>
   </div>
 </section>
 
 <section class="ag-ask" id="ask" aria-labelledby="ask-title">
-  <div class="ag-head">
-    <span class="ab-pill" data-rv>Plain English in, real work out</span>
-    <h2 class="ag-h2" id="ask-title" data-rv>Say what you need. <span class="tone">Your agent does the clicking.</span></h2>
-    <p class="ag-sub" data-rv>Your agent can create and edit courses, add quizzes, run cohorts and read your analytics. Pick a request and watch it happen.</p>
-  </div>
-
-  <div class="ag-capsule-wrap" data-rv>
-    <div class="ag-capsule" id="ag-capsule">
-      <span class="ag-cap-glow" aria-hidden="true"></span>
-      <div class="ag-win" data-tilt>
-        <div class="ag-win-bar"><i></i><i></i><i></i><span><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt="">Claude Code</span><em>classroomio · connected</em></div>
-        <div class="ag-win-body" id="ag-win" aria-live="polite">
-          <p class="ag-prompt"><span class="ag-caret-mark">›</span><span class="ag-typed"></span><i class="ag-caret"></i></p>
-          <ul class="ag-tools"></ul>
-          <div class="ag-result" hidden><span class="ag-res-ic"></span><span><b></b><em></em></span></div>
-        </div>
-      </div>
-      <div class="ag-chips" role="tablist" aria-label="Example requests">
-        <button class="ag-chip c1" type="button" role="tab" aria-selected="true" data-s="0">Draft a course</button>
-        <button class="ag-chip c2 lt" type="button" role="tab" aria-selected="false" data-s="1">Add a quiz</button>
-        <button class="ag-chip c3 lt" type="button" role="tab" aria-selected="false" data-s="2">Invite a cohort</button>
-        <button class="ag-chip c4" type="button" role="tab" aria-selected="false" data-s="3">Check progress</button>
-        <button class="ag-chip c5" type="button" role="tab" aria-selected="false" data-s="4">Publish</button>
-      </div>
+  <div class="ag-hub" data-rv>
+    <svg class="hub-lines" viewBox="0 0 1000 1500" preserveAspectRatio="none" aria-hidden="true">
+      <defs><linearGradient id="hubg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0542cc" stop-opacity=".55"/><stop offset="1" stop-color="#8fb0ff" stop-opacity=".25"/></linearGradient></defs>
+      <path pathLength="1" class="hub-ln" style="--i:0" d="M128 446 C128 606 372 506 398 565"/><path pathLength="1" class="hub-ln" style="--i:1" d="M283 360 C283 520 420 420 436 565"/><path pathLength="1" class="hub-ln" style="--i:2" d="M445 312 C445 472 470 372 476 565"/><path pathLength="1" class="hub-ln" style="--i:3" d="M597 358 C597 518 530 418 524 565"/><path pathLength="1" class="hub-ln" style="--i:4" d="M745 412 C745 572 580 472 564 565"/><path pathLength="1" class="hub-ln" style="--i:5" d="M894 474 C894 634 628 534 602 565"/><path pathLength="1" class="hub-ln b" style="--i:0" d="M398 840 C372 930 500 980 500 1090"/><path pathLength="1" class="hub-ln b" style="--i:1" d="M436 840 C420 930 500 980 500 1090"/><path pathLength="1" class="hub-ln b" style="--i:2" d="M476 840 C470 930 500 980 500 1090"/><path pathLength="1" class="hub-ln b" style="--i:3" d="M524 840 C530 930 500 980 500 1090"/><path pathLength="1" class="hub-ln b" style="--i:4" d="M564 840 C580 930 500 980 500 1090"/><path pathLength="1" class="hub-ln b" style="--i:5" d="M602 840 C628 930 500 980 500 1090"/>
+    </svg>
+    <div class="hub-tiles" aria-hidden="true">
+      <span class="hub-tile" style="--x:12.8%;--y:25.7%;--i:0"><img src="images/tools/claude-color.svg" alt=""><em>Claude</em></span>
+      <span class="hub-tile" style="--x:28.3%;--y:20%;--i:1"><img src="images/tools/cursor.svg" alt=""><em>Cursor</em></span>
+      <span class="hub-tile" style="--x:44.5%;--y:16.4%;--i:2"><img src="images/tools/codex-color.svg" alt=""><em>Codex</em></span>
+      <span class="hub-tile" style="--x:59.7%;--y:19.9%;--i:3"><img src="images/tools/vscode.svg" alt=""><em>VS Code</em></span>
+      <span class="hub-tile" style="--x:74.5%;--y:23.5%;--i:4"><img src="images/tools/windsurf.svg" alt=""><em>Windsurf</em></span>
+      <span class="hub-tile" style="--x:89.4%;--y:27.4%;--i:5"><img src="images/tools/mcp.svg" alt=""><em>Any MCP client</em></span>
+    </div>
+    <div class="hub-copy">
+      <h2 class="ag-h2" id="ask-title">Connect your agent <span class="tone">to your academy.</span></h2>
+      <p class="ag-sub">Connect your AI agent to ClassroomIO and give it the context and tools it needs to work with your academy.</p>
+    </div>
+    <div class="hub-core">
+      <span class="hub-core-ic"><img src="images/logo.svg" alt=""></span>
+      <b>ClassroomIO</b>
+      <em>Your academy, run by your agent</em>
     </div>
   </div>
-  <p class="ag-note" data-rv>New courses start as unpublished drafts. Learners only see a course after it is published.</p>
+
 </section>
 
-<section class="ag-insight" id="insight" aria-labelledby="ins-title">
+<section class="ag-posters" id="can" aria-labelledby="pos-title">
   <div class="ag-head">
-    <span class="ab-pill" data-rv>Answers on the go</span>
-    <h2 class="ag-h2" id="ins-title" data-rv>Ask how your learners are doing. <span class="tone">Get the answer in seconds.</span></h2>
+    <h2 class="ag-h2" id="pos-title" data-rv>Let your agent <span class="tone">handle the work.</span></h2>
+    <p class="ag-sub" data-rv style="--rv:1">From managing courses to handling learner requests, your agent can take action in ClassroomIO while you focus on what needs your attention.</p>
   </div>
 
-  <div class="ag-split">
-    <div class="ag-photo-panel" data-rv style="--rv:0">
-      <img src="https://images.unsplash.com/photo-1702047129200-89734f555f38?w=900&q=80&auto=format&fit=crop" alt="A training lead working at her desk">
-      <div class="ag-phone" data-tilt>
-        <span class="ag-notch" aria-hidden="true"></span>
-        <div class="ag-phone-top"><span>9:41</span><span class="ag-sig" aria-hidden="true"><i></i><i></i><i></i></span></div>
-        <div class="ag-phone-app"><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt=""><b>Claude</b><em>ClassroomIO connected</em></div>
-        <div class="ag-phone-msgs" id="ag-phone" aria-hidden="true">
-          <p class="ag-pm me">How is SOC 2 Security Basics doing this month?</p>
-          <p class="ag-pm tool">Reading course analytics…</p>
-          <p class="ag-pm ai"><b>87% have finished.</b> 23 learners are still in progress, most of them in Sales. Want the list?</p>
-          <p class="ag-pm me">Yes, please.</p>
-          <p class="ag-pm ai list"><span>Ada Obi · Sales · 60%</span><span>Tomi Bello · Sales · 45%</span><span>Kemi Ade · Support · 30%</span><em>+20 more</em></p>
+  <div class="pos-row">
+    <article class="pos pos-a" data-rv style="--rv:0">
+      <svg class="pos-art" viewBox="0 0 300 375" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="pos-sky-a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0542cc"/><stop offset=".6" stop-color="#2a62e6"/><stop offset="1" stop-color="#8fb0ff"/></linearGradient>
+          <linearGradient id="pos-fold-a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#dce6ff"/><stop offset="1" stop-color="#8fb0ff"/></linearGradient>
+        </defs>
+        <rect width="300" height="375" fill="url(#pos-sky-a)"/>
+        <polygon class="pos-fold" fill="url(#pos-fold-a)" points="0,250 104,176 104,268 300,160 300,375 0,375"/>
+      </svg>
+      <div class="pos-top">
+        <h3>Create courses faster. Use your own AI agent, or the one built into ClassroomIO, to draft every lesson. Nothing goes live until you review it.</h3>
+        <span class="pos-tag">Build courses</span>
+      </div>
+      <div class="pos-foot"><span>create_course</span><span>classroomio.com</span></div>
+    </article>
+
+    <article class="pos pos-b" data-rv style="--rv:1">
+      <svg class="pos-art" viewBox="0 0 300 375" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="pos-col" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0542cc"/><stop offset="1" stop-color="#6f98f5"/></linearGradient>
+        </defs>
+        <rect width="300" height="375" fill="#f1f5ff"/>
+        <g class="pos-cols">
+          <rect x="0" y="0" width="100" height="215" fill="url(#pos-col)"/>
+          <rect x="100" y="0" width="100" height="215" fill="url(#pos-col)" opacity=".86"/>
+          <rect x="200" y="0" width="100" height="215" fill="url(#pos-col)" opacity=".72"/>
+        </g>
+        <polygon class="pos-fold" fill="#f1f5ff" points="0,195 100,135 100,190 200,130 200,185 300,125 300,375 0,375"/>
+      </svg>
+      <div class="pos-bottom">
+        <h3>Enrol learners easily. Ask your AI agent to add people and send invites all at once.</h3>
+        <span class="pos-tag solid">Enrol learners</span>
+      </div>
+      <div class="pos-foot dark"><span>add_course_member</span><span>classroomio.com</span></div>
+    </article>
+
+    <article class="pos pos-c" data-rv style="--rv:2">
+      <svg class="pos-art" viewBox="0 0 300 375" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="pos-sky-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0542cc"/><stop offset=".65" stop-color="#1c4fd6"/><stop offset="1" stop-color="#8fb0ff"/></linearGradient>
+          <linearGradient id="pos-fold-c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#e3ebff"/><stop offset="1" stop-color="#8fb0ff"/></linearGradient>
+        </defs>
+        <rect width="300" height="375" fill="url(#pos-sky-c)"/>
+        <polygon class="pos-fold" fill="url(#pos-fold-c)" points="0,330 122,222 122,300 300,196 300,375 0,375"/>
+      </svg>
+      <div class="pos-top">
+        <h3>Track your learners using AI. Get useful information on the state of each learner, their completion rate and more.</h3>
+        <span class="pos-tag">Track your learners</span>
+      </div>
+      <div class="pos-foot"><span>get_student_analytics</span><span>classroomio.com</span></div>
+    </article>
+  </div>
+
+  <div class="pos-cta" data-rv style="--rv:3">
+    <a class="btn btn-blue btn-lg" href="#connect">Connect your agent</a>
+  </div>
+
+</section>
+
+<section class="ag-ops" id="ops" aria-labelledby="ops-title">
+  <div class="ag-head">
+    <h2 class="ag-h2" id="ops-title" data-rv>Intelligence <span class="tone">and insights.</span></h2>
+    <p class="ag-sub" data-rv style="--rv:1">Understand learner activity, course progress, and completion trends. Ask your AI agent a question and get the insights you need without digging through dashboards.</p>
+  </div>
+
+  <div class="ops-board" id="ops-board">
+    <div class="ops-col">
+      <div class="ops-w ops-hi" style="--i:0;--fx:-60px;--fy:-40px;--fr:-6deg;--depth:-26">
+        <img src="images/av-f.jpg" alt="">
+        <div class="ops-hi-pill">
+          <b>Hi, Dami</b>
+          <span><em id="ops-done">0</em> questions answered by your agent today</span>
+          <i class="ops-kebab" aria-hidden="true"><i></i><i></i><i></i></i>
         </div>
+      </div>
+
+      <div class="ops-w ops-list" style="--i:1;--fx:-80px;--fy:60px;--fr:4deg;--depth:14">
+        <div class="ops-w-head">
+          <span class="ops-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
+          <div><b>Who hasn't finished Product Onboarding?</b><span class="ops-mono">list_course_analytics_students</span></div>
+          <button class="ops-go" type="button" id="ops-refresh" aria-label="Run the report again"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></button>
+        </div>
+        <ul class="ops-rows" id="ops-rows">
+          <li style="--r:0"><button type="button" aria-pressed="false"><img src="images/av-e.jpg" alt=""><span class="ops-who"><b>Chidi Obi</b><span class="ops-prog"><i style="--p:60%"></i><em>60%</em></span></span><span class="ops-pill ok">On track</span></button></li>
+          <li class="late" style="--r:1"><button type="button" aria-pressed="false"><img src="images/av-b.jpg" alt=""><span class="ops-who"><b>Tomi Bello</b><span class="ops-prog"><i style="--p:45%"></i><em>45%</em></span></span><span class="ops-pill risk">Overdue</span><span class="ops-act">Remind</span></button></li>
+          <li style="--r:2"><button type="button" aria-pressed="false"><img src="images/av-d.jpg" alt=""><span class="ops-who"><b>Kemi Ade</b><span class="ops-prog"><i style="--p:0%"></i><em>0%</em></span></span><span class="ops-pill idle">Not started</span><span class="ops-act">Remind</span></button></li>
+          <li style="--r:3"><button type="button" aria-pressed="false"><img src="images/av-c.jpg" alt=""><span class="ops-who"><b>Jide Musa</b><span class="ops-prog"><i style="--p:20%"></i><em>20%</em></span></span><span class="ops-pill ok">On track</span></button></li>
+        </ul>
+        <p class="ops-foot"><span class="ops-lbl">Learner activity</span> See which customers are stuck from one question. Click an overdue or not-started customer to send a reminder.</p>
       </div>
     </div>
 
-    <div class="ag-ring-panel" data-rv style="--rv:1">
-      <div class="ag-rp-top"><span>ClassroomIO analytics</span><span>Completion</span></div>
-      <div class="ag-ring-wrap">
-        <svg class="ag-ring" viewBox="0 0 400 400" aria-hidden="true">
-          <circle cx="200" cy="200" r="150" class="trk"/>
-          <circle cx="200" cy="200" r="150" class="val" id="ag-ring-val" pathLength="100"/>
-        </svg>
-        <div class="ag-ring-num"><b id="ag-ring-pct">0%</b><span id="ag-ring-name">SOC 2 Security Basics</span></div>
-        <div class="ag-call a"><i></i><span>Finished</span><b id="ag-call-a">0</b></div>
-        <div class="ag-call b"><i></i><span>In progress</span><b id="ag-call-b">0</b></div>
-      </div>
-      <div class="ag-rp-foot">
-        <p>Read straight from your analytics. Analytics reads use no AI credits.</p>
-        <div class="ag-tabs" role="tablist" aria-label="Course">
-          <button type="button" role="tab" aria-selected="true" data-c="0">SOC 2</button>
-          <button type="button" role="tab" aria-selected="false" data-c="1">HIPAA</button>
-          <button type="button" role="tab" aria-selected="false" data-c="2">Onboarding</button>
+    <div class="ops-col">
+      <div class="ops-w ops-gauge" style="--i:2;--fx:70px;--fy:-50px;--fr:5deg;--depth:-14">
+        <div class="ops-w-head">
+          <span class="ops-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg></span>
+          <div><b id="ops-g-name">Product Onboarding cohort</b><span class="ops-mono">evaluate_cohort_goal</span></div>
+          <button class="ops-toggle" type="button" id="ops-auto" role="switch" aria-checked="true"><span>Auto-remind</span><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v8M6.4 6.6a8 8 0 1 0 11.2 0"/></svg></i></button>
         </div>
+        <span class="ops-due"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg><b id="ops-g-due">Due in 12 days</b></span>
+        <div class="ops-dial">
+          <svg class="ops-ticks" id="ops-ticks" viewBox="0 0 320 180" aria-hidden="true"></svg>
+          <div class="ops-read"><b id="ops-g-pct">0%</b><span id="ops-g-sub">on track · target 80%</span></div>
+          <span class="ops-min" aria-hidden="true">0%</span><span class="ops-max" aria-hidden="true">100%</span>
+          <p class="ops-toast" id="ops-toast" role="status"></p>
+        </div>
+        <div class="ops-tabs" role="tablist" aria-label="Cohort">
+          <button type="button" role="tab" aria-selected="true" data-g="0">Onboarding</button>
+          <button type="button" role="tab" aria-selected="false" data-g="1">Advanced training</button>
+          <button type="button" role="tab" aria-selected="false" data-g="2">Certification</button>
+        </div>
+        <p class="ops-foot"><span class="ops-lbl">Course progress</span> See how every cohort is tracking against its goal, then nudge anyone behind.</p>
+      </div>
+
+      <div class="ops-w ops-scenes" style="--i:3;--fx:80px;--fy:70px;--fr:-4deg;--depth:24">
+        <div class="ops-tiles">
+          <button class="ops-tile on" type="button" aria-pressed="true" data-t="0">
+            <span class="ops-tile-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg></span>
+            <i class="ops-dots2" aria-hidden="true"><i></i><i></i></i>
+            <b>Completion trends</b>
+            <span class="ops-type" data-text="Up 8% this month">Up 8% this month</span>
+            <em class="ops-mono">get_course_analytics</em>
+          </button>
+          <button class="ops-tile" type="button" aria-pressed="false" data-t="1">
+            <span class="ops-tile-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 5.2a3.3 3.3 0 0 1 0 6M18 14.4c2 .8 3.5 2.6 3.5 5.6"/></svg></span>
+            <i class="ops-dots2" aria-hidden="true"><i></i><i></i></i>
+            <b>Learner activity</b>
+            <span class="ops-swatch"><i></i>214 active this week</span>
+            <em class="ops-mono">get_student_analytics</em>
+          </button>
+        </div>
+        <div class="ops-more">
+          <span class="ops-plus" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>
+          <span class="ops-more-txt"><b>Ask anything</b><em>Activity, progress and completion, plus more</em></span>
+          <button class="ops-see" type="button" id="ops-see" aria-expanded="false" aria-controls="ops-extra">See all</button>
+        </div>
+        <ul class="ops-extra" id="ops-extra" hidden>
+          <li style="--c:0">Completion rates</li><li style="--c:1">Learner activity</li><li style="--c:2">Overdue learners</li><li style="--c:3">Cohort goals</li><li style="--c:4">Course progress</li><li style="--c:5">Exercise marks</li><li style="--c:6">Compliance</li><li style="--c:7">Course marketing</li><li style="--c:8">Academy overview</li>
+        </ul>
       </div>
     </div>
   </div>
 </section>
 
-<section class="ag-steps" id="connect" aria-labelledby="steps-title">
-  <div class="ag-head">
-    <span class="ab-pill on-dark" data-rv>Set up in minutes</span>
-    <h2 class="ag-h2" id="steps-title" data-rv>Connected in three steps. <span class="tone">No keys to paste.</span></h2>
-    <p class="ag-sub" data-rv>Point your agent at the hosted ClassroomIO server, sign in as a workspace admin and approve. Nothing to install.</p>
-  </div>
+<section class="hw" id="connect" aria-labelledby="steps-title">
+  <div class="hw-card">
+    <div class="hw-head">
+      <span class="hw-eyebrow" data-rv>Simple steps</span>
+      <h2 class="hw-h2" id="steps-title" data-rv style="--rv:1">How it works</h2>
+      <p class="hw-sub" data-rv style="--rv:2">Connect your AI assistant in three easy steps. No technical skills needed.</p>
+    </div>
 
-  <div class="ag-stories" id="ag-stories">
-    <article class="ag-story s1 on" data-rv style="--rv:0" tabindex="0" aria-label="Step 1: add the server">
-      <div class="ag-bars" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="ag-st-top"><span class="ag-av"><img src="images/logo.svg" alt=""></span><b>Step 1</b><em>⋯</em></div>
-      <p class="ag-st-lede">Add the ClassroomIO server to your agent.</p>
-      <div class="ag-code">
-        <div class="ag-code-tabs" role="tablist" aria-label="Client">
-          <button type="button" role="tab" aria-selected="true" data-k="claude">Claude Code</button>
-          <button type="button" role="tab" aria-selected="false" data-k="codex">Codex</button>
-          <button type="button" role="tab" aria-selected="false" data-k="cursor">Cursor</button>
+    <div class="hw-grid" id="hw">
+      <div class="hw-visual" data-rv style="--rv:1">
+        <div class="hw-photo"><img src="images/how-it-works-host.jpg" alt=""></div>
+        <span class="hw-pill" id="hw-pill">Connect your assistant</span>
+        <div class="hw-float">
+          <div class="hw-panel on" data-p="0">
+            <b class="hw-pt">Connect your assistant</b>
+            <div class="ag-code">
+              <div class="ag-code-tabs" role="tablist" aria-label="Client">
+                <button type="button" role="tab" aria-selected="true" data-k="claude">Claude Code</button>
+                <button type="button" role="tab" aria-selected="false" data-k="codex">Codex</button>
+                <button type="button" role="tab" aria-selected="false" data-k="cursor">Cursor</button>
+              </div>
+              <pre id="ag-code-pre"></pre>
+              <button class="ag-copy" type="button" id="ag-copy">Copy</button>
+            </div>
+          </div>
+          <div class="hw-panel" data-p="1">
+            <img class="hw-logo" src="images/logo.svg" alt="">
+            <b class="hw-pt">Your AI assistant wants to access Acme Academy</b>
+            <span class="hw-ps">See your courses, groups and results</span>
+            <div class="hw-btns"><em>Cancel</em><em class="ok">Approve</em></div>
+          </div>
+          <div class="hw-panel" data-p="2">
+            <b class="hw-pt">Start working with your academy</b>
+            <div class="hw-ask"><span>Which courses need updating?</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8l12-5-5 12-2-5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+            <span class="hw-ps">Your assistant looks at your academy and answers in plain English.</span>
+          </div>
         </div>
-        <pre id="ag-code-pre"></pre>
-        <button class="ag-copy" type="button" id="ag-copy">Copy</button>
       </div>
-      <svg class="ag-big-mark" viewBox="0 0 33 24" aria-hidden="true"><circle cx="26.15" cy="6.49" r="6.09" fill="currentColor"/><path d="M32.3 14.98v8.83H18.93V20.6c0-3.08 2.47-5.62 5.62-5.62zM16.72.4v23.41h-5.02C8.5 23.81 5.55 22.47 3.41 20.4 1.27 18.26 0 15.32 0 12.1 0 5.62 5.22.4 11.7.4z" fill="currentColor"/></svg>
-      <div class="ag-st-input" aria-hidden="true"><span></span><svg viewBox="0 0 16 16"><path d="M2 8l12-5-5 12-2-5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
-    </article>
 
-    <article class="ag-story s2" data-rv style="--rv:1" tabindex="0" aria-label="Step 2: sign in and approve">
-      <img class="ag-st-bg" src="https://images.unsplash.com/photo-1758876017801-f5a892ee460a?w=900&q=80&auto=format&fit=crop" alt="">
-      <div class="ag-bars" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="ag-st-top"><span class="ag-av"><img src="images/logo.svg" alt=""></span><b>Step 2</b><em>⋯</em></div>
-      <div class="ag-auth" aria-hidden="true">
-        <img src="images/logo.svg" alt="">
-        <b>Claude Code wants to access Acme Academy</b>
-        <span>Manage courses, cohorts and analytics</span>
-        <div><em>Cancel</em><em class="ok">Approve</em></div>
-      </div>
-      <p class="ag-st-big">Sign in.<br>Pick a workspace.<br><span>Approve.</span></p>
-      <div class="ag-st-input" aria-hidden="true"><span></span><svg viewBox="0 0 16 16"><path d="M2 8l12-5-5 12-2-5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
-    </article>
+      <ol class="hw-steps" data-rv style="--rv:2">
+        <li class="on" tabindex="0" data-s="0">
+          <span class="hw-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+          <div><h3><span class="hw-num">01.</span> Connect your assistant</h3><p>Copy a single line and paste it into your AI assistant, whether you're using Claude, Codex or Cursor. This gives it the information it needs to connect to your ClassroomIO academy.</p></div>
+        </li>
+        <li tabindex="0" data-s="1">
+          <span class="hw-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z M9 12l2.2 2.2L15.5 10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><h3><span class="hw-num">02.</span> Approve the connection</h3><p>Sign in to ClassroomIO, select your academy and approve the connection. Your assistant will be connected to your academy with the permissions you authorize.</p></div>
+        </li>
+        <li tabindex="0" data-s="2">
+          <span class="hw-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14v10H9l-4 3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+          <div><h3><span class="hw-num">03.</span> Start working with your academy</h3><p>Ask your assistant about courses, learners, groups or results. You can also use it to take actions in your academy, based on the access you've granted.</p></div>
+        </li>
+      </ol>
+    </div>
 
-    <article class="ag-story s3" data-rv style="--rv:2" tabindex="0" aria-label="Step 3: ask your first question">
-      <div class="ag-bars" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="ag-st-top"><span class="ag-av"><img src="images/logo.svg" alt=""></span><b>Step 3</b><em>⋯</em></div>
-      <div class="ag-st-pic"><img src="https://images.unsplash.com/photo-1758691737605-69a0e78bd193?w=600&q=80&auto=format&fit=crop" alt=""><span class="ag-st-cut" aria-hidden="true"></span></div>
-      <p class="ag-st-small">Limited to one workspace, your role and the permissions you approved.</p>
-      <p class="ag-st-huge">Ask your first question.</p>
-      <div class="ag-st-input" aria-hidden="true"><span>Which courses need updating?</span><svg viewBox="0 0 16 16"><path d="M2 8l12-5-5 12-2-5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
-    </article>
+    <div class="ag-ctas center" data-rv>
+      <a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Get started</a>
+    </div>
   </div>
+</section>
 
-  <div class="ag-ctas center" data-rv>
-    <a class="btn btn-white btn-lg" href="https://classroomio.com/signup">Start for free</a>
-    <a class="btn btn-ghost-dark btn-lg" href="https://classroomio.com/help/integrations-and-automation/connect-claude-code-codex-cursor-or-opencode">Read the setup guide</a>
+<section class="fx" id="create" aria-label="Ready to help customers get more from your product?">
+  <div class="fx-copy">
+    <h2 class="h2" data-rv>Ready to help<br> customers get more<br> <span class="tone">from your product?</span></h2>
+    <p class="sub" data-rv style="--rv:1">Start free, or talk to us if you want a hand setting things up.</p>
+    <div class="fx-ctas" data-rv style="--rv:2"><a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Start for free</a><a class="btn btn-line btn-lg" href="https://cal.com/classroomio/demo">Book a demo</a></div>
+  </div>
+  <div class="fx-stage" id="fx-stage" role="img" aria-label="Documents, videos, slides, images, SCORM packages and AI agents flowing into ClassroomIO and coming out as a course plan, lessons and quizzes, a branded academy and certificates">
+    <svg class="fx-svg" id="fx-svg" aria-hidden="true"></svg>
+    <span class="fx-tip" id="fx-tip"></span>
+  </div>
+</section>
+
+<section class="ab-sec" id="story" aria-label="Customer stories">
+  <h2 class="h2 story-h" data-rv>Meet the companies using <span class="tone">ClassroomIO.</span></h2>
+  <div class="ts" id="ts" data-rv>
+    <div class="ts-tabs" role="tablist" aria-label="Customer stories">
+      <button class="ts-tab on" role="tab" aria-selected="true"><img class="mono" src="images/sensorhubb-logo.png" alt="SensorHubb"><i></i></button>
+      <button class="ts-tab" role="tab" aria-selected="false"><img src="https://quickeasy.business/wp-content/uploads/elementor/thumbs/QEBS-Logo-scaled-rpo4xlet0k5vfquff4ut3hpo08ojhrufsyof1wjofc.png" alt="QuickEasy Business Systems"><i></i></button>
+      <button class="ts-tab" role="tab" aria-selected="false"><span>dBlocked · Web3 boot camp</span><i></i></button>
+      <button class="ts-tab" role="tab" aria-selected="false"><span>Dr Ozzy · Academic programs</span><i></i></button>
+    </div>
+
+    <div class="ts-slides">
+      <div class="ts-slide on">
+        <div class="ts-card">
+          <div class="ts-photo">
+            <img src="images/sensorhubb-poster.webp" alt="Andrew Bedell of SensorHubb">
+            <span class="play" aria-hidden="true"></span>
+            <span class="story-len">Customer story · 1:39</span>
+          </div>
+          <div class="ts-body">
+            <blockquote>“I think my favorite part of using ClassroomIO, however, has been the extremely professional and prompt response from their team.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Andrew Bedell</b> · Strategy and Operations Intern</span>
+              <span class="ts-chip ts-logo"><img class="mono" src="images/sensorhubb-logo.png" alt="SensorHubb"></span>
+              <a class="ts-link" href="https://assets.cdn.clsrio.com/www/home/andrew-bedell-sensorhubb-website.mp4" target="_blank" rel="noopener">Watch the story <span>›</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>5 stars</b><span>What Andrew would give ClassroomIO</span></div>
+          <div><b>Recommended</b><span>For any SaaS platform that trains its customers</span></div>
+          <div><b>Self-paced</b><span>Customer training that teaches SensorHubb customers the product</span></div>
+        </div>
+      </div>
+
+      <div class="ts-slide">
+        <div class="ts-card">
+          <div class="ts-photo ts-portrait"><img src="images/jody.webp" alt="Jody Segers"></div>
+          <div class="ts-body">
+            <blockquote>“We love it because it helps us get training material out to clients, while clients can also monitor progress of their staff.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Jody Segers</b> · MD, QuickEasy Business Systems</span>
+              <span class="ts-chip ts-logo"><img src="https://quickeasy.business/wp-content/uploads/elementor/thumbs/QEBS-Logo-scaled-rpo4xlet0k5vfquff4ut3hpo08ojhrufsyof1wjofc.png" alt="QuickEasy Business Systems"></span>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>Paid and free</b><span>Training classes set up for their clients</span></div>
+          <div><b>Staff progress</b><span>Clients follow how their own teams are doing</span></div>
+          <div><b>Customised</b><span>ClassroomIO tailored to their needs with our team</span></div>
+        </div>
+      </div>
+
+      <div class="ts-slide">
+        <div class="ts-card">
+          <div class="ts-photo"><img src="https://assets.cdn.clsrio.com/blog/pranav-web3-bootcamp-hit-100students.png" alt="Pranav Singhal's Web3 boot camp on ClassroomIO"></div>
+          <div class="ts-body">
+            <blockquote>“ClassroomIO really helped me bootstrap my program. The dashboard is extremely intuitive. I could navigate most of it without any help.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Pranav Singhal</b> · Web3 instructor, dBlocked</span>
+              <a class="ts-link" href="https://classroomio.com/blog/pranav-hits-100-students">Read the story <span>›</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>100+</b><span>Students in his Web3 boot camp</span></div>
+          <div><b>One flat plan</b><span>Instead of paying for a site template and plugins</span></div>
+          <div><b>Self-serve</b><span>Found his way around the dashboard without support</span></div>
+        </div>
+      </div>
+
+      <div class="ts-slide">
+        <div class="ts-card">
+          <div class="ts-photo ts-portrait"><img src="images/drozzy.webp" alt="Dr Ozzy"></div>
+          <div class="ts-body">
+            <blockquote>“ClassroomIO helps me focus on the learning experience rather than getting caught up in a complicated platform.”</blockquote>
+            <div class="ts-meta">
+              <span class="ts-chip"><b>Dr Ozzy</b> · Academic Programs Coordinator</span>
+            </div>
+          </div>
+        </div>
+        <div class="ts-stats">
+          <div><b>Fast</b><span>And user friendly, in Dr Ozzy's words</span></div>
+          <div><b>Recommended</b><span>To friends and colleagues who deliver courses</span></div>
+          <div><b>Learner first</b><span>Time goes into the learning, not the platform</span></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -270,7 +459,9 @@
 <footer class="ft rails" data-site-footer></footer>
 
 <script src="mobile-menu.js?v=4"></script>
-<script src="site-footer.js?v=3"></script>
-<script src="ai-agents.js?v=1"></script>
+<script src="site-footer.js?v=6"></script>
+<script src="ai-agents.js?v=13"></script>
+<script src="flow.js?v=7"></script>
+<script src="stories.js?v=2"></script>
 </body>
 </html>

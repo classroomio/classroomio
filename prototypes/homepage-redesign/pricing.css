@@ -87,11 +87,11 @@
 .pr-title {
   margin: 0 auto;
   font-weight: 500;
-  font-size: clamp(36px, 5vw, 62px);
+  font-size: var(--hero-title);
   line-height: 1.04;
   letter-spacing: -0.045em;
   color: #0b1233;
-  max-width: 16ch;
+  max-width: 19ch;
 }
 .pr-title .tone {
   color: var(--blue);

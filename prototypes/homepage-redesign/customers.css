@@ -47,9 +47,9 @@
 }
 .cu-hero h1 {
   margin: 0 auto;
-  max-width: 980px;
+  max-width: 1080px;
   font-weight: 500;
-  font-size: clamp(38px, 5.8vw, 72px);
+  font-size: var(--hero-title);
   line-height: 1.04;
   letter-spacing: -0.045em;
   text-wrap: balance;

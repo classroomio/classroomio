@@ -3581,6 +3581,7 @@ a.ab-c:hover .ab-go {
   --my: 0;
   margin: 0 auto 12px;
   max-width: var(--max);
+  overflow-x: clip;
 }
 .ph-copy {
   display: flex;
@@ -3620,7 +3621,7 @@ a.ab-c:hover .ab-go {
 .ph-title {
   margin: 24px 0 0;
   font-weight: 500;
-  font-size: clamp(40px, 4.6vw, 68px);
+  font-size: var(--hero-title);
   line-height: 1.04;
   letter-spacing: -0.045em;
 }
@@ -4191,9 +4192,6 @@ a.ab-c:hover .ab-go {
 @media (max-width: 640px) {
   .ph-copy {
     padding: 36px 0 32px;
-  }
-  .ph-title {
-    font-size: 38px;
   }
   .ph-lede {
     font-size: 16px;
