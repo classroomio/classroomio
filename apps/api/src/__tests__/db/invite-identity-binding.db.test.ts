@@ -111,6 +111,16 @@ describe.skipIf(!shouldRun)('invite primitives and identity binding (database)',
   }
 
   beforeAll(async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    await db
+      .insert(schema.role)
+      .values([
+        { id: ROLE.ADMIN, type: 'admin' },
+        { id: ROLE.TUTOR, type: 'tutor' },
+        { id: ROLE.STUDENT, type: 'student' }
+      ])
+      .onConflictDoNothing();
     const { createOrganization } = await import('@db/queries/organization');
     const organization = await createOrganization({ name: `bind-${suffix}` });
     const otherOrganization = await createOrganization({ name: `bind-other-${suffix}` });

@@ -152,6 +152,16 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
   }
 
   beforeAll(async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    await db
+      .insert(schema.role)
+      .values([
+        { id: ROLE.ADMIN, type: 'admin' },
+        { id: ROLE.TUTOR, type: 'tutor' },
+        { id: ROLE.STUDENT, type: 'student' }
+      ])
+      .onConflictDoNothing();
     const admin = await createProfile('ladmin');
     adminId = admin.profileId;
   });

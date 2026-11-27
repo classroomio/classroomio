@@ -48,6 +48,16 @@ describe.skipIf(!shouldRun)('invited course roster (database)', () => {
   }
 
   beforeAll(async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    await db
+      .insert(schema.role)
+      .values([
+        { id: ROLE.ADMIN, type: 'admin' },
+        { id: ROLE.TUTOR, type: 'tutor' },
+        { id: ROLE.STUDENT, type: 'student' }
+      ])
+      .onConflictDoNothing();
     const { createOrganization } = await import('@db/queries/organization');
     const organization = await createOrganization({ name: `roster-${suffix}` });
     organizationId = organization.id;
