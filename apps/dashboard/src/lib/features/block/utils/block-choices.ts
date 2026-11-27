@@ -9,32 +9,50 @@ import { t } from '$lib/utils/functions/translations';
 import { BLOCK_EDITORS } from './block-edit-registry';
 import { blockTypeLabelKey } from './block-labels';
 
+const BLOCKS_KEY = 'course.navItem.lessons.materials.blocks';
+
 const NEW_BLOCK_TYPES: readonly TBlockType[] = ['chart', 'flashcards', 'tabs', 'multiple_choice', 'process', 'html'];
 
 const DOCK_BLOCK_TYPES: readonly TBlockType[] = ['note', 'video', 'image', 'html', 'multiple_choice'];
 
+const BLOCK_GROUPS: Record<TBlockType, string> = {
+  note: 'text',
+  tabs: 'text',
+  process: 'text',
+  video: 'media',
+  slides: 'media',
+  document: 'media',
+  image: 'media',
+  chart: 'interactive',
+  flashcards: 'interactive',
+  multiple_choice: 'interactive',
+  html: 'advanced'
+};
+
 const UPCOMING_BLOCKS = [
-  { type: 'audio', icon: AudioLinesIcon },
-  { type: 'poll', icon: VoteIcon },
-  { type: 'timeline', icon: MilestoneIcon },
-  { type: 'code', icon: CodeIcon },
-  { type: 'embed', icon: AppWindowIcon }
+  { type: 'audio', group: 'media', icon: AudioLinesIcon },
+  { type: 'poll', group: 'interactive', icon: VoteIcon },
+  { type: 'timeline', group: 'interactive', icon: MilestoneIcon },
+  { type: 'code', group: 'advanced', icon: CodeIcon },
+  { type: 'embed', group: 'advanced', icon: AppWindowIcon }
 ] as const;
 
 /**
- * The add-menu choices in registry order, with recently added types marked new.
+ * Every block type in registry order, with its catalog group and description, and recently added types marked new.
  */
 export function getAddBlockChoices(): AddBlockChoice[] {
   return BLOCK_TYPES.map((type) => ({
     type,
     label: t.get(blockTypeLabelKey(type)),
+    description: t.get(`${BLOCKS_KEY}.descriptions.${type}`),
+    group: t.get(`${BLOCKS_KEY}.groups.${BLOCK_GROUPS[type]}`),
     icon: BLOCK_EDITORS[type].icon,
     isNew: NEW_BLOCK_TYPES.includes(type)
   }));
 }
 
 /**
- * The few choices pinned to the lesson's bottom dock: the common types, then the newest ones.
+ * The few choices pinned to the add bar and the empty lesson: the common types, then the newest ones.
  */
 export function getDockBlockChoices(): AddBlockChoice[] {
   const choices = getAddBlockChoices();
@@ -43,13 +61,17 @@ export function getDockBlockChoices(): AddBlockChoice[] {
 }
 
 /**
- * Planned block types, listed in All blocks as disabled Coming soon tiles.
+ * Every block type for the All blocks catalog, followed by planned types shown as disabled Coming soon tiles.
  */
-export function getUpcomingBlockChoices(): AddBlockChoice[] {
-  return UPCOMING_BLOCKS.map(({ type, icon }) => ({
+export function getCatalogBlockChoices(): AddBlockChoice[] {
+  const upcoming = UPCOMING_BLOCKS.map(({ type, group, icon }) => ({
     type: `upcoming_${type}`,
-    label: t.get(`course.navItem.lessons.materials.blocks.upcoming.${type}`),
+    label: t.get(`${BLOCKS_KEY}.upcoming.${type}`),
+    description: t.get(`${BLOCKS_KEY}.descriptions.${type}`),
+    group: t.get(`${BLOCKS_KEY}.groups.${group}`),
     icon,
     comingSoon: true
   }));
+
+  return [...getAddBlockChoices(), ...upcoming];
 }

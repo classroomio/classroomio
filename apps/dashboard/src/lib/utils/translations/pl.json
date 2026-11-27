@@ -2913,6 +2913,30 @@
               "timeline": "Oś czasu",
               "code": "Kod",
               "embed": "Osadzenie"
+            },
+            "groups": {
+              "text": "Tekst",
+              "media": "Multimedia",
+              "interactive": "Interaktywne",
+              "advanced": "Zaawansowane"
+            },
+            "descriptions": {
+              "note": "Tekst sformatowany, nagłówki i listy",
+              "video": "Prześlij lub podlinkuj wideo",
+              "slides": "Osadź prezentację",
+              "document": "Plik do podglądu lub pobrania",
+              "image": "Prześlij lub wybierz obraz",
+              "chart": "Wykres z Twoich danych",
+              "flashcards": "Fiszki do powtórek",
+              "tabs": "Podziel treść na karty",
+              "multiple_choice": "Szybkie sprawdzenie wiedzy",
+              "process": "Instrukcja krok po kroku",
+              "html": "Twoja interaktywna strona",
+              "audio": "Podcast lub notatka głosowa",
+              "poll": "Zapytaj grupę i pokaż wyniki",
+              "timeline": "Wydarzenia na osi czasu",
+              "code": "Fragment kodu z podświetlaniem",
+              "embed": "Dowolny osadzalny link"
             }
           }
         },

@@ -1,11 +1,9 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
-  import SearchIcon from '@lucide/svelte/icons/search';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import type { Snippet } from 'svelte';
-  import { Input } from '../../base/input';
-  import Grid from './add-block-grid.svelte';
+  import Catalog from './add-block-catalog.svelte';
   import Item from './add-block-item.svelte';
   import type { AddBlockChoice, AddBlockShortcut } from './types';
 
@@ -74,16 +72,10 @@
   let previousOpen = false;
 
   let moreOpen = $state(false);
-  let moreQuery = $state('');
   let moreElement = $state<HTMLDivElement | null>(null);
-
-  const filteredMoreChoices = $derived(
-    moreChoices.filter((choice) => choice.label.toLowerCase().includes(moreQuery.trim().toLowerCase()))
-  );
 
   function toggleMore() {
     moreOpen = !moreOpen;
-    moreQuery = '';
   }
 
   function selectFromMore(type: string) {
@@ -254,36 +246,22 @@
 
         {#if moreOpen}
           <div
-            class="ui:border-border ui:bg-popover ui:absolute ui:right-0 ui:bottom-full ui:z-50 ui:mb-3 ui:flex ui:max-h-[min(420px,70vh)] ui:w-[min(440px,calc(100vw-32px))] ui:origin-bottom ui:flex-col ui:gap-2 ui:overflow-y-auto ui:rounded-xl ui:border ui:p-2.5 ui:shadow-lg ui:animate-in ui:fade-in ui:zoom-in-[.97] ui:slide-in-from-bottom-1.5 ui:duration-150"
+            class="ui:border-border ui:bg-popover ui:absolute ui:right-0 ui:bottom-full ui:z-50 ui:mb-3 ui:flex ui:max-h-[min(480px,70vh)] ui:w-[min(560px,calc(100vw-32px))] ui:origin-bottom ui:flex-col ui:overflow-y-auto ui:rounded-xl ui:border ui:p-2.5 ui:shadow-lg ui:animate-in ui:fade-in ui:zoom-in-[.97] ui:slide-in-from-bottom-1.5 ui:duration-150"
             role="dialog"
             aria-label={moreLabel}
             data-testid={moreTestId ? `${moreTestId}-menu` : undefined}
           >
-            <div class="ui:relative">
-              <SearchIcon
-                size={14}
-                class="custom ui:text-muted-foreground ui:pointer-events-none ui:absolute ui:top-1/2 ui:left-2.5 ui:-translate-y-1/2"
-              />
-              <Input
-                bind:value={moreQuery}
-                class="ui:h-8 ui:pl-8 ui:text-[13px]"
-                placeholder={searchLabel}
-                aria-label={searchLabel}
-              />
-            </div>
-            {#if filteredMoreChoices.length > 0}
-              <Grid
-                choices={filteredMoreChoices}
-                label={moreLabel}
-                size="sm"
-                {newLabel}
-                {comingSoonLabel}
-                testId={moreTestId ? `${moreTestId}-grid` : undefined}
-                onSelect={selectFromMore}
-              />
-            {:else}
-              <p class="ui:text-muted-foreground ui:py-4 ui:text-center ui:text-[13px]">{noResultsLabel}</p>
-            {/if}
+            <Catalog
+              choices={moreChoices}
+              label={moreLabel}
+              {searchLabel}
+              {noResultsLabel}
+              {newLabel}
+              {comingSoonLabel}
+              autofocus
+              testId={moreTestId ? `${moreTestId}-grid` : undefined}
+              onSelect={selectFromMore}
+            />
           </div>
         {/if}
       </div>

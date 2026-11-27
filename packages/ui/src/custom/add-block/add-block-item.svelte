@@ -33,7 +33,7 @@
   <span class={cn(hideLabelOnMobile && 'ui:hidden ui:sm:inline')}>{choice.label}</span>
   {#if choice.isNew && newLabel}
     <span
-      class="ui:bg-primary ui:text-primary-foreground ui:absolute ui:-top-1.5 ui:right-0 ui:rounded-full ui:px-1 ui:text-[8px] ui:leading-[12px] ui:font-semibold"
+      class="ui:bg-primary ui:text-primary-foreground ui:absolute ui:-top-1.5 ui:left-1/2 ui:-translate-x-1/2 ui:rounded-full ui:px-1 ui:text-[8px] ui:leading-[12px] ui:font-semibold"
       >{newLabel}</span
     >
   {/if}

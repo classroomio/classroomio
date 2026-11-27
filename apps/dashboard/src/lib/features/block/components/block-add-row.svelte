@@ -5,7 +5,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isBlockType, type TBlockType } from '@cio/utils/validation/block';
   import { aiPromptRequests, getAiShortcut } from '../utils/ai-prompt-request';
-  import { getAddBlockChoices, getDockBlockChoices, getUpcomingBlockChoices } from '../utils/block-choices';
+  import { getCatalogBlockChoices, getDockBlockChoices } from '../utils/block-choices';
   import BlockAiPrompt from './block-ai-prompt.svelte';
 
   interface Props {
@@ -17,7 +17,7 @@
   const isMac = $derived(browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform));
 
   const choices = $derived<AddBlockChoice[]>(getDockBlockChoices());
-  const moreChoices = $derived<AddBlockChoice[]>([...getAddBlockChoices(), ...getUpcomingBlockChoices()]);
+  const moreChoices = $derived<AddBlockChoice[]>(getCatalogBlockChoices());
 
   let aiPanelOpen = $state(false);
 

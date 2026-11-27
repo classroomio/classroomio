@@ -25,4 +25,26 @@ export const ALL_CHOICES: AddBlockChoice[] = [
   { type: 'html', label: 'HTML', icon: CodeXmlIcon }
 ];
 
+const DETAILS: Record<string, { group: string; description: string }> = {
+  note: { group: 'Text', description: 'Rich text, headings and lists' },
+  video: { group: 'Media', description: 'Upload or link a video' },
+  slides: { group: 'Media', description: 'Embed a slide deck' },
+  document: { group: 'Media', description: 'A file students can view or download' },
+  image: { group: 'Media', description: 'Upload or pick an image' },
+  chart: { group: 'Interactive', description: 'A chart from your data' },
+  flashcards: { group: 'Interactive', description: 'Flip cards for recall practice' },
+  tabs: { group: 'Text', description: 'Split content into switchable tabs' },
+  multiple_choice: { group: 'Interactive', description: 'A quick knowledge check' },
+  process: { group: 'Text', description: 'A step-by-step walkthrough' },
+  html: { group: 'Advanced', description: 'Your own interactive web page' }
+};
+
+const NEW_TYPES = ['chart', 'flashcards', 'tabs', 'multiple_choice', 'process', 'html'];
+
+export const CATALOG_CHOICES: AddBlockChoice[] = ALL_CHOICES.map((choice) => ({
+  ...choice,
+  ...DETAILS[choice.type],
+  isNew: NEW_TYPES.includes(choice.type)
+}));
+
 export const AI_SHORTCUT = { modifier: '⌘', key: 'I' };

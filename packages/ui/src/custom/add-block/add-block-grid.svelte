@@ -1,4 +1,5 @@
 <script lang="ts">
+  import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
   import { cn } from '../../tools';
   import type { AddBlockChoice } from './types';
 
@@ -7,21 +8,50 @@
     label: string;
     size?: 'lg' | 'sm';
     newLabel?: string;
-    comingSoonLabel?: string;
+    /** Adds a trailing All blocks tile; it calls `onMore` instead of `onSelect`. */
+    moreLabel?: string;
+    moreOpen?: boolean;
     testId?: string;
     onSelect: (type: string) => void;
+    onMore?: () => void;
   }
 
-  let { choices, label, size = 'lg', newLabel, comingSoonLabel, testId, onSelect }: Props = $props();
+  let {
+    choices,
+    label,
+    size = 'lg',
+    newLabel,
+    moreLabel,
+    moreOpen = false,
+    testId,
+    onSelect,
+    onMore
+  }: Props = $props();
 
   const isLarge = $derived(size === 'lg');
+  const showMore = $derived(Boolean(moreLabel && onMore));
+
+  const tileClass = $derived(
+    cn(
+      'ui:border-border ui:bg-card ui:text-foreground ui:relative ui:flex ui:cursor-pointer ui:flex-col ui:items-center ui:justify-center ui:border ui:text-center ui:transition-[border-color,background-color,transform] ui:outline-none',
+      isLarge
+        ? 'ui:hover:border-primary/55 ui:hover:bg-primary/5 ui:focus-visible:border-primary/55 ui:focus-visible:bg-primary/5 ui:min-h-[76px] ui:gap-2 ui:rounded-lg ui:px-1.5 ui:py-3 ui:shadow-2xs ui:active:scale-[.98]'
+        : 'ui:hover:border-primary ui:hover:bg-primary/8 ui:focus-visible:border-primary ui:focus-visible:bg-primary/8 ui:min-h-[58px] ui:gap-[5px] ui:rounded-lg ui:px-0.5 ui:py-2'
+    )
+  );
+  const labelClass = $derived(
+    isLarge ? 'ui:text-xs ui:leading-[1.2] ui:font-semibold' : 'ui:text-[10.5px] ui:leading-[1.15] ui:font-medium'
+  );
 </script>
 
 <div class="ui:@container ui:w-full">
   <div
     class={cn(
-      'ui:grid ui:w-full ui:grid-cols-5',
-      isLarge ? 'ui:gap-2.5 ui:@max-[480px]:grid-cols-2' : 'ui:gap-1.5 ui:@max-[380px]:grid-cols-3'
+      'ui:grid ui:w-full',
+      showMore ? 'ui:grid-cols-6' : 'ui:grid-cols-5',
+      isLarge
+        ? cn('ui:gap-2.5', showMore ? 'ui:@max-[480px]:grid-cols-3' : 'ui:@max-[480px]:grid-cols-2')
+        : 'ui:gap-1.5 ui:@max-[380px]:grid-cols-3'
     )}
     role="group"
     aria-label={label}
@@ -31,43 +61,32 @@
       {@const ChoiceIcon = choice.icon}
       <button
         type="button"
-        class={cn(
-          'ui:border-border ui:bg-card ui:text-foreground ui:relative ui:flex ui:flex-col ui:items-center ui:justify-center ui:border ui:text-center ui:transition-[border-color,background-color,transform] ui:outline-none',
-          isLarge
-            ? 'ui:min-h-[88px] ui:gap-2 ui:rounded-lg ui:px-1.5 ui:py-3.5 ui:shadow-2xs'
-            : 'ui:min-h-[58px] ui:gap-[5px] ui:rounded-lg ui:px-0.5 ui:py-2',
-          choice.comingSoon
-            ? 'ui:cursor-not-allowed ui:opacity-60'
-            : isLarge
-              ? 'ui:hover:border-primary/55 ui:hover:bg-primary/5 ui:focus-visible:border-primary/55 ui:focus-visible:bg-primary/5 ui:cursor-pointer ui:active:scale-[.98]'
-              : 'ui:hover:border-primary ui:hover:bg-primary/8 ui:focus-visible:border-primary ui:focus-visible:bg-primary/8 ui:cursor-pointer'
-        )}
-        disabled={choice.comingSoon}
+        class={tileClass}
         data-testid={testId ? `${testId}-${choice.type}` : undefined}
         onclick={() => onSelect(choice.type)}
       >
-        <ChoiceIcon size={isLarge ? 20 : 16} class="custom ui:text-primary" />
-        <span
-          class={cn(
-            isLarge
-              ? 'ui:text-xs ui:leading-[1.2] ui:font-semibold'
-              : 'ui:text-[10.5px] ui:leading-[1.15] ui:font-medium'
-          )}
-        >
-          {choice.label}
-        </span>
-        {#if choice.comingSoon && comingSoonLabel}
+        <ChoiceIcon size={isLarge ? 18 : 16} class="custom ui:text-muted-foreground" />
+        <span class={labelClass}>{choice.label}</span>
+        {#if choice.isNew && newLabel}
           <span
-            class="ui:bg-muted ui:text-muted-foreground ui:rounded-full ui:px-1.5 ui:text-[9px] ui:leading-[14px] ui:font-semibold"
-            >{comingSoonLabel}</span
-          >
-        {:else if choice.isNew && newLabel}
-          <span
-            class="ui:bg-primary/10 ui:text-primary ui:absolute ui:top-1 ui:right-1 ui:rounded-full ui:px-1.5 ui:text-[9px] ui:leading-[14px] ui:font-semibold"
+            class="ui:bg-primary ui:text-primary-foreground ui:absolute ui:-top-[7px] ui:left-1/2 ui:-translate-x-1/2 ui:rounded-full ui:px-1.5 ui:text-[9px] ui:leading-[14px] ui:font-semibold"
             >{newLabel}</span
           >
         {/if}
       </button>
     {/each}
+
+    {#if showMore}
+      <button
+        type="button"
+        class={cn(tileClass, moreOpen && 'ui:border-primary/55 ui:bg-primary/5')}
+        aria-expanded={moreOpen}
+        data-testid={testId ? `${testId}-more` : undefined}
+        onclick={onMore}
+      >
+        <LayoutGridIcon size={isLarge ? 18 : 16} class="custom ui:text-muted-foreground" />
+        <span class={labelClass}>{moreLabel}</span>
+      </button>
+    {/if}
   </div>
 </div>

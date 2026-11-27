@@ -2913,6 +2913,30 @@
               "timeline": "Cronología",
               "code": "Código",
               "embed": "Insertar"
+            },
+            "groups": {
+              "text": "Texto",
+              "media": "Multimedia",
+              "interactive": "Interactivo",
+              "advanced": "Avanzado"
+            },
+            "descriptions": {
+              "note": "Texto enriquecido, títulos y listas",
+              "video": "Sube o enlaza un video",
+              "slides": "Inserta una presentación",
+              "document": "Un archivo para ver o descargar",
+              "image": "Sube o elige una imagen",
+              "chart": "Un gráfico a partir de tus datos",
+              "flashcards": "Tarjetas para practicar la memoria",
+              "tabs": "Divide el contenido en pestañas",
+              "multiple_choice": "Una comprobación rápida",
+              "process": "Un recorrido paso a paso",
+              "html": "Tu propia página web interactiva",
+              "audio": "Pódcast o nota de voz",
+              "poll": "Pregunta a la clase y muestra resultados",
+              "timeline": "Eventos en un eje temporal",
+              "code": "Un fragmento de código resaltado",
+              "embed": "Cualquier enlace insertable"
             }
           }
         },

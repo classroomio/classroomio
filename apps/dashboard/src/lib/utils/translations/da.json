@@ -2913,6 +2913,30 @@
               "timeline": "Tidslinje",
               "code": "Kode",
               "embed": "Indlejring"
+            },
+            "groups": {
+              "text": "Tekst",
+              "media": "Medier",
+              "interactive": "Interaktivt",
+              "advanced": "Avanceret"
+            },
+            "descriptions": {
+              "note": "Formateret tekst, overskrifter og lister",
+              "video": "Upload eller link en video",
+              "slides": "Indlejr et diasshow",
+              "document": "En fil, kursister kan se eller downloade",
+              "image": "Upload eller vælg et billede",
+              "chart": "Et diagram ud fra dine data",
+              "flashcards": "Vendekort til genkaldelse",
+              "tabs": "Del indhold op i faner",
+              "multiple_choice": "Et hurtigt videnstjek",
+              "process": "En gennemgang trin for trin",
+              "html": "Din egen interaktive webside",
+              "audio": "Podcast eller talebesked",
+              "poll": "Spørg holdet og vis resultaterne",
+              "timeline": "Begivenheder på en tidsakse",
+              "code": "Et kodeuddrag med syntaksfremhævning",
+              "embed": "Ethvert link, der kan indlejres"
             }
           }
         },

@@ -3366,6 +3366,30 @@
               "timeline": "Timeline",
               "code": "Code",
               "embed": "Embed"
+            },
+            "groups": {
+              "text": "Text",
+              "media": "Media",
+              "interactive": "Interactive",
+              "advanced": "Advanced"
+            },
+            "descriptions": {
+              "note": "Rich text, headings and lists",
+              "video": "Upload or link a video",
+              "slides": "Embed a slide deck",
+              "document": "A file students can view or download",
+              "image": "Upload or pick an image",
+              "chart": "A chart from your data",
+              "flashcards": "Flip cards for recall practice",
+              "tabs": "Split content into switchable tabs",
+              "multiple_choice": "A quick knowledge check",
+              "process": "A step-by-step walkthrough",
+              "html": "Your own interactive web page",
+              "audio": "Podcast or voice note",
+              "poll": "Ask the class, show the results",
+              "timeline": "Events on a time axis",
+              "code": "A syntax-highlighted snippet",
+              "embed": "Any embeddable link"
             }
           }
         },

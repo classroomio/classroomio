@@ -3368,6 +3368,30 @@
               "timeline": "Zaman çizelgesi",
               "code": "Kod",
               "embed": "Yerleştirme"
+            },
+            "groups": {
+              "text": "Metin",
+              "media": "Medya",
+              "interactive": "Etkileşimli",
+              "advanced": "Gelişmiş"
+            },
+            "descriptions": {
+              "note": "Biçimli metin, başlıklar ve listeler",
+              "video": "Video yükleyin veya bağlayın",
+              "slides": "Bir sunum yerleştirin",
+              "document": "Görüntülenebilir veya indirilebilir dosya",
+              "image": "Görsel yükleyin veya seçin",
+              "chart": "Verilerinizden bir grafik",
+              "flashcards": "Hatırlama için çevirmeli kartlar",
+              "tabs": "İçeriği sekmelere ayırın",
+              "multiple_choice": "Kısa bir bilgi kontrolü",
+              "process": "Adım adım anlatım",
+              "html": "Kendi etkileşimli web sayfanız",
+              "audio": "Podcast veya sesli not",
+              "poll": "Sınıfa sorun, sonuçları gösterin",
+              "timeline": "Zaman ekseninde olaylar",
+              "code": "Söz dizimi vurgulu kod parçası",
+              "embed": "Yerleştirilebilir herhangi bir bağlantı"
             }
           }
         },

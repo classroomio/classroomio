@@ -1,7 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import * as AddBlock from '@cio/ui/custom/add-block';
-  import { ALL_CHOICES } from './choices';
+  import { ALL_CHOICES, CATALOG_CHOICES } from './choices';
   import { FIELDS } from './grid-fields';
 
   const { Story } = defineMeta({
@@ -59,6 +59,23 @@
   {#snippet template(args)}
     <div class="w-[300px]">
       <AddBlock.Grid {...args} size="sm" onSelect={() => {}} />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="EmptyLessonWithAllBlocks">
+  {#snippet template(args)}
+    <div class="mx-auto w-full max-w-[560px]">
+      <AddBlock.Grid
+        {...args}
+        choices={CATALOG_CHOICES.filter((choice) =>
+          ['note', 'video', 'image', 'html', 'multiple_choice'].includes(choice.type)
+        )}
+        newLabel="New"
+        moreLabel="All blocks"
+        onSelect={() => {}}
+        onMore={() => {}}
+      />
     </div>
   {/snippet}
 </Story>

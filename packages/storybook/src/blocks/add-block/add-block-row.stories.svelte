@@ -12,7 +12,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
   import * as AddBlock from '@cio/ui/custom/add-block';
-  import { ALL_CHOICES } from './choices';
+  import { CATALOG_CHOICES } from './choices';
   import { FIELDS } from './row-fields';
 
   const addChoices: AddBlock.AddBlockChoice[] = [
@@ -23,11 +23,24 @@
     { type: 'image', label: 'Image', icon: ImageIcon }
   ];
 
-  const NEW_TYPES = ['chart', 'flashcards', 'tabs', 'multiple_choice', 'process', 'html'];
-  const allChoices = ALL_CHOICES.map((choice) => ({ ...choice, isNew: NEW_TYPES.includes(choice.type) }));
+  const allChoices = CATALOG_CHOICES;
   const upcomingChoices = [
-    { type: 'upcoming_audio', label: 'Audio', icon: AudioLinesIcon, comingSoon: true },
-    { type: 'upcoming_code', label: 'Code', icon: CodeIcon, comingSoon: true }
+    {
+      type: 'upcoming_audio',
+      label: 'Audio',
+      description: 'Podcast or voice note',
+      group: 'Media',
+      icon: AudioLinesIcon,
+      comingSoon: true
+    },
+    {
+      type: 'upcoming_code',
+      label: 'Code',
+      description: 'A syntax-highlighted snippet',
+      group: 'Advanced',
+      icon: CodeIcon,
+      comingSoon: true
+    }
   ];
   const dockChoices = ['note', 'video', 'image', 'html', 'multiple_choice'].flatMap((type) =>
     allChoices.filter((choice) => choice.type === type)

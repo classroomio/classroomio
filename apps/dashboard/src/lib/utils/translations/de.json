@@ -2913,6 +2913,30 @@
               "timeline": "Zeitleiste",
               "code": "Code",
               "embed": "Einbettung"
+            },
+            "groups": {
+              "text": "Text",
+              "media": "Medien",
+              "interactive": "Interaktiv",
+              "advanced": "Erweitert"
+            },
+            "descriptions": {
+              "note": "Formatierter Text, Überschriften und Listen",
+              "video": "Video hochladen oder verlinken",
+              "slides": "Eine Präsentation einbetten",
+              "document": "Eine Datei zum Ansehen oder Herunterladen",
+              "image": "Bild hochladen oder auswählen",
+              "chart": "Ein Diagramm aus deinen Daten",
+              "flashcards": "Karteikarten zum Wiederholen",
+              "tabs": "Inhalte in umschaltbare Tabs aufteilen",
+              "multiple_choice": "Eine kurze Wissensabfrage",
+              "process": "Eine Schritt-für-Schritt-Anleitung",
+              "html": "Deine eigene interaktive Webseite",
+              "audio": "Podcast oder Sprachnachricht",
+              "poll": "Die Klasse fragen, Ergebnisse zeigen",
+              "timeline": "Ereignisse auf einer Zeitachse",
+              "code": "Ein Codeausschnitt mit Syntaxhervorhebung",
+              "embed": "Jeder einbettbare Link"
             }
           }
         },

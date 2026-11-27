@@ -3360,6 +3360,30 @@
               "timeline": "Cronologia",
               "code": "Codice",
               "embed": "Incorpora"
+            },
+            "groups": {
+              "text": "Testo",
+              "media": "Media",
+              "interactive": "Interattivo",
+              "advanced": "Avanzato"
+            },
+            "descriptions": {
+              "note": "Testo formattato, titoli ed elenchi",
+              "video": "Carica o collega un video",
+              "slides": "Incorpora una presentazione",
+              "document": "Un file da visualizzare o scaricare",
+              "image": "Carica o scegli un'immagine",
+              "chart": "Un grafico dai tuoi dati",
+              "flashcards": "Schede da girare per ripassare",
+              "tabs": "Dividi i contenuti in schede",
+              "multiple_choice": "Una rapida verifica",
+              "process": "Una guida passo passo",
+              "html": "La tua pagina web interattiva",
+              "audio": "Podcast o nota vocale",
+              "poll": "Chiedi alla classe e mostra i risultati",
+              "timeline": "Eventi su un asse temporale",
+              "code": "Uno snippet di codice evidenziato",
+              "embed": "Qualsiasi link incorporabile"
             }
           }
         },

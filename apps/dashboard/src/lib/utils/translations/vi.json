@@ -2913,6 +2913,30 @@
               "timeline": "Dòng thời gian",
               "code": "Mã",
               "embed": "Nhúng"
+            },
+            "groups": {
+              "text": "Văn bản",
+              "media": "Đa phương tiện",
+              "interactive": "Tương tác",
+              "advanced": "Nâng cao"
+            },
+            "descriptions": {
+              "note": "Văn bản định dạng, tiêu đề và danh sách",
+              "video": "Tải lên hoặc liên kết video",
+              "slides": "Nhúng bản trình chiếu",
+              "document": "Tệp để xem hoặc tải xuống",
+              "image": "Tải lên hoặc chọn hình ảnh",
+              "chart": "Biểu đồ từ dữ liệu của bạn",
+              "flashcards": "Thẻ lật để luyện ghi nhớ",
+              "tabs": "Chia nội dung thành các tab",
+              "multiple_choice": "Kiểm tra kiến thức nhanh",
+              "process": "Hướng dẫn từng bước",
+              "html": "Trang web tương tác của riêng bạn",
+              "audio": "Podcast hoặc ghi chú giọng nói",
+              "poll": "Hỏi lớp và hiển thị kết quả",
+              "timeline": "Sự kiện trên trục thời gian",
+              "code": "Đoạn mã có tô sáng cú pháp",
+              "embed": "Bất kỳ liên kết nhúng nào"
             }
           }
         },
