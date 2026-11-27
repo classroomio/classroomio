@@ -1,6 +1,8 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidUuid } from '@cio/utils/validation';
 import { getCommentAuthorAndCourse } from '@cio/db/queries/community';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
@@ -33,6 +35,10 @@ export const commentAuthorOrTeamMiddleware = async (c: Context, next: Next) => {
         },
         400
       );
+    }
+
+    if (!isValidUuid(commentId)) {
+      return invalidIdResponse(c, 'comment');
     }
 
     const comment = await getCommentAuthorAndCourse(commentId);

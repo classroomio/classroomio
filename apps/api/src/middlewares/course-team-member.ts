@@ -1,6 +1,8 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidUuid } from '@cio/utils/validation';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
 /**
@@ -33,6 +35,10 @@ export const courseTeamMemberMiddleware = async (c: Context, next: Next) => {
         },
         400
       );
+    }
+
+    if (!isValidUuid(courseId)) {
+      return invalidIdResponse(c, 'course');
     }
 
     // Check if user is a team member (ADMIN or TUTOR) or org admin

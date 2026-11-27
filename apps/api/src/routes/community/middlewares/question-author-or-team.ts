@@ -1,6 +1,8 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidNumericId } from '@cio/utils/validation';
 import { getQuestionAuthorAndCourse } from '@cio/db/queries/community';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
@@ -33,6 +35,10 @@ export const questionAuthorOrTeamMiddleware = async (c: Context, next: Next) => 
         },
         400
       );
+    }
+
+    if (!isValidNumericId(questionId)) {
+      return invalidIdResponse(c, 'question');
     }
 
     const question = await getQuestionAuthorAndCourse(questionId);

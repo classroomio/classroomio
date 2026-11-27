@@ -3,6 +3,9 @@ import { createPaymentRequest } from '@api/services/course/payment-request';
 import { handleError } from '@api/utils/errors';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
+import { ZUuid } from '@cio/utils/validation';
+
+const ZPaymentRequestParam = z.object({ courseId: ZUuid });
 
 const ZPaymentRequest = z.object({
   studentEmail: z.string().email(),
@@ -15,9 +18,9 @@ export const paymentRequestRouter = new Hono()
    * Creates a payment request and sends emails to teacher and student
    * No authentication required - public route for course landing pages
    */
-  .post('/', zValidator('json', ZPaymentRequest), async (c) => {
+  .post('/', zValidator('param', ZPaymentRequestParam), zValidator('json', ZPaymentRequest), async (c) => {
     try {
-      const courseId = c.req.param('courseId')!;
+      const { courseId } = c.req.valid('param');
       const data = c.req.valid('json');
 
       const result = await createPaymentRequest({

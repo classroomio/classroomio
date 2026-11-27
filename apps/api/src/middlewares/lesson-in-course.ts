@@ -1,6 +1,8 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidUuid } from '@cio/utils/validation';
 import { getLessonRowById } from '@cio/db/queries/lesson';
 
 /**
@@ -12,6 +14,15 @@ export const lessonInCourseMiddleware = async (c: Context, next: Next) => {
   try {
     const courseId = c.req.param('courseId');
     const lessonId = c.req.param('lessonId');
+
+    if (courseId && !isValidUuid(courseId)) {
+      return invalidIdResponse(c, 'course');
+    }
+
+    if (lessonId && !isValidUuid(lessonId)) {
+      return invalidIdResponse(c, 'lesson');
+    }
+
     const lesson = lessonId ? await getLessonRowById(lessonId) : null;
 
     if (lesson && courseId && lesson.courseId === courseId) {

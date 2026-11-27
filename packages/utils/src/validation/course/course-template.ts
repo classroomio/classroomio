@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { ZUuid } from '../shared/id';
+
 export const ZTemplateListQuery = z.object({
   organizationId: z.string().min(1)
 });
@@ -21,7 +23,7 @@ export const ZSaveCourseTemplate = z.object({
 export type TSaveCourseTemplate = z.infer<typeof ZSaveCourseTemplate>;
 
 export const ZCourseTemplateParam = z.object({
-  courseId: z.string().min(1)
+  courseId: ZUuid
 });
 export type TCourseTemplateParam = z.infer<typeof ZCourseTemplateParam>;
 

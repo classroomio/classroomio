@@ -26,7 +26,7 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 | Status        | Meaning                                                                                                                                                      |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `200` / `201` | The request worked                                                                                                                                           |
-| `400`         | The request body or query is invalid                                                                                                                         |
+| `400`         | The request body, query, or a path parameter such as an ID is invalid                                                                                                                         |
 | `401`         | The credential (API key or OAuth token) is missing, invalid, expired, or revoked                                                                             |
 | `403`         | The credential can't call this endpoint — missing scope, read-only connection, or a plan without API access                                                  |
 | `404`         | The resource doesn't exist, or belongs to another organization                                                                                               |

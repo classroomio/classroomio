@@ -3,6 +3,7 @@ import * as z from 'zod';
 import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
+import { ZUuid } from '../shared/id';
 import { ZCourseCalloutInput } from './callout';
 import { ZCourseType } from './course-type';
 import { ZLiveSessionReminderOffsets } from './live-session-reminder';
@@ -25,7 +26,7 @@ export const ZCourseClone = z.object({
 export type TCourseClone = z.infer<typeof ZCourseClone>;
 
 export const ZCourseCloneParam = z.object({
-  courseId: z.string().min(1)
+  courseId: ZUuid
 });
 export type TCourseCloneParam = z.infer<typeof ZCourseCloneParam>;
 
@@ -45,7 +46,7 @@ export const ZCourseGetBySlugParam = z.object({
 export type TCourseGetBySlugParam = z.infer<typeof ZCourseGetBySlugParam>;
 
 export const ZCourseEnrollParam = z.object({
-  courseId: z.string().min(1)
+  courseId: ZUuid
 });
 export type TCourseEnrollParam = z.infer<typeof ZCourseEnrollParam>;
 

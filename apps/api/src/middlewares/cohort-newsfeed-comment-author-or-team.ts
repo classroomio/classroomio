@@ -1,5 +1,7 @@
 import { Context, Next } from 'hono';
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidNumericId, isValidUuid } from '@cio/utils/validation';
 import {
   getCohortMemberByProfileId,
   getCohortMemberRole,
@@ -35,6 +37,18 @@ export const cohortNewsfeedCommentAuthorOrTeamMiddleware = async (c: Context, ne
         },
         400
       );
+    }
+
+    if (!isValidUuid(cohortId)) {
+      return invalidIdResponse(c, 'cohort');
+    }
+
+    if (!isValidUuid(feedId)) {
+      return invalidIdResponse(c, 'newsfeed');
+    }
+
+    if (!isValidNumericId(commentId)) {
+      return invalidIdResponse(c, 'comment');
     }
 
     const comment = await getCohortNewsfeedCommentById(Number(commentId));

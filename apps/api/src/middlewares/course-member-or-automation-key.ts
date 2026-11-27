@@ -2,6 +2,8 @@ import { Context, Next } from 'hono';
 import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidUuid } from '@cio/utils/validation';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { courseMemberMiddleware } from './course-member';
@@ -37,6 +39,10 @@ export const courseMemberOrAutomationKeyMiddleware =
           },
           400
         );
+      }
+
+      if (!isValidUuid(courseId)) {
+        return invalidIdResponse(c, 'course');
       }
 
       const courseOrgId = await getCourseOrganizationId(courseId);
