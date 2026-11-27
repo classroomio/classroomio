@@ -2937,6 +2937,24 @@
               "timeline": "Wydarzenia na osi czasu",
               "code": "Fragment kodu z podświetlaniem",
               "embed": "Dowolny osadzalny link"
+            },
+            "captions": {
+              "note": "Kursanci czytają sformatowany tekst, nagłówki i listy w toku lekcji.",
+              "tabs": "Kursanci przełączają karty zamiast przewijać każdą sekcję.",
+              "process": "Kursanci przechodzą przez ponumerowane kroki, jeden po drugim.",
+              "video": "Uczniowie odtwarzają wideo bezpośrednio w lekcji.",
+              "slides": "Kursanci przeglądają prezentację bez opuszczania lekcji.",
+              "document": "Kursanci przeglądają strony lub pobierają plik.",
+              "image": "Uczniowie widzą obraz na pełną szerokość lekcji.",
+              "audio": "Kursanci słuchają podcastu lub notatki głosowej w lekcji.",
+              "chart": "Uczniowie widzą Twoje dane jako wykres.",
+              "flashcards": "Uczniowie odwracają każdą kartę, by zobaczyć odpowiedź, i przechodzą przez cały zestaw.",
+              "multiple_choice": "Uczniowie wybierają odpowiedź, klikają Sprawdź i od razu widzą, czy jest poprawna.",
+              "poll": "Kursanci głosują, a potem widzą, jak odpowiedziała grupa.",
+              "timeline": "Kursanci śledzą wydarzenia po kolei na osi czasu.",
+              "html": "Twój HTML działa jako interaktywna strona w lekcji.",
+              "code": "Kursanci czytają podświetlony kod i kopiują go jednym kliknięciem.",
+              "embed": "Wklej link, a kursanci zobaczą osadzoną stronę."
             }
           }
         },

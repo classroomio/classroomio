@@ -2937,6 +2937,24 @@
               "timeline": "Eventos en un eje temporal",
               "code": "Un fragmento de código resaltado",
               "embed": "Cualquier enlace insertable"
+            },
+            "captions": {
+              "note": "Los estudiantes leen texto con formato, títulos y listas dentro de la lección.",
+              "tabs": "Los estudiantes cambian de pestaña en lugar de desplazarse por cada sección.",
+              "process": "Los estudiantes avanzan por pasos numerados, uno a la vez.",
+              "video": "Los estudiantes reproducen el video dentro de la lección.",
+              "slides": "Los estudiantes pasan las diapositivas sin salir de la lección.",
+              "document": "Los estudiantes ven las páginas o descargan el archivo.",
+              "image": "Los estudiantes ven la imagen a todo el ancho de la lección.",
+              "audio": "Los estudiantes escuchan un pódcast o una nota de voz en la lección.",
+              "chart": "Los estudiantes ven tus datos como un gráfico.",
+              "flashcards": "Los estudiantes giran cada tarjeta para ver la respuesta y recorren el mazo.",
+              "multiple_choice": "Los estudiantes eligen una respuesta, pulsan Comprobar y ven al instante si es correcta.",
+              "poll": "Los estudiantes votan y luego ven cómo respondió la clase.",
+              "timeline": "Los estudiantes siguen los eventos en orden en un eje temporal.",
+              "html": "Tu HTML funciona como una página interactiva dentro de la lección.",
+              "code": "Los estudiantes leen código resaltado y lo copian con un clic.",
+              "embed": "Pega un enlace y los estudiantes verán la página insertada."
             }
           }
         },

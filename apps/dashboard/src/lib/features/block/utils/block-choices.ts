@@ -45,6 +45,7 @@ export function getAddBlockChoices(): AddBlockChoice[] {
     type,
     label: t.get(blockTypeLabelKey(type)),
     description: t.get(`${BLOCKS_KEY}.descriptions.${type}`),
+    caption: t.get(`${BLOCKS_KEY}.captions.${type}`),
     group: t.get(`${BLOCKS_KEY}.groups.${BLOCK_GROUPS[type]}`),
     icon: BLOCK_EDITORS[type].icon,
     isNew: NEW_BLOCK_TYPES.includes(type)
@@ -68,7 +69,9 @@ export function getCatalogBlockChoices(): AddBlockChoice[] {
     type: `upcoming_${type}`,
     label: t.get(`${BLOCKS_KEY}.upcoming.${type}`),
     description: t.get(`${BLOCKS_KEY}.descriptions.${type}`),
+    caption: t.get(`${BLOCKS_KEY}.captions.${type}`),
     group: t.get(`${BLOCKS_KEY}.groups.${group}`),
+    scene: type,
     icon,
     comingSoon: true
   }));

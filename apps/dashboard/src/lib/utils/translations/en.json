@@ -3390,6 +3390,24 @@
               "timeline": "Events on a time axis",
               "code": "A syntax-highlighted snippet",
               "embed": "Any embeddable link"
+            },
+            "captions": {
+              "note": "Students read formatted text, headings and lists in the lesson flow.",
+              "tabs": "Students switch between tabs instead of scrolling through every section.",
+              "process": "Students move through numbered steps, one at a time.",
+              "video": "Students play the video inline, without leaving the lesson.",
+              "slides": "Students page through the deck without leaving the lesson.",
+              "document": "Students preview the pages or download the file.",
+              "image": "Students see the image full width in the lesson.",
+              "audio": "Students listen to a podcast or voice note in the lesson.",
+              "chart": "Students see your data as a chart.",
+              "flashcards": "Students flip each card to reveal the answer and step through the deck.",
+              "multiple_choice": "Students pick an answer, press Check, and see right away if it's correct.",
+              "poll": "Students vote, then see how the class answered.",
+              "timeline": "Students follow events in order along a time axis.",
+              "html": "Your HTML runs as a live, interactive page inside the lesson.",
+              "code": "Students read highlighted code and copy it in one click.",
+              "embed": "Paste a link and students see the embedded page."
             }
           }
         },

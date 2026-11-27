@@ -2937,6 +2937,24 @@
               "timeline": "Eventos em uma linha do tempo",
               "code": "Um trecho de código destacado",
               "embed": "Qualquer link incorporável"
+            },
+            "captions": {
+              "note": "Os alunos leem texto formatado, títulos e listas na lição.",
+              "tabs": "Os alunos alternam entre abas em vez de rolar por cada seção.",
+              "process": "Os alunos avançam por etapas numeradas, uma de cada vez.",
+              "video": "Os alunos reproduzem o vídeo dentro da lição.",
+              "slides": "Os alunos passam pelos slides sem sair da lição.",
+              "document": "Os alunos veem as páginas ou baixam o arquivo.",
+              "image": "Os alunos veem a imagem em largura total na lição.",
+              "audio": "Os alunos ouvem um podcast ou nota de voz na lição.",
+              "chart": "Os alunos veem seus dados como um gráfico.",
+              "flashcards": "Os alunos viram cada cartão para ver a resposta e percorrem o baralho.",
+              "multiple_choice": "Os alunos escolhem uma resposta, clicam em Verificar e veem na hora se está certa.",
+              "poll": "Os alunos votam e depois veem como a turma respondeu.",
+              "timeline": "Os alunos acompanham os eventos em ordem em uma linha do tempo.",
+              "html": "Seu HTML roda como uma página interativa dentro da lição.",
+              "code": "Os alunos leem código destacado e copiam com um clique.",
+              "embed": "Cole um link e os alunos verão a página incorporada."
             }
           }
         },

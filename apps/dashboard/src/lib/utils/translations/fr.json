@@ -2937,6 +2937,24 @@
               "timeline": "Des événements sur un axe du temps",
               "code": "Un extrait de code coloré",
               "embed": "Tout lien intégrable"
+            },
+            "captions": {
+              "note": "Les apprenants lisent du texte mis en forme, des titres et des listes dans la leçon.",
+              "tabs": "Les apprenants passent d’un onglet à l’autre au lieu de faire défiler chaque section.",
+              "process": "Les apprenants avancent étape par étape, une à la fois.",
+              "video": "Les apprenants lisent la vidéo directement dans la leçon.",
+              "slides": "Les apprenants feuillettent la présentation sans quitter la leçon.",
+              "document": "Les apprenants consultent les pages ou téléchargent le fichier.",
+              "image": "Les apprenants voient l’image en pleine largeur dans la leçon.",
+              "audio": "Les apprenants écoutent un podcast ou une note vocale dans la leçon.",
+              "chart": "Les apprenants voient vos données sous forme de graphique.",
+              "flashcards": "Les apprenants retournent chaque carte pour voir la réponse et parcourent le paquet.",
+              "multiple_choice": "Les apprenants choisissent une réponse, cliquent sur Vérifier et voient aussitôt si elle est juste.",
+              "poll": "Les apprenants votent, puis voient les réponses de la classe.",
+              "timeline": "Les apprenants suivent les événements dans l’ordre sur un axe du temps.",
+              "html": "Votre HTML s’exécute comme une page interactive dans la leçon.",
+              "code": "Les apprenants lisent du code coloré et le copient en un clic.",
+              "embed": "Collez un lien et les apprenants voient la page intégrée."
             }
           }
         },

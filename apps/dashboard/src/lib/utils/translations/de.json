@@ -2937,6 +2937,24 @@
               "timeline": "Ereignisse auf einer Zeitachse",
               "code": "Ein Codeausschnitt mit Syntaxhervorhebung",
               "embed": "Jeder einbettbare Link"
+            },
+            "captions": {
+              "note": "Lernende lesen formatierten Text, Überschriften und Listen im Lektionsverlauf.",
+              "tabs": "Lernende wechseln zwischen Tabs, statt durch jeden Abschnitt zu scrollen.",
+              "process": "Lernende gehen nummerierte Schritte nacheinander durch.",
+              "video": "Lernende spielen das Video direkt in der Lektion ab.",
+              "slides": "Lernende blättern durch die Präsentation, ohne die Lektion zu verlassen.",
+              "document": "Lernende sehen sich die Seiten an oder laden die Datei herunter.",
+              "image": "Lernende sehen das Bild in voller Breite in der Lektion.",
+              "audio": "Lernende hören einen Podcast oder eine Sprachnachricht in der Lektion.",
+              "chart": "Lernende sehen deine Daten als Diagramm.",
+              "flashcards": "Lernende drehen jede Karte um, sehen die Antwort und blättern durch den Stapel.",
+              "multiple_choice": "Lernende wählen eine Antwort, klicken auf Prüfen und sehen sofort, ob sie stimmt.",
+              "poll": "Lernende stimmen ab und sehen dann, wie die Klasse geantwortet hat.",
+              "timeline": "Lernende verfolgen Ereignisse der Reihe nach auf einer Zeitachse.",
+              "html": "Dein HTML läuft als lebendige, interaktive Seite in der Lektion.",
+              "code": "Lernende lesen hervorgehobenen Code und kopieren ihn mit einem Klick.",
+              "embed": "Füge einen Link ein, und Lernende sehen die eingebettete Seite."
             }
           }
         },

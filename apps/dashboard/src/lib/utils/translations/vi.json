@@ -2937,6 +2937,24 @@
               "timeline": "Sự kiện trên trục thời gian",
               "code": "Đoạn mã có tô sáng cú pháp",
               "embed": "Bất kỳ liên kết nhúng nào"
+            },
+            "captions": {
+              "note": "Học viên đọc văn bản định dạng, tiêu đề và danh sách ngay trong bài học.",
+              "tabs": "Học viên chuyển tab thay vì cuộn qua từng phần.",
+              "process": "Học viên đi qua từng bước được đánh số, lần lượt từng bước.",
+              "video": "Học viên phát video ngay trong bài học.",
+              "slides": "Học viên lật qua bản trình chiếu mà không rời bài học.",
+              "document": "Học viên xem trước các trang hoặc tải tệp xuống.",
+              "image": "Học viên xem hình ảnh với chiều rộng đầy đủ trong bài học.",
+              "audio": "Học viên nghe podcast hoặc ghi chú giọng nói trong bài học.",
+              "chart": "Học viên xem dữ liệu của bạn dưới dạng biểu đồ.",
+              "flashcards": "Học viên lật từng thẻ để xem đáp án và lần lượt xem hết bộ thẻ.",
+              "multiple_choice": "Học viên chọn một đáp án, bấm Kiểm tra và biết ngay đúng hay sai.",
+              "poll": "Học viên bỏ phiếu rồi xem cả lớp trả lời ra sao.",
+              "timeline": "Học viên theo dõi các sự kiện theo thứ tự trên trục thời gian.",
+              "html": "HTML của bạn chạy như một trang tương tác ngay trong bài học.",
+              "code": "Học viên đọc mã được tô sáng và sao chép chỉ bằng một cú nhấp.",
+              "embed": "Dán một liên kết và học viên sẽ thấy trang được nhúng."
             }
           }
         },

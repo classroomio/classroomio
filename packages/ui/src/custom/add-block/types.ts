@@ -12,6 +12,10 @@ export interface AddBlockChoice {
   group?: string;
   /** Shows a planned block type as a disabled tile with a Coming soon badge. */
   comingSoon?: boolean;
+  /** Key into the animated block previews; defaults to `type`. */
+  scene?: string;
+  /** What students see, shown under the animated preview in `AddBlock.Catalog`. */
+  caption?: string;
 }
 
 export interface AddBlockShortcut {

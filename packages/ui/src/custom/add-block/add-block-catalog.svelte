@@ -14,6 +14,8 @@
     autofocus?: boolean;
     testId?: string;
     onSelect: (type: string) => void;
+    /** Called with the hovered or focused choice and its tile, and with nulls once neither is. */
+    onActiveChange?: (choice: AddBlockChoice | null, tile: HTMLElement | null) => void;
   }
 
   let {
@@ -25,7 +27,8 @@
     comingSoonLabel,
     autofocus = false,
     testId,
-    onSelect
+    onSelect,
+    onActiveChange
   }: Props = $props();
 
   let query = $state('');
@@ -48,9 +51,28 @@
   $effect(() => {
     if (autofocus) searchElement?.focus();
   });
+
+  function select(choice: AddBlockChoice) {
+    if (choice.comingSoon) return;
+
+    onSelect(choice.type);
+  }
+
+  function handleFocusOut(event: FocusEvent) {
+    if ((event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) return;
+
+    onActiveChange?.(null, null);
+  }
 </script>
 
-<div class="ui:@container ui:flex ui:w-full ui:flex-col ui:gap-1" role="group" aria-label={label} data-testid={testId}>
+<div
+  class="ui:@container ui:flex ui:w-full ui:flex-col ui:gap-1"
+  role="group"
+  aria-label={label}
+  data-testid={testId}
+  onpointerleave={() => onActiveChange?.(null, null)}
+  onfocusout={handleFocusOut}
+>
   <div class="ui:relative">
     <SearchIcon
       size={14}
@@ -79,17 +101,25 @@
         <button
           type="button"
           class={cn(
-            'ui:border-border ui:text-foreground ui:flex ui:flex-col ui:gap-1 ui:rounded-lg ui:border ui:px-2.5 ui:py-2 ui:text-left ui:transition-colors ui:outline-none',
+            'ui:group ui:border-border ui:text-foreground ui:flex ui:flex-col ui:gap-1 ui:rounded-lg ui:border ui:px-2.5 ui:py-2 ui:text-left ui:transition-colors ui:outline-none',
             choice.comingSoon
-              ? 'ui:cursor-not-allowed ui:opacity-55'
+              ? 'ui:cursor-default ui:opacity-55'
               : 'ui:hover:border-primary/40 ui:hover:bg-muted/60 ui:focus-visible:border-primary/40 ui:focus-visible:bg-muted/60 ui:cursor-pointer'
           )}
-          disabled={choice.comingSoon}
+          aria-disabled={choice.comingSoon}
           data-testid={testId ? `${testId}-${choice.type}` : undefined}
-          onclick={() => onSelect(choice.type)}
+          onclick={() => select(choice)}
+          onpointerenter={(event) => onActiveChange?.(choice, event.currentTarget)}
+          onfocus={(event) => onActiveChange?.(choice, event.currentTarget)}
         >
           <span class="ui:flex ui:flex-wrap ui:items-center ui:gap-x-1.5 ui:gap-y-0.5 ui:text-[13px] ui:font-medium">
-            <ChoiceIcon size={14} class="custom ui:text-muted-foreground ui:shrink-0" />
+            <ChoiceIcon
+              size={14}
+              class={cn(
+                'custom ui:text-muted-foreground ui:shrink-0 ui:transition-colors',
+                !choice.comingSoon && 'ui:group-hover:text-primary ui:group-focus-visible:text-primary'
+              )}
+            />
             <span>{choice.label}</span>
             {#if choice.comingSoon && comingSoonLabel}
               <span

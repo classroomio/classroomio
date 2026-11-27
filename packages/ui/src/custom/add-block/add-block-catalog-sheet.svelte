@@ -2,6 +2,7 @@
   import type { Snippet } from 'svelte';
   import * as Sheet from '../../base/sheet';
   import Catalog from './add-block-catalog.svelte';
+  import Preview from './add-block-preview.svelte';
   import type { AddBlockChoice } from './types';
 
   interface Props {
@@ -20,6 +21,13 @@
     $props();
 
   let open = $state(false);
+  let activeChoice = $state<AddBlockChoice | null>(null);
+  let activeTile = $state<HTMLElement | null>(null);
+
+  function setActive(choice: AddBlockChoice | null, tile: HTMLElement | null) {
+    activeChoice = choice;
+    activeTile = tile;
+  }
 
   function toggle() {
     open = !open;
@@ -27,6 +35,7 @@
 
   function select(type: string) {
     open = false;
+    setActive(null, null);
     onSelect(type);
   }
 </script>
@@ -54,8 +63,12 @@
           autofocus
           testId={testId ? `${testId}-grid` : undefined}
           onSelect={select}
+          onActiveChange={setActive}
         />
       {/if}
     </div>
+    {#if open}
+      <Preview choice={activeChoice} anchor={activeTile} {newLabel} {comingSoonLabel} />
+    {/if}
   </Sheet.Content>
 </Sheet.Root>

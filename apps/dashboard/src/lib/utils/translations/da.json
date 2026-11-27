@@ -2937,6 +2937,24 @@
               "timeline": "Begivenheder på en tidsakse",
               "code": "Et kodeuddrag med syntaksfremhævning",
               "embed": "Ethvert link, der kan indlejres"
+            },
+            "captions": {
+              "note": "Kursister læser formateret tekst, overskrifter og lister i lektionen.",
+              "tabs": "Kursister skifter mellem faner i stedet for at rulle gennem hvert afsnit.",
+              "process": "Kursister går gennem nummererede trin, ét ad gangen.",
+              "video": "Eleverne afspiller videoen direkte i lektionen.",
+              "slides": "Kursister blader gennem præsentationen uden at forlade lektionen.",
+              "document": "Kursister ser siderne eller downloader filen.",
+              "image": "Eleverne ser billedet i fuld bredde i lektionen.",
+              "audio": "Kursister lytter til en podcast eller talebesked i lektionen.",
+              "chart": "Eleverne ser dine data som et diagram.",
+              "flashcards": "Eleverne vender hvert kort for at se svaret og bladrer gennem bunken.",
+              "multiple_choice": "Eleverne vælger et svar, trykker på Tjek og ser straks, om det er rigtigt.",
+              "poll": "Kursister stemmer og ser derefter, hvordan holdet svarede.",
+              "timeline": "Kursister følger begivenheder i rækkefølge langs en tidsakse.",
+              "html": "Din HTML kører som en levende, interaktiv side i lektionen.",
+              "code": "Kursister læser fremhævet kode og kopierer den med ét klik.",
+              "embed": "Indsæt et link, så ser kursister den indlejrede side."
             }
           }
         },

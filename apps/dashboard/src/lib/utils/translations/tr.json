@@ -3392,6 +3392,24 @@
               "timeline": "Zaman ekseninde olaylar",
               "code": "Söz dizimi vurgulu kod parçası",
               "embed": "Yerleştirilebilir herhangi bir bağlantı"
+            },
+            "captions": {
+              "note": "Öğrenciler ders akışında biçimli metin, başlıklar ve listeler okur.",
+              "tabs": "Öğrenciler her bölümü kaydırmak yerine sekmeler arasında geçiş yapar.",
+              "process": "Öğrenciler numaralı adımları tek tek ilerler.",
+              "video": "Öğrenciler videoyu doğrudan derste oynatır.",
+              "slides": "Öğrenciler dersten ayrılmadan sunumda gezinir.",
+              "document": "Öğrenciler sayfaları önizler veya dosyayı indirir.",
+              "image": "Öğrenciler görseli derste tam genişlikte görür.",
+              "audio": "Öğrenciler derste bir podcast veya sesli not dinler.",
+              "chart": "Öğrenciler verilerinizi grafik olarak görür.",
+              "flashcards": "Öğrenciler cevabı görmek için her kartı çevirir ve destede ilerler.",
+              "multiple_choice": "Öğrenciler bir cevap seçer, Kontrol Et'e basar ve doğru olup olmadığını hemen görür.",
+              "poll": "Öğrenciler oy verir, sonra sınıfın nasıl cevapladığını görür.",
+              "timeline": "Öğrenciler olayları bir zaman ekseni boyunca sırayla izler.",
+              "html": "HTML’iniz ders içinde canlı, etkileşimli bir sayfa olarak çalışır.",
+              "code": "Öğrenciler vurgulanmış kodu okur ve tek tıkla kopyalar.",
+              "embed": "Bir bağlantı yapıştırın, öğrenciler yerleştirilmiş sayfayı görsün."
             }
           }
         },

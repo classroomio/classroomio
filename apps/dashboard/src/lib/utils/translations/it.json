@@ -3384,6 +3384,24 @@
               "timeline": "Eventi su un asse temporale",
               "code": "Uno snippet di codice evidenziato",
               "embed": "Qualsiasi link incorporabile"
+            },
+            "captions": {
+              "note": "Gli studenti leggono testo formattato, titoli ed elenchi nella lezione.",
+              "tabs": "Gli studenti passano da una scheda all’altra invece di scorrere ogni sezione.",
+              "process": "Gli studenti seguono passaggi numerati, uno alla volta.",
+              "video": "Gli studenti riproducono il video direttamente nella lezione.",
+              "slides": "Gli studenti sfogliano la presentazione senza lasciare la lezione.",
+              "document": "Gli studenti visualizzano le pagine o scaricano il file.",
+              "image": "Gli studenti vedono l'immagine a tutta larghezza nella lezione.",
+              "audio": "Gli studenti ascoltano un podcast o una nota vocale nella lezione.",
+              "chart": "Gli studenti vedono i tuoi dati come un grafico.",
+              "flashcards": "Gli studenti girano ogni carta per vedere la risposta e scorrono il mazzo.",
+              "multiple_choice": "Gli studenti scelgono una risposta, premono Verifica e vedono subito se è giusta.",
+              "poll": "Gli studenti votano, poi vedono come ha risposto la classe.",
+              "timeline": "Gli studenti seguono gli eventi in ordine lungo un asse temporale.",
+              "html": "Il tuo HTML funziona come una pagina interattiva dentro la lezione.",
+              "code": "Gli studenti leggono codice evidenziato e lo copiano con un clic.",
+              "embed": "Incolla un link e gli studenti vedranno la pagina incorporata."
             }
           }
         },
