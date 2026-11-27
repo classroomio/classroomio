@@ -42,7 +42,7 @@
       comingSoon: true
     }
   ];
-  const dockChoices = ['note', 'video', 'image', 'html', 'multiple_choice'].flatMap((type) =>
+  const dockChoices = ['note', 'document', 'video', 'image', 'html'].flatMap((type) =>
     allChoices.filter((choice) => choice.type === type)
   );
 

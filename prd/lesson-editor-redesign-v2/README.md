@@ -22,7 +22,7 @@ v2 adds **five interactive block types** so an admin can build lessons that lear
 | **Multiple Choice** | One question with several answers and one correct answer |
 | **Process** | A step-by-step walkthrough with an optional image per step |
 
-v2 also changes the **empty state** and the **Add content menu** so all ten block types are easy to find.
+v2 also changes the **empty state** and the **Add content menu** so all eleven block types are easy to find.
 
 ## What does not change
 
@@ -217,7 +217,7 @@ When a lesson has no blocks, the canvas shows:
 
 * A heading: **"What goes in this lesson?"**
 * A line under it: "Pick a block to begin. You can add more at any time."
-* A **grid of tiles**, each with an icon and a label: Note, Video, Image, HTML, Multiple Choice and **All blocks**. All blocks opens the same grouped, searchable list as the floating bar's All blocks button, under the grid. On narrow screens the grid shows 3 columns.
+* A **grid of tiles**, each with an icon and a label: Note, Document, Video, Image, HTML and **All blocks**. All blocks opens the same grouped, searchable popover as the floating bar's All blocks button. On narrow screens the grid shows 3 columns.
 * An **Ask AI** button under the grid (shortcut Cmd/Ctrl + I) that opens the same Ask AI prompt as the floating bar.
 
 Clicking a tile adds that block's ready-made example and the empty state disappears. If the admin later removes every block, the empty state comes back.
@@ -226,8 +226,8 @@ The add-content empty state is only visible in Edit. In Preview, an empty lesson
 
 ## Add content menu
 
-* **Between blocks.** The "+" between two blocks opens a menu of all ten block types as tiles, plus **"Ask AI instead"** (shortcut Cmd/Ctrl + I). The new block is inserted exactly at that spot. The menu closes when the admin picks a tile, presses Escape, or clicks elsewhere. Only one menu is open at a time.
-* **End of lesson.** A floating bar at the bottom of the canvas pins five types (Note, Video, Image, HTML, Multiple Choice), plus **Ask AI** and an **All blocks** button that opens a searchable list of every type, grouped into Text, Media, Interactive and Advanced. That list also shows planned types (Audio, Poll, Timeline, Code, Embed) as disabled **Coming soon** tiles. The bar always adds to the **end** of the lesson, never into a tab.
+* **Between blocks.** The "+" between two blocks opens a menu of all eleven block types as tiles, plus **"Ask AI instead"** (shortcut Cmd/Ctrl + I). The new block is inserted exactly at that spot. The menu closes when the admin picks a tile, presses Escape, or clicks elsewhere. Only one menu is open at a time.
+* **End of lesson.** A floating bar at the bottom of the canvas pins five types (Note, Document, Video, Image, HTML), plus **Ask AI** and an **All blocks** button that opens a searchable list of every type, grouped into Text, Media, Interactive and Advanced. That list also shows planned types (Audio, Poll, Timeline, Code, Embed) as disabled **Coming soon** tiles. The bar always adds to the **end** of the lesson, never into a tab.
 * Chart, Flashcards, Tabs, Multiple Choice, Process and HTML carry a **New** badge in every list.
 
 ---
@@ -351,7 +351,7 @@ The AI assistant can create and edit all five new blocks, the same way it writes
 - [ ] A lesson with no blocks shows "What goes in this lesson?", the supporting line, the five-tile grid with All blocks, and Ask AI, in Edit only.
 - [ ] Clicking a tile adds that example and removes the empty state; deleting every block brings it back.
 - [ ] The grid shows 3 columns on narrow screens.
-- [ ] The "+" between blocks opens a ten-tile menu plus "Ask AI instead", and inserts at that exact position.
+- [ ] The "+" between blocks opens an eleven-tile menu plus "Ask AI instead", and inserts at that exact position.
 - [ ] The menu closes on pick, Escape, outside click, or when another menu opens.
 - [ ] The floating bar adds to the end of the lesson, never into a tab.
 

@@ -3,7 +3,7 @@
   import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import type { Snippet } from 'svelte';
-  import Catalog from './add-block-catalog.svelte';
+  import CatalogPopover from './add-block-catalog-popover.svelte';
   import Item from './add-block-item.svelte';
   import type { AddBlockChoice, AddBlockShortcut } from './types';
 
@@ -70,28 +70,6 @@
   let panelAnimation: Animation | undefined;
   let closeTimer: ReturnType<typeof setTimeout> | undefined;
   let previousOpen = false;
-
-  let moreOpen = $state(false);
-  let moreElement = $state<HTMLDivElement | null>(null);
-
-  function toggleMore() {
-    moreOpen = !moreOpen;
-  }
-
-  function selectFromMore(type: string) {
-    moreOpen = false;
-    onSelect(type);
-  }
-
-  function handleWindowClick(event: MouseEvent) {
-    if (!moreOpen || moreElement?.contains(event.target as Node)) return;
-
-    moreOpen = false;
-  }
-
-  function handleWindowKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') moreOpen = false;
-  }
 
   const active = $derived(aiOpen || closing);
   const panelClip = $derived(aiOpen ? CLIP_OPEN : clipFrom);
@@ -167,8 +145,6 @@
   });
 </script>
 
-<svelte:window onclick={handleWindowClick} onkeydown={handleWindowKeydown} />
-
 <div
   bind:this={rowElement}
   class="ui:bg-background/95 ui:border-border ui:relative ui:inline-flex ui:items-center ui:gap-0 ui:rounded-lg ui:border ui:px-2 ui:py-1"
@@ -228,43 +204,33 @@
         role="separator"
         aria-orientation="vertical"
       ></div>
-      <div class="ui:relative" bind:this={moreElement}>
-        <button
-          type="button"
-          class="ui:text-muted-foreground ui:hover:bg-muted ui:hover:text-primary ui:mx-1 ui:flex ui:cursor-pointer ui:flex-col ui:items-center ui:gap-0.5 ui:rounded-md ui:px-2.5 ui:py-1.5 ui:text-[12px] ui:font-medium ui:transition ui:active:scale-95 {moreOpen
-            ? 'ui:bg-muted ui:text-primary'
-            : ''}"
-          onclick={toggleMore}
-          title={moreLabel}
-          aria-label={moreLabel}
-          aria-expanded={moreOpen}
-          data-testid={moreTestId}
-        >
-          <LayoutGridIcon size={14} class="custom" />
-          <span class="ui:hidden ui:sm:inline">{moreLabel}</span>
-        </button>
-
-        {#if moreOpen}
-          <div
-            class="ui:border-border ui:bg-popover ui:absolute ui:right-0 ui:bottom-full ui:z-50 ui:mb-3 ui:flex ui:max-h-[min(480px,70vh)] ui:w-[min(560px,calc(100vw-32px))] ui:origin-bottom ui:flex-col ui:overflow-y-auto ui:rounded-xl ui:border ui:p-2.5 ui:shadow-lg ui:animate-in ui:fade-in ui:zoom-in-[.97] ui:slide-in-from-bottom-1.5 ui:duration-150"
-            role="dialog"
+      <CatalogPopover
+        choices={moreChoices}
+        label={moreLabel}
+        {searchLabel}
+        {noResultsLabel}
+        {newLabel}
+        {comingSoonLabel}
+        testId={moreTestId}
+        {onSelect}
+      >
+        {#snippet trigger({ open, toggle })}
+          <button
+            type="button"
+            class="ui:text-muted-foreground ui:hover:bg-muted ui:hover:text-primary ui:mx-1 ui:flex ui:cursor-pointer ui:flex-col ui:items-center ui:gap-0.5 ui:rounded-md ui:px-2.5 ui:py-1.5 ui:text-[12px] ui:font-medium ui:transition ui:active:scale-95 {open
+              ? 'ui:bg-muted ui:text-primary'
+              : ''}"
+            onclick={toggle}
+            title={moreLabel}
             aria-label={moreLabel}
-            data-testid={moreTestId ? `${moreTestId}-menu` : undefined}
+            aria-expanded={open}
+            data-testid={moreTestId}
           >
-            <Catalog
-              choices={moreChoices}
-              label={moreLabel}
-              {searchLabel}
-              {noResultsLabel}
-              {newLabel}
-              {comingSoonLabel}
-              autofocus
-              testId={moreTestId ? `${moreTestId}-grid` : undefined}
-              onSelect={selectFromMore}
-            />
-          </div>
-        {/if}
-      </div>
+            <LayoutGridIcon size={14} class="custom" />
+            <span class="ui:hidden ui:sm:inline">{moreLabel}</span>
+          </button>
+        {/snippet}
+      </CatalogPopover>
     {/if}
   </div>
 

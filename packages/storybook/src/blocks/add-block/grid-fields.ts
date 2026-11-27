@@ -1,1 +1,11 @@
-export const FIELDS = ['choices', 'label', 'size', 'newLabel', 'moreLabel', 'moreOpen'];
+export const FIELDS = [
+  'choices',
+  'label',
+  'size',
+  'newLabel',
+  'moreChoices',
+  'moreLabel',
+  'searchLabel',
+  'noResultsLabel',
+  'comingSoonLabel'
+];

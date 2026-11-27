@@ -1,6 +1,7 @@
 <script lang="ts">
   import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
   import { cn } from '../../tools';
+  import CatalogPopover from './add-block-catalog-popover.svelte';
   import type { AddBlockChoice } from './types';
 
   interface Props {
@@ -8,12 +9,14 @@
     label: string;
     size?: 'lg' | 'sm';
     newLabel?: string;
-    /** Adds a trailing All blocks tile; it calls `onMore` instead of `onSelect`. */
+    /** Every block type, shown in the All blocks popover. The All blocks tile is hidden when this is empty. */
+    moreChoices?: AddBlockChoice[];
     moreLabel?: string;
-    moreOpen?: boolean;
+    searchLabel?: string;
+    noResultsLabel?: string;
+    comingSoonLabel?: string;
     testId?: string;
     onSelect: (type: string) => void;
-    onMore?: () => void;
   }
 
   let {
@@ -21,15 +24,17 @@
     label,
     size = 'lg',
     newLabel,
-    moreLabel,
-    moreOpen = false,
+    moreChoices = [],
+    moreLabel = 'All blocks',
+    searchLabel,
+    noResultsLabel,
+    comingSoonLabel,
     testId,
-    onSelect,
-    onMore
+    onSelect
   }: Props = $props();
 
   const isLarge = $derived(size === 'lg');
-  const showMore = $derived(Boolean(moreLabel && onMore));
+  const showMore = $derived(moreChoices.length > 0);
 
   const tileClass = $derived(
     cn(
@@ -77,16 +82,31 @@
     {/each}
 
     {#if showMore}
-      <button
-        type="button"
-        class={cn(tileClass, moreOpen && 'ui:border-primary/55 ui:bg-primary/5')}
-        aria-expanded={moreOpen}
-        data-testid={testId ? `${testId}-more` : undefined}
-        onclick={onMore}
+      <CatalogPopover
+        choices={moreChoices}
+        label={moreLabel}
+        {searchLabel}
+        {noResultsLabel}
+        {newLabel}
+        {comingSoonLabel}
+        side="bottom"
+        class="ui:flex"
+        testId={testId ? `${testId}-more` : undefined}
+        {onSelect}
       >
-        <LayoutGridIcon size={isLarge ? 18 : 16} class="custom ui:text-muted-foreground" />
-        <span class={labelClass}>{moreLabel}</span>
-      </button>
+        {#snippet trigger({ open, toggle })}
+          <button
+            type="button"
+            class={cn(tileClass, 'ui:w-full', open && 'ui:border-primary/55 ui:bg-primary/5')}
+            aria-expanded={open}
+            data-testid={testId ? `${testId}-more` : undefined}
+            onclick={toggle}
+          >
+            <LayoutGridIcon size={isLarge ? 18 : 16} class="custom ui:text-muted-foreground" />
+            <span class={labelClass}>{moreLabel}</span>
+          </button>
+        {/snippet}
+      </CatalogPopover>
     {/if}
   </div>
 </div>

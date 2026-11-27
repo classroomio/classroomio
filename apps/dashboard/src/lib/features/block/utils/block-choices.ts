@@ -13,7 +13,7 @@ const BLOCKS_KEY = 'course.navItem.lessons.materials.blocks';
 
 const NEW_BLOCK_TYPES: readonly TBlockType[] = ['chart', 'flashcards', 'tabs', 'multiple_choice', 'process', 'html'];
 
-const DOCK_BLOCK_TYPES: readonly TBlockType[] = ['note', 'video', 'image', 'html', 'multiple_choice'];
+const DOCK_BLOCK_TYPES: readonly TBlockType[] = ['note', 'document', 'video', 'image', 'html'];
 
 const BLOCK_GROUPS: Record<TBlockType, string> = {
   note: 'text',

@@ -69,12 +69,11 @@
       <AddBlock.Grid
         {...args}
         choices={CATALOG_CHOICES.filter((choice) =>
-          ['note', 'video', 'image', 'html', 'multiple_choice'].includes(choice.type)
+          ['note', 'document', 'video', 'image', 'html'].includes(choice.type)
         )}
         newLabel="New"
         moreLabel="All blocks"
         onSelect={() => {}}
-        onMore={() => {}}
       />
     </div>
   {/snippet}
