@@ -1,204 +1,253 @@
-<script>
-  import { page } from '$app/state';
-  import { ALTERNATIVE_SLUGS, COMPETITOR_NAMES } from '$lib/features/alternatives/navigation';
-  import Facebook from '@lucide/svelte/icons/facebook';
-  import Youtube from '@lucide/svelte/icons/youtube';
-  import Twitter from '@lucide/svelte/icons/twitter';
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { FOOTER_SOCIAL_LINKS } from './footer-icons';
 
-  const currentPath = $derived(page.url.pathname);
+  let footerEl: HTMLElement;
+  let revealed = $state(false);
+  let animDone = $state(false);
+  let letterEls = $state<HTMLElement[]>([]);
+
+  const site = 'https://classroomio.com/';
+
+  const groups = [
+    {
+      title: 'Product',
+      links: [
+        ['AI Agents', '/#ncard-agents'],
+        ['Branded Academies', '/#bx-academy'],
+        ['Analytics', '/#hs'],
+        ['Integrations', '/#bx-integrations'],
+        ['Plugins', '/#bx-plugins'],
+        ['Pricing', '/pricing']
+      ]
+    },
+    {
+      title: 'Solutions',
+      links: [
+        ['Customer Education', '/customer-education'],
+        ['Partner Training', '/partner-training'],
+        ['Cohort Training', '/cohort-training'],
+        ['Certification Programs', '/certification-programs']
+      ]
+    },
+    {
+      title: 'For Devs',
+      links: [
+        ['API', `${site}developers`],
+        ['MCP server & skills', `${site}mcp-recipes`],
+        ['Self-hosting docs', `${site}docs`],
+        ['GitHub', `${site}github`]
+      ]
+    },
+    {
+      title: 'Resources',
+      links: [
+        ['Customer stories', '/#story'],
+        ['Blog', '/blog'],
+        ['Help center', `${site}help`],
+        ['Changelog', '/changelog'],
+        ['Roadmap', `${site}roadmap`]
+      ]
+    },
+    {
+      title: 'Compare platforms',
+      links: [
+        'Skilljar',
+        'LearnUpon',
+        'Docebo',
+        'Intellum',
+        'Thought Industries',
+        'Thinkific',
+        'Teachfloor',
+        'Teachable',
+        'Kajabi',
+        'Disco',
+        'Trainn'
+      ].map((name) => [name, `/alternatives/${name.toLowerCase().replace(/ /g, '-')}`])
+    },
+    {
+      title: 'Company',
+      links: [
+        ['Roadmap', `${site}roadmap`],
+        ['Support', `${site}help`],
+        ['Privacy Policy', '/privacy'],
+        ['Terms of Use', '/terms']
+      ]
+    }
+  ] as const;
+
+  const wordmarkLetters = [...'ClassroomIO'];
+
+  function handlePointerMove(event: PointerEvent) {
+    if (!animDone) return;
+    letterEls.forEach((letter) => {
+      const box = letter.getBoundingClientRect();
+      const distance = Math.abs(event.clientX - (box.left + box.width / 2)) / box.width;
+      letter.style.setProperty('--lift', (Math.exp((-distance * distance) / 2.2) * -0.14).toFixed(3) + 'em');
+    });
+  }
+
+  function handlePointerLeave() {
+    letterEls.forEach((letter) => letter.style.removeProperty('--lift'));
+  }
+
+  onMount(() => {
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      revealed = true;
+      animDone = true;
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        revealed = true;
+        setTimeout(() => (animDone = true), 1400);
+        observer.disconnect();
+      },
+      { threshold: 0.18 }
+    );
+    observer.observe(footerEl);
+
+    return () => observer.disconnect();
+  });
 </script>
 
 <footer
-  class="ui:border-border relative overflow-hidden border-t bg-[linear-gradient(to_top,#eef3fb_0%,#f8fafc_100%)] px-6 pt-20 pb-10 md:px-10 lg:pt-24"
+  bind:this={footerEl}
+  class="overflow-hidden border-t border-[var(--line)] bg-white"
+  class:ft-revealed={revealed}
+  class:ft-done={animDone}
+  style="--line: #ebebed; --blue: #0542cc; --ink: #0e0f13; --muted: #6b6e76; --panel: #f5f5f4; --ease: cubic-bezier(0.22, 1, 0.36, 1); --spring: cubic-bezier(0.34, 1.56, 0.64, 1); --line-2: #e2e2e5;"
 >
-  <div class="max-w-content relative z-10 mx-auto flex flex-col gap-12 lg:flex-row lg:justify-between">
-    <div class="flex flex-col gap-5 lg:max-w-[280px]">
-      <img width="48" height="48" loading="lazy" src="/logo-192.png" alt="ClassroomIO logo" />
-      <p class="ui:text-muted-foreground text-[15px] leading-relaxed">
-        The Open Source LMS for compliance training and certification programs.
-      </p>
-      <div class="flex items-center gap-2">
-        <a
-          href="https://www.facebook.com/classroomiohq"
-          target="_blank"
-          aria-label="Facebook"
-          class="ui:text-muted-foreground ui:hover:text-foreground p-1 transition-colors"
-        >
-          <Facebook size={18} />
-        </a>
-        <a
-          href="https://twitter.com/classroomio"
-          target="_blank"
-          aria-label="Twitter"
-          class="ui:text-muted-foreground ui:hover:text-foreground p-1 transition-colors"
-        >
-          <Twitter size={18} />
-        </a>
-        <a
-          href="https://www.youtube.com/@ClassroomIO"
-          target="_blank"
-          aria-label="YouTube"
-          class="ui:text-muted-foreground ui:hover:text-foreground p-1 transition-colors"
-        >
-          <Youtube size={18} />
-        </a>
-      </div>
+  <div class="mx-auto max-w-[1240px] px-12 pt-16 pb-7 max-md:px-4 max-md:pt-12 max-md:pb-6">
+    <!-- Link columns -->
+    <div class="grid grid-cols-6 gap-8 max-[980px]:grid-cols-2 max-[980px]:gap-x-4 max-[980px]:gap-y-7">
+      {#each groups as group, i}
+        <div class="ft-col grid content-start gap-3 text-[15px]" style="--i: {i};">
+          <b class="mb-2.5 font-normal text-[var(--muted)]">{group.title}</b>
+          {#each group.links as link}
+            <a
+              class="w-fit text-[var(--ink)] transition-colors duration-200 hover:text-[var(--blue)]"
+              href={link[1]}
+              style="background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: color 0.2s, background-size 0.3s var(--ease);"
+              onmouseenter={(e) => {
+                (e.currentTarget as HTMLElement).style.backgroundSize = '100% 1px';
+              }}
+              onmouseleave={(e) => {
+                (e.currentTarget as HTMLElement).style.backgroundSize = '0 1px';
+              }}>{link[0]}</a
+            >
+          {/each}
+        </div>
+      {/each}
     </div>
 
-    <nav class="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-      <div>
-        <p class="ui:text-foreground mb-5 text-sm font-semibold">Product</p>
-        <ul class="space-y-3.5">
-          <li>
-            <a href="/mcp-recipes" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >MCP Recipes</a
-            >
-          </li>
-          <li>
-            <a href="/automation" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >API & MCP</a
-            >
-          </li>
-          <li>
-            <a href="/pricing" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >Pricing</a
-            >
-          </li>
-          <li>
-            <a href="/changelog" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >Changelog</a
-            >
-          </li>
-        </ul>
-      </div>
+    <!-- Wordmark -->
+    <div class="mt-[72px] flex items-center gap-[18px] select-none max-[980px]:mt-12 max-[980px]:gap-3">
+      <img class="h-auto w-[50px] lg:w-[95px]" src="/home/images/logo.svg" alt="" />
+      <span
+        class="ft-wordmark -mb-[0.06em] inline-flex overflow-hidden pb-[0.06em] text-[80px] leading-[0.9] font-semibold tracking-[-0.055em] whitespace-nowrap text-[var(--ink)] max-[980px]:text-[12vw]"
+        role="img"
+        aria-label="ClassroomIO"
+        onpointermove={handlePointerMove}
+        onpointerleave={handlePointerLeave}
+      >
+        {#each wordmarkLetters as letter, idx}
+          <i bind:this={letterEls[idx]} class="ft-letter inline-block not-italic" aria-hidden="true" style="--i: {idx};"
+            >{letter}</i
+          >
+        {/each}
+      </span>
+    </div>
 
+    <!-- Bottom bar -->
+    <div
+      class="mt-11 flex flex-wrap items-center justify-between gap-4 text-sm text-[var(--muted)] max-[980px]:flex-col max-[980px]:items-start"
+    >
       <div>
-        <p class="ui:text-foreground mb-5 text-sm font-semibold">Solutions</p>
-        <ul class="space-y-3.5">
-          <li>
-            <a
-              href="/customer-education"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Customer Education</a
-            >
-          </li>
-          <li>
-            <a
-              href="/compliance-training"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Compliance Training</a
-            >
-          </li>
-          <li>
-            <a
-              href="/partner-training"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Partner Training</a
-            >
-          </li>
-        </ul>
+        <a
+          class="underline decoration-[var(--line-2)] underline-offset-[3px] transition-colors duration-200 hover:text-[var(--ink)] hover:decoration-current"
+          href="/terms">Terms of Use</a
+        >,
+        <a
+          class="underline decoration-[var(--line-2)] underline-offset-[3px] transition-colors duration-200 hover:text-[var(--ink)] hover:decoration-current"
+          href="/privacy">Privacy Policy</a
+        >
+        and
+        <a
+          class="underline decoration-[var(--line-2)] underline-offset-[3px] transition-colors duration-200 hover:text-[var(--ink)] hover:decoration-current"
+          href="/privacy">Cookies</a
+        >
       </div>
-
-      <div>
-        <p class="ui:text-foreground mb-5 text-sm font-semibold">Resources</p>
-        <ul class="space-y-3.5">
-          <li>
+      <div class="flex items-center gap-[22px] max-[980px]:flex-col max-[980px]:items-start">
+        <span>&copy; {new Date().getFullYear()} ClassroomIO</span>
+        <div class="flex gap-1.5">
+          {#each FOOTER_SOCIAL_LINKS as social}
             <a
-              href="/docs-vs-company-academy"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >Docs vs Company Academy</a
-            >
-          </li>
-          <li>
-            <a
-              href="/customer-academy-roi-calculator"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >Academy ROI Calculator</a
-            >
-          </li>
-          <li>
-            <a
-              href="/public-courses"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Public Courses</a
-            >
-          </li>
-          <li>
-            <a href="/teach" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >Teach with us</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://classroomio.com/help"
+              class="grid h-[38px] w-[38px] place-items-center rounded-[10px] bg-[var(--panel)] text-[var(--ink)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--blue)] hover:text-white"
+              href={social.href}
+              aria-label={social.label}
               target="_blank"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Help Center</a
             >
-          </li>
-          <li>
-            <a
-              href="https://classroomio.com/help/get-started/signup"
-              target="_blank"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Getting Started</a
-            >
-          </li>
-          <li>
-            <a href="/oss-friends" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >OSS Friends</a
-            >
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <p class="ui:text-foreground mb-5 text-sm font-semibold">Company</p>
-        <ul class="space-y-3.5">
-          <li>
-            <a
-              href="https://feedback.classroomio.com/roadmap"
-              target="_blank"
-              rel="noopener"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Roadmap</a
-            >
-          </li>
-          <li>
-            <a
-              href="mailto:help@classroomio.com"
-              target="_blank"
-              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Support</a
-            >
-          </li>
-          <li>
-            <a href="/privacy" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >Privacy Policy</a
-            >
-          </li>
-          <li>
-            <a href="/tos" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >Terms of Use</a
-            >
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <p class="ui:text-foreground mb-5 text-sm font-semibold">Compare platforms</p>
-        <ul class="space-y-3.5">
-          {#each ALTERNATIVE_SLUGS as slug}
-            <li>
-              <a
-                href={`/alternatives/${slug}`}
-                aria-current={currentPath === `/alternatives/${slug}` ? 'page' : undefined}
-                class="text-sm transition-colors {currentPath === `/alternatives/${slug}`
-                  ? 'text-blue-700'
-                  : 'ui:text-muted-foreground ui:hover:text-foreground'}"
-              >
-                {COMPETITOR_NAMES[slug]} alternative
-              </a>
-            </li>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+                <path d={social.path} />
+              </svg>
+            </a>
           {/each}
-        </ul>
+        </div>
       </div>
-    </nav>
-  </div>
-
-  <div class="max-w-content ui:text-muted-foreground relative z-10 mx-auto mt-16 text-center text-[13px] lg:text-left">
-    All rights reserved. ClassroomIO © {new Date().getFullYear()}
+    </div>
   </div>
 </footer>
+
+<style>
+  .ft-col {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.6s var(--ease) calc(var(--i) * 70ms),
+      transform 0.7s var(--ease) calc(var(--i) * 70ms);
+  }
+  .ft-revealed .ft-col {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ft-logo {
+    opacity: 0;
+    transform: scale(0.6) rotate(-20deg);
+    transition:
+      opacity 0.5s,
+      transform 0.8s var(--spring);
+  }
+  .ft-revealed .ft-logo {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ft-letter {
+    transform: translateY(105%) translateY(var(--lift, 0));
+    transition: transform 0.9s var(--ease) calc(var(--i) * 45ms);
+  }
+  .ft-revealed .ft-letter {
+    transform: translateY(0) translateY(var(--lift, 0));
+  }
+  .ft-done .ft-wordmark {
+    overflow: visible;
+  }
+  .ft-done .ft-letter {
+    transition: transform 0.45s var(--spring);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ft-col,
+    .ft-logo,
+    .ft-letter {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
