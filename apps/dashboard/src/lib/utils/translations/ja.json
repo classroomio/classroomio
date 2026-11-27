@@ -666,7 +666,7 @@
         "title": "テストメールを送信する",
         "description": "プレースホルダーの代わりにサンプル値を含む現在のドラフトを送信します。最初に保存する必要はありません。",
         "recipients": "送信先",
-        "recipients_placeholder": "you@example.com、同僚@example.com",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
         "invalid_recipients": "最大 5 つの有効な電子メール アドレスをカンマで区切って入力します。"
       },
       "test_sent": "テストメールが配信待ちにされました",
@@ -1375,7 +1375,7 @@
     "ai_credits": {
       "sub_title": "AIクレジット",
       "page_subtitle": "AI アシスタントの使用状況、チームの使用量を追跡し、AI クレジット パックを購入します。",
-      "cost_note": "クレジットの使用量はモデルのコストによって重み付けされます。 Gemini 3.1 Flash Lite は、トークンごとに 1 クレジット ユニットとしてカウントされます。 GPT-5.4 Mini および Kim K2.6 は、トークンごとに 4 倍としてカウントされます。 Claude Sonnet 4.6 は、より高い API コストを反映して、トークンあたり 11 倍としてカウントされます。",
+      "cost_note": "クレジットの使用量はモデルのコストによって重み付けされます。 Gemini 3.1 Flash Lite は、トークンごとに 1 クレジット ユニットとしてカウントされます。 GPT-5.4 Mini および Kimi K2.6 は、トークンごとに 4 倍としてカウントされます。 Claude Sonnet 4.6 は、より高い API コストを反映して、トークンあたり 11 倍としてカウントされます。",
       "included": {
         "title": "含まれる使用量",
         "subtitle": "プランには毎月の AI クレジットが含まれています。",
@@ -2064,7 +2064,7 @@
   "org_chooser": {
     "page_title": "あなたの組織",
     "title": "継続するアカデミーを選択してください",
-    "subtitle": "{count, plural, one {# academy} other {# academies}} にアクセスできます。着陸したい場所を選択してください。",
+    "subtitle": "{count, plural, other {# 件のアカデミー}} にアクセスできます。移動先を選択してください。",
     "managed_heading": "あなたが管理する組織",
     "learning_heading": "で学ぶ",
     "invites_heading": "保留中の招待状",
@@ -3007,7 +3007,7 @@
                 "upload_not_finished": "アップロードが完了していません。このビデオにはまだファイルがないため、追加できません。",
                 "cancel_upload": "アップロードのキャンセル",
                 "upload_cancelled": "ユーザーによってアップロードがキャンセルされました",
-                "max_files": "{count, plural, one {# 個のファイルをアップロードできます} other {# 個のファイルをアップロードできます}}",
+                "max_files": "{count, plural, other {# 個のファイルをアップロードできます}}",
                 "max_files_and_size": "(それぞれ最大 {size})",
                 "google_drive_choose": "Googleドライブから選択",
                 "google_drive_opening": "ピッカーを開いています…",
@@ -4783,7 +4783,7 @@
       "title": "ユーザーのインポート",
       "description": "電子メール アドレスを入力して、学生を組織に追加します。必要に応じて、それらをコースまたはコホートに割り当て、招待メールを送信します。",
       "emails_label": "メールアドレス",
-      "emails_placeholder": "カンマ、改行、またはセミコロンで区切って電子メールを入力してください\n例: alice@example.com、bob@example.com",
+      "emails_placeholder": "カンマ、改行、またはセミコロンで区切ってメールアドレスを入力してください\n例: alice@example.com, bob@example.com",
       "course_access": "コースへのアクセス",
       "no_courses": "コースの割り当てはありません",
       "all_courses": "全コース",
@@ -6999,8 +6999,8 @@
     "tab_label": "招待リンク",
     "title": "招待リンク",
     "description": "このリンクを知っている人は誰でも参加できます。メールを 1 つずつ入力するのではなく、共有してください。",
-    "course_description": "Anyone with this link can join this course as a student.メールを 1 つずつ入力するのではなく、共有してください。",
-    "cohort_description": "Anyone with this link can join this cohort and every course in it.メールを 1 つずつ入力するのではなく、共有してください。",
+    "course_description": "このリンクを知っている人は誰でも、生徒としてこのコースに参加できます。メールアドレスを 1 件ずつ入力する代わりに共有してください。",
+    "cohort_description": "このリンクを知っている人は誰でも、このコホートとそのすべてのコースに参加できます。メールアドレスを 1 件ずつ入力する代わりに共有してください。",
     "generate": "招待リンクを作成する",
     "copy": "招待リンクをコピーする",
     "copied": "招待リンクをコピーしました",
@@ -7136,7 +7136,7 @@
       "lesson_download": "学習者はレッスンをダウンロードできます",
       "self_enrollment": "学習者自身も参加できます",
       "ai_tutor": "AI講師が有効です",
-      "compliance_retake": "再受験は {months, plural, one {# month} other {# months}} ごとに",
+      "compliance_retake": "{months, plural, other {# か月}} ごとに再受講",
       "compliance_mandatory": "必須",
       "counts": "{sections} セクション · {lessons} レッスン · {exercises} 演習",
       "questions": "{count, plural, other {# 問}}"
@@ -7156,15 +7156,15 @@
       "copy_description": "コースはそのままです。",
       "convert": "このコースを変換する",
       "convert_description": "コースがテンプレートになります。公開したり、生徒を受け入れたりすることはできません。",
-      "has_students": "has {count, plural, one {# students} other {# students}} — 代わりにコピーを保存してください。",
+      "has_students": "{count, plural, other {# 人の生徒}} がいます — 代わりにコピーを保存してください。",
       "unpublish": "変換すると、このコースは非公開になります。",
       "name": "テンプレート名",
       "save_button": "テンプレートの保存",
       "convert_button": "テンプレートに変換",
       "saved": "テンプレートが保存されました",
       "converted": "テンプレートに変換されたコース",
-      "limit_title": "プランには {count, plural, one {# template} other {# templates}} が含まれています",
-      "limit_body": "すでに {used, plural, one {{title}} other {# templates}} があります。アップグレードしてさらに多くのテンプレートを使用するか、既存のテンプレートを削除してください。",
+      "limit_title": "ご利用のプランには {count, plural, other {# 件のテンプレート}} が含まれています",
+      "limit_body": "すでに {used, plural, =1 {{title}} other {# 件のテンプレート}} があります。アップグレードしてテンプレートを増やすか、既存のテンプレートを削除してください。",
       "upgrade": "アップグレード",
       "manage": "テンプレートの管理",
       "view_templates": "テンプレートを表示する"
@@ -7178,7 +7178,7 @@
       "badge": "テンプレート"
     },
     "sync": {
-      "alert_title": "テンプレートには {count, plural, one {# update} other {# updated}} があります",
+      "alert_title": "テンプレートに {count, plural, other {# 件の更新}} があります",
       "alert_body": "最後に {date} を取得してから {title} が変更されました。",
       "review_in_settings": "設定で確認する",
       "section_title": "テンプレート",
@@ -7196,7 +7196,7 @@
       "select_all": "すべて選択",
       "new": "新しい",
       "updated": "更新されました",
-      "locked": "{count, plural, one {# 件の送信 — 更新できません} other {# 件の送信 — 更新できません}}",
+      "locked": "{count, plural, other {# 件の提出 — 更新できません}}",
       "edited_locally": "これは {date} に編集されました。変更内容をプルすると置き換えられます。",
       "removed_locally": "これをコースから削除しました。",
       "also_adds": "{kind}: {title} も追加します",
@@ -7207,8 +7207,8 @@
       "empty_value": "なし",
       "custom_value": "カスタム",
       "selected": "{count, plural, other {# 件選択中}}",
-      "pull": "プル {count, plural, one {# 変更} other {# 変更}}",
-      "pulled": "{title} から {count, plural, one {#change} other {#changes}} を取得しました",
+      "pull": "{count, plural, other {# 件の変更}} を取り込む",
+      "pulled": "{title} から {count, plural, other {# 件の変更}} を取り込みました",
       "kind": {
         "section": "セクション",
         "lesson": "レッスン",
@@ -7320,7 +7320,7 @@
         "course": "生徒がレッスンを開いて演習を提出すると、分析が行われます。",
         "org": "学生をアカデミーに追加し、コースまたはコーホートに登録します。"
       },
-      "pending": "{count, plural, one {# 件の招待状があります} other {# 件の招待状があります}} が承認を待っています。学生が参加すると、分析機能が追加されます。",
+      "pending": "{count, plural, other {# 件の招待}} が承認待ちです。生徒が参加すると分析データが表示されます。",
       "invite_students": "学生を招待する",
       "add_courses": "コースを追加する",
       "add_students": "生徒を追加する"
@@ -7386,7 +7386,7 @@
     "pagination": {
       "showing": "{total} 件中 {from} ～ {to} を表示中",
       "cohorts_org": "組織内の {total, plural, other {# 件のコホート}}のうち {from}–{to} 件を表示中",
-      "cohorts_course": "このコースを受講している {total, plural, one {# cohort} other {# cohorts}} の {from}–{to} を表示しています",
+      "cohorts_course": "このコースを受講している {total, plural, other {# 件のコホート}} のうち {from}–{to} を表示しています",
       "courses_cohort": "コホート内の {total, plural, other {# 件のコース}}のうち {from}–{to} 件を表示中",
       "courses_org": "組織内の {total, plural, other {# 件のコース}}のうち {from}–{to} 件を表示中",
       "sections_course": "コース内の {total, plural, other {# 件のセクション}}のうち {from}–{to} 件を表示中",
@@ -7435,12 +7435,12 @@
       "students": {
         "all_courses": "学生をクリックしてコースを表示します。",
         "one_course": "生徒をクリックすると、生徒のスコアがグラフ化されます。検索、フィルター、並べ替えもエクスポートに適用されます。",
-        "course_scope": "学生を選択して、このコースの進捗状況を開きます。 Search, filters and sort also apply to the export."
+        "course_scope": "生徒を選択すると、このコースでの進捗状況が開きます。検索、フィルター、並べ替えはエクスポートにも適用されます。"
       },
       "showing_first": "{total} 件中、最初の {shown} 件を表示しています。",
       "cohorts_select": "コホートを選択してダッシュボードを開きます。",
       "courses_select": "コースを選択してダッシュボードを開きます。",
-      "cohorts_in_table": "上の表の {count, plural, one {コホート} other {# コホート}}。",
+      "cohorts_in_table": "上の表の {count, plural, =1 {コホート} other {# 件のコホート}} です。",
       "courses_in_table": "上の表の{count, plural, =1 {コース} other {# 件のコース}}です。",
       "not_counted_empty": "カウントされません: {names} (生徒はまだいません)。",
       "not_charted_empty": "グラフ化されていません: {names} (生徒はまだいません)。",
@@ -7708,7 +7708,7 @@
     "actions": {
       "send_reminder": "リマインダーを送信する",
       "queued": "キューに入れられました",
-      "remind_all_overdue": "すべての {count, plural, one {# 期限を過ぎた学生} other {# 期限を過ぎた学生}} に通知する",
+      "remind_all_overdue": "期限超過の {count, plural, other {# 人の生徒}} 全員にリマインド",
       "reminders_queued": "リマインダーがキューに登録されました"
     },
     "target": {
@@ -7736,26 +7736,26 @@
       "cells_failed": "エクササイズのスコアを読み込めませんでした",
       "attempts_unavailable": "どの演習に解答があるかを確認できなかったため、一部の未配信の演習が表示されていない可能性があります。",
       "showing": {
-        "cohort": "コホート内の {total} 件中 {from}–{to} を表示しています · {count, plural, one {# students} other {# students}}",
-        "course": "一致する {total} 件中 {from}–{to} を表示しています · {count, plural, one {# students} other {# students}} をコース内で表示しています",
-        "org": "一致する {total} 件中、{from}–{to} を表示しています · {count, plural, one {# students} other {# students}} 組織内"
+        "cohort": "一致する {total} 件中 {from}–{to} を表示 · コホート内の {count, plural, other {# 人の生徒}}",
+        "course": "一致する {total} 件中 {from}–{to} を表示 · コース内の {count, plural, other {# 人の生徒}}",
+        "org": "一致する {total} 件中 {from}–{to} を表示 · 組織内の {count, plural, other {# 人の生徒}}"
       },
       "showing_paged": {
-        "cohort": "コホート内の {count, plural, one {# students} other {# students}} の {from}–{to} を表示しています",
-        "course": "コース内の {count, plural, one {# students} other {# students}} の {from}–{to} を表示しています",
-        "org": "組織内の {count, plural, one {# students} other {# students}} の {from}–{to} を表示しています"
+        "cohort": "コホート内の {count, plural, other {# 人の生徒}} のうち {from}–{to} を表示しています",
+        "course": "コース内の {count, plural, other {# 人の生徒}} のうち {from}–{to} を表示しています",
+        "org": "組織内の {count, plural, other {# 人の生徒}} のうち {from}–{to} を表示しています"
       },
       "showing_filtered": {
-        "cohort": "コホート内の {total, plural, one {# students} other {# students}} 一致 · {count, plural, one {# students} other {# students}}",
-        "course": "{total, plural, one {# students} other {# students}} が一致しました · {count, plural, one {# students} other {# students}} がコース内にあります",
-        "org": "{total, plural, one {# students} other {# students}} 一致 · {count, plural, one {# students} other {# students}} 組織内"
+        "cohort": "{total, plural, other {# 人の生徒}} が一致 · コホート内の {count, plural, other {# 人の生徒}}",
+        "course": "{total, plural, other {# 人の生徒}} が一致 · コース内の {count, plural, other {# 人の生徒}}",
+        "org": "{total, plural, other {# 人の生徒}} が一致 · 組織内の {count, plural, other {# 人の生徒}}"
       },
       "showing_all": {
-        "cohort": "コホート内の {count, plural, other {# 人の学生}}",
-        "course": "{count, plural, one {# 学生} other {# 学生}} がコースにいます",
-        "org": "組織内の {count, plural, other {# 人の学生}}"
+        "cohort": "コホート内の {count, plural, other {# 人の生徒}}",
+        "course": "コース内の {count, plural, other {# 人の生徒}}",
+        "org": "組織内の {count, plural, other {# 人の生徒}}"
       },
-      "clear_filters": "{count, plural, one {# 個のフィルターをクリア} other {# 個のフィルターをクリア}}",
+      "clear_filters": "{count, plural, other {# 件のフィルターをクリア}}",
       "sort": {
         "status": "並べ替え: 遅れている順",
         "progress": "並べ替え: 進行状況が最も少ない",
@@ -7945,7 +7945,7 @@
       "no_workspaces_description": "ワークスペース管理者のみがアプリに接続できます。管理者に問い合わせるか、管理者アカウントでサインインしてください。",
       "permissions_heading": "{client} は次のことができるようになります:",
       "stay_connected": "アクセスを削除するまで接続を維持する",
-      "admin_note": "ワークスペース管理者のみがアプリに接続できます。 Access follows your admin permissions and ends if you lose them.",
+      "admin_note": "アプリを接続できるのはワークスペース管理者のみです。アクセス権は管理者権限に従い、権限を失うと終了します。",
       "redirect_note": "承認すると、{host} に送信されます。",
       "allow": "アクセスを許可する",
       "deny": "拒否する",
@@ -7955,7 +7955,7 @@
       "verified": "確認済み",
       "allow_changes": {
         "label": "{client} による変更を許可する",
-        "description": "読み取り専用アクセスの場合はこれをオフにします。 {client} can still read data and run triggers, but can't add, change or remove anything."
+        "description": "読み取り専用アクセスにする場合はオフにします。{client} は引き続きデータの読み取りとトリガーの実行ができますが、追加・変更・削除はできません。"
       },
       "plan_required": "このアプリを接続するには、Early Adopter にアップグレードしてください",
       "no_eligible_title": "対象となるワークスペースがありません",
