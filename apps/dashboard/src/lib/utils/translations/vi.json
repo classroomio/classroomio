@@ -6206,6 +6206,9 @@
       "status": "Trạng thái",
       "all": "Tất cả",
       "unpublished": "Chưa được xuất bản",
+      "pricing": "Giá",
+      "free": "Miễn phí",
+      "paid": "Trả phí",
       "course_type": "Loại khóa học"
     },
     "notifications": {

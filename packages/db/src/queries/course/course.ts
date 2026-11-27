@@ -862,6 +862,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
 }
 
 type OrgCoursePublishedStatus = 'published' | 'unpublished' | 'private';
+type OrgCoursePricing = 'free' | 'paid';
 type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons' | 'name' | 'price';
 type OrgCourseSortOrder = 'asc' | 'desc';
 
@@ -880,6 +881,7 @@ interface GetOrgCoursesOptions {
   title?: string;
   type?: TCourseType;
   publishedStatus?: OrgCoursePublishedStatus;
+  pricing?: OrgCoursePricing;
   sortKey?: OrgCourseSortKey;
   order?: OrgCourseSortOrder;
   /** Page number (1-indexed) */
@@ -903,8 +905,12 @@ function orgCourseListConditions({
   slug,
   title,
   type,
-  publishedStatus
-}: Pick<GetOrgCoursesOptions, 'orgId' | 'courseIds' | 'search' | 'slug' | 'title' | 'type' | 'publishedStatus'>) {
+  publishedStatus,
+  pricing
+}: Pick<
+  GetOrgCoursesOptions,
+  'orgId' | 'courseIds' | 'search' | 'slug' | 'title' | 'type' | 'publishedStatus' | 'pricing'
+>) {
   const conditions = [
     eq(schema.group.organizationId, orgId),
     eq(schema.course.status, 'ACTIVE'),
@@ -943,6 +949,11 @@ function orgCourseListConditions({
     conditions.push(eq(schema.course.isPrivate, true));
   }
 
+  if (pricing) {
+    const isPaidCourse = sql`COALESCE((${schema.course.metadata}->>'paymentEnabled')::boolean, COALESCE(${schema.course.cost}, 0) > 0)`;
+    conditions.push(pricing === 'paid' ? isPaidCourse : sql`NOT (${isPaidCourse})`);
+  }
+
   return conditions;
 }
 
@@ -972,17 +983,27 @@ export async function countOrgCourses({
   slug,
   title,
   type,
-  publishedStatus
+  publishedStatus,
+  pricing
 }: Pick<
   GetOrgCoursesOptions,
-  'orgId' | 'profileId' | 'courseIds' | 'search' | 'slug' | 'title' | 'type' | 'publishedStatus'
+  'orgId' | 'profileId' | 'courseIds' | 'search' | 'slug' | 'title' | 'type' | 'publishedStatus' | 'pricing'
 >): Promise<number> {
   try {
     if (courseIds && courseIds.length === 0) {
       return 0;
     }
 
-    const conditions = orgCourseListConditions({ orgId, courseIds, search, slug, title, type, publishedStatus });
+    const conditions = orgCourseListConditions({
+      orgId,
+      courseIds,
+      search,
+      slug,
+      title,
+      type,
+      publishedStatus,
+      pricing
+    });
 
     const totalQuery = profileId
       ? db
@@ -1024,6 +1045,7 @@ export const getOrgCourses = async ({
   title,
   type,
   publishedStatus,
+  pricing,
   sortKey,
   order,
   page = 1,
@@ -1040,8 +1062,27 @@ export const getOrgCourses = async ({
       };
     }
 
-    const conditions = orgCourseListConditions({ orgId, courseIds, search, slug, title, type, publishedStatus });
-    const total = await countOrgCourses({ orgId, profileId, courseIds, search, slug, title, type, publishedStatus });
+    const conditions = orgCourseListConditions({
+      orgId,
+      courseIds,
+      search,
+      slug,
+      title,
+      type,
+      publishedStatus,
+      pricing
+    });
+    const total = await countOrgCourses({
+      orgId,
+      profileId,
+      courseIds,
+      search,
+      slug,
+      title,
+      type,
+      publishedStatus,
+      pricing
+    });
 
     const baseQuery = db
       .select({

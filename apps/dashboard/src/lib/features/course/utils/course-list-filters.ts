@@ -9,6 +9,8 @@ import {
 
 export type PublishedStatusFilter = 'all' | 'published' | 'unpublished' | 'private';
 
+export type PricingFilter = 'all' | 'free' | 'paid';
+
 export interface CourseListFilters {
   search: string;
   tags: string[];
@@ -16,9 +18,19 @@ export interface CourseListFilters {
   order: CourseSortOrderType;
   courseType: string;
   publishedStatus: PublishedStatusFilter;
+  pricing: PricingFilter;
 }
 
-export const COURSE_LIST_FILTER_PARAM_KEYS = ['search', 'tags', 'sort', 'order', 'type', 'status', 'next'] as const;
+export const COURSE_LIST_FILTER_PARAM_KEYS = [
+  'search',
+  'tags',
+  'sort',
+  'order',
+  'type',
+  'status',
+  'pricing',
+  'next'
+] as const;
 
 export const DEFAULT_COURSE_LIST_FILTERS: CourseListFilters = {
   search: '',
@@ -26,7 +38,8 @@ export const DEFAULT_COURSE_LIST_FILTERS: CourseListFilters = {
   sortKey: DEFAULT_COURSE_SORT,
   order: DEFAULT_SORT_ORDER,
   courseType: 'all',
-  publishedStatus: 'all'
+  publishedStatus: 'all',
+  pricing: 'all'
 };
 
 export const ORG_COURSES_PAGE_SIZE = 20;
@@ -37,6 +50,14 @@ const VALID_COURSE_TYPES = new Set(['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'P
 
 export function parsePublishedStatusFilter(value: string | null | undefined): PublishedStatusFilter {
   if (value === 'published' || value === 'unpublished' || value === 'private') {
+    return value;
+  }
+
+  return 'all';
+}
+
+export function parsePricingFilter(value: string | null | undefined): PricingFilter {
+  if (value === 'free' || value === 'paid') {
     return value;
   }
 
@@ -71,7 +92,8 @@ export function parseCourseListFilters(params: URLSearchParams): CourseListFilte
     sortKey: parseCourseSortValue(params.get('sort')),
     order: parseCourseSortOrder(params.get('order')),
     courseType,
-    publishedStatus: parsePublishedStatusFilter(params.get('status'))
+    publishedStatus: parsePublishedStatusFilter(params.get('status')),
+    pricing: parsePricingFilter(params.get('pricing'))
   };
 }
 
@@ -107,6 +129,10 @@ export function buildCourseListSearchParams(
     filters.publishedStatus === 'private'
   ) {
     params.set('status', filters.publishedStatus);
+  }
+
+  if (filters.pricing === 'free' || filters.pricing === 'paid') {
+    params.set('pricing', filters.pricing);
   }
 
   if (next > DEFAULT_COURSE_LIST_NEXT) {

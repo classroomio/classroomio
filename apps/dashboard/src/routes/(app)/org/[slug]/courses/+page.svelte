@@ -19,6 +19,7 @@
     mergeCourseListSearchParams,
     parseCourseListFilters,
     type CourseListFilters,
+    type PricingFilter,
     type PublishedStatusFilter
   } from '$features/course/utils/course-list-filters';
   import { browser } from '$app/environment';
@@ -38,6 +39,7 @@
   let selectedTags = $state<string[]>([]);
   let courseType = $state<string>('all');
   let publishedStatus = $state<PublishedStatusFilter>('all');
+  let pricing = $state<PricingFilter>('all');
 
   const courseTypeOptions = $derived([
     { value: 'SELF_PACED', label: $t('new_course_modal.self_paced_label') },
@@ -53,7 +55,11 @@
 
   const filtersFromUrl = $derived(parseCourseListFilters(page.url.searchParams));
   const listIsUnfiltered = $derived(
-    !searchValue.trim() && selectedTags.length === 0 && courseType === 'all' && publishedStatus === 'all'
+    !searchValue.trim() &&
+      selectedTags.length === 0 &&
+      courseType === 'all' &&
+      publishedStatus === 'all' &&
+      pricing === 'all'
   );
   const hasMoreCourses = $derived(data.pagination?.hasMore ?? false);
 
@@ -70,6 +76,7 @@
     selectedTags = filters.tags;
     courseType = filters.courseType;
     publishedStatus = filters.publishedStatus;
+    pricing = filters.pricing;
   }
 
   async function navigateCourseFilters(
@@ -137,8 +144,9 @@
     const sortChanged = sortKey !== urlFilters.sortKey || selectedOrder !== urlFilters.order;
     const typeChanged = courseType !== urlFilters.courseType;
     const statusChanged = publishedStatus !== urlFilters.publishedStatus;
+    const pricingChanged = pricing !== urlFilters.pricing;
 
-    if (!tagsChanged && !sortChanged && !typeChanged && !statusChanged) {
+    if (!tagsChanged && !sortChanged && !typeChanged && !statusChanged && !pricingChanged) {
       return;
     }
 
@@ -150,7 +158,8 @@
       sortKey,
       order: selectedOrder,
       courseType,
-      publishedStatus
+      publishedStatus,
+      pricing
     });
   });
 
@@ -261,6 +270,7 @@
               bind:selectedOrder
               bind:courseType
               bind:publishedStatus
+              bind:pricing
               {courseTypeOptions}
               {selectedTags}
               tagGroups={data.tagGroups}

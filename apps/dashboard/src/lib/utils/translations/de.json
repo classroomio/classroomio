@@ -6206,6 +6206,9 @@
       "status": "Status",
       "all": "Alle",
       "unpublished": "Unveröffentlicht",
+      "pricing": "Preis",
+      "free": "Kostenlos",
+      "paid": "Kostenpflichtig",
       "course_type": "Kurstyp"
     },
     "notifications": {

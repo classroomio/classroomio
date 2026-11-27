@@ -37,6 +37,7 @@
     isFiltering?: boolean;
     hasActiveFilters?: boolean;
     publishedStatus?: 'all' | 'published' | 'unpublished' | 'private';
+    pricing?: 'all' | 'free' | 'paid';
     courseType?: string;
     courseTypeOptions?: { value: string; label: string }[];
     onToggleTag?: (tagSlug: string, checked: boolean) => void;
@@ -54,6 +55,7 @@
     isFiltering = false,
     hasActiveFilters: hasActiveFiltersOverride = undefined,
     publishedStatus = $bindable('all'),
+    pricing = $bindable('all'),
     courseType = $bindable('all'),
     courseTypeOptions = [],
     onToggleTag = () => {},
@@ -73,6 +75,7 @@
           selectedOrder !== DEFAULT_SORT_ORDER ||
           selectedTags.length > 0 ||
           publishedStatus !== 'all' ||
+          pricing !== 'all' ||
           courseType !== 'all'
   );
 
@@ -129,6 +132,30 @@
             size="sm"
             variant={publishedStatus === 'private' ? 'secondary' : 'outline'}
             onclick={() => setPublishedStatus('private')}>{$t('course.navItem.settings.private.badge')}</Button
+          >
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="ui:text-muted-foreground text-xs font-semibold uppercase">{$t('widgets.filter.pricing')}</p>
+        <div class="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={pricing === 'all' ? 'secondary' : 'outline'}
+            onclick={() => (pricing = 'all')}>{$t('widgets.filter.all')}</Button
+          >
+          <Button
+            type="button"
+            size="sm"
+            variant={pricing === 'free' ? 'secondary' : 'outline'}
+            onclick={() => (pricing = 'free')}>{$t('widgets.filter.free')}</Button
+          >
+          <Button
+            type="button"
+            size="sm"
+            variant={pricing === 'paid' ? 'secondary' : 'outline'}
+            onclick={() => (pricing = 'paid')}>{$t('widgets.filter.paid')}</Button
           >
         </div>
       </div>

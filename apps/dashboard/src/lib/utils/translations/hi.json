@@ -6206,6 +6206,9 @@
       "status": "स्थिति",
       "all": "सब",
       "unpublished": "अप्रकाशित",
+      "pricing": "मूल्य",
+      "free": "निःशुल्क",
+      "paid": "सशुल्क",
       "course_type": "कोर्स का प्रकार"
     },
     "notifications": {

@@ -17,6 +17,7 @@ export type OrgCoursesQuery = {
   tags?: string;
   type?: string;
   status?: 'published' | 'unpublished' | 'private';
+  pricing?: 'free' | 'paid';
   sort?: string;
   order?: 'asc' | 'desc';
 };

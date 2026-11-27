@@ -424,7 +424,7 @@ export async function getOrganizationCourses(
       throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    const { page, limit, search, slug, title, type, status, sort, order } = query;
+    const { page, limit, search, slug, title, type, status, pricing, sort, order } = query;
     const listQuery = {
       page,
       limit,
@@ -432,6 +432,7 @@ export async function getOrganizationCourses(
       tags: query.tags,
       type,
       status,
+      pricing,
       sort,
       order
     };
@@ -469,6 +470,7 @@ export async function getOrganizationCourses(
           title,
           type,
           publishedStatus: status,
+          pricing,
           sortKey: sort,
           order
         });
@@ -503,6 +505,7 @@ export async function getOrganizationCourses(
           title,
           type,
           publishedStatus: status,
+          pricing,
           sortKey: sort,
           order
         });

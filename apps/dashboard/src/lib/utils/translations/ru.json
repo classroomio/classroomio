@@ -6206,6 +6206,9 @@
       "status": "Статус",
       "all": "Все",
       "unpublished": "Неопубликовано",
+      "pricing": "Стоимость",
+      "free": "Бесплатные",
+      "paid": "Платные",
       "course_type": "Тип курса"
     },
     "notifications": {

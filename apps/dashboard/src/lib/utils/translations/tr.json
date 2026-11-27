@@ -2007,6 +2007,9 @@
       "status": "Durum",
       "all": "Tüm",
       "unpublished": "Yayınlanmamış",
+      "pricing": "Fiyat",
+      "free": "Ücretsiz",
+      "paid": "Ücretli",
       "course_type": "Ders Türü"
     },
     "filters": {

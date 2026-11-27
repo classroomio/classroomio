@@ -82,6 +82,7 @@ export class CoursesApi extends BaseApiWithErrors {
       tags: normalizedTagSlugs.length > 0 ? normalizedTagSlugs.join(',') : undefined,
       type: query.type,
       status: query.status,
+      pricing: query.pricing,
       sort: query.sort,
       order: query.order
     };

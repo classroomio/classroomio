@@ -1997,6 +1997,9 @@
       "status": "Stato",
       "all": "Tutto",
       "unpublished": "Inedito",
+      "pricing": "Prezzo",
+      "free": "Gratuito",
+      "paid": "A pagamento",
       "course_type": "Tipo di corso"
     },
     "filters": {

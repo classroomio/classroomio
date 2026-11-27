@@ -6206,6 +6206,9 @@
       "status": "Status",
       "all": "Alle",
       "unpublished": "Upubliceret",
+      "pricing": "Pris",
+      "free": "Gratis",
+      "paid": "Betalt",
       "course_type": "Kursustype"
     },
     "notifications": {

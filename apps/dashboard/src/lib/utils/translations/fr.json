@@ -6206,6 +6206,9 @@
       "status": "Statut",
       "all": "Tout",
       "unpublished": "Inédit",
+      "pricing": "Tarification",
+      "free": "Gratuit",
+      "paid": "Payant",
       "course_type": "Type de cours"
     },
     "notifications": {

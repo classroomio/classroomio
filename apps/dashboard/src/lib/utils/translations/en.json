@@ -1997,6 +1997,9 @@
       "status": "Status",
       "all": "All",
       "unpublished": "Unpublished",
+      "pricing": "Pricing",
+      "free": "Free",
+      "paid": "Paid",
       "course_type": "Course Type"
     },
     "filters": {

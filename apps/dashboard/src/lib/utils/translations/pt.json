@@ -6206,6 +6206,9 @@
       "status": "Status",
       "all": "Todos",
       "unpublished": "Não publicado",
+      "pricing": "Preço",
+      "free": "Grátis",
+      "paid": "Pago",
       "course_type": "Tipo de curso"
     },
     "notifications": {
