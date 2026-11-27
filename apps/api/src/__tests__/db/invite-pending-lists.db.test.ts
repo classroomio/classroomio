@@ -28,7 +28,9 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
     const schema = await import('@db/schema');
     const email = `${label}-${suffix}@lists.test`;
     const [user] = await db.insert(schema.user).values({ name: label, email, emailVerified: true }).returning();
-    await db.insert(schema.profile).values({ id: user.id, fullname: label, username: `${label}-${suffix}`, email });
+    await db
+      .insert(schema.profile)
+      .values({ id: user.id, fullname: label, username: `${label}-${suffix}`, email, isEmailVerified: true });
     userIds.push(user.id);
 
     return { profileId: user.id, email };
@@ -292,7 +294,7 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
   });
 
   describe('getPaginatedInvitedCourseMembers', () => {
-    it('lists org invitations, course invites and legacy rows once per email, keeping expired ones and dropping dead and joined ones', async () => {
+    it('lists org invitations, course invites and legacy rows once per email, keeping expired ones and dropping dead, superseded and joined ones', async () => {
       const { getPaginatedInvitedCourseMembers } = await import('@cio/db/queries/course/people');
       const { db } = await import('@db/drizzle');
       const schema = await import('@db/schema');
@@ -342,6 +344,16 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
       );
       await createOrgInvite(orgId, staleEmail, { courseIds: [otherCourseId] });
 
+      const supersededEmail = `superseded-${suffix}@lists.test`;
+      await addOrgMember(orgId, { email: supersededEmail });
+      await createOrgInvite(
+        orgId,
+        supersededEmail,
+        { courseIds: [courseId] },
+        { expired: true, createdAt: new Date(Date.now() - 60_000).toISOString() }
+      );
+      const supersedingInvite = await createOrgInvite(orgId, supersededEmail, { courseIds: [courseId, otherCourseId] });
+
       await addOrgMember(orgId, { email: joined.email, profileId: joined.profileId });
       await createOrgInvite(orgId, joined.email, { courseIds: [courseId] });
       await db.insert(schema.groupmember).values({ groupId, roleId: ROLE.STUDENT, profileId: joined.profileId });
@@ -350,10 +362,20 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
       const result = await getPaginatedInvitedCourseMembers(courseId, { page: 1, limit: 20 });
       const byEmail = new Map(result.items.map((item) => [item.email?.toLowerCase(), item]));
 
-      expect(result.total).toBe(5);
+      expect(result.total).toBe(7);
       expect([...byEmail.keys()].sort()).toEqual(
-        [courseInviteEmail, expiredCourseInviteEmail, expiredEmail, legacyEmail, pendingEmail].sort()
+        [
+          courseInviteEmail,
+          expiredCourseInviteEmail,
+          expiredEmail,
+          legacyEmail,
+          pendingEmail,
+          staleEmail,
+          supersededEmail
+        ].sort()
       );
+      expect(byEmail.get(staleEmail)).toMatchObject({ kind: 'org_invite' });
+      expect(byEmail.get(supersededEmail)).toMatchObject({ kind: 'org_invite', orgInviteId: supersedingInvite.id });
       expect(byEmail.get(expiredEmail)).toMatchObject({ kind: 'org_invite', orgInviteId: expiredInvite.id });
       expect(byEmail.get(expiredCourseInviteEmail)).toMatchObject({
         kind: 'course_invite',
@@ -440,6 +462,16 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
       );
       await createOrgInvite(orgId, staleEmail, { cohortIds: [otherCohortId] });
 
+      const supersededEmail = `csuperseded-${suffix}@lists.test`;
+      await addOrgMember(orgId, { email: supersededEmail });
+      await createOrgInvite(
+        orgId,
+        supersededEmail,
+        { cohortIds: [cohortId] },
+        { expired: true, createdAt: new Date(Date.now() - 60_000).toISOString() }
+      );
+      const supersedingInvite = await createOrgInvite(orgId, supersededEmail, { cohortIds: [cohortId, otherCohortId] });
+
       const staffInviteEmail = `cstaff-${suffix}@lists.test`;
       await addOrgMember(orgId, { email: staffInviteEmail, roleId: ROLE.TUTOR });
       await createOrgInvite(orgId, staffInviteEmail, { cohortIds: [cohortId] }, { roleId: ROLE.TUTOR });
@@ -451,8 +483,11 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
       const result = await getPaginatedInvitedCohortPeople(cohortId, { page: 1, limit: 20 });
       const byEmail = new Map(result.items.map((item) => [item.email?.toLowerCase(), item]));
 
-      expect(result.total).toBe(3);
-      expect([...byEmail.keys()].sort()).toEqual([expiredEmail, legacyEmail, pendingEmail].sort());
+      expect(result.total).toBe(5);
+      expect([...byEmail.keys()].sort()).toEqual(
+        [expiredEmail, legacyEmail, pendingEmail, staleEmail, supersededEmail].sort()
+      );
+      expect(byEmail.get(supersededEmail)?.orgInviteId).toBe(supersedingInvite.id);
       expect(byEmail.get(expiredEmail)).toMatchObject({ kind: 'org_invite', orgInviteId: expiredInvite.id });
       expect(byEmail.get(pendingEmail)).toMatchObject({
         kind: 'org_invite',
@@ -467,7 +502,7 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
       expect(searched.items.map((item) => item.email)).toEqual([legacyEmail]);
 
       const paged = await getPaginatedInvitedCohortPeople(cohortId, { page: 2, limit: 1 });
-      expect(paged.total).toBe(3);
+      expect(paged.total).toBe(5);
       expect(paged.items).toHaveLength(1);
     });
   });
@@ -488,6 +523,11 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
       const archived = await createProfile('cand-archived');
       const noRows = await createProfile('cand-norows');
       const elsewhere = await createProfile('cand-elsewhere');
+      const unverified = await createProfile('cand-unverified');
+      await db
+        .update(schema.profile)
+        .set({ isEmailVerified: false })
+        .where(eq(schema.profile.id, unverified.profileId));
       const pendingEmail = `cand-pending-${suffix}@lists.test`;
 
       const firstMember = await addOrgMember(orgId, { email: first.email.toUpperCase(), profileId: first.profileId });
@@ -495,12 +535,14 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
       await addOrgMember(orgId, { email: archived.email, profileId: archived.profileId, status: 'ARCHIVED' });
       await addOrgMember(orgId, { email: noRows.email, profileId: noRows.profileId });
       await addOrgMember(orgId, { email: elsewhere.email, profileId: elsewhere.profileId });
+      await addOrgMember(orgId, { email: unverified.email, profileId: unverified.profileId });
       await addOrgMember(orgId, { email: pendingEmail });
 
       await db.insert(schema.groupmember).values([
         { groupId, roleId: ROLE.STUDENT, email: first.email },
         { groupId, roleId: ROLE.STUDENT, email: archived.email },
         { groupId, roleId: ROLE.STUDENT, email: pendingEmail },
+        { groupId, roleId: ROLE.STUDENT, email: unverified.email },
         { groupId: otherGroupId, roleId: ROLE.STUDENT, email: elsewhere.email }
       ]);
       await db.insert(schema.cohortMember).values([
@@ -527,7 +569,7 @@ describe.skipIf(!shouldRun)('email-only claims and invited lists (database)', ()
       const counts = await countEmailOnlyMemberships(orgId);
       expect(counts).toEqual({
         claimable: { groups: 1, cohorts: 1, programs: 0 },
-        pending: { groups: 2, cohorts: 1, programs: 0 }
+        pending: { groups: 3, cohorts: 1, programs: 0 }
       });
 
       const otherCounts = await countEmailOnlyMemberships(otherOrgId);

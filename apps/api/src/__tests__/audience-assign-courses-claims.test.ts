@@ -65,6 +65,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrgMembersByProfileIds: vi.fn(),
   getOrganizationById: vi.fn(),
   getOrganizationMembersByNormalizedEmails: vi.fn(),
+  getOrganizationMembersByProfileIds: vi.fn().mockResolvedValue([]),
   getStudentOrganizationMemberByOrgAndEmail: vi.fn(),
   hasActiveOrganizationInviteForEmail: vi.fn(),
   hasLapsedStudentInvite: vi.fn(),
@@ -105,6 +106,7 @@ import {
   createOrganizationInvites,
   getBulkAudienceMembersByIds,
   getOrgMembersByProfileIds,
+  getOrganizationMembersByProfileIds,
   getOrganizationById,
   getOrganizationMembersByNormalizedEmails
 } from '@cio/db/queries/organization';
@@ -124,6 +126,9 @@ describe('assignAudienceToCourses with an email-only course membership', () => {
     vi.mocked(getOrganizationById).mockResolvedValue({ id: ORG_ID, name: 'Acme', siteName: 'acme' } as never);
     vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
       { profileId: PROFILE_ID, email: EMAIL, roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrganizationMembersByProfileIds).mockResolvedValue([
+      { normalizedEmail: EMAIL, profileId: PROFILE_ID, roleId: ROLE.STUDENT, status: 'ACTIVE', inviteHoldsSeat: false }
     ] as never);
     vi.mocked(getOrgCourseGroups).mockResolvedValue([
       { groupId: GROUP_ID, courseId: 'course-1', courseTitle: 'Intro', welcomeEmailMessage: null }

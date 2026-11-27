@@ -56,7 +56,7 @@ Allows organization admins to bypass SSO with email/password in case of emergenc
 
 Users are automatically provisioned when they first sign in via SSO:
 
-1. If the user has a pending invitation, they join with the invited role
+1. If the user has a pending invitation and signs in through your SSO provider (or has a verified email), they join with the invited role. A password sign-up with an unverified email on your domain is not added automatically; they can accept by opening the emailed invitation link, or verify their email and accept from the **You've been invited** dialog.
 2. If auto-join is enabled, they join with the default role (typically Student)
 3. If neither, they can join later via invitation
 

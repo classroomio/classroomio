@@ -1,28 +1,44 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@cio/db/queries/organization', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@cio/db/queries/organization')>()),
-  getOrganizationById: vi.fn(),
-  getStudentOrganizationMemberByOrgAndEmail: vi.fn(),
-  listLiveStudentOrgInvitesForEmail: vi.fn()
-}));
+vi.mock('@cio/db/queries/organization', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/db/queries/organization')>();
 
-vi.mock('@cio/db/queries/course', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@cio/db/queries/course')>()),
-  getOrgCourseGroups: vi.fn(async () => [])
-}));
+  return {
+    ...original,
+    getOrganizationById: vi.fn(),
+    getStudentOrganizationMemberByOrgAndEmail: vi.fn(),
+    listLiveStudentOrgInvitesForEmail: vi.fn()
+  };
+});
 
-vi.mock('@cio/db/queries/cohort', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@cio/db/queries/cohort')>()),
-  getCohortsByOrg: vi.fn(async () => [])
-}));
+vi.mock('@cio/db/queries/course', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/db/queries/course')>();
 
-vi.mock('@cio/core/services/webhook/emit', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@cio/core/services/webhook/emit')>()),
-  emitCourseWebhookEvent: vi.fn(),
-  emitWebhookEvent: vi.fn(),
-  emitCohortMemberWebhookEvent: vi.fn()
-}));
+  return {
+    ...original,
+    getOrgCourseGroups: vi.fn(async () => [])
+  };
+});
+
+vi.mock('@cio/db/queries/cohort', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/db/queries/cohort')>();
+
+  return {
+    ...original,
+    getCohortsByOrg: vi.fn(async () => [])
+  };
+});
+
+vi.mock('@cio/core/services/webhook/emit', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/core/services/webhook/emit')>();
+
+  return {
+    ...original,
+    emitCourseWebhookEvent: vi.fn(),
+    emitWebhookEvent: vi.fn(),
+    emitCohortMemberWebhookEvent: vi.fn()
+  };
+});
 
 vi.mock('@api/services/jobs', () => ({
   enqueueTransactionalEmail: vi.fn()
@@ -37,10 +53,14 @@ vi.mock('@cio/core/services/organization/supersede-invites', () => ({
   supersedeStudentOrgInvites: vi.fn()
 }));
 
-vi.mock('@cio/db/drizzle', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@cio/db/drizzle')>()),
-  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run({})) }
-}));
+vi.mock('@cio/db/drizzle', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/db/drizzle')>();
+
+  return {
+    ...original,
+    db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run({})) }
+  };
+});
 
 import {
   getOrganizationById,
@@ -121,7 +141,7 @@ describe('revokeAudienceInviteAccess for a course', () => {
     expect(emitCourseWebhookEvent).toHaveBeenCalledWith(
       COURSE_ID,
       'course.invite.revoked',
-      expect.objectContaining({ inviteId: 'invite-2', email: EMAIL })
+      expect.objectContaining({ inviteId: 'invite-1', email: EMAIL })
     );
     expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
     expect(result).toEqual({ revoked: true, inviteRevoked: false, inviteId: 'invite-2' });

@@ -211,9 +211,28 @@ describe.skipIf(!shouldRun)('invited course roster (database)', () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
     const joinedProfileId = await createProfile('roster-member');
-    const { groupId } = await createCourseGroup(organizationId, 'roster-exclude-group');
+    const joinedEmail = `roster-member-${suffix}@roster.test`;
+    const [courseGroup] = await db
+      .select({ groupId: schema.course.groupId })
+      .from(schema.course)
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
 
-    await db.insert(schema.groupmember).values({ groupId, roleId: ROLE.STUDENT, profileId: joinedProfileId });
+    await orgMember(joinedEmail, joinedProfileId);
+    await orgInvite(joinedEmail, [courseId]);
+    await courseInvite(courseId, joinedEmail);
+    await db
+      .insert(schema.groupmember)
+      .values({ groupId: courseGroup.groupId as string, roleId: ROLE.STUDENT, profileId: joinedProfileId });
+
+    const excludedEmails = [
+      `revoked-${suffix}@roster.test`,
+      `used-${suffix}@roster.test`,
+      `multi-${suffix}@roster.test`,
+      `multi2-${suffix}@roster.test`,
+      `othercourse-${suffix}@roster.test`,
+      joinedEmail
+    ];
     await courseInvite(courseId, `revoked-${suffix}@roster.test`, { isRevoked: true });
     await courseInvite(courseId, `expired-${suffix}@roster.test`, {
       expiresAt: new Date(Date.now() - 1000).toISOString()
@@ -224,12 +243,11 @@ describe.skipIf(!shouldRun)('invited course roster (database)', () => {
 
     const result = await listInvited();
 
-    const emails = result.items.map((row) => row.email);
-    for (const excluded of ['revoked', 'used', 'multi@', 'othercourse@']) {
-      expect(emails.some((email) => email?.includes(excluded))).toBe(false);
+    const emails = result.items.map((row) => row.email?.toLowerCase());
+    for (const excluded of excludedEmails) {
+      expect(emails).not.toContain(excluded);
     }
     expect(emails).toContain(`expired-${suffix}@roster.test`);
-    expect(emails).not.toContain(`roster-member-${suffix}@roster.test`);
   });
 
   it('paginates and searches by email', async () => {

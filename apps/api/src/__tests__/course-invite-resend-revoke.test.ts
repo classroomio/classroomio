@@ -35,10 +35,14 @@ vi.mock('@api/services/organization/audience', () => ({
   revokeAudienceInviteAccess: vi.fn()
 }));
 
-vi.mock('@cio/db/drizzle', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@cio/db/drizzle')>()),
-  db: { transaction: vi.fn() }
-}));
+vi.mock('@cio/db/drizzle', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/db/drizzle')>();
+
+  return {
+    ...original,
+    db: { transaction: vi.fn() }
+  };
+});
 
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
 import {

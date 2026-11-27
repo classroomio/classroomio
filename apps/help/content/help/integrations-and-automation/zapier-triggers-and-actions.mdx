@@ -147,7 +147,7 @@ All create actions that take a student accept the student's email address, not a
   - `Student Email` (required).
   - `Send Email` (optional, defaults to on).
 - **Outputs**: `status`, `memberId`, `inviteId`, `inviteKind`, `inviteLink`, `email`. When the student is invited, `inviteId` is their organization invite, which carries this course, and `inviteKind` is `organization`.
-- **Repeat behavior**: If the student is already enrolled or invited, the action succeeds without duplicating records.
+- **Repeat behavior**: If the student is already enrolled or invited, the action succeeds without duplicating records. With **Send Email** on, a repeat sends the invitation email if it was never sent. If the email can't be queued the step fails, but the invitation is kept, so a retry sends it.
 
 ### 2. Add Student to Organization
 
@@ -223,7 +223,7 @@ All create actions that take a student accept the student's email address, not a
 - **Key**: `add_cohort_member`
 - **Description**: Adds a student to a cohort. A student who has not joined your organization is emailed an organization invite carrying the cohort, which takes a student seat.
 - **Inputs**: `Cohort` (required), `Student Email` (required), `Name` (optional).
-- **Outputs**: `added[]` (`id`, `cohortId`, `profileId`, `roleId`, `email`, `createdAt`), `invited[]` (`index`, `email`, `status` = `invited`, `already_invited` or `enrolled`, `inviteId`), `errors[]`.
+- **Outputs**: `added[]` (`id`, `cohortId`, `profileId`, `roleId`, `email`, `createdAt`), `invited[]` (`index`, `email`, `status` = `invited`, `already_invited`, `enrolled` or `already_enrolled`, `inviteId`), `errors[]`. An admin or tutor email fails the step.
 - **Repeat behavior**: Re-running for an existing member fails with "already a member". Repeating an invite reports `already_invited`.
 
 ### 11. Post to Cohort Feed
