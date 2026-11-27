@@ -84,7 +84,7 @@ Every trigger returns the event fields listed below plus the shared envelope fie
 ### 8. Course Invite Accepted
 
 - **Key**: `course_invite_accepted`
-- **When it fires**: Someone accepts a course invite, or joins a course through its invite link. It also fires once for each course on an organization invite when that invite is accepted; `inviteId` is then the organization invite id, and `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount` and `allowedDomains` are empty.
+- **When it fires**: Someone accepts a course invite, or joins a course through its invite link.
 - **Inputs**: `Course` (optional).
 - **Outputs**: `courseId`, `inviteId`, `inviteLinkId`, `email`, `actorProfileId`, `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount`, `allowedDomains`, `links`, `course.*`, `actor.*`.
 
@@ -146,7 +146,7 @@ All create actions that take a student accept the student's email address, not a
   - `Course` (required).
   - `Student Email` (required).
   - `Send Email` (optional, defaults to on).
-- **Outputs**: `status`, `memberId`, `inviteId`, `inviteKind`, `inviteLink`, `email`. When the student is invited, `inviteId` is their organization invite, which carries this course, and `inviteKind` is `organization`.
+- **Outputs**: `status`, `memberId`, `inviteId`, `inviteLink`, `email`.
 - **Repeat behavior**: If the student is already enrolled or invited, the action succeeds without duplicating records.
 
 ### 2. Add Student to Organization
@@ -190,17 +190,17 @@ All create actions that take a student accept the student's email address, not a
 
 - **Key**: `send_course_invite`
 - **Description**: Emails an invite to join a course.
-- **Inputs**: `Course` (required), `Emails` (required list; each address gets the course on its organization invite, and people who already joined are enrolled).
-- **Outputs**: `recipients[]` (`email`, `status`, `inviteId`, `inviteKind`, `inviteLink`), `mode`, `invites` (always empty), `inviteLink` (always empty), `duplicatesSkipped`, `delivery.requested`, `delivery.sent`, `delivery.failed`, `delivery.failures`.
-- **Repeat behavior**: Sends a fresh invite link to each address that has not joined; people who already joined are enrolled instead. The new link replaces the previous one, so the address keeps a single invite and the older link opens the newest invite. An address repeated within one request is invited once. A malformed address fails the step before anyone is invited. If an address belongs to staff or an archived member, or would exceed your student seats, the step fails after the other addresses were already invited; remove the failing address before replaying. Use **Enroll Student in Course** when repeats should change nothing.
+- **Inputs**: `Course` (required), `Emails` (required list; each address gets its own invite).
+- **Outputs**: `mode`, `invites[]` (`id`, `courseId`, `roleId`, `expiresAt`, `maxUses`, `usedCount`, `allowedEmails`, `allowedDomains`, `createdAt`, `status`, `inviteLink`), `inviteLink`, `duplicatesSkipped`, `delivery.requested`, `delivery.sent`, `delivery.failed`, `delivery.failures`.
+- **Repeat behavior**: Creates a new invite for each address every time, even when that address already has a pending invite. An address repeated within one request is invited once. Use **Enroll Student in Course** when repeats should change nothing.
 
 ### 7. Revoke Course Invite
 
 - **Key**: `revoke_course_invite`
-- **Description**: Removes this course from a pending invite, or cancels a course invite link so it stops working.
-- **Inputs**: `Course` (required), `Invite` (required). Pick an invite link, or pass an organization invite id from **Send Course Invite** or **Enroll Student in Course** to remove just this course from it. The invite keeps its other courses and cohorts and is revoked only when nothing is left on it.
+- **Description**: Cancels a pending course invite so its link stops working.
+- **Inputs**: `Course` (required), `Invite` (required).
 - **Outputs**: `id`, `status`, `isRevoked`.
-- **Repeat behavior**: Revokes the invite. Revoking an already-revoked invite succeeds and changes nothing; only an invite that no longer exists returns not found. An organization invite that was already accepted returns a conflict error.
+- **Repeat behavior**: Revokes the invite. Revoking an already-revoked invite succeeds and changes nothing; only an invite that no longer exists returns not found.
 
 ### 8. Reset Student Course Progress
 
@@ -221,10 +221,10 @@ All create actions that take a student accept the student's email address, not a
 ### 10. Add Student to Cohort
 
 - **Key**: `add_cohort_member`
-- **Description**: Adds a student to a cohort. A student who has not joined your organization is emailed an organization invite carrying the cohort, which takes a student seat.
+- **Description**: Adds a student to a cohort.
 - **Inputs**: `Cohort` (required), `Student Email` (required), `Name` (optional).
-- **Outputs**: `added[]` (`id`, `cohortId`, `profileId`, `roleId`, `email`, `createdAt`), `invited[]` (`index`, `email`, `status` = `invited`, `already_invited` or `enrolled`, `inviteId`), `errors[]`.
-- **Repeat behavior**: Re-running for an existing member fails with "already a member". Repeating an invite reports `already_invited`.
+- **Outputs**: `added[]` (`id`, `cohortId`, `profileId`, `roleId`, `email`, `createdAt`), `errors[]`.
+- **Repeat behavior**: Idempotent. Adding an existing member does not create duplicates.
 
 ### 11. Post to Cohort Feed
 

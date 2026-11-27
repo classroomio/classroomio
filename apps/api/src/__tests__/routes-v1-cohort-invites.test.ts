@@ -156,7 +156,9 @@ describe('v1CohortsRouter invite, learner, and goal-evaluation routes', () => {
     vi.mocked(assignPublicApiCohortStudentsService).mockResolvedValue({
       assigned: 1,
       alreadyEnrolled: 0,
-      emailsSent: 0
+      invited: 0,
+      emailsSent: 0,
+      details: []
     });
 
     const response = await app.request(

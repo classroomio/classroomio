@@ -9,7 +9,7 @@ exports[`public API cohort request contract > ZPublicApiAddCohortMembers keeps i
       "items": {
         "properties": {
           "email": {
-            "description": "Linked to its existing profile if there is one; otherwise the membership is stored against the email alone.",
+            "description": "A student who already joined your organization is added directly; anyone else is sent an organization invite that carries this cohort.",
             "format": "email",
             "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
             "type": "string",
@@ -217,9 +217,96 @@ exports[`public API cohort request contract > ZPublicApiCohortMemberListItemResp
       ],
     },
     "id": {
-      "format": "uuid",
-      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "description": "Membership id; an invited person without one gets an invited:<kind>:<email> key",
       "type": "string",
+    },
+    "invitation": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "cohortIds": {
+              "items": {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "cohortMemberId": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "courseIds": {
+              "items": {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "expiresAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "kind": {
+              "enum": [
+                "org_invite",
+                "course_invite",
+                "email_only_member",
+              ],
+              "type": "string",
+            },
+            "orgInviteId": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "status": {
+              "enum": [
+                "pending",
+                "expired",
+              ],
+              "type": "string",
+            },
+          },
+          "required": [
+            "kind",
+            "status",
+            "orgInviteId",
+            "expiresAt",
+            "courseIds",
+            "cohortIds",
+            "cohortMemberId",
+          ],
+          "type": "object",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Null for joined members",
     },
     "lastLoginAt": {
       "anyOf": [
@@ -231,6 +318,14 @@ exports[`public API cohort request contract > ZPublicApiCohortMemberListItemResp
         },
       ],
       "description": "Null if no login was ever recorded",
+    },
+    "membership": {
+      "description": "invited = the invite has not been accepted yet",
+      "enum": [
+        "joined",
+        "invited",
+      ],
+      "type": "string",
     },
     "profile": {
       "anyOf": [
@@ -320,6 +415,8 @@ exports[`public API cohort request contract > ZPublicApiCohortMemberListItemResp
     "roleId",
     "email",
     "createdAt",
+    "membership",
+    "invitation",
     "profile",
     "lastLoginAt",
   ],
@@ -350,7 +447,7 @@ exports[`public API cohort request contract > ZPublicApiCohortMembersQuery keeps
       "type": "integer",
     },
     "membership": {
-      "description": "invited = the invite has not been accepted yet.",
+      "description": "Omit to list joined members, then invited people (cohort team only). invited = the invite has not been accepted yet.",
       "enum": [
         "joined",
         "invited",

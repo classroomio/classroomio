@@ -198,7 +198,7 @@ describe('v1CohortsRouter', () => {
   );
 
   it('adds, updates, and removes cohort members', async () => {
-    vi.mocked(addPublicApiCohortMembersService).mockResolvedValue({ added: [], errors: [] });
+    vi.mocked(addPublicApiCohortMembersService).mockResolvedValue({ added: [], invited: [], errors: [] });
     vi.mocked(updatePublicApiCohortMemberService).mockResolvedValue({ id: MEMBER_ID } as Awaited<
       ReturnType<typeof updatePublicApiCohortMemberService>
     >);
