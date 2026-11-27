@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sidebar required vs optional marker</title>
+    <style>
+      :root {
+        --foreground: oklch(0.145 0 0);
+        --muted-foreground: oklch(0.556 0 0);
+        --primary: oklch(0.488 0.243 264.376);
+        --border: oklch(0.922 0 0);
+        --destructive: oklch(0.577 0.245 27.325);
+        --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 24px; font-family: var(--font); color: var(--foreground); background: oklch(0.97 0.005 80); }
+      h1 { font-size: 18px; margin: 0 0 16px; }
+      .controls { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 20px; }
+      .group { display: flex; gap: 4px; align-items: center; font-size: 13px; }
+      .group span { color: var(--muted-foreground); margin-right: 6px; }
+      button { font: inherit; font-size: 13px; padding: 6px 12px; border: 1px solid var(--border); background: #fff; border-radius: 6px; cursor: pointer; }
+      button[aria-pressed='true'] { background: var(--foreground); color: #fff; border-color: var(--foreground); }
+      .sidebar { width: 300px; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 12px 8px; }
+      .section { font-weight: 600; font-size: 13px; padding: 8px 10px 4px; display: flex; justify-content: space-between; }
+      .section small { color: var(--muted-foreground); font-weight: 400; }
+      .row { display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 24px; font-size: 13px; border-radius: 6px; }
+      .row:hover { background: oklch(0.97 0 0); }
+      .row .title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .ico { width: 14px; height: 14px; border-radius: 3px; background: var(--primary); opacity: 0.7; flex: none; }
+      .ico.ex { background: oklch(0.6 0.15 150); }
+      .req-current { color: red; font-weight: 700; }
+      .req-muted { color: var(--muted-foreground); font-weight: 600; }
+      .dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.7 0 0); flex: none; margin-right: 2px; }
+      .opt { font-size: 11px; color: var(--muted-foreground); border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; flex: none; }
+      .note { max-width: 520px; font-size: 13px; color: var(--muted-foreground); margin-top: 16px; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <h1>Course sidebar: required vs optional</h1>
+    <div class="controls">
+      <div class="group" id="variant"><span>Design</span></div>
+      <div class="group" id="course"><span>Course</span></div>
+    </div>
+    <div class="sidebar" id="sidebar"></div>
+    <p class="note" id="note"></p>
+    <script>
+      const sections = [
+        { name: 'Bring Learners into Your Academy', items: [['Import Learners from a File', 'l'], ['Add Learners to a Course', 'l'], ['Exercise: Practice Your Learner Import', 'e']] },
+        { name: 'Find the Right Learners', items: [['Read the Audience Page', 'l'], ['Segment Learners with Groups', 'l'], ['Act on Many Learners at Once', 'l'], ['Exercise: Practice Your Audience', 'e']] },
+        { name: 'Look After Each Learner', items: [['Review a Learner Profile', 'l'], ['Archive, Restore or Delete a Learner', 'l'], ['Exercise: Practice Your Learner Care', 'e']] }
+      ];
+      const optionalWhenMixed = new Set(['Read the Audience Page', 'Segment Learners with Groups', 'Exercise: Practice Your Learner Import']);
+      const state = { variant: 'dot', course: 'mixed' };
+      const variants = { current: 'Current', dot: 'Muted dot' };
+      const courses = { allRequired: 'All required', mixed: 'Mixed' };
+      const notes = {
+        current: 'Every required item gets a red asterisk. When everything is required the marker says nothing and reads like an error.',
+        dot: 'A muted dot with a "Required" tooltip, shown only when the course mixes required and optional items. Hover a dot. All-required courses stay clean.'
+      };
+      function buildToggles(id, map, key) {
+        const el = document.getElementById(id);
+        Object.entries(map).forEach(([value, label]) => {
+          const b = document.createElement('button');
+          b.textContent = label;
+          b.onclick = () => { state[key] = value; render(); };
+          b.dataset.value = value;
+          el.appendChild(b);
+        });
+      }
+      function render() {
+        document.querySelectorAll('#variant button').forEach(b => b.setAttribute('aria-pressed', b.dataset.value === state.variant));
+        document.querySelectorAll('#course button').forEach(b => b.setAttribute('aria-pressed', b.dataset.value === state.course));
+        const mixed = state.course === 'mixed';
+        const html = sections.map(s => {
+          const rows = s.items.map(([title, kind]) => {
+            const optional = mixed && optionalWhenMixed.has(title);
+            let marker = '';
+            if (state.variant === 'current') marker = optional ? '' : '<span class="req-current">*</span>';
+            if (state.variant === 'dot') marker = mixed && !optional ? '<span class="dot" title="Required" aria-label="Required"></span>' : '';
+            return `<div class="row"><span class="ico ${kind === 'e' ? 'ex' : ''}"></span><span class="title">${title}</span>${marker}</div>`;
+          }).join('');
+          return `<div class="section">${s.name}<small>${s.items.length}</small></div>${rows}`;
+        }).join('');
+        document.getElementById('sidebar').innerHTML = html;
+        document.getElementById('note').textContent = notes[state.variant];
+      }
+      buildToggles('variant', variants, 'variant');
+      buildToggles('course', courses, 'course');
+      render();
+    </script>
+  </body>
+</html>
