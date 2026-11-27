@@ -145,6 +145,37 @@ describe('creates and actions', () => {
         })
       ).rejects.toThrow('could not email 1 invite');
     });
+
+    it('fails the action when a recipient is skipped', async () => {
+      nock(API_ORIGIN)
+        .post('/public-api/v1/courses/course-1/invites')
+        .reply(201, {
+          success: true,
+          data: {
+            mode: 'bulk',
+            invites: [],
+            inviteLink: null,
+            recipients: [
+              {
+                email: 'student@example.com',
+                status: 'over_seat_limit',
+                inviteId: null,
+                inviteKind: null,
+                inviteLink: null
+              }
+            ],
+            duplicatesSkipped: [],
+            delivery: { requested: 1, sent: 0, failed: 0, failures: [] }
+          }
+        });
+
+      const perform = (App.creates.send_course_invite.operation as any).perform;
+      await expect(
+        appTester(perform, {
+          inputData: { courseId: 'course-1', emails: ['student@example.com'] }
+        })
+      ).rejects.toThrow('student@example.com: over_seat_limit');
+    });
   });
 
   describe('update_student', () => {
