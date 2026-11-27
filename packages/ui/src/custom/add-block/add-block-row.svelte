@@ -3,7 +3,7 @@
   import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import type { Snippet } from 'svelte';
-  import CatalogPopover from './add-block-catalog-popover.svelte';
+  import CatalogSheet from './add-block-catalog-sheet.svelte';
   import Item from './add-block-item.svelte';
   import type { AddBlockChoice, AddBlockShortcut } from './types';
 
@@ -204,7 +204,7 @@
         role="separator"
         aria-orientation="vertical"
       ></div>
-      <CatalogPopover
+      <CatalogSheet
         choices={moreChoices}
         label={moreLabel}
         {searchLabel}
@@ -230,7 +230,7 @@
             <span class="ui:hidden ui:sm:inline">{moreLabel}</span>
           </button>
         {/snippet}
-      </CatalogPopover>
+      </CatalogSheet>
     {/if}
   </div>
 

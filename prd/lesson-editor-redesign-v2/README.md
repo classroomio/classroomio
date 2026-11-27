@@ -217,7 +217,7 @@ When a lesson has no blocks, the canvas shows:
 
 * A heading: **"What goes in this lesson?"**
 * A line under it: "Pick a block to begin. You can add more at any time."
-* A **grid of tiles**, each with an icon and a label: Note, Document, Video, Image, HTML and **All blocks**. All blocks opens the same grouped, searchable popover as the floating bar's All blocks button. On narrow screens the grid shows 3 columns.
+* A **grid of tiles**, each with an icon and a label: Note, Document, Video, Image, HTML and **All blocks**. All blocks opens the same grouped, searchable drawer from the right as the floating bar's All blocks button. On narrow screens the grid shows 3 columns.
 * An **Ask AI** button under the grid (shortcut Cmd/Ctrl + I) that opens the same Ask AI prompt as the floating bar.
 
 Clicking a tile adds that block's ready-made example and the empty state disappears. If the admin later removes every block, the empty state comes back.

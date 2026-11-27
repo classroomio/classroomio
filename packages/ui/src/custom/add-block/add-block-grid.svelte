@@ -1,7 +1,7 @@
 <script lang="ts">
   import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
   import { cn } from '../../tools';
-  import CatalogPopover from './add-block-catalog-popover.svelte';
+  import CatalogSheet from './add-block-catalog-sheet.svelte';
   import type { AddBlockChoice } from './types';
 
   interface Props {
@@ -82,22 +82,20 @@
     {/each}
 
     {#if showMore}
-      <CatalogPopover
+      <CatalogSheet
         choices={moreChoices}
         label={moreLabel}
         {searchLabel}
         {noResultsLabel}
         {newLabel}
         {comingSoonLabel}
-        side="bottom"
-        class="ui:flex"
         testId={testId ? `${testId}-more` : undefined}
         {onSelect}
       >
         {#snippet trigger({ open, toggle })}
           <button
             type="button"
-            class={cn(tileClass, 'ui:w-full', open && 'ui:border-primary/55 ui:bg-primary/5')}
+            class={cn(tileClass, open && 'ui:border-primary/55 ui:bg-primary/5')}
             aria-expanded={open}
             data-testid={testId ? `${testId}-more` : undefined}
             onclick={toggle}
@@ -106,7 +104,7 @@
             <span class={labelClass}>{moreLabel}</span>
           </button>
         {/snippet}
-      </CatalogPopover>
+      </CatalogSheet>
     {/if}
   </div>
 </div>
