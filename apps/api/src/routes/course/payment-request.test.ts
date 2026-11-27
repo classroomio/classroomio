@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { ErrorCodes } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
 
 import { paymentRequestRouter } from './payment-request';
@@ -30,7 +31,11 @@ describe('POST /course/:courseId/payment-request', () => {
     const response = await buildApp().request('/course/not-a-uuid/payment-request', init);
 
     expect(response.status).toBe(400);
-    expect((await response.json()).success).toBe(false);
+    expect(await response.json()).toEqual({
+      success: false,
+      error: 'Invalid course ID',
+      code: ErrorCodes.VALIDATION_ERROR
+    });
     expect(mocks.createPaymentRequest).not.toHaveBeenCalled();
   });
 
