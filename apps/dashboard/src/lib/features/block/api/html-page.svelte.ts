@@ -1,7 +1,10 @@
 import type { THtmlPage, THtmlPageCreate, THtmlPageGenerate } from '@cio/utils/validation/block';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import type { RequestConfig } from '$lib/utils/services/api/types';
 import { snackbar } from '$features/ui/snackbar/store';
 import type { BlockEditHost, CreateHtmlPageRequest, GenerateHtmlPageRequest } from '../utils/types';
+
+const GENERATE_REQUEST: RequestConfig = { timeout: 240_000, retries: 0 };
 
 export class HtmlPageApi extends BaseApiWithErrors {
   /**
@@ -38,10 +41,13 @@ export class HtmlPageApi extends BaseApiWithErrors {
 
     await this.execute<GenerateHtmlPageRequest>({
       requestFn: () =>
-        classroomio.course[':courseId'].lesson[':lessonId'].blocks['html-pages'].generate.$post({
-          param: { courseId: host.courseId, lessonId: host.lessonId },
-          json: input
-        }),
+        classroomio.course[':courseId'].lesson[':lessonId'].blocks['html-pages'].generate.$post(
+          {
+            param: { courseId: host.courseId, lessonId: host.lessonId },
+            json: input
+          },
+          { init: GENERATE_REQUEST }
+        ),
       logContext: 'generating html page',
       onSuccess: (response) => {
         page = response.data;
