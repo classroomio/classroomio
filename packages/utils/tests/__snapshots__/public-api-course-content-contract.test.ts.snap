@@ -463,6 +463,7 @@ exports[`public API course content request contract > ZPublicApiUpdateCourseCont
             "type": "string",
           },
           "isUnlocked": {
+            "description": "true releases the item to students; false holds it back from every student.",
             "type": "boolean",
           },
           "type": {

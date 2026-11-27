@@ -285,10 +285,10 @@
         <Field.Label for="lesson-unlocked" class="gap-1.5">
           {#if isUnlocked}
             <UnlockIcon size={14} />
-            {$t('generic.unlocked')}
+            {$t('course.navItem.lessons.settings.access.released')}
           {:else}
             <LockIcon size={14} />
-            {$t('generic.locked')}
+            {$t('course.navItem.lessons.settings.access.not_released')}
           {/if}
         </Field.Label>
       </Field.Field>

@@ -161,6 +161,8 @@
       playbackErrorLabel={$t('course.navItem.lessons.materials.tabs.video.playback_error')}
       playbackReloadLabel={$t('course.navItem.lessons.materials.tabs.video.playback_reload')}
       {callout}
+      notReleasedTitle={$t('public_course.not_released.title')}
+      notReleasedDescription={$t('public_course.not_released.description')}
       outlineLabel={$t('public_course.outline.label')}
     >
       {#snippet content()}
@@ -223,6 +225,8 @@
     <PublicCourse.PublicExerciseView
       exercise={exerciseView}
       {callout}
+      notReleasedTitle={$t('public_course.not_released.title')}
+      notReleasedDescription={$t('public_course.not_released.description')}
       labels={exerciseLabels}
       attemptsPersistenceKey={publicExerciseAttemptsStorageKey(data.tree.course.slug, itemSlug)}
       formatAttemptOption={({ attemptNumber, correct, total }) =>

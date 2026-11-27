@@ -33,6 +33,7 @@ export * from './course-member';
 export * from './course-member-responses';
 export * from './course-responses';
 export * from './course-section';
+export * from './course-settings';
 export * from './course-student';
 export * from './course-student-responses';
 export * from './course-submission';

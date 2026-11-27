@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { LESSON_COMPLETION_POLICIES } from '@cio/utils/functions/course-progression';
 import { CoursePlanSchema } from '@cio/ai-assistant';
 import {
   LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT,
@@ -85,8 +86,28 @@ export const updateLessonParam = z
       ),
     lessonAt: z.string().optional(),
     callUrl: z.string().optional(),
-    isUnlocked: z.boolean().optional(),
-    public: z.boolean().optional()
+    isUnlocked: z
+      .boolean()
+      .optional()
+      .describe(
+        'Release flag: false holds the lesson back from every student until it is released. Not a way to make students finish earlier items first.'
+      ),
+    public: z.boolean().optional(),
+    completionPolicy: z
+      .enum(LESSON_COMPLETION_POLICIES)
+      .optional()
+      .describe(
+        '"manual" (default): the student marks the lesson complete. "video_watch": completes once the student watches videoWatchThreshold percent of its uploaded videos; links are not tracked. "none": never required and never blocks a sequential course.'
+      ),
+    videoWatchThreshold: z
+      .number()
+      .int()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe(
+        'Percent of each uploaded video to watch when completionPolicy is "video_watch"; 95 when unset. A video block can set its own threshold, and the highest applicable one counts.'
+      )
   })
   .refine(
     (data) =>
@@ -96,7 +117,9 @@ export const updateLessonParam = z
       data.lessonAt !== undefined ||
       data.callUrl !== undefined ||
       data.isUnlocked !== undefined ||
-      data.public !== undefined,
+      data.public !== undefined ||
+      data.completionPolicy !== undefined ||
+      data.videoWatchThreshold !== undefined,
     {
       message: 'Provide at least one field to update'
     }
@@ -278,7 +301,12 @@ export const updateExerciseParam = z
       .string()
       .optional()
       .describe('Due date in ISO 8601 format (e.g. 2026-05-01T23:59:00Z). Omit to keep unchanged.'),
-    isUnlocked: z.boolean().optional().describe('Whether the exercise is unlocked for students.'),
+    isUnlocked: z
+      .boolean()
+      .optional()
+      .describe(
+        'Release flag: false holds the exercise back from every student until it is released. Not a way to make students finish earlier items first.'
+      ),
     allowMultipleAttempts: z.boolean().optional().describe('Whether students can re-take the exercise.'),
     completionPolicy: z
       .enum(['submitted', 'passed', 'none'])

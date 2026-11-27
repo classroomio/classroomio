@@ -360,8 +360,8 @@
         "successful_integration": "Integracja udana",
         "successful_deletion": "Integracja usunięta",
         "update_successful": "Aktualizacja pomyślna",
-        "unlocked_all_content": "Wszystkie elementy kursu odblokowane",
-        "all_content_already_unlocked": "Cała treść jest już odblokowana",
+        "unlocked_all_content": "Udostępniono wszystkie elementy kursu",
+        "all_content_already_unlocked": "Cała zawartość jest już udostępniona",
         "content_grouping_enabled": "Grupowanie treści włączone",
         "content_grouping_disabled": "Grupowanie treści wyłączone",
         "link_generated": "Link do kursu został pomyślnie zaktualizowany",
@@ -964,8 +964,8 @@
         "content_grouping_title": "Grupowanie treści",
         "content_grouping_description": "Grupuj lekcje i ćwiczenia według sekcji na liście treści.",
         "progression_mode_title": "Postęp ucznia",
-        "progression_mode_free": "Wolny — odblokowana treść jest dostępna",
-        "progression_mode_sequential": "Sekwencyjny — ukończ poprzednie elementy, aby odblokować następny",
+        "progression_mode_free": "Swobodny — uczniowie mogą otworzyć dowolny udostępniony element",
+        "progression_mode_sequential": "Sekwencyjny — uczniowie kończą każdy wymagany element, zanim otworzy się następny",
         "comments": {
           "title": "Komentarze do lekcji",
           "description": "Zezwól uczniom na wyświetlanie i dodawanie komentarzy w lekcjach tego kursu. Komentarze można nadal wyłączyć dla poszczególnych lekcji.",
@@ -1020,7 +1020,7 @@
         },
         "callout": {
           "legend": "Objaśnienie dotyczące kursu publicznego",
-          "description": "Wyświetlane na dole każdej lekcji oraz w miejscu zablokowanych elementów. Użyj go, aby przyciągnąć uczniów do Twojej witryny lub płatnego kursu.",
+          "description": "Wyświetlane na dole każdej lekcji oraz w miejscu elementów, których jeszcze nie udostępniono. Użyj go, aby przyciągnąć uczniów do Twojej witryny lub płatnego kursu.",
           "title_label": "Tytuł",
           "title_placeholder": "Chcesz zgłębić ten temat?",
           "description_label": "Opis",
@@ -1050,10 +1050,10 @@
         "content_card_title": "Treść",
         "access_card_title": "Dostęp",
         "locked_content": {
-          "title": "Elementy kursu: {count} są zablokowane",
-          "description": "Zarejestrowani uczniowie nie będą mogli brać udziału w zablokowanych lekcjach ani ćwiczeniach, dopóki ich nie odblokujesz.",
-          "description_live": "Zablokowane lekcje i ćwiczenia pozostają ukryte przed uczniami, dopóki ich nie odblokujesz — przydatne, jeśli publikujesz treści tydzień po tygodniu.",
-          "unlock_all": "Odblokuj wszystko"
+          "title": "Elementy kursu jeszcze nieudostępnione: {count}",
+          "description": "Zapisani uczniowie nie mogą otworzyć tych lekcji ani ćwiczeń, dopóki ich nie udostępnisz.",
+          "description_live": "Uczniowie nie mogą otworzyć nieudostępnionych lekcji i ćwiczeń, dopóki ich nie udostępnisz — przydatne, jeśli udostępniasz treści co tydzień.",
+          "unlock_all": "Udostępnij wszystkie"
         },
         "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
         "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu",
@@ -1099,9 +1099,9 @@
         "fix": "Popraw",
         "save_changes_to_fix_questions": "Zapisz niezapisane zmiany przed przejściem do poprawiania pytań.",
         "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
-        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Reguła ukończenia na podstawie oglądania wideo działa tylko dla przesłanych filmów.",
+        "progression_mode_description": "Określ, czy uczniowie mogą otworzyć dowolny udostępniony element, czy muszą ukończyć elementy po kolei. Ukończenie przez obejrzenie wideo śledzi tylko przesłane filmy.",
         "allow_markdown_export": "Pozwól uczniom kopiować strony lekcji jako Markdown",
-        "allow_markdown_export_description": "Po włączeniu publiczne strony lekcji pokazują przycisk Kopiuj stronę, który eksportuje treść lekcji (bez filmów) jako Markdown. Publikuje też publiczny adres URL Markdown dla każdej odblokowanej lekcji.",
+        "allow_markdown_export_description": "Po włączeniu publiczne strony lekcji pokazują przycisk Kopiuj stronę, który eksportuje treść lekcji (bez filmów) jako Markdown. Publikuje też publiczny adres URL Markdown dla każdej udostępnionej lekcji.",
         "live_session_reminders": {
           "legend": "Przypomnienia e-mail o sesjach",
           "description": "Wybierz, kiedy zapisani uczniowie otrzymają e-mail z linkiem dołączenia przed każdą sesją na żywo.",
@@ -1720,7 +1720,7 @@
         "add_content_lesson_title_placeholder": "np. Pierwsze kroki ze zmiennymi",
         "content_menu": {
           "label": "Opcje treści",
-          "unlock_all": "Odblokuj całą treść",
+          "unlock_all": "Udostępnij całą zawartość",
           "enable_grouping": "Włącz grupowanie treści",
           "disable_grouping": "Wyłącz grupowanie treści"
         },
@@ -2729,9 +2729,11 @@
           "lesson_title": "Tytuł lekcji",
           "course_section_title": "Tytuł sekcji",
           "click_to": "Kliknij, aby",
-          "lock": "Blokada",
-          "unlock": "Odblokuj",
+          "lock": "Wstrzymaj",
+          "unlock": "Udostępnij",
           "all": "Wszystko",
+          "hold_back_all": "Wstrzymaj wszystkie",
+          "release_all": "Udostępnij wszystkie",
           "fullname": "imię i nazwisko",
           "save": "Zapisz",
           "edit": "Edytuj",
@@ -2747,12 +2749,14 @@
           "activate": "Aktywuj",
           "cancel": "Anuluj"
         },
-        "content_locked_title": "Ta zawartość jest zablokowana",
-        "content_locked_description": "Twój instruktor nie odblokował jeszcze tej zawartości. Uzupełnij poprzednią zawartość lub sprawdź później.",
+        "content_locked_title": "Jeszcze nie udostępniono",
+        "content_locked_description": "Twój instruktor jeszcze tego nie udostępnił. Zajrzyj później.",
         "content_progression_locked_title": "Najpierw ukończ poprzednią treść",
         "content_progression_locked_description": "Ta treść odblokowuje się po ukończeniu poprzedniego wymaganego elementu kursu.",
         "content_progression_locked_description_lesson": "Ta lekcja odblokowuje się po ukończeniu poprzedniego wymaganego elementu kursu.",
         "content_progression_locked_description_exercise": "To ćwiczenie odblokowuje się po ukończeniu poprzedniego wymaganego elementu kursu.",
+        "content_progression_locked_description_named_lesson": "Ukończ „{title}”, aby odblokować tę lekcję.",
+        "content_progression_locked_description_named_exercise": "Ukończ „{title}”, aby odblokować to ćwiczenie.",
         "completion_policy": {
           "label": "Zasada ukończenia",
           "manual_label": "Ręcznie",
@@ -2786,7 +2790,9 @@
           },
           "access": {
             "title": "Dostęp",
-            "description": "Uczniowie nie mogą otworzyć zablokowanej lekcji, dopóki jej nie odblokujesz."
+            "description": "Uczniowie widzą tę lekcję w spisie kursu, ale nie mogą jej otworzyć, dopóki jej nie udostępnisz.",
+            "released": "Udostępniona",
+            "not_released": "Jeszcze nie udostępniona"
           }
         },
         "watch_progress": {
@@ -6545,6 +6551,10 @@
       "x": "X",
       "instagram": "Instagram",
       "instagram_copied": "Skopiowano link. Wklej go w Instagramie."
+    },
+    "not_released": {
+      "title": "Jeszcze nie udostępniono",
+      "description": "Twórca jeszcze tego nie udostępnił. Zajrzyj później."
     }
   },
   "account": {
@@ -7748,7 +7758,7 @@
       },
       "failed": "Nie udało się wczytać uczniów",
       "cells_failed": "Nie udało się wczytać wyników ćwiczeń",
-      "attempts_unavailable": "Nie udało się sprawdzić, które ćwiczenia mają próby, więc niektóre zablokowane ćwiczenia mogą być ukryte."
+      "attempts_unavailable": "Nie udało się sprawdzić, które ćwiczenia mają próby, więc niektóre nieudostępnione ćwiczenia mogą być ukryte."
     },
     "empty": {
       "failed": "Nie można załadować tego wykresu",

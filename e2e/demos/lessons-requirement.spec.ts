@@ -80,7 +80,7 @@ test('teacher marks course content as required or optional', async ({ page }) =>
 
   await toggles.nth(0).click();
   await expect(markers).toHaveCount(2);
-  await expect(page.getByTestId('sidebar-requirement-marker')).toHaveCount(2);
+  await expect(page.getByTestId('sidebar-optional-marker')).toHaveCount(1);
   await page.waitForTimeout(2000);
 
   await toggles.nth(0).click();
@@ -97,9 +97,9 @@ test('changing a lesson completion rule updates the sidebar marker', async ({ pa
   await ensureAllRequired(page);
   await page.getByRole('link', { name: 'Passwords, MFA, and not getting phished' }).first().click();
 
-  const sidebarMarkers = page.getByTestId('sidebar-requirement-marker');
+  const sidebarMarkers = page.getByTestId('sidebar-optional-marker');
   await page.getByTestId('lesson-settings-open').click({ timeout: 30_000 });
-  await expect(sidebarMarkers).toHaveCount(3);
+  await expect(sidebarMarkers).toHaveCount(0);
 
   const completionSelect = page.locator('#lesson-completion-policy');
   const lessonSaved = () =>
@@ -110,7 +110,7 @@ test('changing a lesson completion rule updates the sidebar marker', async ({ pa
   try {
     await completionSelect.click();
     await page.getByTestId('lesson-completion-none').click();
-    await expect(sidebarMarkers).toHaveCount(2, { timeout: 15_000 });
+    await expect(sidebarMarkers).toHaveCount(1, { timeout: 15_000 });
   } finally {
     const restored = lessonSaved().catch(() => undefined);
     await completionSelect.click({ timeout: 5_000 }).catch(() => undefined);
@@ -120,7 +120,7 @@ test('changing a lesson completion rule updates the sidebar marker', async ({ pa
       .catch(() => undefined);
     await restored;
   }
-  await expect(sidebarMarkers).toHaveCount(3, { timeout: 15_000 });
+  await expect(sidebarMarkers).toHaveCount(0, { timeout: 15_000 });
 });
 
 test('student sees which content is required', async ({ page }) => {

@@ -7,7 +7,7 @@
 
   interface Props {
     callout: PublicCourseCalloutData | null;
-    /** "inline" sits below the lesson body; "full" replaces it for locked items. */
+    /** "inline" sits below the lesson body; "full" replaces it for unreleased items. */
     variant?: 'inline' | 'full';
     /** Shown when callout is null and variant === 'full'. */
     lockedFallbackTitle?: string;
@@ -19,8 +19,8 @@
   let {
     callout,
     variant = 'inline',
-    lockedFallbackTitle = 'This lesson is locked',
-    lockedFallbackDescription = 'The creator hasn’t shared a link for this lesson yet. Check back later.',
+    lockedFallbackTitle = 'Not released yet',
+    lockedFallbackDescription = 'The creator hasn’t released this yet. Check back later.',
     animation = 'waves',
     class: className
   }: Props = $props();

@@ -26,6 +26,7 @@ import { registerTagTools } from './tools/tags';
 import { registerTeamTools } from './tools/team';
 import { registerImageUploadTools } from './tools/image-upload';
 import { registerMediaUploadTools } from './tools/media-upload';
+import { COURSE_ACCESS_INSTRUCTIONS } from './instructions';
 import { MCP_VERSION } from './version';
 
 export { ClassroomIoApiClient } from './api-client';
@@ -40,10 +41,13 @@ export type CreateMcpServerOptions = {
  * Callers decide where the client's requests go, so one factory serves stdio and remote transports.
  */
 export function createMcpServer(apiClient: ClassroomIoApiClient, options: CreateMcpServerOptions): McpServer {
-  const server = new McpServer({
-    name: 'classroomio-course-authoring',
-    version: MCP_VERSION
-  });
+  const server = new McpServer(
+    {
+      name: 'classroomio-course-authoring',
+      version: MCP_VERSION
+    },
+    { instructions: COURSE_ACCESS_INSTRUCTIONS }
+  );
   returnApiErrorsAsToolResults(server);
   server.server.oninitialized = () => {
     const clientName = server.server.getClientVersion()?.name;

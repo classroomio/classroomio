@@ -508,8 +508,8 @@
     {@const sectionHasUnlocked = section.items.some((item) => item.isUnlocked ?? false)}
     {@const sectionLockLabel = hasSectionItems
       ? sectionHasUnlocked
-        ? `${$t('course.navItem.lessons.add_lesson.lock')} ${$t('course.navItem.lessons.add_lesson.all')}`
-        : `${$t('course.navItem.lessons.add_lesson.unlock')} ${$t('course.navItem.lessons.add_lesson.all')}`
+        ? $t('course.navItem.lessons.add_lesson.hold_back_all')
+        : $t('course.navItem.lessons.add_lesson.release_all')
       : undefined}
     {@const sectionMakeRequired = hasOptionalItem(section.items)}
     {@const sectionRequirementLabel = hasSectionItems

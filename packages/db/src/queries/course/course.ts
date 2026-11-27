@@ -630,6 +630,34 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>, dbC
 }
 
 /**
+ * Shallow-merges `patch` into a course's metadata in one statement, so concurrent writers never drop each other's keys.
+ * Returns the updated course, or undefined when it does not exist.
+ */
+export async function mergeCourseMetadata(
+  courseId: string,
+  patch: Partial<NonNullable<TCourse['metadata']>>,
+  dbClient: DbOrTxClient = db
+) {
+  try {
+    const patchJson = JSON.stringify(patch);
+    const updatedAt = new Date().toISOString();
+    const [updated] = await dbClient
+      .update(schema.course)
+      .set({
+        metadata: sql`COALESCE(${schema.course.metadata}, '{}'::jsonb) || ${patchJson}::jsonb`,
+        updatedAt
+      })
+      .where(eq(schema.course.id, courseId))
+      .returning();
+
+    return updated;
+  } catch (error) {
+    console.error('mergeCourseMetadata error:', error);
+    throw new Error(`Failed to update course metadata: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
  * Bumps updatedAt on a course without changing any other fields.
  * Call this whenever course content (lessons, exercises) changes.
  */

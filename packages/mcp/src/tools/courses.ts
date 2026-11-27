@@ -3,7 +3,8 @@ import {
   ZPublicApiCourseParam,
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
-  ZPublicApiRelatedCoursesQuery
+  ZPublicApiRelatedCoursesQuery,
+  ZPublicApiUpdateCourseSettings
 } from '@cio/utils/validation/public-api';
 import { ZAutomationCourseTagAssignment } from '@cio/utils/validation/tag';
 import { ZCourseLandingPageUpdate } from '@cio/utils/validation/course';
@@ -21,6 +22,8 @@ const DESTRUCTIVE: ToolAnnotations = { readOnlyHint: false, destructiveHint: tru
 
 const LINKS_RULE =
   'The result has appUrl, the dashboard page where the team edits the course and the link to give the user while the course is unpublished, and landingPageUrl, the public page that is null until the course is published and always null for a private course; give the user landingPageUrl only when it is not null.';
+
+const COURSE_TEAM_RULE = 'the API key creator must be a course tutor/admin or an org admin';
 
 const courseId = ZPublicApiCourseParam.shape.courseId;
 
@@ -40,6 +43,8 @@ export const ZSetCoursePrivateToolInput = z.object({
     .boolean()
     .describe('true hides the course from every listing and blocks self-enrollment; false makes it public again')
 });
+export const ZGetCourseSettingsToolInput = z.object({ courseId });
+export const ZUpdateCourseSettingsToolInput = ZPublicApiUpdateCourseSettings.safeExtend({ courseId });
 export const ZUpdateCourseLandingPageToolInput = ZCourseLandingPageUpdate.extend({ courseId });
 export const ZCloneCourseToolInput = ZPublicApiCloneCourse.safeExtend({ courseId });
 export const ZListRelatedCoursesToolInput = ZPublicApiRelatedCoursesQuery.safeExtend({ courseId });
@@ -112,6 +117,28 @@ export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApi
     async (args) => {
       const { courseId } = ZPublishCourseToolInput.parse(args);
       return jsonContent(await apiClient.unpublishCourse(courseId));
+    }
+  );
+
+  server.tool(
+    'get_course_settings',
+    "Get a course's settings from its dashboard Settings page: student progression (free or sequential), self-enrollment, Markdown export and lesson comments.",
+    shape(ZGetCourseSettingsToolInput),
+    READ_ONLY,
+    async (args) => {
+      const { courseId } = ZGetCourseSettingsToolInput.parse(args);
+      return jsonContent(await apiClient.getCourseSettings(courseId));
+    }
+  );
+
+  server.tool(
+    'update_course_settings',
+    `Change a course's settings from its dashboard Settings page; omitted settings stay as they are, and ${COURSE_TEAM_RULE}. progressionMode sequential is how students are made to finish each required item, such as passing a quiz, before the next one opens.`,
+    shape(ZUpdateCourseSettingsToolInput),
+    { title: 'Update course settings', ...UPDATE },
+    async (args) => {
+      const { courseId, ...payload } = ZUpdateCourseSettingsToolInput.parse(args);
+      return jsonContent(await apiClient.updateCourseSettings(courseId, payload));
     }
   );
 

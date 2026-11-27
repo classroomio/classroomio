@@ -16,6 +16,7 @@ import { v1CourseLessonsRouter } from './lessons';
 import { v1CourseMarksRouter } from './marks';
 import { v1CourseMembersRouter } from './members';
 import { v1CourseSectionsRouter } from './sections';
+import { v1CourseSettingsRouter } from './settings';
 import { v1CourseStudentRouter } from './student';
 import { v1CourseSubmissionsRouter } from './submissions';
 
@@ -29,6 +30,7 @@ export const v1CoursesRouter = new Hono()
   .route('/:courseId/certificate', v1CourseCertificateRouter)
   .route('/:courseId/certificates', v1CourseCertificatesRouter)
   .route('/:courseId/sections', v1CourseSectionsRouter)
+  .route('/:courseId/settings', v1CourseSettingsRouter)
   .route('/:courseId/lessons/:lessonId/blocks', v1CourseLessonBlocksRouter)
   .route('/:courseId/lessons/:lessonId/translations', v1CourseLessonTranslationsRouter)
   .route('/:courseId/lessons/:lessonId/history', v1CourseLessonHistoryRouter)

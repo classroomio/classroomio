@@ -28,7 +28,7 @@
   import * as Collapsible from '@cio/ui/base/collapsible';
   import { ContentType } from '@cio/utils/constants/content';
   import { courseApi, contentApi, exerciseApi, lessonApi } from '$features/course/api';
-  import RequirementMarker from '$features/course/components/lesson/requirement-marker.svelte';
+  import OptionalMarker from '$features/course/components/lesson/optional-marker.svelte';
   import { isContentRequired, isRequirementTarget } from '$features/course/utils/content-requirement-utils';
   import { deleteContent } from '$features/course/components/lesson/content-action-helpers';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
@@ -49,6 +49,7 @@
   } from '$features/course/utils/content-navigation';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
+  import { getContentLockIndicatorLabelKey } from '$features/course/utils/content-lock-utils';
   import { Button } from '@cio/ui/base/button';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
@@ -302,7 +303,7 @@
 {#snippet contentItemRow(contentItem: (typeof contentData.items)[number])}
   {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
   {@const isLockedForStudent = $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
-  {@const showRequiredMarker = isRequirementTarget(contentItem) && isContentRequired(contentItem)}
+  {@const showOptionalMarker = isRequirementTarget(contentItem) && !isContentRequired(contentItem)}
   {@const sessionPhase =
     contentItem.type === ContentType.Lesson ? getSessionIndicatorPhase(contentItem, $liveSessionClock) : null}
   <Sidebar.MenuSubButton isActive={isContentItemInPath(contentItem.id, currentPath)}>
@@ -374,16 +375,16 @@
           {:else if isContentLocked || isLockedForStudent}
             <span
               class="shrink-0"
-              title={$t('course.navItem.lessons.add_lesson.lock')}
-              aria-label={$t('course.navItem.lessons.add_lesson.lock')}
+              title={$t(getContentLockIndicatorLabelKey(isContentLocked))}
+              aria-label={$t(getContentLockIndicatorLabelKey(isContentLocked))}
             >
               <LockIcon size={12} />
             </span>
           {:else if sessionPhase}
             <LiveSessionIndicator phase={sessionPhase} />
           {/if}
-          {#if showRequiredMarker}
-            <RequirementMarker testId="sidebar-requirement-marker" />
+          {#if showOptionalMarker}
+            <OptionalMarker />
           {/if}
         </div>
       </a>

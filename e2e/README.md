@@ -55,7 +55,7 @@ Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{
 | `lessons-requirement-all-optional` | **Make everything optional** item in the content options menu |
 | `lessons-requirement-marker` | Red `*` after a required item's title on the Content page; hover shows **Required** |
 | `lessons-requirement-summary` | One-line required/optional counts (teacher) or required progress (student) above the Content list |
-| `sidebar-requirement-marker` | Red `*` beside a required item in the course sidebar |
+| `sidebar-optional-marker` | Muted dot beside an optional item in the course sidebar; hover shows **Optional** |
 | `lesson-video-edit` | **Edit** item in a lesson video block's options menu |
 | `media-upload` | Media page **Upload files** button |
 | `media-upload-menu` | Media page upload-options menu (**Add a video link**) |

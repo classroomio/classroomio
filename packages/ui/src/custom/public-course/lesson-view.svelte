@@ -34,6 +34,9 @@
     playbackReloadLabel?: string;
     callout?: PublicCourseCalloutData | null;
     calloutAnimation?: PublicCourseCalloutAnimation;
+    /** Shown in place of an unreleased item when there is no callout. Defaults are English. */
+    notReleasedTitle?: string;
+    notReleasedDescription?: string;
     /** Actions rendered beside the lesson title (e.g. Copy Page, Share). */
     titleActions?: Snippet;
     /** Replaces the default video and body with host-rendered lesson content, such as its blocks. */
@@ -54,6 +57,8 @@
     playbackReloadLabel,
     callout = null,
     calloutAnimation,
+    notReleasedTitle,
+    notReleasedDescription,
     titleActions,
     content,
     outlineActions,
@@ -107,7 +112,13 @@
   <div class="ui:min-w-0 ui:flex-1">
     <div class="ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10">
       {#if !lesson.isUnlocked}
-        <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
+        <Callout
+          variant="full"
+          {callout}
+          animation={resolvedCalloutAnimation}
+          lockedFallbackTitle={notReleasedTitle}
+          lockedFallbackDescription={notReleasedDescription}
+        />
       {:else}
         {#if lesson.sectionTitle}
           <div class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">

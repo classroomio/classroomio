@@ -360,8 +360,8 @@
         "successful_integration": "Integración exitosa",
         "successful_deletion": "Integración eliminada",
         "update_successful": "Actualización exitosa",
-        "unlocked_all_content": "Todos los elementos del curso desbloqueados",
-        "all_content_already_unlocked": "Todo el contenido ya está desbloqueado",
+        "unlocked_all_content": "Todos los elementos del curso liberados",
+        "all_content_already_unlocked": "Todo el contenido ya está liberado",
         "content_grouping_enabled": "Agrupación de contenidos activada",
         "content_grouping_disabled": "Agrupación de contenidos desactivada",
         "link_generated": "Enlace del curso actualizado exitosamente",
@@ -964,8 +964,8 @@
         "content_grouping_title": "Agrupación de contenidos",
         "content_grouping_description": "Agrupe lecciones y ejercicios por sección en la lista de contenidos.",
         "progression_mode_title": "Progresión del estudiante",
-        "progression_mode_free": "Libre — el contenido desbloqueado es accesible",
-        "progression_mode_sequential": "Secuencial — completar elementos previos para desbloquear el siguiente",
+        "progression_mode_free": "Libre — los estudiantes pueden abrir cualquier elemento liberado",
+        "progression_mode_sequential": "Secuencial — los estudiantes terminan cada elemento obligatorio antes de que se abra el siguiente",
         "comments": {
           "title": "Comentarios de las lecciones",
           "description": "Permite que los estudiantes vean y añadan comentarios en las lecciones de este curso. También puedes desactivar los comentarios en lecciones individuales.",
@@ -1020,7 +1020,7 @@
         },
         "callout": {
           "legend": "Llamada del curso público",
-          "description": "Se muestra al final de cada lección y en lugar de los elementos bloqueados. Úselo para llevar a los estudiantes a su sitio o a un curso pago.",
+          "description": "Se muestra al final de cada lección y en lugar de los elementos que aún no has liberado. Úselo para llevar a los estudiantes a su sitio o a un curso pago.",
           "title_label": "Título",
           "title_placeholder": "¿Quieres profundizar en esto?",
           "description_label": "Descripción",
@@ -1050,10 +1050,10 @@
         "completion_rules_card_desc": "Decida cuándo los estudiantes completan este curso y obtienen su certificado. Los cursos de cumplimiento también usan la fecha límite como fecha de vencimiento de cada estudiante.",
         "back_to_certificate_settings": "Volver a la configuración del certificado",
         "locked_content": {
-          "title": "{count} elementos del curso están bloqueados",
-          "description": "Los estudiantes inscritos no podrán tomar lecciones o ejercicios bloqueados hasta que los desbloquees.",
-          "description_live": "Las lecciones y ejercicios bloqueados permanecen ocultos para los estudiantes hasta que los desbloqueas, lo que resulta útil si publicas contenido semana tras semana.",
-          "unlock_all": "Desbloquear todo"
+          "title": "{count} elementos del curso aún no están liberados",
+          "description": "Los estudiantes inscritos no pueden abrir estas lecciones o ejercicios hasta que los liberes.",
+          "description_live": "Los estudiantes no pueden abrir las lecciones y los ejercicios no liberados hasta que los liberes — útil si liberas contenido semana a semana.",
+          "unlock_all": "Liberar todo"
         },
         "certificate_deadline_required": "Establecer la fecha límite del certificado primero",
         "go_to_certificate_settings": "Vaya a Configuración de certificado",
@@ -1099,9 +1099,9 @@
         "fix": "Corregir",
         "save_changes_to_fix_questions": "Guarda los cambios antes de corregir las preguntas.",
         "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo.",
-        "progression_mode_description": "Controle si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden. La finalización de la visualización del video solo rastrea los videos subidos.",
+        "progression_mode_description": "Controla si los estudiantes pueden abrir cualquier elemento liberado o deben completar los elementos en orden. La finalización por visualización de video solo registra videos subidos.",
         "allow_markdown_export": "Permitir a los alumnos copiar las páginas de las lecciones como Markdown",
-        "allow_markdown_export_description": "Cuando está activado, las páginas públicas de las lecciones muestran un botón Copiar página que exporta el contenido de la lección (sin vídeos) como Markdown. También publica una URL pública de Markdown para cada lección desbloqueada.",
+        "allow_markdown_export_description": "Cuando está activado, las páginas públicas de las lecciones muestran un botón Copiar página que exporta el contenido de la lección (sin vídeos) como Markdown. También publica una URL pública de Markdown para cada lección liberada.",
         "live_session_reminders": {
           "legend": "Recordatorios de sesión por correo",
           "description": "Elija cuándo reciben los estudiantes inscritos un correo con el enlace para unirse antes de cada sesión en vivo.",
@@ -1720,7 +1720,7 @@
         "add_content_lesson_title_placeholder": "por ejemplo, Introducción a las variables",
         "content_menu": {
           "label": "Opciones de contenido",
-          "unlock_all": "Desbloquear todo el contenido",
+          "unlock_all": "Liberar todo el contenido",
           "enable_grouping": "Activar agrupación de contenidos",
           "disable_grouping": "Desactivar agrupación de contenidos"
         },
@@ -2729,9 +2729,11 @@
           "lesson_title": "Título de la lección",
           "course_section_title": "Título de la sección",
           "click_to": "Haga clic para",
-          "lock": "Bloquear",
-          "unlock": "Desbloquear",
+          "lock": "Retener",
+          "unlock": "Liberar",
           "all": "Todos",
+          "hold_back_all": "Retener todo",
+          "release_all": "Liberar todo",
           "fullname": "nombre completo",
           "save": "Guardar",
           "edit": "Editar",
@@ -2747,12 +2749,14 @@
           "activate": "Activar",
           "cancel": "Cancelar"
         },
-        "content_locked_title": "Este contenido está bloqueado.",
-        "content_locked_description": "Su instructor aún no ha desbloqueado este contenido. Complete el contenido anterior o vuelva a consultarlo más tarde.",
+        "content_locked_title": "Aún no liberado",
+        "content_locked_description": "Tu instructor aún no ha liberado este contenido. Vuelve más tarde.",
         "content_progression_locked_title": "Completa primero el contenido anterior",
         "content_progression_locked_description": "Este contenido se desbloquea después de terminar el elemento requerido anterior del curso.",
         "content_progression_locked_description_lesson": "Esta lección se desbloquea después de terminar el elemento requerido anterior del curso.",
         "content_progression_locked_description_exercise": "Este ejercicio se desbloquea después de terminar el elemento requerido anterior del curso.",
+        "content_progression_locked_description_named_lesson": "Termina “{title}” para desbloquear esta lección.",
+        "content_progression_locked_description_named_exercise": "Termina “{title}” para desbloquear este ejercicio.",
         "completion_policy": {
           "label": "Regla de finalización",
           "manual_label": "Manual",
@@ -2786,7 +2790,9 @@
           },
           "access": {
             "title": "Acceso",
-            "description": "Los estudiantes no pueden abrir una lección bloqueada hasta que la desbloquees."
+            "description": "Los estudiantes ven esta lección en el índice del curso, pero no pueden abrirla hasta que la liberes.",
+            "released": "Liberado",
+            "not_released": "Aún no liberado"
           }
         },
         "watch_progress": {
@@ -6545,6 +6551,10 @@
       "x": "X",
       "instagram": "Instagram",
       "instagram_copied": "Enlace copiado. Pégalo en Instagram."
+    },
+    "not_released": {
+      "title": "Aún no liberado",
+      "description": "El creador aún no ha liberado este contenido. Vuelve más tarde."
     }
   },
   "account": {
@@ -7748,7 +7758,7 @@
       },
       "failed": "No se pudieron cargar los estudiantes",
       "cells_failed": "No se pudieron cargar las puntuaciones de los ejercicios",
-      "attempts_unavailable": "No se pudo comprobar qué ejercicios tienen intentos, así que algunos ejercicios bloqueados podrían estar ocultos."
+      "attempts_unavailable": "No se pudo comprobar qué ejercicios tienen intentos, así que algunos ejercicios no liberados podrían estar ocultos."
     },
     "empty": {
       "failed": "No se pudo cargar este gráfico.",

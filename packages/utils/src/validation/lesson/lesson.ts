@@ -2,6 +2,7 @@ import * as z from 'zod';
 
 import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { getSlidePlatformByHost, isAllowedSlideEmbedSrc, SLIDE_PLATFORM_IDS } from '../../functions/slide-embed';
+import { LESSON_COMPLETION_POLICIES } from '../../functions/course-progression';
 import { MAX_SESSION_DURATION_MINUTES, MIN_SESSION_DURATION_MINUTES } from '../../functions/live-session';
 import { isAllowedHref } from '../shared/safe-href';
 import { ZSlug } from '../shared/slug';
@@ -96,7 +97,7 @@ export const ZLessonUpdate = z.object({
   public: z.boolean().optional(),
   slug: ZSlug.optional(),
   isComplete: z.boolean().optional(),
-  completionPolicy: z.enum(['manual', 'video_watch', 'none']).optional(),
+  completionPolicy: z.enum(LESSON_COMPLETION_POLICIES).optional(),
   videoWatchThreshold: z.number().int().min(1).max(100).optional(),
   commentsEnabled: z.boolean().optional(),
   readingDensity: z.enum(['compact', 'comfortable', 'spacious']).optional(),
