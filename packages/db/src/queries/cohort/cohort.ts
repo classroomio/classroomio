@@ -970,9 +970,9 @@ export type TInvitedCohortPersonRow = {
 };
 
 /**
- * People invited to a cohort who have not joined: pending organization members whose latest open student invite
- * carries this cohort (expired ones included so they can be resent), and legacy email-only cohort rows. One row per
- * email; the invite wins over a legacy row.
+ * People invited to a cohort who have not joined: pending organization members, with their newest open student invite
+ * that carries this cohort (expired ones included so they can be resent), and legacy email-only cohort rows. One row
+ * per email; the invite wins over a legacy row.
  */
 export async function getPaginatedInvitedCohortPeople(
   cohortId: string,

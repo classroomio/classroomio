@@ -404,8 +404,9 @@ export interface PaginatedInvitedCourseMembersResult {
 /**
  * People invited to a course but not yet joined, from three sources:
  * legacy email-only group rows (and staff email-only rows), pending org members
- * whose latest open student org invite carries this course directly or through
- * a cohort that contains it, and unused single-recipient course invites.
+ * whose newest open student org invite that carries this course (directly or
+ * through a cohort that contains it) is listed, and unused single-recipient
+ * course invites.
  * Expired invites are included so they can be resent. One row per email; an org
  * invitation wins over a course invite, which wins over a legacy row.
  */
