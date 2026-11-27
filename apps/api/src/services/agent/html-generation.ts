@@ -13,6 +13,10 @@ const HTML_MODELS: Record<AIProvider, string> = {
 
 const MAX_OUTPUT_TOKENS = 32_000;
 
+const PROVIDER_OPTIONS = {
+  google: { thinkingConfig: { thinkingLevel: 'low' } }
+};
+
 const SYSTEM_PROMPT = [
   'You build one interactive HTML page that a teacher embeds inside a lesson on an online course platform.',
   'Return a single complete, self-contained HTML document that starts with <!doctype html>.',
@@ -78,7 +82,8 @@ export async function generateHtmlDocument(
     system: SYSTEM_PROMPT,
     prompt: userPrompt,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
-    maxRetries: 0
+    maxRetries: 0,
+    providerOptions: PROVIDER_OPTIONS
   });
 
   const html = unwrapCodeFence(text);
