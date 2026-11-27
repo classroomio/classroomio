@@ -32,7 +32,8 @@ const languageFiles = {
   vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
   da: path.resolve(__dirname, '../src/lib/utils/translations/da.json'),
   tr: path.resolve(__dirname, '../src/lib/utils/translations/tr.json'),
-  it: path.resolve(__dirname, '../src/lib/utils/translations/it.json')
+  it: path.resolve(__dirname, '../src/lib/utils/translations/it.json'),
+  ja: path.resolve(__dirname, '../src/lib/utils/translations/ja.json')
 };
 
 const selectedLanguageFiles = requestedLanguages.length

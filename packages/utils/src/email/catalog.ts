@@ -817,6 +817,77 @@ const tr: StudentEmailLocaleCopy = {
   }
 };
 
+const ja: StudentEmailLocaleCopy = {
+  footer: {
+    rightsReserved: '無断転載を禁じます。',
+    website: 'ウェブサイト',
+    terms: '利用規約',
+    privacy: 'プライバシー'
+  },
+  templates: {
+    studentCourseInvite: {
+      subject: 'コースへの招待が届いています',
+      body: '<p>こんにちは。</p><p>{{org_name}} の <strong>{{course_name}}</strong> に招待されました。</p><p>この招待の有効期限は <strong>{{expires_at}}</strong> です。</p>',
+      cta: 'コースに参加'
+    },
+    studentCourseWelcome: {
+      subject: '{{course_name}} にアクセスできるようになりました',
+      body: '<p>こんにちは。</p><p><strong>{{org_name}}</strong> の <strong>{{course_name}}</strong> にアクセスできるようになりました。</p><p>問題がある場合は、講師にお問い合わせください。</p><p>よろしくお願いいたします。<br>{{org_name}}</p>',
+      cta: 'コースを開く'
+    },
+    studentCourseCompletion: {
+      subject: 'おめでとうございます — コースの修了要件を満たしました',
+      body: '<p>{{student_name}} さん</p><p>おめでとうございます！<strong>{{course_name}}</strong> の修了要件を満たしました。</p>{{course_message}}<p>よろしくお願いいたします。<br>{{org_name}}</p>',
+      cta: '修了証を見る'
+    },
+    studentOrgInvite: {
+      subject: '受講者として招待されました',
+      body: '<p>こんにちは。</p><p><strong>{{org_name}}</strong> に受講者として招待されました。</p>{{course_names}}<p>この招待の有効期限は <strong>{{expires_at}}</strong> です。</p>',
+      cta: '招待を承諾'
+    },
+    studentCohortWelcome: {
+      subject: 'コホートにアクセスできるようになりました',
+      body: '<p>こんにちは。</p><p><strong>{{org_name}}</strong> の <strong>{{cohort_name}}</strong> にアクセスできるようになりました。</p><p>問題がある場合は、講師にお問い合わせください。</p><p>よろしくお願いいたします。<br>{{org_name}}</p>',
+      cta: 'コホートを開く'
+    },
+    studentProvePayment: {
+      subject: 'あと 1 ステップです',
+      body: '<p>{{student_name}} さん</p><p><strong>{{course_name}}</strong> への参加まであと 1 ステップです。</p><p>コースに参加するには、支払いの証明を <strong>{{teacher_email}}</strong> に送ってください。</p><p>授業でお会いできるのを楽しみにしています。</p><p>{{org_name}}</p>'
+    },
+    cohortGoalReminder: {
+      subject: '{{goal_title}} — {{due_status}}',
+      body: '<p>こんにちは。</p><p>{{org_name}} の <strong>{{cohort_name}}</strong> にある目標 <strong>{{goal_title}}</strong> の対応が必要です。</p><p>{{due_status}}</p><p>進捗: <strong>{{required_count}} コース中 {{completed_count}} コース完了</strong></p><p>よろしくお願いいたします。<br>{{org_name}}</p>',
+      cta: 'LMS を開く'
+    },
+    quizAssigned: {
+      subject: '受けるべきクイズがあります',
+      body: '<p>こんにちは。</p><p><strong>{{org_name}}</strong> の <strong>{{course_name}}</strong> で、クイズ <strong>{{exercise_title}}</strong> が割り当てられました。</p><p>よろしくお願いいたします。<br>{{org_name}}</p>',
+      cta: 'クイズを受ける'
+    },
+    sessionReminder: {
+      subject: 'リマインダー: ライブセッションがまもなく始まります',
+      body: '<p>こんにちは。</p><p><strong>{{course_name}}</strong> のライブセッション <strong>{{session_title}}</strong> は <strong>{{when}}</strong> に始まります。</p><p><strong>日時:</strong> {{session_time}}</p><p>お会いできるのを楽しみにしています。<br>{{org_name}}</p>',
+      cta: 'セッションに参加'
+    },
+    sessionUpdated: {
+      subject: '更新: ライブセッションの詳細が変更されました',
+      body: '<p>こんにちは。</p><p><strong>{{course_name}}</strong> のライブセッション <strong>{{session_title}}</strong> が更新されました。</p><p><strong>新しい日時:</strong> {{session_time}}</p><p>添付のカレンダー招待で、カレンダーの予定が更新されます。</p><p>よろしくお願いいたします。<br>{{org_name}}</p>',
+      cta: 'セッションに参加'
+    },
+    submissionGraded: {
+      subject: '演習の提出物が更新されました',
+      body: '<p>{{student_name}} さん</p><p><strong>{{course_name}}</strong> の <strong>{{exercise_title}}</strong> の提出物のステータスが <strong>{{status}}</strong> になりました。</p><p><strong>スコア:</strong> {{score}}</p><p>この演習はレッスン <strong>{{lesson_title}}</strong> の一部です。</p>',
+      cta: '演習を開く',
+      ctaWhenScored: '結果を見る'
+    },
+    newsfeedPost: {
+      subject: 'コースに新しい投稿があります',
+      body: '<p><strong>{{teacher_name}}</strong> さんが、受講中のコース <strong>{{course_name}}</strong> に投稿しました。</p>{{post_content}}',
+      cta: '投稿を見る'
+    }
+  }
+};
+
 export const STUDENT_EMAIL_CATALOG: Record<EmailLocale, StudentEmailLocaleCopy> = {
   en,
   hi,
@@ -829,5 +900,6 @@ export const STUDENT_EMAIL_CATALOG: Record<EmailLocale, StudentEmailLocaleCopy> 
   pl,
   da,
   tr,
-  it
+  it,
+  ja
 };

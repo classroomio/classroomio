@@ -589,7 +589,7 @@ Follow `CLAUDE.md` layering strictly.
 16. An MCP client with a `course:slides:write` key can create and update a deck; a key without the scope receives 403.
 17. Version history records every mutation with the correct actor, and restore returns the deck to that snapshot.
 18. External embeds via `slideUrl`, lesson notes, videos, and documents behave exactly as before (zero regression).
-19. All user-facing strings use translation keys and are present in all ten locale files.
+19. All user-facing strings use translation keys and are present in every locale file.
 20. `pnpm format:check`, `pnpm --filter @cio/api build`, and `pnpm --filter @cio/dashboard build` pass.
 
 ## Risks and Mitigations

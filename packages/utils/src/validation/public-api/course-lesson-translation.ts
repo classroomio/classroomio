@@ -1,8 +1,9 @@
 import * as z from 'zod';
 
+import { BLOCK_LOCALES } from '../block/block';
 import { ZPublicApiCourseLessonParam } from './course-lesson';
 
-export const ZPublicApiLessonLocale = z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
+export const ZPublicApiLessonLocale = z.enum(BLOCK_LOCALES);
 export type TPublicApiLessonLocale = z.infer<typeof ZPublicApiLessonLocale>;
 
 export const ZPublicApiCourseLessonTranslationParam = ZPublicApiCourseLessonParam.extend({

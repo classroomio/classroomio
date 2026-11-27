@@ -228,6 +228,25 @@ const localizedSamples: Record<EmailLocale, Record<string, string>> = {
     course_message: 'Una nota del tuo istruttore.',
     course_names: 'Corso di esempio',
     post_content: 'Un post di esempio del corso.'
+  },
+  ja: {
+    course_name: 'サンプルコース',
+    cohort_name: 'サンプルコホート',
+    student_name: '山田 花子',
+    teacher_name: '佐藤 先生',
+    teacher_email: 'teacher@example.com',
+    exercise_title: 'サンプル演習',
+    session_title: 'サンプルライブセッション',
+    goal_title: 'コースを修了する',
+    due_status: 'この目標の期限は明日です。',
+    completed_count: '1',
+    required_count: '3',
+    status: 'レビュー済み',
+    score: '8/10',
+    lesson_title: 'サンプルレッスン',
+    course_message: '講師からのメッセージです。',
+    course_names: 'サンプルコース',
+    post_content: 'コースのサンプル投稿です。'
   }
 };
 

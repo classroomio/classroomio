@@ -3,7 +3,7 @@ import * as z from 'zod';
 import { ZLessonVersionIntent } from '../lesson/language';
 import { BLOCK_DEFINITIONS, BLOCK_TYPES, type TBlockType } from './registry';
 
-export const BLOCK_LOCALES = ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it'] as const;
+export const BLOCK_LOCALES = ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it', 'ja'] as const;
 export const ZBlockLocale = z.enum(BLOCK_LOCALES);
 export type TBlockLocaleCode = z.infer<typeof ZBlockLocale>;
 

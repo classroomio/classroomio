@@ -71,7 +71,7 @@ export const ZPublicApiMemberProfileFields = {
     .optional()
     .describe(`Joined members only: an http or https image URL. ${SHARED_PROFILE_NOTE}`),
   locale: z
-    .enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it'])
+    .enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it', 'ja'])
     .optional()
     .describe(`Joined members only: the language ClassroomIO is shown in. ${SHARED_PROFILE_NOTE}`)
 };
