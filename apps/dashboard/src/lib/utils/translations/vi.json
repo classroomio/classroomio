@@ -2760,8 +2760,6 @@
               "process": "Quy trình",
               "html": "HTML"
             },
-            "empty_preview_title": "Chưa có gì để xem trước",
-            "empty_preview_description": "Bài học này chưa có nội dung cho học viên. Chuyển sang {editLabel} để thêm nội dung.",
             "empty_learner_title": "Bài học này chưa sẵn sàng",
             "empty_learner_description": "Người hướng dẫn của bạn chưa thêm bất kỳ nội dung nào vào bài học này. Kiểm tra lại sớm.",
             "document": {

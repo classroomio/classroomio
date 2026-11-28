@@ -1,11 +1,12 @@
 <script lang="ts">
-  import PencilIcon from '@lucide/svelte/icons/pencil';
-  import { Button } from '@cio/ui/base/button';
   import MODES from '$lib/utils/constants/mode';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import BlockEditor from '$features/block/components/block-editor.svelte';
   import BlockReader from '$features/block/components/block-reader.svelte';
+  import BlockEmptyAdd from '$features/block/components/block-empty-add.svelte';
+  import { pendingBlockAdd } from '$features/block/utils/pending-block-add';
+  import type { TBlockType } from '@cio/utils/validation/block';
   import { toBlockViewModel } from '$features/block/utils/block-list-utils';
   import type { BlockEditHost, BlockVideoPlayerProps, BlockViewHost } from '$features/block/utils/types';
   import { lessonApi } from '$features/course/api';
@@ -37,18 +38,22 @@
   const viewHost: BlockViewHost = { videoPlayer: lessonVideoPlayer };
   const editHost = $derived<BlockEditHost>({ courseId, lessonId });
   const showsEncodingState = $derived(isEditing || $isOrgStudent !== true);
+  const canAddFromPreview = $derived(!learnerView && Boolean(onEdit));
   const emptyTitle = $derived(
-    learnerView
-      ? $t('course.navItem.lessons.materials.blocks.empty_learner_title')
-      : $t('course.navItem.lessons.materials.blocks.empty_preview_title')
+    canAddFromPreview
+      ? $t('course.navItem.lessons.materials.blocks.empty_title')
+      : $t('course.navItem.lessons.materials.blocks.empty_learner_title')
   );
   const emptyDescription = $derived(
-    learnerView
-      ? $t('course.navItem.lessons.materials.blocks.empty_learner_description')
-      : $t('course.navItem.lessons.materials.blocks.empty_preview_description', {
-          editLabel: $t('course.navItem.lessons.header.mode_edit')
-        })
+    canAddFromPreview
+      ? $t('course.navItem.lessons.materials.blocks.empty_description')
+      : $t('course.navItem.lessons.materials.blocks.empty_learner_description')
   );
+
+  function openInEdit(pending: TBlockType | 'ai') {
+    pendingBlockAdd.set(pending);
+    onEdit?.();
+  }
 
   let statusLessonId = '';
   let pollTimer: ReturnType<typeof setInterval> | undefined;
@@ -89,11 +94,8 @@
   <LessonBlockVideoPlayer {...props} />
 {/snippet}
 
-{#snippet editAction()}
-  <Button onclick={onEdit} testId="lesson-empty-edit">
-    <PencilIcon />
-    {$t('course.navItem.lessons.header.mode_edit')}
-  </Button>
+{#snippet previewAddAction()}
+  <BlockEmptyAdd onSelect={(type) => openInEdit(type)} onAi={() => openInEdit('ai')} />
 {/snippet}
 
 {#if isEditing}
@@ -105,6 +107,6 @@
     {emptyTitle}
     {emptyDescription}
     {spacingClass}
-    emptyAction={!learnerView && onEdit ? editAction : undefined}
+    emptyAction={canAddFromPreview ? previewAddAction : undefined}
   />
 {/if}

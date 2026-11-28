@@ -2760,8 +2760,6 @@
               "process": "Proceso",
               "html": "HTML"
             },
-            "empty_preview_title": "Aún no hay nada que previsualizar",
-            "empty_preview_description": "Esta lección no tiene contenido para los estudiantes. Cambia a {editLabel} para añadirlo.",
             "empty_learner_title": "Esta lección aún no está lista",
             "empty_learner_description": "Su instructor no ha agregado ningún contenido a esta lección. Vuelve pronto.",
             "document": {

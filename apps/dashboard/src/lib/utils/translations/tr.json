@@ -3215,8 +3215,6 @@
               "process": "Süreç",
               "html": "HTML"
             },
-            "empty_preview_title": "Henüz önizlenecek bir şey yok",
-            "empty_preview_description": "Bu derste öğrencilerin görebileceği içerik yok. İçerik eklemek için {editLabel} moduna geçin.",
             "empty_learner_title": "Bu ders henüz hazır değil",
             "empty_learner_description": "Eğitmeniniz bu derse herhangi bir içerik eklemedi. Yakında tekrar kontrol edin.",
             "document": {

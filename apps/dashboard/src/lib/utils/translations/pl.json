@@ -2760,8 +2760,6 @@
               "process": "Proces",
               "html": "HTML"
             },
-            "empty_preview_title": "Nie ma jeszcze nic do podglądu",
-            "empty_preview_description": "Ta lekcja nie ma treści dla uczniów. Przełącz na {editLabel}, aby ją dodać.",
             "empty_learner_title": "Ta lekcja nie jest jeszcze gotowa",
             "empty_learner_description": "Twój instruktor nie dodał żadnych treści do tej lekcji. Sprawdź ponownie wkrótce.",
             "document": {

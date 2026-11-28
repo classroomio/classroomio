@@ -2760,8 +2760,6 @@
               "process": "Proces",
               "html": "HTML"
             },
-            "empty_preview_title": "Intet at forhåndsvise endnu",
-            "empty_preview_description": "Denne lektion har intet indhold, som eleverne kan se. Skift til {editLabel} for at tilføje noget.",
             "empty_learner_title": "Denne lektion er ikke klar endnu",
             "empty_learner_description": "Din instruktør har ikke tilføjet noget indhold til denne lektion. Kom snart tilbage.",
             "document": {

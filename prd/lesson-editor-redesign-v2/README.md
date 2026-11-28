@@ -221,7 +221,7 @@ When a lesson has no blocks, the canvas shows:
 
 Choosing a block adds that block's ready-made example and the empty state disappears. If the admin later removes every block, the empty state comes back.
 
-The add-content empty state is only visible in Edit. In Preview, an empty lesson shows teachers "Nothing to preview yet" with an **Edit** button that switches to Edit. Learners see "This lesson isn't ready yet" and "Your instructor hasn't added any content to this lesson. Check back soon." Each empty state shows the `MachineBlankLesson` animation.
+Teachers see the same add-content empty state in Preview. Choosing a block there switches to Edit and adds it, and **Ask AI** switches to Edit and opens the prompt. Learners see "This lesson isn't ready yet" and "Your instructor hasn't added any content to this lesson. Check back soon." Each empty state shows the `MachineBlankLesson` animation.
 
 ## Add content menu
 
@@ -347,9 +347,9 @@ The AI assistant can create and edit all five new blocks, the same way it writes
 
 ### Empty state and Add content menu
 
-- [ ] A lesson with no blocks shows "What goes in this lesson?", the supporting line and the add bar (Ask AI, five blocks, All blocks), in Edit only.
+- [ ] A lesson with no blocks shows "What goes in this lesson?", the supporting line and the add bar (Ask AI, five blocks, All blocks), for teachers in Edit and Preview.
 - [ ] Choosing a block adds that example and removes the empty state; deleting every block brings it back.
-- [ ] In Preview, an empty lesson shows teachers an Edit button that switches to Edit; learners don't see it.
+- [ ] In Preview, choosing a block switches to Edit and adds it, and Ask AI switches to Edit with the prompt open; learners see only the "isn't ready yet" message.
 - [ ] The "+" between blocks opens an eleven-tile menu plus "Ask AI instead", and inserts at that exact position.
 - [ ] The menu closes on pick, Escape, outside click, or when another menu opens.
 - [ ] The floating bar adds to the end of the lesson, never into a tab.

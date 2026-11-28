@@ -3132,8 +3132,6 @@
             "dismiss_hint": "Dismiss reorder hint",
             "empty_title": "What goes in this lesson?",
             "empty_description": "Pick a block to begin. You can add more at any time.",
-            "empty_preview_title": "Nothing to preview yet",
-            "empty_preview_description": "This lesson has no content for students to see. Switch to {editLabel} to add some.",
             "empty_learner_title": "This lesson isn't ready yet",
             "empty_learner_description": "Your instructor hasn't added any content to this lesson. Check back soon.",
             "empty_note": "This note is empty.",

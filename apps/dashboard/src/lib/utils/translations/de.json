@@ -2760,8 +2760,6 @@
               "process": "Ablauf",
               "html": "HTML"
             },
-            "empty_preview_title": "Es gibt noch nichts zur Vorschau",
-            "empty_preview_description": "Diese Lektion enthält keinen Inhalt, den die Schüler sehen können. Wechseln Sie zu {editLabel}, um Inhalte hinzuzufügen.",
             "empty_learner_title": "Diese Lektion ist noch nicht fertig",
             "empty_learner_description": "Ihr Kursleiter hat dieser Lektion keine Inhalte hinzugefügt. Schauen Sie bald wieder vorbei.",
             "document": {

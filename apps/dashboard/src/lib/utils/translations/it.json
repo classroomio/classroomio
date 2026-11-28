@@ -3207,8 +3207,6 @@
               "process": "Processo",
               "html": "HTML"
             },
-            "empty_preview_title": "Niente da vedere in anteprima ancora",
-            "empty_preview_description": "Questa lezione non ha contenuti visibili agli studenti. Passa a {editLabel} per aggiungerne.",
             "empty_learner_title": "Questa lezione non è ancora pronta",
             "empty_learner_description": "Il tuo insegnante non ha aggiunto alcun contenuto a questa lezione. Ricontrolla presto.",
             "document": {

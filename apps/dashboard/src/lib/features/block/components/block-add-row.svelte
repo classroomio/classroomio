@@ -10,9 +10,11 @@
 
   interface Props {
     onSelect: (type: TBlockType) => void;
+    /** Replaces opening the inline Ask AI panel, for a row that hands Ask AI off elsewhere. */
+    onAi?: () => void;
   }
 
-  let { onSelect }: Props = $props();
+  let { onSelect, onAi }: Props = $props();
 
   const isMac = $derived(browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform));
 
@@ -60,7 +62,7 @@
   aiPanelTestId="block-ai-panel"
   moreTestId="block-all-blocks"
   onSelect={handleSelect}
-  onAiTrigger={() => (aiPanelOpen = true)}
+  onAiTrigger={() => (onAi ? onAi() : (aiPanelOpen = true))}
 >
   {#snippet aiPanel()}
     <BlockAiPrompt open={aiPanelOpen} onClose={() => (aiPanelOpen = false)} />
