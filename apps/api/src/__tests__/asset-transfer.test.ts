@@ -155,6 +155,91 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
     }
   });
 
+  it('records a usage for a video kept inside a tab in the copied lesson', async () => {
+    const { db } = await import('@db/drizzle');
+    const { createOrganization } = await import('@db/queries/organization');
+    const schema = await import('@db/schema');
+
+    const rollback = new Error('rollback');
+    try {
+      await db.transaction(async (tx) => {
+        const [profile] = await tx.select({ id: schema.profile.id }).from(schema.profile).limit(1);
+        if (!profile) throw rollback;
+
+        const templateOrg = await createOrganization({ name: `tab-video-source-${Date.now()}` }, tx);
+        const courseOrg = await createOrganization({ name: `tab-video-target-${Date.now()}` }, tx);
+        const videoLink = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+        const [video] = await tx
+          .insert(schema.asset)
+          .values({
+            organizationId: templateOrg.id,
+            kind: 'video',
+            provider: 'youtube',
+            sourceUrl: videoLink,
+            title: 'Tab video'
+          })
+          .returning();
+        const [group] = await tx
+          .insert(schema.group)
+          .values({ name: 'Tabs', organizationId: templateOrg.id })
+          .returning();
+        const [template] = await tx
+          .insert(schema.course)
+          .values({
+            title: 'Tabs template',
+            description: 'Template with a tab video',
+            groupId: group.id,
+            isTemplate: true,
+            slug: `tabs-template-${templateOrg.id}`
+          })
+          .returning();
+        const [lesson] = await tx
+          .insert(schema.lesson)
+          .values({ courseId: template.id, title: 'Watch this', slug: 'watch-this', order: 1 })
+          .returning();
+        const tabVideo = { type: 'youtube', link: videoLink, assetId: video.id };
+        const [tabsBlock] = await tx
+          .insert(schema.block)
+          .values({
+            organizationId: templateOrg.id,
+            type: 'tabs',
+            data: {
+              align: 'center',
+              tabs: [{ id: 'a', name: 'Watch', note: '', media: { kind: 'video', data: tabVideo } }]
+            }
+          })
+          .returning();
+        await tx.insert(schema.blockPlacement).values({ lessonId: lesson.id, blockId: tabsBlock.id, position: 'a0' });
+
+        const copy = await cloneCourse(
+          template.id,
+          { title: 'From template', userId: profile.id, organizationId: courseOrg.id, slug: `tabs-${courseOrg.id}` },
+          tx
+        );
+
+        const [copiedLesson] = await tx
+          .select({ id: schema.lesson.id })
+          .from(schema.lesson)
+          .where(eq(schema.lesson.courseId, copy.id));
+        const usages = await tx
+          .select({ assetId: schema.assetUsage.assetId, slotType: schema.assetUsage.slotType })
+          .from(schema.assetUsage)
+          .where(eq(schema.assetUsage.targetId, copiedLesson.id));
+        const [copiedVideo] = await tx
+          .select({ id: schema.asset.id })
+          .from(schema.asset)
+          .where(eq(schema.asset.organizationId, courseOrg.id));
+
+        expect(copiedVideo.id).not.toBe(video.id);
+        expect(usages).toEqual([{ assetId: copiedVideo.id, slotType: 'lesson_video' }]);
+
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    }
+  });
+
   it('removes copied files when the copy fails', async () => {
     const { withAssetStorageRollback, transferUploadedAsset } = await import(
       '@cio/core/services/assets/asset-transfer'

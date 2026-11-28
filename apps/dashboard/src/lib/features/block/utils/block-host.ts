@@ -16,6 +16,13 @@ export function getBlockViewHost(): BlockViewHost {
 }
 
 /**
+ * The view host when the component renders inside a reader; null inside the editor, which sets none.
+ */
+export function findBlockViewHost(): BlockViewHost | null {
+  return getContext<(() => BlockViewHost) | undefined>(VIEW_HOST_KEY)?.() ?? null;
+}
+
+/**
  * Makes the surface's edit host available to block editors and pickers below.
  */
 export function setBlockEditHost(getHost: () => BlockEditHost): void {

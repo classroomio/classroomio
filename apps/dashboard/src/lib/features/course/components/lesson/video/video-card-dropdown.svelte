@@ -32,8 +32,10 @@
   interface Props {
     video: LessonVideo;
     onRemove?: () => void;
-    onThumbnailSaved?: (thumbnailUrl: string) => void;
-    onHlsMetadataUpdated?: (metadata: Record<string, unknown>) => void;
+    /** Receives the asset the thumbnail belongs to, which can differ from `video` once the video is replaced. */
+    onThumbnailSaved?: (thumbnailUrl: string, sourceAssetId: string) => void;
+    /** Receives the asset the metadata belongs to, which can differ from `video` once the video is replaced. */
+    onHlsMetadataUpdated?: (metadata: Record<string, unknown>, sourceAssetId: string) => void;
     onTranscribingChange?: (value: boolean) => void;
     /** `inline` aligns with the title row (YouTube-style). `corner` is top-right overlay on the nearest `relative` ancestor. */
     menuPlacement?: 'inline' | 'corner';
@@ -125,21 +127,25 @@
   }
 
   async function ensureHlsMetadataChecked() {
-    if (!assetId || !isHlsUploadVideo(video)) return;
+    const sourceAssetId = assetId;
+    if (!sourceAssetId || !isHlsUploadVideo(video)) return;
 
     const metadata = getVideoMetadata(video);
     if (metadata.sourceHeight != null) return;
 
-    const asset = await mediaApi.refreshAsset(assetId);
+    const asset = await mediaApi.refreshAsset(sourceAssetId);
     if (!asset?.metadata || typeof asset.metadata !== 'object' || Array.isArray(asset.metadata)) return;
 
     const assetMetadata = asset.metadata as Record<string, unknown>;
-    onHlsMetadataUpdated?.({
-      ...(typeof assetMetadata.sourceWidth === 'number' ? { sourceWidth: assetMetadata.sourceWidth } : {}),
-      ...(typeof assetMetadata.sourceHeight === 'number' ? { sourceHeight: assetMetadata.sourceHeight } : {}),
-      ...(Array.isArray(assetMetadata.hlsRenditions) ? { hlsRenditions: assetMetadata.hlsRenditions } : {}),
-      ...(typeof assetMetadata.hls1080Status === 'string' ? { hls1080Status: assetMetadata.hls1080Status } : {})
-    });
+    onHlsMetadataUpdated?.(
+      {
+        ...(typeof assetMetadata.sourceWidth === 'number' ? { sourceWidth: assetMetadata.sourceWidth } : {}),
+        ...(typeof assetMetadata.sourceHeight === 'number' ? { sourceHeight: assetMetadata.sourceHeight } : {}),
+        ...(Array.isArray(assetMetadata.hlsRenditions) ? { hlsRenditions: assetMetadata.hlsRenditions } : {}),
+        ...(typeof assetMetadata.hls1080Status === 'string' ? { hls1080Status: assetMetadata.hls1080Status } : {})
+      },
+      sourceAssetId
+    );
   }
 
   /** A caption job completes even when its result is `unavailable` or `skipped`, so completion is not proof of a transcript. */
@@ -301,7 +307,7 @@
       snackbar.success('snackbar.media_manager.update_success');
 
       if (updated.thumbnailUrl && updated.thumbnailUrl !== previousThumbnailUrl) {
-        onThumbnailSaved?.(updated.thumbnailUrl);
+        onThumbnailSaved?.(updated.thumbnailUrl, updated.id);
       }
     } finally {
       isSavingAsset = false;
@@ -311,7 +317,7 @@
   function handleThumbnailSaved(asset: OrganizationAsset) {
     manageThumbsAsset = asset;
     if (asset.thumbnailUrl) {
-      onThumbnailSaved?.(asset.thumbnailUrl);
+      onThumbnailSaved?.(asset.thumbnailUrl, asset.id);
     }
   }
 
@@ -327,25 +333,29 @@
     const selectedFile = input.files?.[0];
     input.value = '';
 
-    if (!selectedFile || !assetId) return;
+    const sourceAssetId = assetId;
+    if (!selectedFile || !sourceAssetId) return;
 
     isGenerating1080 = true;
-    onHlsMetadataUpdated?.({ hls1080Status: 'generating' });
+    onHlsMetadataUpdated?.({ hls1080Status: 'generating' }, sourceAssetId);
 
     try {
       const result = await encodeAndUploadHls1080({
         file: selectedFile,
-        assetId
+        assetId: sourceAssetId
       });
 
-      onHlsMetadataUpdated?.({
-        hlsRenditions: result.hlsRenditions,
-        hls1080Status: result.hls1080Status
-      });
+      onHlsMetadataUpdated?.(
+        {
+          hlsRenditions: result.hlsRenditions,
+          hls1080Status: result.hls1080Status
+        },
+        sourceAssetId
+      );
       snackbar.success('snackbar.lesson_video.generate_1080_completed');
     } catch (error) {
       console.error('Failed to generate 1080p rendition', error);
-      onHlsMetadataUpdated?.({ hls1080Status: 'failed' });
+      onHlsMetadataUpdated?.({ hls1080Status: 'failed' }, sourceAssetId);
       snackbar.error('snackbar.lesson_video.generate_1080_failed');
     } finally {
       isGenerating1080 = false;

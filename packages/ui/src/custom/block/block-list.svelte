@@ -6,8 +6,9 @@
   import XIcon from '@lucide/svelte/icons/x';
   import { Empty } from '../empty';
   import * as AddBlock from '../add-block';
-  import type { AddBlockChoice } from '../add-block';
+  import type { AddBlockChoice, AddBlockShortcut } from '../add-block';
   import { MachineBlankLesson } from '../animation/machines';
+  import { cn } from '../../tools';
 
   interface Props {
     items: T[];
@@ -15,6 +16,10 @@
     spacingClass?: string;
     addChoices?: AddBlockChoice[];
     addLabel?: string;
+    addAiLabel?: string;
+    addAiShortcut?: AddBlockShortcut | null;
+    addNewLabel?: string;
+    gapTestId?: string;
     emptyTitle?: string;
     emptyDescription?: string;
     emptyIcon?: Component;
@@ -22,6 +27,7 @@
     emptyAction?: Snippet;
     renderItem: Snippet<[{ item: T; index: number; total: number; highlighted: boolean }]>;
     onAdd?: (type: string, index: number) => void;
+    onAddAi?: () => void;
     onReorder?: (items: T[]) => void;
     scrollRailLabel: string;
     goToBlockLabel: (index: number) => string;
@@ -40,6 +46,10 @@
     spacingClass = 'ui:gap-6',
     addChoices = [],
     addLabel = 'Add content',
+    addAiLabel,
+    addNewLabel,
+    addAiShortcut = null,
+    gapTestId,
     emptyTitle = 'No content',
     emptyDescription,
     emptyIcon,
@@ -47,6 +57,7 @@
     emptyAction,
     renderItem,
     onAdd,
+    onAddAi,
     onReorder,
     scrollRailLabel,
     goToBlockLabel,
@@ -308,10 +319,10 @@
       icon={emptyIcon}
       media={emptyIcon ? undefined : emptyMachine}
       variant="page"
-      class="ui:mx-[5px] ui:w-auto ui:max-w-4xl! ui:text-center"
+      class="ui:bg-card/60 ui:mx-[5px] ui:w-auto ui:max-w-[640px]! ui:border-solid ui:text-center"
       contentClass="ui:max-w-none!"
     >
-      {#if editable && emptyAction}
+      {#if emptyAction}
         {@render emptyAction()}
       {/if}
     </Empty>
@@ -363,18 +374,27 @@
           >
             {#each orderedItems as item, index (item.id)}
               <div class="ui:relative ui:min-w-0" animate:flip={{ duration: flipDurationMs }}>
-                {@render renderItem({
-                  item,
-                  index,
-                  total: orderedItems.length,
-                  highlighted: highlightedId === item.id
-                })}
+                <div
+                  class={cn('ui:transition-opacity ui:duration-150', activeMenuGapIndex !== null && 'ui:opacity-40')}
+                >
+                  {@render renderItem({
+                    item,
+                    index,
+                    total: orderedItems.length,
+                    highlighted: highlightedId === item.id
+                  })}
+                </div>
 
                 {#if addChoices.length > 0 && index < orderedItems.length - 1}
                   <AddBlock.Menu
                     open={activeMenuGapIndex === index + 1}
                     choices={addChoices}
                     {addLabel}
+                    aiLabel={addAiLabel}
+                    aiShortcut={addAiShortcut}
+                    newLabel={addNewLabel}
+                    onAi={onAddAi}
+                    testId={gapTestId}
                     onToggle={() => {
                       activeMenuGapIndex = activeMenuGapIndex === index + 1 ? null : index + 1;
                     }}

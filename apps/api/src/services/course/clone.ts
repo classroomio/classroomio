@@ -1,5 +1,5 @@
 import { db, type DbOrTxClient } from '@db/drizzle';
-import { TAsset, TCourse, TCourseSection, TLesson } from '@db/types';
+import { TAsset, TCourse, TCourseSection } from '@db/types';
 import {
   addGroupMember,
   createCourse,
@@ -31,7 +31,8 @@ import {
 
 import { ROLE } from '@cio/utils/constants';
 import { copyLessonBlocks } from '@cio/core/services/block/copy';
-import { withDerivedLessonContent } from '@db/queries/block/legacy';
+import { listBlockMedia } from '@cio/utils/validation/block';
+import { listBlockRowsForLessons } from '@db/queries/block/placement';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { captureServerEvent } from '@cio/core/services/posthog';
 import { transferUploadedAsset, withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
@@ -84,13 +85,46 @@ export async function remapContentAssets<T>(
   return replaceAssetIds(value, copiedIds);
 }
 
-type LessonAssetRefs = Pick<TLesson, 'id' | 'videos' | 'documents'>;
+interface LessonAssetRef {
+  assetId?: string | null;
+}
 
-const LESSON_MEDIA_SLOTS = ['lesson_video', 'lesson_document'];
+interface LessonAssetRefs {
+  id: string;
+  videos?: LessonAssetRef[] | null;
+  documents?: LessonAssetRef[] | null;
+  htmlPages?: LessonAssetRef[] | null;
+}
+
+const LESSON_MEDIA_SLOTS = ['lesson_video', 'lesson_document', 'lesson_html'];
 
 /**
- * Makes each lesson's `lesson_video` and `lesson_document` usages match the videos
- * and documents it now points at, so replaced media stops showing as in use and
+ * Lists the videos, documents and HTML pages each lesson's blocks play, including media kept inside a
+ * block such as a tab's video.
+ */
+export async function listLessonAssetRefs(lessonIds: string[], dbClient: DbOrTxClient = db) {
+  const refsByLesson = new Map<string, LessonAssetRefs>(
+    lessonIds.map((lessonId) => [lessonId, { id: lessonId, videos: [], documents: [], htmlPages: [] }])
+  );
+  const rows = await listBlockRowsForLessons(lessonIds, dbClient);
+
+  for (const row of rows) {
+    const refs = refsByLesson.get(row.lessonId);
+    if (!refs) continue;
+
+    for (const item of listBlockMedia(row.block.type, row.block.data)) {
+      const assetId = typeof item.data.assetId === 'string' ? item.data.assetId : null;
+      const lists = { video: refs.videos, document: refs.documents, html: refs.htmlPages };
+      lists[item.media]?.push({ assetId });
+    }
+  }
+
+  return [...refsByLesson.values()];
+}
+
+/**
+ * Makes each lesson's `lesson_video`, `lesson_document` and `lesson_html` usages match the videos,
+ * documents and HTML pages it now points at, so replaced media stops showing as in use and
  * current media shows as in use in the target org's library. References to assets
  * outside `organizationId` are skipped. No background media work is queued.
  */
@@ -111,6 +145,12 @@ export async function syncLessonAssetUsages(
       lessonId: lesson.id,
       assetId: document.assetId,
       slotType: 'lesson_document',
+      position
+    })),
+    ...(lesson.htmlPages ?? []).map((page, position) => ({
+      lessonId: lesson.id,
+      assetId: page.assetId,
+      slotType: 'lesson_html',
       position
     }))
   ]);
@@ -270,6 +310,7 @@ async function cloneCourseWithClient(
   const oldQuestions = oldExerciseIds.length > 0 ? await getQuestionsByExerciseIds(oldExerciseIds, tx) : [];
   const oldQuestionIds = oldQuestions.map((question) => question.id).filter((id) => id !== undefined);
   const oldOptions = oldQuestionIds.length > 0 ? await getOptionsByQuestionIds(oldQuestionIds, tx) : [];
+  const oldBlockData = crossOrg ? (await listBlockRowsForLessons(oldLessonIds, tx)).map((row) => row.block.data) : [];
 
   const assetIds =
     crossOrg && sourceOrgId
@@ -281,7 +322,8 @@ async function cloneCourseWithClient(
             oldExercises,
             oldExerciseSections,
             oldQuestions,
-            oldOptions
+            oldOptions,
+            oldBlockData
           }),
           targetOrgId!,
           options.userId,
@@ -409,7 +451,9 @@ async function cloneCourseWithClient(
   }
 
   if (targetOrgId) {
-    await syncLessonAssetUsages(await withDerivedLessonContent(newLessons, tx), targetOrgId, options.userId, tx);
+    const newLessonIds = newLessons.map((lesson) => lesson.id);
+    const newLessonAssets = await listLessonAssetRefs(newLessonIds, tx);
+    await syncLessonAssetUsages(newLessonAssets, targetOrgId, options.userId, tx);
   }
 
   const exerciseCopies = replaceAssetIds(oldExercises, assetIds);

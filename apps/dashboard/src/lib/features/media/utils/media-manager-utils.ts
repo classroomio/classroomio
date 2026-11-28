@@ -168,7 +168,8 @@ export function getTargetTypeLabel(targetType: string): string {
 export function getSlotTypeLabel(slotType: string): string {
   const keyMap: Record<string, string> = {
     lesson_video: 'media_manager.usage.slot_type.lesson_video',
-    lesson_document: 'media_manager.usage.slot_type.lesson_document'
+    lesson_document: 'media_manager.usage.slot_type.lesson_document',
+    lesson_html: 'media_manager.usage.slot_type.lesson_html'
   };
   return t.get(keyMap[slotType] ?? 'media_manager.usage.slot_type.unknown');
 }

@@ -5,11 +5,16 @@ import type {
   TBlockDataByType,
   TBlockType,
   TPlacementMove,
-  TPlacementUpdate
+  TPlacementUpdate,
+  TVideoBlockData
 } from '@cio/utils/validation/block';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 
 type BlocksRoute = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['blocks'];
+
+export type CreateHtmlPageRequest = BlocksRoute['html-pages']['$post'];
+export type GenerateHtmlPageRequest = BlocksRoute['html-pages']['generate']['$post'];
+export type HtmlPage = Extract<InferResponseType<CreateHtmlPageRequest>, { success: true }>['data'];
 
 export type BlockRecord = Extract<InferResponseType<BlocksRoute['$get']>, { success: true }>['data'][number];
 
@@ -40,6 +45,10 @@ export interface BlockEditProps<K extends TBlockType> {
   onContentChange: (content: string) => void;
   /** Opens the type's source picker; undefined when the type has none. */
   onRequestSource?: () => void;
+  /** Opens the image picker. Resolves with the chosen image URL, or null when dismissed. */
+  onRequestImage: () => Promise<string | null>;
+  /** Opens the video picker. Resolves with the chosen video, or null when dismissed. */
+  onRequestVideo: () => Promise<TVideoBlockData | null>;
 }
 
 export interface BlockPickerProps<K extends TBlockType> {
@@ -75,14 +84,21 @@ export interface BlockViewHost {
 
 /** What the editor's pickers need from the surface they run on. */
 export interface BlockEditHost {
+  courseId: string;
   lessonId: string;
 }
+
+/** The outcome of a data save. A conflict means another save landed first, so the caller can reload and retry. */
+export type BlockDataSaveResult =
+  | { status: 'saved'; record: BlockRecord }
+  | { status: 'conflict'; reason: string }
+  | { status: 'failed' };
 
 /** A place that holds an ordered list of blocks, such as a lesson. */
 export interface BlockOwner {
   list(): Promise<BlockRecord[] | null>;
   create(input: TBlockCreate): Promise<BlockRecord | null>;
-  updateData(blockId: string, data: Record<string, unknown>, expectedVersion: number): Promise<BlockRecord | null>;
+  updateData(blockId: string, data: Record<string, unknown>, expectedVersion: number): Promise<BlockDataSaveResult>;
   updateContent(
     blockId: string,
     locale: TLocale,

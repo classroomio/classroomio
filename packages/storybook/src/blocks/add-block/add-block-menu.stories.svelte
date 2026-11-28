@@ -1,20 +1,10 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import FileTextIcon from '@lucide/svelte/icons/file-text';
-  import ImageIcon from '@lucide/svelte/icons/image';
-  import PresentationIcon from '@lucide/svelte/icons/presentation';
-  import VideoIcon from '@lucide/svelte/icons/video';
   import * as AddBlock from '@cio/ui/custom/add-block';
+  import { AI_SHORTCUT, ALL_CHOICES } from './choices';
   import { FIELDS } from './menu-fields';
 
-  const addChoices: AddBlock.AddBlockChoice[] = [
-    { type: 'note', label: 'Note', icon: BookOpenIcon },
-    { type: 'video', label: 'Video', icon: VideoIcon },
-    { type: 'slide', label: 'Slides', icon: PresentationIcon },
-    { type: 'document', label: 'Document', icon: FileTextIcon },
-    { type: 'image', label: 'Image', icon: ImageIcon }
-  ];
+  const addChoices = ALL_CHOICES;
 
   const { Story } = defineMeta({
     title: 'Blocks/AddBlock/Menu',
@@ -33,7 +23,8 @@
     argTypes: {
       onToggle: { control: false },
       onClose: { control: false },
-      onSelect: { control: false }
+      onSelect: { control: false },
+      onAi: { control: false }
     },
     tags: ['autodocs']
   });
@@ -64,7 +55,7 @@
 
 <Story name="Open">
   {#snippet template()}
-    <div class="mx-auto w-full max-w-lg pt-24 pb-8">
+    <div class="mx-auto w-full max-w-lg pt-56 pb-8">
       <AddBlock.Menu
         open={true}
         choices={addChoices}
@@ -77,9 +68,27 @@
   {/snippet}
 </Story>
 
+<Story name="OpenWithAskAi">
+  {#snippet template()}
+    <div class="mx-auto w-full max-w-lg pt-64 pb-8">
+      <AddBlock.Menu
+        open={true}
+        choices={addChoices}
+        addLabel="Add content"
+        aiLabel="Ask AI instead"
+        aiShortcut={AI_SHORTCUT}
+        onToggle={() => {}}
+        onClose={() => {}}
+        onSelect={(type) => console.log('add', type)}
+        onAi={() => console.log('ask ai')}
+      />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="TwoChoices">
   {#snippet template()}
-    <div class="mx-auto w-full max-w-lg pt-24 pb-8">
+    <div class="mx-auto w-full max-w-lg pt-56 pb-8">
       <AddBlock.Menu
         open={true}
         choices={addChoices.slice(0, 2)}
@@ -94,7 +103,7 @@
 
 <Story name="Interactive">
   {#snippet template()}
-    <div class="mx-auto w-full max-w-lg pt-24 pb-8">
+    <div class="mx-auto w-full max-w-lg pt-56 pb-8">
       <p class="text-muted-foreground mb-6 text-sm">Last selection: {lastSelection}</p>
       <AddBlock.Menu
         open={interactiveOpen}
@@ -102,7 +111,10 @@
         addLabel="Add content"
         onToggle={() => (interactiveOpen = !interactiveOpen)}
         onClose={() => (interactiveOpen = false)}
+        aiLabel="Ask AI instead"
+        aiShortcut={AI_SHORTCUT}
         onSelect={(type) => (lastSelection = type)}
+        onAi={() => (lastSelection = 'ask ai')}
       />
     </div>
   {/snippet}

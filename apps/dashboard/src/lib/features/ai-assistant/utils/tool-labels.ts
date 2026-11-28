@@ -34,6 +34,11 @@ const TOOLS_WITH_PENDING_COPY = new Set([
   'move_lesson_block',
   'add_lesson_slides_block',
   'add_lesson_image_block',
+  'write_lesson_chart_block',
+  'write_lesson_flashcards_block',
+  'write_lesson_tabs_block',
+  'write_lesson_multiple_choice_block',
+  'write_lesson_process_block',
   'update_lesson_block_settings',
   'update_lesson_block_requirements',
   'detach_lesson_block',
@@ -169,6 +174,16 @@ export function getCompletedToolLine(toolName: string, result: unknown): ToolLin
       return {
         shape: 'i18n',
         key: 'ai_assistant.tool.done.add_lesson_image_block',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'write_lesson_chart_block':
+    case 'write_lesson_flashcards_block':
+    case 'write_lesson_tabs_block':
+    case 'write_lesson_multiple_choice_block':
+    case 'write_lesson_process_block':
+      return {
+        shape: 'i18n',
+        key: `ai_assistant.tool.done.${toolName}`,
         vars: { title: readString(r, 'lessonTitle') ?? '' }
       };
     case 'update_lesson_block_settings':
@@ -405,6 +420,11 @@ export const MUTATION_TOOLS = [
   'move_lesson_block',
   'add_lesson_slides_block',
   'add_lesson_image_block',
+  'write_lesson_chart_block',
+  'write_lesson_flashcards_block',
+  'write_lesson_tabs_block',
+  'write_lesson_multiple_choice_block',
+  'write_lesson_process_block',
   'update_lesson_block_settings',
   'update_lesson_block_requirements',
   'detach_lesson_block',

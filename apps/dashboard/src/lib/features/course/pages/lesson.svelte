@@ -490,7 +490,7 @@
         />
       {:else if lessonApi.lesson && lessonBlockList.isReady}
         <div class={['pt-5', showBlockViewComments ? 'pb-12' : 'min-h-screen pb-20']} in:fade={{ delay: 300 }} out:fade>
-          <LessonBlocks {mode} {courseId} {lessonId} learnerView={$isCourseLearnerView} />
+          <LessonBlocks {mode} {courseId} {lessonId} learnerView={$isCourseLearnerView} onEdit={toggleMode} />
 
           <!-- {#if mode === MODES.view}
             <LessonMaterialActions
@@ -518,6 +518,12 @@
     {/if}
   {/snippet}
 </Page.Body>
+
+<svelte:window
+  onbeforeunload={(event) => {
+    if (lessonBlockList.hasPendingEdits) event.preventDefault();
+  }}
+/>
 
 <UnsavedChanges bind:hasUnsavedChanges />
 

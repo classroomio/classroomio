@@ -1375,7 +1375,7 @@
     "ai_credits": {
       "sub_title": "AI credits",
       "page_subtitle": "Track AI assistant usage, team consumption, and purchase AI credit packs.",
-      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "cost_note": "Credit usage is weighted by model cost. Kimi K2.6 counts as 1 credit unit per token. Gemini 3.8 Flash counts as 2.7× per token. GPT-5.4 Mini counts as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
       "included": {
         "title": "Your included usage",
         "subtitle": "Monthly AI credits included with your plan.",
@@ -1608,6 +1608,7 @@
       "slot_type": {
         "lesson_video": "Lesson video",
         "lesson_document": "Lesson document",
+        "lesson_html": "Lesson HTML page",
         "unknown": "Attachment"
       },
       "table": {
@@ -3100,15 +3101,22 @@
           "button_done": "Done",
           "blocks": {
             "add_content": "Add content",
+            "ask_ai_instead": "Ask AI instead",
             "types": {
               "note": "Note",
               "video": "Video",
               "slides": "Slides",
               "document": "Document",
-              "image": "Image"
+              "image": "Image",
+              "chart": "Chart",
+              "flashcards": "Flashcards",
+              "tabs": "Tabs",
+              "multiple_choice": "Multiple Choice",
+              "process": "Process",
+              "html": "HTML"
             },
             "ai": {
-              "title": "Draft a note with AI",
+              "title": "Ask AI to add to this lesson",
               "prompt_label": "Prompt",
               "prompt_placeholder": "e.g. A short introduction to the water cycle for beginners"
             },
@@ -3122,10 +3130,8 @@
             "drag": "Drag to reorder",
             "drag_hint": "Drag the handle on a block to reorder it. You can also use Move up and Move down from its menu.",
             "dismiss_hint": "Dismiss reorder hint",
-            "empty_title": "Start building this lesson",
-            "empty_description": "Add a note, video, slides, document, or image. You can add as many blocks as you need, in any order.",
-            "empty_preview_title": "Nothing to preview yet",
-            "empty_preview_description": "This lesson has no content for students to see. Switch to {editLabel} to add a note, video, slides, document, or image.",
+            "empty_title": "What goes in this lesson?",
+            "empty_description": "Pick a block to begin. You can add more at any time.",
             "empty_learner_title": "This lesson isn't ready yet",
             "empty_learner_description": "Your instructor hasn't added any content to this lesson. Check back soon.",
             "empty_note": "This note is empty.",
@@ -3154,6 +3160,61 @@
               "fit_cover": "Fill",
               "fit_contain": "Fit"
             },
+            "html": {
+              "dialog_title": "Add HTML",
+              "add_tab": "Add",
+              "code_tab": "Paste code",
+              "upload": "Upload HTML file",
+              "upload_hint": "Or drag and drop here",
+              "create_with_ai": "Create with AI",
+              "describe_placeholder": "Or describe your idea...",
+              "beta": "Beta",
+              "generate": "Generate",
+              "generating": "Generating your page. This can take a minute…",
+              "remove_template": "Remove template",
+              "insert": "Insert",
+              "frame_title": "Embedded HTML page",
+              "interact": "Interact",
+              "full_screen": "Full screen",
+              "more": "More actions",
+              "change": "Replace HTML",
+              "download": "Download HTML",
+              "resize_width": "Drag to resize the width",
+              "resize_height": "Drag to resize the height",
+              "edit_with_ai": "Edit with AI",
+              "ai_edit_placeholder": "Describe what to change, e.g. Use a dark theme and add a reset button",
+              "ai_edit_submit": "Apply",
+              "generate_error": "Could not generate the page. Please try again.",
+              "save_error": "Could not save the page. Please try again.",
+              "too_large": "This page is larger than 2 MB. Please use a smaller page.",
+              "empty_file": "This file is empty.",
+              "templates": {
+                "slides": {
+                  "label": "Slides",
+                  "prompt": "Create a polished slide deck about this lesson's topic, with a title slide, 5 to 7 content slides, keyboard and button navigation, and a slide counter."
+                },
+                "dashboard": {
+                  "label": "Dashboard",
+                  "prompt": "Create an interactive dashboard with sample data for this lesson's topic, with headline numbers, two charts drawn in SVG, and filters that update them."
+                },
+                "report": {
+                  "label": "Report",
+                  "prompt": "Create a clear, well-structured one-page report on this lesson's topic, with a summary, key findings, a comparison table, and a short conclusion."
+                },
+                "explainer": {
+                  "label": "Explainer",
+                  "prompt": "Create an interactive explainer that teaches this lesson's topic step by step, with a diagram learners can explore and a short check-your-understanding quiz."
+                },
+                "prototype": {
+                  "label": "Prototype",
+                  "prompt": "Create a clickable app prototype related to this lesson's topic, with two or three screens, realistic sample content, and working navigation between them."
+                },
+                "game": {
+                  "label": "Game",
+                  "prompt": "Create a polished, playable game that helps learners practise this lesson's topic. Include clear instructions, intuitive controls, a complete game loop, a score, and a way to restart."
+                }
+              }
+            },
             "document": {
               "view_file": "View file",
               "download": "Download",
@@ -3163,6 +3224,188 @@
             },
             "slides": {
               "add_slide": "Add slide"
+            },
+            "chart": {
+              "title": "Chart title",
+              "title_placeholder": "Chart title",
+              "chart_type": "Chart type",
+              "types": {
+                "bar": "Bar chart",
+                "line": "Line chart",
+                "pie": "Pie chart",
+                "donut": "Donut chart"
+              },
+              "point_count": "{count, plural, one {# data point} other {# data points}}",
+              "highest": "Highest",
+              "total": "Total",
+              "edit_data": "Edit data",
+              "live_hint": "Changes update the chart live.",
+              "label": "Label",
+              "value": "Value",
+              "label_placeholder": "Label",
+              "add_point": "Add data point",
+              "remove_point": "Remove data point",
+              "new_point": "New",
+              "example": {
+                "title": "Quarterly revenue",
+                "label_1": "Q1",
+                "label_2": "Q2",
+                "label_3": "Q3",
+                "label_4": "Q4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Click any text on the card to edit it · use the flip button to edit the answers",
+              "flip_hint": "Click the card to flip",
+              "question": "Question",
+              "answer": "Answer",
+              "question_placeholder": "Type the question",
+              "answer_placeholder": "Type the answer",
+              "flip": "Flip card",
+              "show_question": "Flashcard showing the answer. Press Space to see the question.",
+              "show_answer": "Flashcard showing the question. Press Space to see the answer.",
+              "previous": "Previous card",
+              "next": "Next card",
+              "progress": "Deck progress",
+              "cards": "Cards",
+              "add_card": "Add card",
+              "remove_card": "Remove card",
+              "example": {
+                "question_1": "What is customer retention?",
+                "answer_1": "The ability of a business to keep its customers over time.",
+                "question_2": "Why does retention matter more than acquisition?",
+                "answer_2": "It's typically 5–7× cheaper to keep an existing customer than to win a new one.",
+                "question_3": "What is a simple way to measure it?",
+                "answer_3": "Compare how many customers you had at the start of a period to how many remain at the end."
+              }
+            },
+            "tabs": {
+              "tab_list": "Tabs",
+              "position": "Tabs position",
+              "align_left": "Align tabs left",
+              "align_center": "Align tabs center",
+              "align_right": "Align tabs right",
+              "tab_name": "Tab name",
+              "untitled_tab": "Untitled tab",
+              "note_placeholder": "Write a note for this tab…",
+              "add_tab": "Add tab",
+              "remove_tab": "Remove tab",
+              "new_tab": "New tab",
+              "add_image": "Add image",
+              "add_video": "Add video",
+              "remove_image": "Remove image",
+              "remove_video": "Remove video",
+              "example": {
+                "name_1": "Overview",
+                "note_1": "A quick overview of what this section covers.",
+                "name_2": "Setup",
+                "note_2": "What learners need in place before they start.",
+                "name_3": "Advanced",
+                "note_3": "Go deeper once the basics are comfortable."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Click a letter to mark the correct answer.",
+              "learner_hint": "Choose one answer.",
+              "question_placeholder": "Type your question",
+              "option_placeholder": "Type an answer",
+              "mark_correct": "Mark as correct answer",
+              "correct_badge": "Correct answer",
+              "add_option": "Add option",
+              "new_option": "New option",
+              "remove_option": "Remove option",
+              "add_media": "Add media",
+              "remove_image": "Remove image",
+              "check": "Check answer",
+              "try_again": "Try again",
+              "correct_feedback": "Correct — well done!",
+              "wrong_feedback": "Not quite. The correct answer is highlighted.",
+              "example": {
+                "question": "What is the capital city of Italy?",
+                "correct_option": "Rome",
+                "other_option_1": "Athens",
+                "other_option_2": "Lisbon"
+              }
+            },
+            "process": {
+              "stepper": "Steps",
+              "go_to_step": "Go to step {step}",
+              "untitled_step": "Untitled step",
+              "heading_placeholder": "Step heading",
+              "body_placeholder": "Describe this step",
+              "add_media": "Add media",
+              "image_option": "Image",
+              "remove_image": "Remove image",
+              "delete_step": "Delete this step",
+              "add_step": "Add step",
+              "back": "Back",
+              "next": "Next",
+              "start_over": "Start over",
+              "progress": "Process progress",
+              "new_step_heading": "New step",
+              "new_step_body": "Describe this step.",
+              "example": {
+                "heading_1": "Introduction",
+                "body_1": "Artificial intelligence, or AI, has become one of the most transformative and rapidly evolving fields in technology. It involves the creation of intelligent machines that can perform tasks typically associated with human intelligence, such as learning, problem-solving, and decision-making.",
+                "heading_2": "How it works",
+                "body_2": "Describe what happens in this step of the process.",
+                "heading_3": "Putting it to use",
+                "body_3": "Show how learners apply what they have just seen."
+              }
+            },
+            "all_blocks": "All blocks",
+            "search_blocks": "Search blocks",
+            "no_blocks_found": "No blocks match",
+            "new_badge": "New",
+            "coming_soon": "Coming soon",
+            "upcoming": {
+              "audio": "Audio",
+              "poll": "Poll",
+              "timeline": "Timeline",
+              "code": "Code",
+              "embed": "Embed"
+            },
+            "groups": {
+              "text": "Text",
+              "media": "Media",
+              "interactive": "Interactive",
+              "advanced": "Advanced"
+            },
+            "descriptions": {
+              "note": "Rich text, headings and lists",
+              "video": "Upload or link a video",
+              "slides": "Embed a slide deck",
+              "document": "A file students can view or download",
+              "image": "Upload or pick an image",
+              "chart": "A chart from your data",
+              "flashcards": "Flip cards for recall practice",
+              "tabs": "Split content into switchable tabs",
+              "multiple_choice": "A quick knowledge check",
+              "process": "A step-by-step walkthrough",
+              "html": "Your own interactive web page",
+              "audio": "Podcast or voice note",
+              "poll": "Ask the class, show the results",
+              "timeline": "Events on a time axis",
+              "code": "A syntax-highlighted snippet",
+              "embed": "Any embeddable link"
+            },
+            "captions": {
+              "note": "Students read formatted text, headings and lists in the lesson flow.",
+              "tabs": "Students switch between tabs instead of scrolling through every section.",
+              "process": "Students move through numbered steps, one at a time.",
+              "video": "Students play the video inline, without leaving the lesson.",
+              "slides": "Students page through the deck without leaving the lesson.",
+              "document": "Students preview the pages or download the file.",
+              "image": "Students see the image full width in the lesson.",
+              "audio": "Students listen to a podcast or voice note in the lesson.",
+              "chart": "Students see your data as a chart.",
+              "flashcards": "Students flip each card to reveal the answer and step through the deck.",
+              "multiple_choice": "Students pick an answer, press Check, and see right away if it's correct.",
+              "poll": "Students vote, then see how the class answered.",
+              "timeline": "Students follow events in order along a time axis.",
+              "html": "Your HTML runs as a live, interactive page inside the lesson.",
+              "code": "Students read highlighted code and copy it in one click.",
+              "embed": "Paste a link and students see the embedded page."
             }
           }
         },
@@ -3825,7 +4068,13 @@
             "video": "video",
             "slides": "slides",
             "document": "document",
-            "image": "image"
+            "image": "image",
+            "chart": "chart",
+            "flashcards": "flashcards",
+            "tabs": "tabs",
+            "multiple_choice": "multiple choice question",
+            "process": "process",
+            "html": "HTML page"
           }
         },
         "no_section": "No section",
@@ -6661,6 +6910,11 @@
         "move_lesson_block": "Moving a block",
         "add_lesson_slides_block": "Adding slides",
         "add_lesson_image_block": "Adding an image",
+        "write_lesson_chart_block": "Saving a chart",
+        "write_lesson_flashcards_block": "Saving flashcards",
+        "write_lesson_tabs_block": "Saving tabs",
+        "write_lesson_multiple_choice_block": "Saving a multiple-choice question",
+        "write_lesson_process_block": "Saving a process",
         "update_lesson_block_settings": "Updating block settings",
         "update_lesson_block_requirements": "Updating completion rules",
         "detach_lesson_block": "Detaching a shared block",
@@ -6706,6 +6960,11 @@
         "move_lesson_block": "Moved a block in {title}",
         "add_lesson_slides_block": "Added slides to {title}",
         "add_lesson_image_block": "Added an image to {title}",
+        "write_lesson_chart_block": "Saved a chart in {title}",
+        "write_lesson_flashcards_block": "Saved flashcards in {title}",
+        "write_lesson_tabs_block": "Saved tabs in {title}",
+        "write_lesson_multiple_choice_block": "Saved a multiple-choice question in {title}",
+        "write_lesson_process_block": "Saved a process in {title}",
         "update_lesson_block_settings": "Updated a block in {title}",
         "update_lesson_block_requirements": "Updated completion rules in {title}",
         "detach_lesson_block": "Gave {title} its own copy of a shared block",
@@ -7289,7 +7548,7 @@
     "dismiss": "Got it",
     "lesson_blocks": {
       "coach_title": "🎉 New! Lessons are now flexible.",
-      "coach_description": "Build each lesson from note, video, slides, document and image blocks, in any order. Select Edit to try it.",
+      "coach_description": "Build each lesson from blocks such as notes, videos, charts, flashcards and multiple-choice questions, in any order. Select Edit to try it.",
       "title": "Introducing lesson blocks",
       "description": "Lessons are now built from blocks. See how it works in 5 minutes."
     },

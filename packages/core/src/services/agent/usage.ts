@@ -37,6 +37,7 @@ const PLAN_TOKEN_ALLOWANCES: Record<string, number> = {
 // gemini-2.5-flash kept for backward compat with historical usage records.
 const MODEL_COST_MULTIPLIER: Record<string, number> = {
   'gemini-3.1-flash-lite': 1,
+  'gemini-3.8-flash': 2.7,
   'gemini-2.5-flash': 1.5,
   'gpt-5.4-mini': 4,
   'claude-sonnet-4-6': 11,

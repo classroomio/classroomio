@@ -1774,7 +1774,13 @@
             "video": "video",
             "slides": "dias",
             "document": "dokument",
-            "image": "billede"
+            "image": "billede",
+            "chart": "diagram",
+            "flashcards": "flashcards",
+            "tabs": "faner",
+            "multiple_choice": "multiple choice-spørgsmål",
+            "process": "proces",
+            "html": "HTML-side"
           },
           "change_kind": {
             "added": "Tilføjet",
@@ -2642,6 +2648,7 @@
           },
           "blocks": {
             "add_content": "Tilføj indhold",
+            "ask_ai_instead": "Spørg AI i stedet",
             "example": "Eksempel",
             "change_type": "Ændring {type}",
             "edit_type": "Rediger {type}",
@@ -2652,8 +2659,8 @@
             "drag": "Træk for at ændre rækkefølgen",
             "drag_hint": "Træk i håndtaget på en blok for at ændre dens rækkefølge. Du kan også bruge Flyt op og Flyt ned fra dens menu.",
             "dismiss_hint": "Afvis tip til ændring af rækkefølge",
-            "empty_title": "Begynd at opbygge denne lektion",
-            "empty_description": "Tilføj en note, video, slides, dokument eller billede. Du kan tilføje så mange blokke, som du har brug for, i en hvilken som helst rækkefølge.",
+            "empty_title": "Hvad skal denne lektion indeholde?",
+            "empty_description": "Vælg en blok for at begynde. Du kan tilføje flere når som helst.",
             "empty_note": "Denne note er tom.",
             "scroll_rail": "Lektionsblokke",
             "save_failed": "Ændringen kunne ikke gemmes, så blokken er blevet gendannet. {reason}",
@@ -2669,6 +2676,61 @@
               "fit_cover": "Fylde",
               "fit_contain": "Passe"
             },
+            "html": {
+              "dialog_title": "Tilføj HTML",
+              "add_tab": "Tilføj",
+              "code_tab": "Indsæt kode",
+              "upload": "Upload HTML-fil",
+              "upload_hint": "Eller træk og slip her",
+              "create_with_ai": "Opret med AI",
+              "describe_placeholder": "Eller beskriv din idé...",
+              "beta": "Beta",
+              "generate": "Generér",
+              "generating": "Din side bliver genereret. Det kan tage et minut…",
+              "remove_template": "Fjern skabelon",
+              "insert": "Indsæt",
+              "frame_title": "Indlejret HTML-side",
+              "interact": "Interager",
+              "full_screen": "Fuld skærm",
+              "more": "Flere handlinger",
+              "change": "Erstat HTML",
+              "download": "Download HTML",
+              "resize_width": "Træk for at ændre bredden",
+              "resize_height": "Træk for at ændre højden",
+              "edit_with_ai": "Redigér med AI",
+              "ai_edit_placeholder": "Beskriv hvad der skal ændres, f.eks. Brug et mørkt tema og tilføj en nulstil-knap",
+              "ai_edit_submit": "Anvend",
+              "generate_error": "Siden kunne ikke genereres. Prøv igen.",
+              "save_error": "Siden kunne ikke gemmes. Prøv igen.",
+              "too_large": "Denne side er større end 2 MB. Brug en mindre side.",
+              "empty_file": "Denne fil er tom.",
+              "templates": {
+                "slides": {
+                  "label": "Slides",
+                  "prompt": "Lav et flot diassæt om lektionens emne med et titeldias, 5 til 7 indholdsdias, navigation med tastatur og knapper samt en diastæller."
+                },
+                "dashboard": {
+                  "label": "Dashboard",
+                  "prompt": "Lav et interaktivt dashboard med eksempeldata om lektionens emne, med nøgletal, to diagrammer tegnet i SVG og filtre, der opdaterer dem."
+                },
+                "report": {
+                  "label": "Rapport",
+                  "prompt": "Lav en klar og velstruktureret rapport på én side om lektionens emne med et resumé, vigtigste fund, en sammenligningstabel og en kort konklusion."
+                },
+                "explainer": {
+                  "label": "Forklaring",
+                  "prompt": "Lav en interaktiv forklaring, der underviser i lektionens emne trin for trin, med et diagram, som eleverne kan udforske, og en kort quiz til at tjekke forståelsen."
+                },
+                "prototype": {
+                  "label": "Prototype",
+                  "prompt": "Lav en klikbar app-prototype relateret til lektionens emne med to eller tre skærme, realistisk eksempelindhold og fungerende navigation mellem dem."
+                },
+                "game": {
+                  "label": "Spil",
+                  "prompt": "Lav et flot, spilbart spil, der hjælper eleverne med at øve lektionens emne. Medtag klare instruktioner, intuitive kontroller, et komplet spilforløb, en score og en måde at starte forfra på."
+                }
+              }
+            },
             "settings": {
               "title": "Lektionsindstillinger",
               "description": "Administrer denne lektion uden at forlade indholdslærredet."
@@ -2681,7 +2743,7 @@
               "spacious": "Rummelig"
             },
             "ai": {
-              "title": "Udarbejd en note med AI",
+              "title": "Bed AI om at tilføje til denne lektion",
               "prompt_label": "Hurtig",
               "prompt_placeholder": "f.eks. En kort introduktion til vandets kredsløb for begyndere"
             },
@@ -2690,10 +2752,14 @@
               "video": "Video",
               "slides": "Slides",
               "document": "Dokument",
-              "image": "Billede"
+              "image": "Billede",
+              "chart": "Diagram",
+              "flashcards": "Flashcards",
+              "tabs": "Faner",
+              "multiple_choice": "Multiple choice",
+              "process": "Proces",
+              "html": "HTML"
             },
-            "empty_preview_title": "Intet at forhåndsvise endnu",
-            "empty_preview_description": "Denne lektion har intet indhold, som eleverne kan se. Skift til {editLabel} for at tilføje en note, video, dias, dokument eller billede.",
             "empty_learner_title": "Denne lektion er ikke klar endnu",
             "empty_learner_description": "Din instruktør har ikke tilføjet noget indhold til denne lektion. Kom snart tilbage.",
             "document": {
@@ -2705,6 +2771,188 @@
             },
             "slides": {
               "add_slide": "Tilføj dias"
+            },
+            "chart": {
+              "title": "Diagramtitel",
+              "title_placeholder": "Diagramtitel",
+              "chart_type": "Diagramtype",
+              "types": {
+                "bar": "Søjlediagram",
+                "line": "Kurvediagram",
+                "pie": "Cirkeldiagram",
+                "donut": "Ringdiagram"
+              },
+              "point_count": "{count, plural, one {# datapunkt} other {# datapunkter}}",
+              "highest": "Højest",
+              "total": "I alt",
+              "edit_data": "Rediger data",
+              "live_hint": "Ændringer opdaterer diagrammet med det samme.",
+              "label": "Etiket",
+              "value": "Værdi",
+              "label_placeholder": "Etiket",
+              "add_point": "Tilføj datapunkt",
+              "remove_point": "Fjern datapunkt",
+              "new_point": "Ny",
+              "example": {
+                "title": "Kvartalsomsætning",
+                "label_1": "K1",
+                "label_2": "K2",
+                "label_3": "K3",
+                "label_4": "K4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Klik på en tekst på kortet for at redigere den · brug vendeknappen til at redigere svarene",
+              "flip_hint": "Klik på kortet for at vende det",
+              "question": "Spørgsmål",
+              "answer": "Svar",
+              "question_placeholder": "Skriv spørgsmålet",
+              "answer_placeholder": "Skriv svaret",
+              "flip": "Vend kort",
+              "show_question": "Flashcard viser svaret. Tryk på mellemrum for at se spørgsmålet.",
+              "show_answer": "Flashcard viser spørgsmålet. Tryk på mellemrum for at se svaret.",
+              "previous": "Forrige kort",
+              "next": "Næste kort",
+              "progress": "Fremskridt i bunken",
+              "cards": "Kort",
+              "add_card": "Tilføj kort",
+              "remove_card": "Fjern kort",
+              "example": {
+                "question_1": "Hvad er kundefastholdelse?",
+                "answer_1": "En virksomheds evne til at beholde sine kunder over tid.",
+                "question_2": "Hvorfor er fastholdelse vigtigere end at skaffe nye kunder?",
+                "answer_2": "Det er typisk 5–7× billigere at beholde en eksisterende kunde end at vinde en ny.",
+                "question_3": "Hvad er en enkel måde at måle det på?",
+                "answer_3": "Sammenlign hvor mange kunder du havde i starten af en periode med hvor mange der er tilbage i slutningen."
+              }
+            },
+            "tabs": {
+              "tab_list": "Faner",
+              "position": "Fanernes placering",
+              "align_left": "Placer fanerne til venstre",
+              "align_center": "Placer fanerne i midten",
+              "align_right": "Placer fanerne til højre",
+              "tab_name": "Fanenavn",
+              "untitled_tab": "Fane uden navn",
+              "note_placeholder": "Skriv en note til denne fane…",
+              "add_tab": "Tilføj fane",
+              "remove_tab": "Fjern fane",
+              "new_tab": "Ny fane",
+              "add_image": "Tilføj billede",
+              "add_video": "Tilføj video",
+              "remove_image": "Fjern billede",
+              "remove_video": "Fjern video",
+              "example": {
+                "name_1": "Overblik",
+                "note_1": "Et hurtigt overblik over, hvad dette afsnit handler om.",
+                "name_2": "Opsætning",
+                "note_2": "Det, deltagerne skal have på plads, før de går i gang.",
+                "name_3": "Avanceret",
+                "note_3": "Gå i dybden, når det grundlæggende sidder."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Klik på et bogstav for at markere det rigtige svar.",
+              "learner_hint": "Vælg ét svar.",
+              "question_placeholder": "Skriv dit spørgsmål",
+              "option_placeholder": "Skriv et svar",
+              "mark_correct": "Markér som rigtigt svar",
+              "correct_badge": "Rigtigt svar",
+              "add_option": "Tilføj mulighed",
+              "new_option": "Ny mulighed",
+              "remove_option": "Fjern mulighed",
+              "add_media": "Tilføj medie",
+              "remove_image": "Fjern billede",
+              "check": "Tjek svar",
+              "try_again": "Prøv igen",
+              "correct_feedback": "Rigtigt, godt klaret!",
+              "wrong_feedback": "Ikke helt. Det rigtige svar er fremhævet.",
+              "example": {
+                "question": "Hvad er Italiens hovedstad?",
+                "correct_option": "Rom",
+                "other_option_1": "Athen",
+                "other_option_2": "Lissabon"
+              }
+            },
+            "process": {
+              "stepper": "Trin",
+              "go_to_step": "Gå til trin {step}",
+              "untitled_step": "Trin uden titel",
+              "heading_placeholder": "Trinoverskrift",
+              "body_placeholder": "Beskriv dette trin",
+              "add_media": "Tilføj medie",
+              "image_option": "Billede",
+              "remove_image": "Fjern billede",
+              "delete_step": "Slet dette trin",
+              "add_step": "Tilføj trin",
+              "back": "Tilbage",
+              "next": "Næste",
+              "start_over": "Start forfra",
+              "progress": "Fremskridt i processen",
+              "new_step_heading": "Nyt trin",
+              "new_step_body": "Beskriv dette trin.",
+              "example": {
+                "heading_1": "Introduktion",
+                "body_1": "Kunstig intelligens, eller AI, er blevet et af de mest banebrydende og hurtigst udviklende områder inden for teknologi. Det handler om at skabe intelligente maskiner, der kan udføre opgaver, som typisk forbindes med menneskelig intelligens, såsom læring, problemløsning og beslutningstagning.",
+                "heading_2": "Sådan fungerer det",
+                "body_2": "Beskriv, hvad der sker i dette trin af processen.",
+                "heading_3": "Brug det i praksis",
+                "body_3": "Vis, hvordan deltagerne anvender det, de lige har set."
+              }
+            },
+            "all_blocks": "Alle blokke",
+            "search_blocks": "Søg i blokke",
+            "no_blocks_found": "Ingen blokke matcher",
+            "new_badge": "Ny",
+            "coming_soon": "Kommer snart",
+            "upcoming": {
+              "audio": "Lyd",
+              "poll": "Afstemning",
+              "timeline": "Tidslinje",
+              "code": "Kode",
+              "embed": "Indlejring"
+            },
+            "groups": {
+              "text": "Tekst",
+              "media": "Medier",
+              "interactive": "Interaktivt",
+              "advanced": "Avanceret"
+            },
+            "descriptions": {
+              "note": "Formateret tekst, overskrifter og lister",
+              "video": "Upload eller link en video",
+              "slides": "Indlejr et diasshow",
+              "document": "En fil, kursister kan se eller downloade",
+              "image": "Upload eller vælg et billede",
+              "chart": "Et diagram ud fra dine data",
+              "flashcards": "Vendekort til genkaldelse",
+              "tabs": "Del indhold op i faner",
+              "multiple_choice": "Et hurtigt videnstjek",
+              "process": "En gennemgang trin for trin",
+              "html": "Din egen interaktive webside",
+              "audio": "Podcast eller talebesked",
+              "poll": "Spørg holdet og vis resultaterne",
+              "timeline": "Begivenheder på en tidsakse",
+              "code": "Et kodeuddrag med syntaksfremhævning",
+              "embed": "Ethvert link, der kan indlejres"
+            },
+            "captions": {
+              "note": "Kursister læser formateret tekst, overskrifter og lister i lektionen.",
+              "tabs": "Kursister skifter mellem faner i stedet for at rulle gennem hvert afsnit.",
+              "process": "Kursister går gennem nummererede trin, ét ad gangen.",
+              "video": "Eleverne afspiller videoen direkte i lektionen.",
+              "slides": "Kursister blader gennem præsentationen uden at forlade lektionen.",
+              "document": "Kursister ser siderne eller downloader filen.",
+              "image": "Eleverne ser billedet i fuld bredde i lektionen.",
+              "audio": "Kursister lytter til en podcast eller talebesked i lektionen.",
+              "chart": "Eleverne ser dine data som et diagram.",
+              "flashcards": "Eleverne vender hvert kort for at se svaret og bladrer gennem bunken.",
+              "multiple_choice": "Eleverne vælger et svar, trykker på Tjek og ser straks, om det er rigtigt.",
+              "poll": "Kursister stemmer og ser derefter, hvordan holdet svarede.",
+              "timeline": "Kursister følger begivenheder i rækkefølge langs en tidsakse.",
+              "html": "Din HTML kører som en levende, interaktiv side i lektionen.",
+              "code": "Kursister læser fremhævet kode og kopierer den med ét klik.",
+              "embed": "Indsæt et link, så ser kursister den indlejrede side."
             }
           }
         },
@@ -3698,6 +3946,7 @@
       "slot_type": {
         "lesson_video": "Lektion video",
         "lesson_document": "Lektionsdokument",
+        "lesson_html": "HTML-side i lektion",
         "unknown": "Vedhæftet fil"
       },
       "refresh": "Opdater brugen"
@@ -4478,7 +4727,7 @@
     "ai_credits": {
       "sub_title": "AI-credits",
       "page_subtitle": "Spor brug af AI-assistent, teamforbrug og køb af AI credit packs.",
-      "cost_note": "Creditforbrug vægtes efter modelomkostning. Gemini 3.1 Flash Lite tæller som 1 credit-enhed pr. token. GPT-5.4 Mini og Kimi K2.6 tæller som 4× pr. token. Claude Sonnet 4.6 tæller som 11× pr. token, hvilket afspejler dens højere API-omkostning.",
+      "cost_note": "Creditforbrug vægtes efter modelomkostning. Kimi K2.6 tæller som 1 credit-enhed pr. token. Gemini 3.8 Flash tæller som 2,7× pr. token. GPT-5.4 Mini tæller som 4× pr. token. Claude Sonnet 4.6 tæller som 11× pr. token, hvilket afspejler dens højere API-omkostning.",
       "included": {
         "title": "Dit inkluderede forbrug",
         "subtitle": "Månedlige AI credits inkluderet i din plan.",
@@ -6033,6 +6282,11 @@
         "move_lesson_block": "Flytning af en blok",
         "add_lesson_slides_block": "Tilføjelse af dias",
         "add_lesson_image_block": "Tilføjelse af et billede",
+        "write_lesson_chart_block": "Gemmer et diagram",
+        "write_lesson_flashcards_block": "Gemmer flashcards",
+        "write_lesson_tabs_block": "Gemmer faner",
+        "write_lesson_multiple_choice_block": "Gemmer et multiple choice-spørgsmål",
+        "write_lesson_process_block": "Gemmer en proces",
         "update_lesson_block_settings": "Opdatering af blokindstillinger",
         "update_lesson_block_requirements": "Opdatering af færdiggørelsesregler",
         "detach_lesson_block": "Afmontering af en delt blok",
@@ -6087,6 +6341,11 @@
         "move_lesson_block": "Flyttede en blok i {title}",
         "add_lesson_slides_block": "Tilføjede dias til {title}",
         "add_lesson_image_block": "Føjede et billede til {title}",
+        "write_lesson_chart_block": "Gemte et diagram i {title}",
+        "write_lesson_flashcards_block": "Gemte flashcards i {title}",
+        "write_lesson_tabs_block": "Gemte faner i {title}",
+        "write_lesson_multiple_choice_block": "Gemte et multiple choice-spørgsmål i {title}",
+        "write_lesson_process_block": "Gemte en proces i {title}",
         "update_lesson_block_settings": "Opdaterede en blok i {title}",
         "update_lesson_block_requirements": "Opdaterede fuldførelsesregler i {title}",
         "detach_lesson_block": "Gav {title} sin egen kopi af en delt blok",
@@ -8057,7 +8316,7 @@
     "lesson_blocks": {
       "title": "Introduktion til lektionsblokke",
       "description": "Lektioner er nu bygget af blokke. Se hvordan det virker på 5 minutter.",
-      "coach_description": "Byg hver lektion ud fra noter, video, dias, dokument- og billedblokke i vilkårlig rækkefølge. Vælg Rediger for at prøve det.",
+      "coach_description": "Byg hver lektion af blokke som noter, videoer, diagrammer, flashcards og multiple choice-spørgsmål i vilkårlig rækkefølge. Vælg Rediger for at prøve det.",
       "coach_title": "🎉 Nyt! Lektionerne er nu fleksible."
     },
     "close": "Luk",

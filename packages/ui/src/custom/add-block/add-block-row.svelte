@@ -1,13 +1,22 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
+  import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import type { Snippet } from 'svelte';
+  import CatalogSheet from './add-block-catalog-sheet.svelte';
   import Item from './add-block-item.svelte';
   import type { AddBlockChoice, AddBlockShortcut } from './types';
 
   interface Props {
     choices: AddBlockChoice[];
+    /** Every block type, shown in the All blocks drawer. The button is hidden when this is empty. */
+    moreChoices?: AddBlockChoice[];
     addLabel: string;
+    moreLabel?: string;
+    searchLabel?: string;
+    noResultsLabel?: string;
+    newLabel?: string;
+    comingSoonLabel?: string;
     aiLabel?: string;
     aiPanelLabel?: string;
     aiShortcut?: AddBlockShortcut | null;
@@ -17,6 +26,7 @@
     toolbarTestId?: string;
     aiTriggerTestId?: string;
     aiPanelTestId?: string;
+    moreTestId?: string;
     onSelect: (type: string) => void;
     onAiTrigger?: () => void;
     aiPanel?: Snippet;
@@ -24,7 +34,13 @@
 
   let {
     choices,
+    moreChoices = [],
     addLabel,
+    moreLabel = 'All blocks',
+    searchLabel = 'Search blocks',
+    noResultsLabel = 'No blocks match',
+    newLabel,
+    comingSoonLabel = 'Coming soon',
     aiLabel = 'Ask AI',
     aiPanelLabel,
     aiShortcut = null,
@@ -34,6 +50,7 @@
     toolbarTestId,
     aiTriggerTestId,
     aiPanelTestId,
+    moreTestId,
     onSelect,
     onAiTrigger,
     aiPanel
@@ -178,8 +195,43 @@
     data-testid={toolbarTestId}
   >
     {#each choices as choice (choice.type)}
-      <Item {choice} hideLabelOnMobile {onSelect} />
+      <Item {choice} hideLabelOnMobile {newLabel} {onSelect} />
     {/each}
+
+    {#if moreChoices.length > 0}
+      <div
+        class="ui:bg-border ui:mx-1 ui:my-[2px] ui:w-px ui:self-stretch"
+        role="separator"
+        aria-orientation="vertical"
+      ></div>
+      <CatalogSheet
+        choices={moreChoices}
+        label={moreLabel}
+        {searchLabel}
+        {noResultsLabel}
+        {newLabel}
+        {comingSoonLabel}
+        testId={moreTestId}
+        {onSelect}
+      >
+        {#snippet trigger({ open, toggle })}
+          <button
+            type="button"
+            class="ui:text-muted-foreground ui:hover:bg-muted ui:hover:text-primary ui:mx-1 ui:flex ui:cursor-pointer ui:flex-col ui:items-center ui:gap-0.5 ui:rounded-md ui:px-2.5 ui:py-1.5 ui:text-[12px] ui:font-medium ui:transition ui:active:scale-95 {open
+              ? 'ui:bg-muted ui:text-primary'
+              : ''}"
+            onclick={toggle}
+            title={moreLabel}
+            aria-label={moreLabel}
+            aria-expanded={open}
+            data-testid={moreTestId}
+          >
+            <LayoutGridIcon size={14} class="custom" />
+            <span class="ui:hidden ui:whitespace-nowrap ui:sm:inline">{moreLabel}</span>
+          </button>
+        {/snippet}
+      </CatalogSheet>
+    {/if}
   </div>
 
   {#if aiPanel}

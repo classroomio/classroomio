@@ -1290,7 +1290,7 @@
     "ai_credits": {
       "sub_title": "AI kredileri",
       "page_subtitle": "AI asistanı kullanımını, ekip tüketimini ve AI kredi paketlerini satın almayı takip edin.",
-      "cost_note": "Kredi kullanımı şu şekilde ağırlıklandırılır: modeli maliyeti. Gemini 3.1 Flash Lite, jeton başına 1 kredi birimi olarak sayılır. GPT-5.4 Mini ve Kimi K2.6 jeton başına 4 kat sayılır. Claude Sonnet 4.6, daha yüksek API maliyetini yansıtacak şekilde token başına 11 kat olarak sayılır.",
+      "cost_note": "Kredi kullanımı model maliyetine göre ağırlıklandırılır. Kimi K2.6, jeton başına 1 kredi birimi olarak sayılır. Gemini 3.8 Flash jeton başına 2,7 kat sayılır. GPT-5.4 Mini jeton başına 4 kat sayılır. Claude Sonnet 4.6, daha yüksek API maliyetini yansıtacak şekilde jeton başına 11 kat olarak sayılır.",
       "included": {
         "title": "Dahil olan kullanımınız",
         "subtitle": "Planınıza dahil olan aylık AI kredileri.",
@@ -1618,6 +1618,7 @@
       "slot_type": {
         "lesson_video": "Lders videosu",
         "lesson_document": "Lders belgesi",
+        "lesson_html": "Ders HTML sayfası",
         "unknown": "Attachment"
       },
       "table": {
@@ -3102,6 +3103,7 @@
           "button_done": "Done",
           "blocks": {
             "add_content": "İçerik ekle",
+            "ask_ai_instead": "Bunun yerine yapay zekâya sor",
             "example": "Örnek",
             "change_type": "{type} türünü değiştir",
             "edit_type": "{type} düzenle",
@@ -3112,8 +3114,8 @@
             "drag": "Sırayı değiştirmek için sürükleyin",
             "drag_hint": "Bir bloğun üzerindeki tutamacı sürükleyerek bloğun sırasını değiştirebilirsiniz. Ayrıca menüsünden Yukarı Taşı ve Aşağı Taşı seçeneklerini de kullanabilirsiniz.",
             "dismiss_hint": "Yeniden sipariş ipucunu göz ardı et",
-            "empty_title": "Bu dersi oluşturmaya başlayın.",
-            "empty_description": "Not, video, slayt, belge veya resim ekleyin. İstediğiniz kadar blok ekleyebilir ve istediğiniz sırayla düzenleyebilirsiniz.",
+            "empty_title": "Bu derste neler olacak?",
+            "empty_description": "Başlamak için bir blok seçin. İstediğiniz zaman daha fazlasını ekleyebilirsiniz.",
             "empty_note": "Bu not boş.",
             "scroll_rail": "Ders blokları",
             "save_failed": "Bu değişiklik kaydedilemedi, bu yüzden blok geri yüklendi. {reason}",
@@ -3129,6 +3131,61 @@
               "fit_cover": "Doldurmak",
               "fit_contain": "Yerleştirmek"
             },
+            "html": {
+              "dialog_title": "HTML ekle",
+              "add_tab": "Ekle",
+              "code_tab": "Kod yapıştır",
+              "upload": "HTML dosyası yükle",
+              "upload_hint": "Veya buraya sürükleyip bırak",
+              "create_with_ai": "Yapay zekâ ile oluştur",
+              "describe_placeholder": "Veya fikrini anlat...",
+              "beta": "Beta",
+              "generate": "Oluştur",
+              "generating": "Sayfan oluşturuluyor. Bu bir dakika sürebilir…",
+              "remove_template": "Şablonu kaldır",
+              "insert": "Ekle",
+              "frame_title": "Gömülü HTML sayfası",
+              "interact": "Etkileşim kur",
+              "full_screen": "Tam ekran",
+              "more": "Diğer işlemler",
+              "change": "HTML'i değiştir",
+              "download": "HTML'i indir",
+              "resize_width": "Genişliği değiştirmek için sürükle",
+              "resize_height": "Yüksekliği değiştirmek için sürükle",
+              "edit_with_ai": "Yapay zekâ ile düzenle",
+              "ai_edit_placeholder": "Neyin değişeceğini anlat, ör. Koyu tema kullan ve sıfırlama düğmesi ekle",
+              "ai_edit_submit": "Uygula",
+              "generate_error": "Sayfa oluşturulamadı. Lütfen tekrar dene.",
+              "save_error": "Sayfa kaydedilemedi. Lütfen tekrar dene.",
+              "too_large": "Bu sayfa 2 MB'tan büyük. Lütfen daha küçük bir sayfa kullan.",
+              "empty_file": "Bu dosya boş.",
+              "templates": {
+                "slides": {
+                  "label": "Slaytlar",
+                  "prompt": "Bu dersin konusu hakkında bir başlık slaytı, 5 ila 7 içerik slaytı, klavye ve düğmeyle gezinme ve slayt sayacı içeren özenli bir slayt sunumu oluştur."
+                },
+                "dashboard": {
+                  "label": "Pano",
+                  "prompt": "Bu dersin konusu için örnek verilerle, temel rakamlar, SVG ile çizilmiş iki grafik ve bunları güncelleyen filtreler içeren etkileşimli bir pano oluştur."
+                },
+                "report": {
+                  "label": "Rapor",
+                  "prompt": "Bu dersin konusu hakkında özet, temel bulgular, karşılaştırma tablosu ve kısa bir sonuç içeren, açık ve iyi yapılandırılmış tek sayfalık bir rapor oluştur."
+                },
+                "explainer": {
+                  "label": "Açıklama",
+                  "prompt": "Bu dersin konusunu adım adım öğreten, öğrencilerin keşfedebileceği bir diyagram ve kısa bir anlama testi içeren etkileşimli bir açıklama oluştur."
+                },
+                "prototype": {
+                  "label": "Prototip",
+                  "prompt": "Bu dersin konusuyla ilgili, iki veya üç ekran, gerçekçi örnek içerik ve ekranlar arasında çalışan gezinme içeren tıklanabilir bir uygulama prototipi oluştur."
+                },
+                "game": {
+                  "label": "Oyun",
+                  "prompt": "Öğrencilerin bu dersin konusunu pekiştirmesine yardımcı olan özenli, oynanabilir bir oyun oluştur. Açık talimatlar, sezgisel kontroller, eksiksiz bir oyun döngüsü, skor ve yeniden başlatma yolu ekle."
+                }
+              }
+            },
             "settings": {
               "title": "Ders ayarları",
               "description": "Bu dersi içerik tuvalinden ayrılmadan yönetin."
@@ -3141,7 +3198,7 @@
               "spacious": "Ferah"
             },
             "ai": {
-              "title": "Yapay zekâ ile bir not taslağı oluşturun.",
+              "title": "Yapay zekâdan bu derse içerik eklemesini isteyin",
               "prompt_label": "Çabuk",
               "prompt_placeholder": "Örneğin, yeni başlayanlar için su döngüsüne kısa bir giriş."
             },
@@ -3150,10 +3207,14 @@
               "video": "Video",
               "slides": "Slaytlar",
               "document": "Belge",
-              "image": "Görüntü"
+              "image": "Görüntü",
+              "chart": "Grafik",
+              "flashcards": "Bilgi kartları",
+              "tabs": "Sekmeler",
+              "multiple_choice": "Çoktan seçmeli",
+              "process": "Süreç",
+              "html": "HTML"
             },
-            "empty_preview_title": "Henüz önizlenecek bir şey yok",
-            "empty_preview_description": "Bu derste öğrencilerin görebileceği içerik bulunmamaktadır. Not, video, slayt, belge veya resim eklemek için {editLabel}'a geçin.",
             "empty_learner_title": "Bu ders henüz hazır değil",
             "empty_learner_description": "Eğitmeniniz bu derse herhangi bir içerik eklemedi. Yakında tekrar kontrol edin.",
             "document": {
@@ -3165,6 +3226,188 @@
             },
             "slides": {
               "add_slide": "Slayt ekle"
+            },
+            "chart": {
+              "title": "Grafik başlığı",
+              "title_placeholder": "Grafik başlığı",
+              "chart_type": "Grafik türü",
+              "types": {
+                "bar": "Sütun grafik",
+                "line": "Çizgi grafik",
+                "pie": "Pasta grafik",
+                "donut": "Halka grafik"
+              },
+              "point_count": "{count, plural, one {# veri noktası} other {# veri noktası}}",
+              "highest": "En yüksek",
+              "total": "Toplam",
+              "edit_data": "Verileri düzenle",
+              "live_hint": "Değişiklikler grafiği anında günceller.",
+              "label": "Etiket",
+              "value": "Değer",
+              "label_placeholder": "Etiket",
+              "add_point": "Veri noktası ekle",
+              "remove_point": "Veri noktasını kaldır",
+              "new_point": "Yeni",
+              "example": {
+                "title": "Çeyreklik gelir",
+                "label_1": "Ç1",
+                "label_2": "Ç2",
+                "label_3": "Ç3",
+                "label_4": "Ç4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Düzenlemek için karttaki herhangi bir metne tıklayın · cevapları düzenlemek için çevirme düğmesini kullanın",
+              "flip_hint": "Çevirmek için karta tıklayın",
+              "question": "Soru",
+              "answer": "Cevap",
+              "question_placeholder": "Soruyu yazın",
+              "answer_placeholder": "Cevabı yazın",
+              "flip": "Kartı çevir",
+              "show_question": "Kart cevabı gösteriyor. Soruyu görmek için Boşluk tuşuna basın.",
+              "show_answer": "Kart soruyu gösteriyor. Cevabı görmek için Boşluk tuşuna basın.",
+              "previous": "Önceki kart",
+              "next": "Sonraki kart",
+              "progress": "Deste ilerlemesi",
+              "cards": "Kartlar",
+              "add_card": "Kart ekle",
+              "remove_card": "Kartı kaldır",
+              "example": {
+                "question_1": "Müşteri elde tutma nedir?",
+                "answer_1": "Bir işletmenin müşterilerini zaman içinde koruyabilme yeteneği.",
+                "question_2": "Elde tutma neden yeni müşteri kazanmaktan daha önemlidir?",
+                "answer_2": "Mevcut bir müşteriyi tutmak, yeni bir müşteri kazanmaktan genellikle 5–7 kat daha ucuzdur.",
+                "question_3": "Bunu ölçmenin basit bir yolu nedir?",
+                "answer_3": "Bir dönemin başındaki müşteri sayınızı dönem sonunda kalanlarla karşılaştırın."
+              }
+            },
+            "tabs": {
+              "tab_list": "Sekmeler",
+              "position": "Sekme konumu",
+              "align_left": "Sekmeleri sola hizala",
+              "align_center": "Sekmeleri ortala",
+              "align_right": "Sekmeleri sağa hizala",
+              "tab_name": "Sekme adı",
+              "untitled_tab": "Adsız sekme",
+              "note_placeholder": "Bu sekme için bir not yazın…",
+              "add_tab": "Sekme ekle",
+              "remove_tab": "Sekmeyi kaldır",
+              "new_tab": "Yeni sekme",
+              "add_image": "Görsel ekle",
+              "add_video": "Video ekle",
+              "remove_image": "Görseli kaldır",
+              "remove_video": "Videoyu kaldır",
+              "example": {
+                "name_1": "Genel bakış",
+                "note_1": "Bu bölümün neleri kapsadığına hızlı bir bakış.",
+                "name_2": "Hazırlık",
+                "note_2": "Öğrencilerin başlamadan önce hazır etmesi gerekenler.",
+                "name_3": "İleri düzey",
+                "note_3": "Temeller oturduğunda daha derine inin."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Doğru cevabı işaretlemek için bir harfe tıklayın.",
+              "learner_hint": "Bir cevap seçin.",
+              "question_placeholder": "Sorunuzu yazın",
+              "option_placeholder": "Bir cevap yazın",
+              "mark_correct": "Doğru cevap olarak işaretle",
+              "correct_badge": "Doğru cevap",
+              "add_option": "Seçenek ekle",
+              "new_option": "Yeni seçenek",
+              "remove_option": "Seçeneği kaldır",
+              "add_media": "Medya ekle",
+              "remove_image": "Görseli kaldır",
+              "check": "Cevabı kontrol et",
+              "try_again": "Tekrar dene",
+              "correct_feedback": "Doğru, tebrikler!",
+              "wrong_feedback": "Tam değil. Doğru cevap vurgulandı.",
+              "example": {
+                "question": "İtalya'nın başkenti neresidir?",
+                "correct_option": "Roma",
+                "other_option_1": "Atina",
+                "other_option_2": "Lizbon"
+              }
+            },
+            "process": {
+              "stepper": "Adımlar",
+              "go_to_step": "{step}. adıma git",
+              "untitled_step": "Başlıksız adım",
+              "heading_placeholder": "Adım başlığı",
+              "body_placeholder": "Bu adımı açıklayın",
+              "add_media": "Medya ekle",
+              "image_option": "Görsel",
+              "remove_image": "Görseli kaldır",
+              "delete_step": "Bu adımı sil",
+              "add_step": "Adım ekle",
+              "back": "Geri",
+              "next": "İleri",
+              "start_over": "Baştan başla",
+              "progress": "Süreç ilerlemesi",
+              "new_step_heading": "Yeni adım",
+              "new_step_body": "Bu adımı açıklayın.",
+              "example": {
+                "heading_1": "Giriş",
+                "body_1": "Yapay zekâ ya da YZ, teknolojinin en dönüştürücü ve en hızlı gelişen alanlarından biri hâline geldi. Öğrenme, problem çözme ve karar verme gibi genellikle insan zekâsıyla ilişkilendirilen görevleri yerine getirebilen akıllı makineler oluşturmayı kapsar.",
+                "heading_2": "Nasıl çalışır",
+                "body_2": "Sürecin bu adımında neler olduğunu açıklayın.",
+                "heading_3": "Uygulamaya geçirmek",
+                "body_3": "Öğrencilerin az önce gördüklerini nasıl uyguladığını gösterin."
+              }
+            },
+            "all_blocks": "Tüm bloklar",
+            "search_blocks": "Blok ara",
+            "no_blocks_found": "Eşleşen blok yok",
+            "new_badge": "Yeni",
+            "coming_soon": "Yakında",
+            "upcoming": {
+              "audio": "Ses",
+              "poll": "Anket",
+              "timeline": "Zaman çizelgesi",
+              "code": "Kod",
+              "embed": "Yerleştirme"
+            },
+            "groups": {
+              "text": "Metin",
+              "media": "Medya",
+              "interactive": "Etkileşimli",
+              "advanced": "Gelişmiş"
+            },
+            "descriptions": {
+              "note": "Biçimli metin, başlıklar ve listeler",
+              "video": "Video yükleyin veya bağlayın",
+              "slides": "Bir sunum yerleştirin",
+              "document": "Görüntülenebilir veya indirilebilir dosya",
+              "image": "Görsel yükleyin veya seçin",
+              "chart": "Verilerinizden bir grafik",
+              "flashcards": "Hatırlama için çevirmeli kartlar",
+              "tabs": "İçeriği sekmelere ayırın",
+              "multiple_choice": "Kısa bir bilgi kontrolü",
+              "process": "Adım adım anlatım",
+              "html": "Kendi etkileşimli web sayfanız",
+              "audio": "Podcast veya sesli not",
+              "poll": "Sınıfa sorun, sonuçları gösterin",
+              "timeline": "Zaman ekseninde olaylar",
+              "code": "Söz dizimi vurgulu kod parçası",
+              "embed": "Yerleştirilebilir herhangi bir bağlantı"
+            },
+            "captions": {
+              "note": "Öğrenciler ders akışında biçimli metin, başlıklar ve listeler okur.",
+              "tabs": "Öğrenciler her bölümü kaydırmak yerine sekmeler arasında geçiş yapar.",
+              "process": "Öğrenciler numaralı adımları tek tek ilerler.",
+              "video": "Öğrenciler videoyu doğrudan derste oynatır.",
+              "slides": "Öğrenciler dersten ayrılmadan sunumda gezinir.",
+              "document": "Öğrenciler sayfaları önizler veya dosyayı indirir.",
+              "image": "Öğrenciler görseli derste tam genişlikte görür.",
+              "audio": "Öğrenciler derste bir podcast veya sesli not dinler.",
+              "chart": "Öğrenciler verilerinizi grafik olarak görür.",
+              "flashcards": "Öğrenciler cevabı görmek için her kartı çevirir ve destede ilerler.",
+              "multiple_choice": "Öğrenciler bir cevap seçer, Kontrol Et'e basar ve doğru olup olmadığını hemen görür.",
+              "poll": "Öğrenciler oy verir, sonra sınıfın nasıl cevapladığını görür.",
+              "timeline": "Öğrenciler olayları bir zaman ekseni boyunca sırayla izler.",
+              "html": "HTML’iniz ders içinde canlı, etkileşimli bir sayfa olarak çalışır.",
+              "code": "Öğrenciler vurgulanmış kodu okur ve tek tıkla kopyalar.",
+              "embed": "Bir bağlantı yapıştırın, öğrenciler yerleştirilmiş sayfayı görsün."
             }
           }
         },
@@ -3815,7 +4058,13 @@
             "video": "video",
             "slides": "slaytlar",
             "document": "belge",
-            "image": "resim"
+            "image": "resim",
+            "chart": "grafik",
+            "flashcards": "bilgi kartları",
+            "tabs": "sekmeler",
+            "multiple_choice": "çoktan seçmeli soru",
+            "process": "süreç",
+            "html": "HTML sayfası"
           },
           "change_kind": {
             "added": "Eklendi",
@@ -6618,6 +6867,11 @@
         "move_lesson_block": "Bir bloğu taşıma",
         "add_lesson_slides_block": "Slayt ekleme",
         "add_lesson_image_block": "Resim ekleme",
+        "write_lesson_chart_block": "Grafik kaydediliyor",
+        "write_lesson_flashcards_block": "Bilgi kartları kaydediliyor",
+        "write_lesson_tabs_block": "Sekmeler kaydediliyor",
+        "write_lesson_multiple_choice_block": "Çoktan seçmeli soru kaydediliyor",
+        "write_lesson_process_block": "Süreç kaydediliyor",
         "update_lesson_block_settings": "Blok ayarları güncelleniyor",
         "update_lesson_block_requirements": "Tamamlama kuralları güncelleniyor",
         "detach_lesson_block": "Paylaşılan bir bloğu ayırma",
@@ -6672,6 +6926,11 @@
         "move_lesson_block": "{title} içinde bir blok taşındı",
         "add_lesson_slides_block": "{title} dosyasına slaytlar eklendi",
         "add_lesson_image_block": "{title}'a bir resim eklendi",
+        "write_lesson_chart_block": "{title} içine bir grafik kaydedildi",
+        "write_lesson_flashcards_block": "{title} içine bilgi kartları kaydedildi",
+        "write_lesson_tabs_block": "{title} içine sekmeler kaydedildi",
+        "write_lesson_multiple_choice_block": "{title} içine çoktan seçmeli bir soru kaydedildi",
+        "write_lesson_process_block": "{title} içine bir süreç kaydedildi",
         "update_lesson_block_settings": "{title} içindeki bir blok güncellendi",
         "update_lesson_block_requirements": "{title} içindeki tamamlama kuralları güncellendi",
         "detach_lesson_block": "{title} adlı kullanıcıya paylaşılan bloğun kendi kopyasını verdi",
@@ -7340,7 +7599,7 @@
     "lesson_blocks": {
       "title": "Ders bloklarıyla tanışın",
       "description": "Dersler artık bloklardan oluşturuluyor. 5 dakikada nasıl çalıştığını görün.",
-      "coach_description": "Her dersi not, video, slayt, belge ve resim bloklarından istediğiniz sırayla oluşturun. Denemek için Düzenle'yi seçin.",
+      "coach_description": "Her dersi not, video, grafik, bilgi kartı ve çoktan seçmeli soru gibi bloklardan istediğiniz sırayla oluşturun. Denemek için Düzenle'yi seçin.",
       "coach_title": "🎉 Yeni! Dersler artık esnek."
     },
     "close": "Kapat",

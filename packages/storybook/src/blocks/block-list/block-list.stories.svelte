@@ -1,12 +1,8 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import FileTextIcon from '@lucide/svelte/icons/file-text';
-  import ImageIcon from '@lucide/svelte/icons/image';
-  import PresentationIcon from '@lucide/svelte/icons/presentation';
-  import VideoIcon from '@lucide/svelte/icons/video';
   import * as AddBlock from '@cio/ui/custom/add-block';
   import * as Block from '@cio/ui/custom/block';
+  import { AI_SHORTCUT, ALL_CHOICES } from '../add-block/choices';
   import { FIELDS } from './fields';
 
   interface DemoBlock {
@@ -17,13 +13,7 @@
     badge?: string;
   }
 
-  const addChoices: AddBlock.AddBlockChoice[] = [
-    { type: 'note', label: 'Note', icon: BookOpenIcon },
-    { type: 'video', label: 'Video', icon: VideoIcon },
-    { type: 'slide', label: 'Slides', icon: PresentationIcon },
-    { type: 'document', label: 'Document', icon: FileTextIcon },
-    { type: 'image', label: 'Image', icon: ImageIcon }
-  ];
+  const addChoices = ALL_CHOICES;
 
   const demoBlocks: DemoBlock[] = [
     {
@@ -61,8 +51,10 @@
       spacingClass: 'ui:gap-10',
       addChoices,
       addLabel: 'Add content',
+      addAiLabel: 'Ask AI instead',
+      addAiShortcut: AI_SHORTCUT,
       emptyTitle: 'No content yet',
-      emptyDescription: 'Add a note, video, slides, document or image to get started.',
+      emptyDescription: 'Pick a block to begin. You can add more at any time.',
       previewLabel: 'Preview',
       dragHintLabel: 'Drag blocks to reorder them',
       dismissHintLabel: 'Dismiss hint',
@@ -77,6 +69,7 @@
     argTypes: {
       emptyIcon: { control: false },
       emptyAction: { control: false },
+      onAddAi: { control: false },
       renderItem: { control: false },
       onAdd: { control: false },
       onReorder: { control: false },
@@ -85,6 +78,10 @@
     },
     tags: ['autodocs']
   });
+</script>
+
+<script lang="ts">
+  let emptyAiOpen = $state(false);
 </script>
 
 {#snippet blockBody(block: DemoBlock)}
@@ -102,6 +99,7 @@
         items={demoBlocks}
         editable={true}
         onAdd={(type, index) => console.log('add', type, 'at', index)}
+        onAddAi={() => console.log('ask ai')}
         onReorder={(items: DemoBlock[]) =>
           console.log(
             'reorder',
@@ -181,14 +179,24 @@
 <Story name="EmptyEditable">
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-3xl">
-      <Block.List {...args} items={[]} editable={true} emptyTitle="Add your first block">
+      <Block.List {...args} items={[]} editable={true} emptyTitle="What goes in this lesson?">
         {#snippet emptyAction()}
-          <AddBlock.Row
-            choices={addChoices}
-            addLabel="Add content"
-            aiLabel="Ask AI"
-            onSelect={(type) => console.log('add', type)}
-          />
+          <div class="flex w-full flex-col items-center gap-4">
+            <AddBlock.Grid choices={addChoices} label="Add content" onSelect={(type) => console.log('add', type)} />
+            <AddBlock.AiLauncher
+              label="Ask AI"
+              panelLabel="Draft a note with AI"
+              shortcut={AI_SHORTCUT}
+              open={emptyAiOpen}
+              onOpen={() => (emptyAiOpen = true)}
+            >
+              {#snippet panel()}
+                <button type="button" class="w-full text-left text-sm" onclick={() => (emptyAiOpen = false)}>
+                  Type a prompt… (click to close)
+                </button>
+              {/snippet}
+            </AddBlock.AiLauncher>
+          </div>
         {/snippet}
 
         {#snippet renderItem({ item }: { item: DemoBlock; index: number; total: number; highlighted: boolean })}

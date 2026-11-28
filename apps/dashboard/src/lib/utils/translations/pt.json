@@ -1774,7 +1774,13 @@
             "video": "vídeo",
             "slides": "diapositivos",
             "document": "documento",
-            "image": "imagem"
+            "image": "imagem",
+            "chart": "gráfico",
+            "flashcards": "flashcards",
+            "tabs": "abas",
+            "multiple_choice": "pergunta de múltipla escolha",
+            "process": "processo",
+            "html": "página HTML"
           },
           "change_kind": {
             "added": "Adicionado",
@@ -2642,6 +2648,7 @@
           },
           "blocks": {
             "add_content": "Adicionar conteúdo",
+            "ask_ai_instead": "Perguntar à IA",
             "example": "Exemplo",
             "change_type": "Alterar {type}",
             "edit_type": "Editar {type}",
@@ -2652,8 +2659,8 @@
             "drag": "Arraste para reordenar",
             "drag_hint": "Arraste a alça de um bloco para reordená-lo. Você também pode usar as opções \"Mover para cima\" e \"Mover para baixo\" no menu correspondente.",
             "dismiss_hint": "Ignorar dica de reordenação",
-            "empty_title": "Comece a construir esta lição.",
-            "empty_description": "Adicione uma nota, vídeo, slides, documento ou imagem. Você pode adicionar quantos blocos precisar, em qualquer ordem.",
+            "empty_title": "O que vai nesta aula?",
+            "empty_description": "Escolha um bloco para começar. Você pode adicionar mais a qualquer momento.",
             "empty_note": "Esta nota está vazia.",
             "scroll_rail": "Blocos de aula",
             "save_failed": "Não foi possível salvar esta alteração, então o bloco foi restaurado. {reason}",
@@ -2669,6 +2676,61 @@
               "fit_cover": "Preencher",
               "fit_contain": "Ajustar"
             },
+            "html": {
+              "dialog_title": "Adicionar HTML",
+              "add_tab": "Adicionar",
+              "code_tab": "Colar código",
+              "upload": "Enviar arquivo HTML",
+              "upload_hint": "Ou arraste e solte aqui",
+              "create_with_ai": "Criar com IA",
+              "describe_placeholder": "Ou descreva sua ideia...",
+              "beta": "Beta",
+              "generate": "Gerar",
+              "generating": "Gerando sua página. Isso pode levar um minuto…",
+              "remove_template": "Remover modelo",
+              "insert": "Inserir",
+              "frame_title": "Página HTML incorporada",
+              "interact": "Interagir",
+              "full_screen": "Tela cheia",
+              "more": "Mais ações",
+              "change": "Substituir HTML",
+              "download": "Baixar HTML",
+              "resize_width": "Arraste para redimensionar a largura",
+              "resize_height": "Arraste para redimensionar a altura",
+              "edit_with_ai": "Editar com IA",
+              "ai_edit_placeholder": "Descreva o que mudar, por ex. Use um tema escuro e adicione um botão de reiniciar",
+              "ai_edit_submit": "Aplicar",
+              "generate_error": "Não foi possível gerar a página. Tente novamente.",
+              "save_error": "Não foi possível salvar a página. Tente novamente.",
+              "too_large": "Esta página tem mais de 2 MB. Use uma página menor.",
+              "empty_file": "Este arquivo está vazio.",
+              "templates": {
+                "slides": {
+                  "label": "Slides",
+                  "prompt": "Crie uma apresentação caprichada sobre o tema desta aula, com um slide de título, 5 a 7 slides de conteúdo, navegação por teclado e botões e um contador de slides."
+                },
+                "dashboard": {
+                  "label": "Painel",
+                  "prompt": "Crie um painel interativo com dados de exemplo sobre o tema desta aula, com números principais, dois gráficos desenhados em SVG e filtros que os atualizam."
+                },
+                "report": {
+                  "label": "Relatório",
+                  "prompt": "Crie um relatório de uma página claro e bem estruturado sobre o tema desta aula, com um resumo, principais descobertas, uma tabela comparativa e uma breve conclusão."
+                },
+                "explainer": {
+                  "label": "Explicação",
+                  "prompt": "Crie uma explicação interativa que ensine o tema desta aula passo a passo, com um diagrama para os alunos explorarem e um breve quiz de compreensão."
+                },
+                "prototype": {
+                  "label": "Protótipo",
+                  "prompt": "Crie um protótipo de app clicável relacionado ao tema desta aula, com duas ou três telas, conteúdo de exemplo realista e navegação funcional entre elas."
+                },
+                "game": {
+                  "label": "Jogo",
+                  "prompt": "Crie um jogo caprichado e jogável que ajude os alunos a praticar o tema desta aula. Inclua instruções claras, controles intuitivos, um ciclo de jogo completo, pontuação e uma forma de recomeçar."
+                }
+              }
+            },
             "settings": {
               "title": "Configurações da aula",
               "description": "Gerencie esta lição sem sair da tela de conteúdo."
@@ -2681,7 +2743,7 @@
               "spacious": "Espaçoso"
             },
             "ai": {
-              "title": "Elabore uma nota com IA",
+              "title": "Peça à IA para adicionar conteúdo a esta lição",
               "prompt_label": "Incitar",
               "prompt_placeholder": "Exemplo: Uma breve introdução ao ciclo da água para iniciantes"
             },
@@ -2690,10 +2752,14 @@
               "video": "Vídeo",
               "slides": "Slides",
               "document": "Documento",
-              "image": "Imagem"
+              "image": "Imagem",
+              "chart": "Gráfico",
+              "flashcards": "Flashcards",
+              "tabs": "Abas",
+              "multiple_choice": "Múltipla escolha",
+              "process": "Processo",
+              "html": "HTML"
             },
-            "empty_preview_title": "Nada para visualizar ainda",
-            "empty_preview_description": "Esta lição não tem conteúdo para os alunos verem. Mude para {editLabel} para adicionar uma nota, vídeo, slides, documento ou imagem.",
             "empty_learner_title": "Esta lição ainda não está pronta",
             "empty_learner_description": "Seu instrutor não adicionou nenhum conteúdo a esta lição. Volte em breve.",
             "document": {
@@ -2705,6 +2771,188 @@
             },
             "slides": {
               "add_slide": "Adicionar slide"
+            },
+            "chart": {
+              "title": "Título do gráfico",
+              "title_placeholder": "Título do gráfico",
+              "chart_type": "Tipo de gráfico",
+              "types": {
+                "bar": "Gráfico de barras",
+                "line": "Gráfico de linhas",
+                "pie": "Gráfico de pizza",
+                "donut": "Gráfico de rosca"
+              },
+              "point_count": "{count, plural, one {# ponto de dados} other {# pontos de dados}}",
+              "highest": "Maior",
+              "total": "Total",
+              "edit_data": "Editar dados",
+              "live_hint": "As alterações atualizam o gráfico em tempo real.",
+              "label": "Rótulo",
+              "value": "Valor",
+              "label_placeholder": "Rótulo",
+              "add_point": "Adicionar ponto de dados",
+              "remove_point": "Remover ponto de dados",
+              "new_point": "Novo",
+              "example": {
+                "title": "Receita trimestral",
+                "label_1": "T1",
+                "label_2": "T2",
+                "label_3": "T3",
+                "label_4": "T4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Clique em qualquer texto do cartão para editá-lo · use o botão de virar para editar as respostas",
+              "flip_hint": "Clique no cartão para virá-lo",
+              "question": "Pergunta",
+              "answer": "Resposta",
+              "question_placeholder": "Digite a pergunta",
+              "answer_placeholder": "Digite a resposta",
+              "flip": "Virar cartão",
+              "show_question": "Cartão mostrando a resposta. Pressione Espaço para ver a pergunta.",
+              "show_answer": "Cartão mostrando a pergunta. Pressione Espaço para ver a resposta.",
+              "previous": "Cartão anterior",
+              "next": "Próximo cartão",
+              "progress": "Progresso do baralho",
+              "cards": "Cartões",
+              "add_card": "Adicionar cartão",
+              "remove_card": "Remover cartão",
+              "example": {
+                "question_1": "O que é retenção de clientes?",
+                "answer_1": "A capacidade de uma empresa de manter seus clientes ao longo do tempo.",
+                "question_2": "Por que a retenção importa mais do que a aquisição?",
+                "answer_2": "Manter um cliente existente costuma ser de 5 a 7 vezes mais barato do que conquistar um novo.",
+                "question_3": "Qual é uma forma simples de medi-la?",
+                "answer_3": "Compare quantos clientes você tinha no início de um período com quantos restam no final."
+              }
+            },
+            "tabs": {
+              "tab_list": "Abas",
+              "position": "Posição das abas",
+              "align_left": "Alinhar abas à esquerda",
+              "align_center": "Centralizar abas",
+              "align_right": "Alinhar abas à direita",
+              "tab_name": "Nome da aba",
+              "untitled_tab": "Aba sem título",
+              "note_placeholder": "Escreva uma nota para esta aba…",
+              "add_tab": "Adicionar aba",
+              "remove_tab": "Remover aba",
+              "new_tab": "Nova aba",
+              "add_image": "Adicionar imagem",
+              "add_video": "Adicionar vídeo",
+              "remove_image": "Remover imagem",
+              "remove_video": "Remover vídeo",
+              "example": {
+                "name_1": "Visão geral",
+                "note_1": "Uma visão geral rápida do que esta seção aborda.",
+                "name_2": "Preparação",
+                "note_2": "O que os alunos precisam ter pronto antes de começar.",
+                "name_3": "Avançado",
+                "note_3": "Aprofunde-se quando o básico estiver confortável."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Clique em uma letra para marcar a resposta correta.",
+              "learner_hint": "Escolha uma resposta.",
+              "question_placeholder": "Digite sua pergunta",
+              "option_placeholder": "Digite uma resposta",
+              "mark_correct": "Marcar como resposta correta",
+              "correct_badge": "Resposta correta",
+              "add_option": "Adicionar opção",
+              "new_option": "Nova opção",
+              "remove_option": "Remover opção",
+              "add_media": "Adicionar mídia",
+              "remove_image": "Remover imagem",
+              "check": "Verificar resposta",
+              "try_again": "Tentar novamente",
+              "correct_feedback": "Correto, muito bem!",
+              "wrong_feedback": "Não exatamente. A resposta correta está destacada.",
+              "example": {
+                "question": "Qual é a capital da Itália?",
+                "correct_option": "Roma",
+                "other_option_1": "Atenas",
+                "other_option_2": "Lisboa"
+              }
+            },
+            "process": {
+              "stepper": "Etapas",
+              "go_to_step": "Ir para a etapa {step}",
+              "untitled_step": "Etapa sem título",
+              "heading_placeholder": "Título da etapa",
+              "body_placeholder": "Descreva esta etapa",
+              "add_media": "Adicionar mídia",
+              "image_option": "Imagem",
+              "remove_image": "Remover imagem",
+              "delete_step": "Excluir esta etapa",
+              "add_step": "Adicionar etapa",
+              "back": "Voltar",
+              "next": "Próximo",
+              "start_over": "Recomeçar",
+              "progress": "Progresso do processo",
+              "new_step_heading": "Nova etapa",
+              "new_step_body": "Descreva esta etapa.",
+              "example": {
+                "heading_1": "Introdução",
+                "body_1": "A inteligência artificial, ou IA, tornou-se uma das áreas mais transformadoras e de evolução mais rápida da tecnologia. Ela envolve a criação de máquinas inteligentes capazes de realizar tarefas normalmente associadas à inteligência humana, como aprender, resolver problemas e tomar decisões.",
+                "heading_2": "Como funciona",
+                "body_2": "Descreva o que acontece nesta etapa do processo.",
+                "heading_3": "Colocando em prática",
+                "body_3": "Mostre como os alunos aplicam o que acabaram de ver."
+              }
+            },
+            "all_blocks": "Todos os blocos",
+            "search_blocks": "Pesquisar blocos",
+            "no_blocks_found": "Nenhum bloco corresponde",
+            "new_badge": "Novo",
+            "coming_soon": "Em breve",
+            "upcoming": {
+              "audio": "Áudio",
+              "poll": "Enquete",
+              "timeline": "Linha do tempo",
+              "code": "Código",
+              "embed": "Incorporar"
+            },
+            "groups": {
+              "text": "Texto",
+              "media": "Mídia",
+              "interactive": "Interativo",
+              "advanced": "Avançado"
+            },
+            "descriptions": {
+              "note": "Texto formatado, títulos e listas",
+              "video": "Envie ou vincule um vídeo",
+              "slides": "Incorpore uma apresentação",
+              "document": "Um arquivo para ver ou baixar",
+              "image": "Envie ou escolha uma imagem",
+              "chart": "Um gráfico a partir dos seus dados",
+              "flashcards": "Cartões para praticar a memória",
+              "tabs": "Divida o conteúdo em abas",
+              "multiple_choice": "Uma verificação rápida",
+              "process": "Um passo a passo",
+              "html": "Sua própria página web interativa",
+              "audio": "Podcast ou nota de voz",
+              "poll": "Pergunte à turma e mostre os resultados",
+              "timeline": "Eventos em uma linha do tempo",
+              "code": "Um trecho de código destacado",
+              "embed": "Qualquer link incorporável"
+            },
+            "captions": {
+              "note": "Os alunos leem texto formatado, títulos e listas na lição.",
+              "tabs": "Os alunos alternam entre abas em vez de rolar por cada seção.",
+              "process": "Os alunos avançam por etapas numeradas, uma de cada vez.",
+              "video": "Os alunos reproduzem o vídeo dentro da lição.",
+              "slides": "Os alunos passam pelos slides sem sair da lição.",
+              "document": "Os alunos veem as páginas ou baixam o arquivo.",
+              "image": "Os alunos veem a imagem em largura total na lição.",
+              "audio": "Os alunos ouvem um podcast ou nota de voz na lição.",
+              "chart": "Os alunos veem seus dados como um gráfico.",
+              "flashcards": "Os alunos viram cada cartão para ver a resposta e percorrem o baralho.",
+              "multiple_choice": "Os alunos escolhem uma resposta, clicam em Verificar e veem na hora se está certa.",
+              "poll": "Os alunos votam e depois veem como a turma respondeu.",
+              "timeline": "Os alunos acompanham os eventos em ordem em uma linha do tempo.",
+              "html": "Seu HTML roda como uma página interativa dentro da lição.",
+              "code": "Os alunos leem código destacado e copiam com um clique.",
+              "embed": "Cole um link e os alunos verão a página incorporada."
             }
           }
         },
@@ -3698,6 +3946,7 @@
       "slot_type": {
         "lesson_video": "Vídeo da aula",
         "lesson_document": "Documento da lição",
+        "lesson_html": "Página HTML da aula",
         "unknown": "Anexo"
       },
       "refresh": "Atualizar uso"
@@ -4478,7 +4727,7 @@
     "ai_credits": {
       "sub_title": "Créditos de IA",
       "page_subtitle": "Acompanhe o uso do assistente de IA, o consumo da equipe e compre pacotes de AI credits.",
-      "cost_note": "O uso de créditos é ponderado pelo custo do modelo. Gemini 3.1 Flash Lite conta como 1 unidade de crédito por token. GPT-5.4 Mini e Kimi K2.6 contam como 4× por token. Claude Sonnet 4.6 conta como 11× por token, refletindo seu custo de API mais alto.",
+      "cost_note": "O uso de créditos é ponderado pelo custo do modelo. Kimi K2.6 conta como 1 unidade de crédito por token. Gemini 3.8 Flash conta como 2,7× por token. GPT-5.4 Mini conta como 4× por token. Claude Sonnet 4.6 conta como 11× por token, refletindo seu custo de API mais alto.",
       "included": {
         "title": "Seu uso incluído",
         "subtitle": "AI credits mensais incluídos no seu plano.",
@@ -6033,6 +6282,11 @@
         "move_lesson_block": "Movendo um bloco",
         "add_lesson_slides_block": "Adicionando slides",
         "add_lesson_image_block": "Adicionando uma imagem",
+        "write_lesson_chart_block": "Salvando um gráfico",
+        "write_lesson_flashcards_block": "Salvando flashcards",
+        "write_lesson_tabs_block": "Salvando abas",
+        "write_lesson_multiple_choice_block": "Salvando uma pergunta de múltipla escolha",
+        "write_lesson_process_block": "Salvando um processo",
         "update_lesson_block_settings": "Atualizando configurações de bloqueio",
         "update_lesson_block_requirements": "Atualizando regras de conclusão",
         "detach_lesson_block": "Desanexando um bloco compartilhado",
@@ -6087,6 +6341,11 @@
         "move_lesson_block": "Movido um bloco em {title}",
         "add_lesson_slides_block": "Slides adicionados a {title}",
         "add_lesson_image_block": "Adicionada uma imagem a {title}",
+        "write_lesson_chart_block": "Gráfico salvo em {title}",
+        "write_lesson_flashcards_block": "Flashcards salvos em {title}",
+        "write_lesson_tabs_block": "Abas salvas em {title}",
+        "write_lesson_multiple_choice_block": "Pergunta de múltipla escolha salva em {title}",
+        "write_lesson_process_block": "Processo salvo em {title}",
         "update_lesson_block_settings": "Atualizado um bloco em {title}",
         "update_lesson_block_requirements": "Regras de conclusão atualizadas em {title}",
         "detach_lesson_block": "Deu a {title} sua própria cópia de um bloco compartilhado",
@@ -8057,7 +8316,7 @@
     "lesson_blocks": {
       "title": "Apresentando blocos de aula",
       "description": "As aulas agora são construídas a partir de blocos. Veja como funciona em 5 minutos.",
-      "coach_description": "Crie cada lição a partir de blocos de notas, vídeos, slides, documentos e imagens, em qualquer ordem. Selecione Editar para experimentar.",
+      "coach_description": "Crie cada lição com blocos como notas, vídeos, gráficos, flashcards e perguntas de múltipla escolha, em qualquer ordem. Selecione Editar para experimentar.",
       "coach_title": "🎉 Novidade! As aulas agora são flexíveis."
     },
     "close": "Fechar",
