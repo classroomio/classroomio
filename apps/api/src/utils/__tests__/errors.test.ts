@@ -3,7 +3,47 @@ import { z, ZodError } from 'zod';
 import { Hono } from 'hono';
 
 import { ZCourseType } from '@cio/utils/validation/course';
-import { AppError, ErrorCodes, formatZodErrorMessage, handleError, handlePublicApiError } from '@api/utils/errors';
+import {
+  AppError,
+  ErrorCodes,
+  formatZodErrorMessage,
+  handleError,
+  handlePublicApiError,
+  membershipConflictError
+} from '@api/utils/errors';
+
+function uniqueViolation(constraint: string) {
+  return {
+    name: 'DrizzleQueryError',
+    message: 'Failed query',
+    cause: { code: '23505', constraint_name: constraint }
+  };
+}
+
+describe('membershipConflictError', () => {
+  it('maps course membership duplicates to COURSE_MEMBER_EXISTS', () => {
+    for (const constraint of ['unique_group_email', 'unique_group_profile']) {
+      const mapped = membershipConflictError(uniqueViolation(constraint));
+
+      expect(mapped).toMatchObject({ statusCode: 409, code: 'COURSE_MEMBER_EXISTS' });
+    }
+  });
+
+  it('maps org email links to ORG_MEMBER_EMAIL_LINKED_TO_OTHER_ACCOUNT', () => {
+    const mapped = membershipConflictError(uniqueViolation('organizationmember_org_email_unique'));
+
+    expect(mapped).toMatchObject({
+      statusCode: 409,
+      code: 'ORG_MEMBER_EMAIL_LINKED_TO_OTHER_ACCOUNT',
+      field: 'email'
+    });
+  });
+
+  it('returns null for unrecognized unique violations', () => {
+    expect(membershipConflictError(uniqueViolation('some_other_unique'))).toBeNull();
+    expect(membershipConflictError(new Error('boom'))).toBeNull();
+  });
+});
 
 describe('formatZodErrorMessage', () => {
   it('formats issue paths and messages', () => {

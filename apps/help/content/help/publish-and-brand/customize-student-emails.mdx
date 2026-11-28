@@ -4,9 +4,9 @@ description: Edit the subject and message of the emails ClassroomIO sends your s
 last_reviewed: '2026-10-05'
 ---
 
-Go to **Settings → Emails** to rewrite the emails your students receive, such as course invitations, welcome emails, quiz assignments, and live session reminders. Your version replaces ClassroomIO's default for every student in your organization, and it's sent in the language you enforce for students.
+Go to **Settings → Emails** to rewrite the emails your students receive, such as invitations, welcome emails, quiz assignments, and live session reminders. Your version replaces ClassroomIO's default for every student in your organization, and it's sent in the language you enforce for students.
 
-![Emails settings page with the Course invitation email open in the editor and the email list grouped by type](./images/customize-student-emails/overview.webp)
+![Emails settings page with the Organization invitation email open in the editor and the email list grouped by type](./images/customize-student-emails/overview.webp)
 
 ## Before you start
 
@@ -76,20 +76,20 @@ Some values only appear when they exist:
 
 Every email can use **Organization** (`{{org_name}}`). These emails also support:
 
-| Email                       | When it's sent                              | Placeholders                                                           |
-| --------------------------- | ------------------------------------------- | ---------------------------------------------------------------------- |
-| **Course invitation**       | You invite someone to a course              | Course name, Expiry date                                               |
-| **Organization invitation** | You invite someone to your organization     | Expiry date, Courses                                                   |
-| **Course welcome**          | A student gets access to a course           | Course name                                                            |
-| **Cohort welcome**          | A student gets access to a cohort           | Cohort name                                                            |
-| **Quiz assigned**           | A quiz is assigned to a student             | Course name, Exercise title                                            |
-| **Submission graded**       | A student's exercise submission is reviewed | Student name, Exercise title, Course name, Status, Score, Lesson title |
-| **Cohort goal reminder**    | A cohort goal is due or overdue             | Cohort name, Goal, Due status, Completed count, Required count         |
-| **Course completion**       | A student completes a course                | Course name, Student name, Instructor message                          |
-| **Live session reminder**   | Before a scheduled live session             | Course name, Session title, Session time, Start time                   |
-| **Live session updated**    | Live session details change                 | Course name, Session title, Session time                               |
-| **Course newsfeed post**    | A new course post is published              | Course name, Teacher name, Post content                                |
-| **Payment proof request**   | A student needs to send proof of payment    | Course name, Student name, Teacher email                               |
+| Email                       | When it's sent                                                         | Placeholders                                                           |
+| --------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Course invitation**       | No longer sent; email invitations use **Organization invitation**      | Course name, Expiry date                                               |
+| **Organization invitation** | You invite someone to your organization, a course or a cohort by email | Expiry date, Courses (the courses and cohorts on the invitation)       |
+| **Course welcome**          | A student gets access to a course                                      | Course name                                                            |
+| **Cohort welcome**          | A student gets access to a cohort                                      | Cohort name                                                            |
+| **Quiz assigned**           | A quiz is assigned to a student                                        | Course name, Exercise title                                            |
+| **Submission graded**       | A student's exercise submission is reviewed                            | Student name, Exercise title, Course name, Status, Score, Lesson title |
+| **Cohort goal reminder**    | A cohort goal is due or overdue                                        | Cohort name, Goal, Due status, Completed count, Required count         |
+| **Course completion**       | A student completes a course                                           | Course name, Student name, Instructor message                          |
+| **Live session reminder**   | Before a scheduled live session                                        | Course name, Session title, Session time, Start time                   |
+| **Live session updated**    | Live session details change                                            | Course name, Session title, Session time                               |
+| **Course newsfeed post**    | A new course post is published                                         | Course name, Teacher name, Post content                                |
+| **Payment proof request**   | A student needs to send proof of payment                               | Course name, Student name, Teacher email                               |
 
 **Payment proof request** has no button or **+ Link**, because students reply by email.
 
@@ -102,5 +102,5 @@ If your organization moves to the Free plan, every student email goes back to th
 ## Related guides
 
 - [Customize the welcome email](/manage-students/welcome-email) — write a course's own welcome message, which replaces the **Course welcome** body
-- [Invite students](/manage-students/invite-students) — send the course invitation email
+- [Invite students](/manage-students/invite-students) — send the organization invitation email
 - [Manage your notification preferences](/account-team-security/manage-your-notification-preferences) — choose which emails you receive yourself
