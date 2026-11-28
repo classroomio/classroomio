@@ -849,6 +849,39 @@ export async function importAudienceMembers(
     racedMembers.map((member) => [member.normalizedEmail, classifyRacedMember(member)])
   );
   const racedPendingEmails = racedEmails.filter((email) => racedStatusByEmail.get(email) === 'ready');
+  const racedJoinedProfileIds = racedMembers
+    .filter((member) => racedStatusByEmail.get(member.normalizedEmail) === 'already_member' && member.profileId)
+    .map((member) => member.profileId as string);
+
+  const racedEnrolledCourses =
+    racedJoinedProfileIds.length > 0 && courseIds.length > 0
+      ? await enrollAudienceStudentProfilesInCourses(
+          orgId,
+          organization,
+          racedJoinedProfileIds,
+          courseIds,
+          data.sendEmail,
+          source
+        )
+      : { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, outcomes: [] as TAudienceEnrollmentOutcome[] };
+  const racedEnrolledCohorts =
+    racedJoinedProfileIds.length > 0 && cohortIds.length > 0
+      ? await enrollAudienceStudentProfilesInCohorts(
+          organization,
+          orgId,
+          racedJoinedProfileIds,
+          cohortIds,
+          data.sendEmail,
+          source,
+          invitedByProfileId
+        )
+      : { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, outcomes: [] as TAudienceEnrollmentOutcome[] };
+
+  const racedEnrolledProfileIds = new Set(
+    [...racedEnrolledCourses.outcomes, ...racedEnrolledCohorts.outcomes]
+      .filter((outcome) => outcome.status === 'enrolled')
+      .map((outcome) => outcome.profileId)
+  );
 
   const imported = await createStudentOrgInvitesAndSendEmails({
     ...inviteInput,
@@ -860,6 +893,10 @@ export async function importAudienceMembers(
     const racedStatus = racedStatusByEmail.get(row.email) ?? 'already_member';
     const invited = imported.invites?.inviteByEmail.has(row.email) ?? false;
     row.status = racedStatus === 'ready' && !invited ? 'already_member' : racedStatus;
+    if (row.status === 'already_member' && (courseIds.length > 0 || cohortIds.length > 0)) {
+      const profileId = racedMembers.find((member) => member.normalizedEmail === row.email)?.profileId;
+      if (profileId) row.enrollment = racedEnrolledProfileIds.has(profileId) ? 'enrolled' : 'already_enrolled';
+    }
   }
   const renewed = await sendStudentOrgInvites({ ...inviteInput, emails: pendingStudentEmails }, renewedInvites);
 
@@ -892,14 +929,24 @@ export async function importAudienceMembers(
   return {
     ...buildImportResult(rows, {
       imported: addedEmails.length,
-      enrolled: assignedToCourses.assigned + assignedToCohorts.assigned,
+      enrolled:
+        assignedToCourses.assigned + assignedToCohorts.assigned + racedEnrolledCourses.assigned + racedEnrolledCohorts.assigned,
       emailsSent:
-        assignedToCourses.emailsSent + assignedToCohorts.emailsSent + imported.emailsSent + renewed.emailsSent,
+        assignedToCourses.emailsSent +
+        assignedToCohorts.emailsSent +
+        racedEnrolledCourses.emailsSent +
+        racedEnrolledCohorts.emailsSent +
+        imported.emailsSent +
+        renewed.emailsSent,
       emailsFailed: imported.emailsFailed + renewed.emailsFailed
     }),
-    assigned: assignedToCourses.assigned + assignedToCohorts.assigned,
-    alreadyEnrolledInCourses: assignedToCourses.alreadyEnrolled,
-    alreadyEnrolledInCohorts: assignedToCohorts.alreadyEnrolled,
+    assigned:
+      assignedToCourses.assigned +
+      assignedToCohorts.assigned +
+      racedEnrolledCourses.assigned +
+      racedEnrolledCohorts.assigned,
+    alreadyEnrolledInCourses: assignedToCourses.alreadyEnrolled + racedEnrolledCourses.alreadyEnrolled,
+    alreadyEnrolledInCohorts: assignedToCohorts.alreadyEnrolled + racedEnrolledCohorts.alreadyEnrolled,
     pendingInvitesRenewed: renewedInvites ? (renewedInvites as TStudentOrgInvites).created.length : 0,
     emailFailures: [...imported.emailFailures, ...renewed.emailFailures],
     truncated: parsed.truncated

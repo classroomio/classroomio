@@ -257,16 +257,25 @@
     const email = getEmail(person);
     if (!email) return;
 
+    const originCohortId = data.cohortId;
+    const originQuery = { ...query };
+    const originRowCount = peopleRows.length;
+
     const result = await cohortApi.revokeInvite(data.cohortId, email);
     if (!result?.success) return;
 
-    const emptiedLastPage = peopleRows.length <= 1 && query.page > 1;
-    if (emptiedLastPage) {
-      await navigatePeople({ ...query, page: query.page - 1, search: search.takePending() || undefined });
-      return;
-    }
+    try {
+      const emptiedLastPage = originRowCount <= 1 && originQuery.page > 1;
+      const isStillCurrent = data.cohortId === originCohortId && query.page === originQuery.page;
+      if (emptiedLastPage && isStillCurrent) {
+        await navigatePeople({ ...originQuery, page: originQuery.page - 1, search: search.takePending() || undefined });
+        return;
+      }
 
-    await reloadPeople();
+      await reloadPeople();
+    } catch (error) {
+      console.error('Failed to refresh after revoking invitation:', error);
+    }
   }
 
   function openInviteModal() {

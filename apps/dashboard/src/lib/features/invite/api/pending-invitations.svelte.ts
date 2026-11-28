@@ -31,6 +31,7 @@ class PendingInvitationsApi extends BaseApiWithErrors {
   private requestedWhileVerified = false;
   private preferredOrgId: string | null = null;
   private latestFetchId = 0;
+  private resetGeneration = 0;
 
   get count() {
     return this.groups.filter((group) => !this.joinedByOrg.has(group.organization.id)).length;
@@ -127,6 +128,7 @@ class PendingInvitationsApi extends BaseApiWithErrors {
   /** Clears account-scoped invitation state so the next account to sign in loads its own invitations. */
   reset() {
     this.latestFetchId += 1;
+    this.resetGeneration += 1;
     this.groups = [];
     this.joinedByOrg.clear();
     this.joinedCoursesByOrg = {};
@@ -166,6 +168,8 @@ class PendingInvitationsApi extends BaseApiWithErrors {
     const target = getJoinTarget(group);
     if (!target || this.joiningOrgId) return null;
 
+    const resetGenerationAtStart = this.resetGeneration;
+    const isStale = () => resetGenerationAtStart !== this.resetGeneration;
     this.joiningOrgId = group.organization.id;
     const outcome: { joined: JoinedOrgResult | null } = { joined: null };
 
@@ -184,6 +188,7 @@ class PendingInvitationsApi extends BaseApiWithErrors {
           classroomio.invite.organization[':inviteId']['accept-by-id'].$post({ param: { inviteId: target.inviteId } }),
         logContext: 'accepting organization invite',
         onSuccess: (response) => {
+          if (isStale()) return;
           const fulfilled = response.data?.fulfilled;
           const courses = buildJoinedCourseLinks(group, acceptedInviteId, fulfilled);
           outcome.joined = { organizationId: group.organization.id, courses };
@@ -200,6 +205,7 @@ class PendingInvitationsApi extends BaseApiWithErrors {
           classroomio.invite.student[':inviteId']['accept-by-id'].$post({ param: { inviteId: target.inviteId } }),
         logContext: 'accepting course invite',
         onSuccess: (response) => {
+          if (isStale()) return;
           const fulfilled = response.data?.fulfilled;
           const trigger = group.courses.find((course: PendingInvitationCourse) => course.inviteId === target.inviteId);
           const courses = buildJoinedCourseLinks(group, acceptedInviteId, fulfilled);
@@ -216,10 +222,12 @@ class PendingInvitationsApi extends BaseApiWithErrors {
       });
     }
 
+    if (isStale()) return null;
+
     this.joiningOrgId = null;
 
     const { joined } = outcome;
-    if (joined) {
+    if (joined && !isStale()) {
       this.joinedByOrg.add(joined.organizationId);
       this.joinedCoursesByOrg = { ...this.joinedCoursesByOrg, [joined.organizationId]: joined.courses };
     }

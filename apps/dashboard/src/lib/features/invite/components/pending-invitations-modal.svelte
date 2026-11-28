@@ -47,9 +47,14 @@
 
   async function handleJoin(group: PendingInvitationGroup) {
     const joined = await pendingInvitationsApi.joinOrg(group);
+    if (!joined) return;
 
-    if (joined && onJoinedOrg) {
-      await onJoinedOrg(joined.organizationId);
+    if (onJoinedOrg) {
+      try {
+        await onJoinedOrg(joined.organizationId);
+      } catch (error) {
+        console.error('Failed to refresh after joining organization:', error);
+      }
     }
   }
 

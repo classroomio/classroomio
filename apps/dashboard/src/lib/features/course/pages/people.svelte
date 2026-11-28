@@ -89,7 +89,11 @@
     const nextSearch = searchParams.toString();
     if (nextSearch === page.url.searchParams.toString()) return;
 
-    await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    try {
+      await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    } catch (error) {
+      console.error('navigation failed:', error);
+    }
   }
 
   async function loadMembers(courseId: string, activeQuery: ListPeopleQuery) {
@@ -218,16 +222,25 @@
     const inviteId = person.invitation?.orgInviteId ?? person.invitation?.courseInviteId;
     if (!courseId || !inviteId) return;
 
+    const originCourseId = courseId;
+    const originQuery = { ...query };
+    const originRowCount = memberRows.length;
+
     const revoked = await peopleApi.revokePersonInvitation(courseId, inviteId);
     if (!revoked) return;
 
-    const emptiedLastPage = memberRows.length === 1 && query.page > 1;
-    if (emptiedLastPage) {
-      await navigatePeople({ ...query, page: query.page - 1, search: search.takePending() || undefined });
-      return;
-    }
+    try {
+      const emptiedLastPage = originRowCount === 1 && originQuery.page > 1;
+      const isStillCurrent = courseApi.course?.id === originCourseId && query.page === originQuery.page;
+      if (emptiedLastPage && isStillCurrent) {
+        await navigatePeople({ ...originQuery, page: originQuery.page - 1, search: search.takePending() || undefined });
+        return;
+      }
 
-    await loadMembers(courseId, query);
+      await loadMembers(originCourseId, isStillCurrent ? query : originQuery);
+    } catch (error) {
+      console.error('Failed to refresh after revoking invitation:', error);
+    }
   }
 
   function getInvitedStatus(person: CourseMember) {

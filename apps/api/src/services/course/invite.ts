@@ -21,7 +21,8 @@ import {
   listLiveStudentOrgInvitesForEmail,
   selectOrganizationInviteWithOrgByInviteId
 } from '@cio/db/queries/organization';
-import { parseCourseIdsFromInviteMetadata } from '@cio/utils/functions/invite-metadata';
+import { getCourseIdsByCohortIds } from '@cio/db/queries/cohort/cohort';
+import { parseCohortIdsFromInviteMetadata, parseCourseIdsFromInviteMetadata } from '@cio/utils/functions/invite-metadata';
 import { addGroupMember, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
 import {
   getCourseById,
@@ -810,16 +811,46 @@ export async function resendCourseInvitation(
     throw RESEND_REFUSALS.invalid_email!();
   }
 
-  const { recipients, emailsFailed } = await inviteStudentsToCourseByEmail(
-    courseId,
-    createdByProfileId,
-    [normalizedEmail],
-    {
-      sendEmail,
-      reissue: 'always',
-      inviteSource: 'COURSE_RESEND'
-    }
+  const orgId = await getOrgIdByCourseId(courseId);
+  const liveInvites = orgId ? await listLiveStudentOrgInvitesForEmail(orgId, normalizedEmail) : [];
+  const cohortIdsInInvites = [...new Set(liveInvites.flatMap((invite) => parseCohortIdsFromInviteMetadata(invite.metadata)))];
+  const courseIdsViaCohorts = cohortIdsInInvites.length > 0 ? await getCourseIdsByCohortIds(cohortIdsInInvites) : [];
+  const alreadyCarriesCourse = liveInvites.some(
+    (invite) =>
+      parseCourseIdsFromInviteMetadata(invite.metadata).includes(courseId) ||
+      courseIdsViaCohorts.includes(courseId)
   );
+
+  const { recipients, emailsFailed } = alreadyCarriesCourse && orgId
+    ? await (async () => {
+        const result = await importAudienceMembers(
+          orgId,
+          {
+            recipients: [{ email: normalizedEmail }],
+            courseIds: [],
+            allCourses: false,
+            allCohorts: false,
+            sendEmail
+          },
+          createdByProfileId,
+          'dashboard',
+          { reissue: 'always', inviteSource: 'COURSE_RESEND' }
+        );
+        const mapped = result.rows.map((row) => ({
+          email: row.email,
+          status: toCourseEmailInviteStatus(row),
+          inviteId: row.inviteId ?? null,
+          inviteKind: row.inviteId ? ('organization' as const) : null,
+          inviteLink: row.inviteLink ?? null
+        }));
+
+        return { recipients: mapped, emailsFailed: result.emailsFailed };
+      })()
+    : await inviteStudentsToCourseByEmail(courseId, createdByProfileId, [normalizedEmail], {
+        sendEmail,
+        reissue: 'always',
+        inviteSource: 'COURSE_RESEND'
+      });
   const [recipient] = recipients;
   const refusal = recipient ? RESEND_REFUSALS[recipient.status] : RESEND_REFUSALS.invalid_email;
   if (refusal) throw refusal();
@@ -1368,6 +1399,25 @@ async function acceptStudentInviteWith(options: InviteAcceptOptions, user: TAuth
 
     const existingMemberId = await getGroupMemberIdByGroupAndProfile(course.groupId, user.id, tx);
 
+    if (invite.roleId !== ROLE.STUDENT) {
+      throw new AppError('This invite is not valid for student enrollment', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    if (course.status !== 'ACTIVE' || !course.isPublished) {
+      throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    const status = getInviteStatus(invite);
+    if (status === 'REVOKED') {
+      throw new AppError('This invite has been revoked', ErrorCodes.UNAUTHORIZED, 403);
+    }
+    if (status === 'EXPIRED') {
+      throw new AppError('This invite link has expired', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+    if (status === 'USED_UP') {
+      throw new AppError('This invite has reached its usage limit', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
     if (existingMemberId) {
       const bindResult = await bindProfileInOrg(tx, bindParams);
 
@@ -1400,25 +1450,6 @@ async function acceptStudentInviteWith(options: InviteAcceptOptions, user: TAuth
         welcomeEmailMessage: null,
         bindResult
       };
-    }
-
-    if (invite.roleId !== ROLE.STUDENT) {
-      throw new AppError('This invite is not valid for student enrollment', ErrorCodes.UNAUTHORIZED, 403);
-    }
-
-    if (course.status !== 'ACTIVE' || !course.isPublished) {
-      throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
-    }
-
-    const status = getInviteStatus(invite);
-    if (status === 'REVOKED') {
-      throw new AppError('This invite has been revoked', ErrorCodes.UNAUTHORIZED, 403);
-    }
-    if (status === 'EXPIRED') {
-      throw new AppError('This invite link has expired', ErrorCodes.VALIDATION_ERROR, 400);
-    }
-    if (status === 'USED_UP') {
-      throw new AppError('This invite has reached its usage limit', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
     const bindResult = await bindProfileInOrg(tx, bindParams);

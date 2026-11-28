@@ -166,6 +166,15 @@ async function resolveOrganizationMember(
 
   if (byProfile) {
     if (byEmail && byEmail.id !== byProfile.id) {
+      if (!params.identityProven) {
+        throw new AppError(
+          'Verify your email address to accept the access waiting for it',
+          ErrorCodes.EMAIL_NOT_VERIFIED,
+          403,
+          'email'
+        );
+      }
+
       await deleteOrganizationMemberById(tx, byEmail.id);
     }
 
@@ -209,11 +218,13 @@ async function applyInviteRole(
   tx: DbOrTxClient,
   member: TOrganizationmember,
   inviteRoleId: number | undefined,
-  email: string
+  email: string,
+  identityProven: boolean
 ): Promise<TOrganizationmember> {
   const roleMatches = inviteRoleId === undefined || Number(member.roleId) === Number(inviteRoleId);
   const emailMatches = (member.email ?? '').trim().toLowerCase() === email;
   if (roleMatches && emailMatches) return member;
+  if (!identityProven && !emailMatches) return member;
 
   const updated = await updateOrganizationMemberById(tx, member.id, {
     ...(inviteRoleId === undefined ? {} : { roleId: inviteRoleId }),
@@ -357,7 +368,7 @@ export async function bindProfileToOrgEmail(
   await lockOrganizationMemberEmail(tx, params.orgId, email);
 
   const resolved = await resolveOrganizationMember(tx, params, email);
-  const member = await applyInviteRole(tx, resolved.member, params.inviteRoleId, email);
+  const member = await applyInviteRole(tx, resolved.member, params.inviteRoleId, email, params.identityProven);
   const isActive = member.status === 'ACTIVE';
   const claim =
     isActive && params.identityProven

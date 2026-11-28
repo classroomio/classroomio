@@ -54,7 +54,7 @@ export async function listEmailOnlyClaimCandidates(
       WHERE om.profile_id IS NOT NULL
         AND om.email IS NOT NULL
         AND om.status = 'ACTIVE'
-        AND EXISTS (SELECT 1 FROM profile p WHERE p.id = om.profile_id AND p.is_email_verified = true)
+        AND EXISTS (SELECT 1 FROM profile p WHERE p.id = om.profile_id AND p.is_email_verified = true AND lower(trim(p.email)) = lower(trim(om.email)))
         AND (om.organization_id, om.id) > (${afterOrg}::uuid, ${afterId}::bigint)
         ${orgFilter(sql.raw('om.organization_id'), options.orgId)}
         AND EXISTS (
@@ -97,7 +97,7 @@ export async function lockActiveEmailOnlyClaimCandidate(
         AND om.profile_id = ${candidate.profileId}
         AND om.status = 'ACTIVE'
         AND lower(trim(om.email)) = ${candidate.email}
-        AND EXISTS (SELECT 1 FROM profile p WHERE p.id = om.profile_id AND p.is_email_verified = true)
+        AND EXISTS (SELECT 1 FROM profile p WHERE p.id = om.profile_id AND p.is_email_verified = true AND lower(trim(p.email)) = lower(trim(om.email)))
       FOR UPDATE OF om
     `);
 
@@ -131,7 +131,7 @@ export async function countEmailOnlyMemberships(
           AND lower(trim(om.email)) = email_only.email
           AND om.profile_id IS NOT NULL
           AND om.status = 'ACTIVE'
-          AND EXISTS (SELECT 1 FROM profile p WHERE p.id = om.profile_id AND p.is_email_verified = true)
+          AND EXISTS (SELECT 1 FROM profile p WHERE p.id = om.profile_id AND p.is_email_verified = true AND lower(trim(p.email)) = lower(trim(om.email)))
         LIMIT 1
       ) AS joined ON true
       WHERE true ${orgFilter(sql.raw('email_only.organization_id'), orgId)}
