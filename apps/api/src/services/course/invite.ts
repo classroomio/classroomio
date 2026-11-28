@@ -812,7 +812,7 @@ export async function resendCourseInvitation(
   }
 
   const orgId = await getOrgIdByCourseId(courseId);
-  const liveInvites = orgId ? await listLiveStudentOrgInvitesForEmail(orgId, normalizedEmail) : [];
+  const liveInvites = (orgId ? await listLiveStudentOrgInvitesForEmail(orgId, normalizedEmail) : []) ?? [];
   const cohortIdsInInvites = [...new Set(liveInvites.flatMap((invite) => parseCohortIdsFromInviteMetadata(invite.metadata)))];
   const courseIdsViaCohorts = cohortIdsInInvites.length > 0 ? await getCourseIdsByCohortIds(cohortIdsInInvites) : [];
   const alreadyCarriesCourse = liveInvites.some(
