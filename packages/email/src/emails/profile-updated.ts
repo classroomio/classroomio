@@ -162,6 +162,17 @@ const COPY: Record<EmailLocale, ProfileUpdatedCopy> = {
     notYou: 'Se non riconosci questa modifica, accedi per controllare il tuo profilo e cambia la password.',
     cta: 'Accedi',
     fields: { fullname: 'Nome', username: 'Nome utente', avatarUrl: 'Immagine del profilo', locale: 'Lingua' }
+  },
+  ja: {
+    subject: 'プロフィールが更新されました',
+    greeting: '{{name}} さん',
+    bySelf: 'プロフィールを更新しました。',
+    byAdmin: '{{org_name}} の管理者があなたのプロフィールを更新しました。',
+    changed: '変更内容:',
+    when: '日時:',
+    notYou: 'この変更に心当たりがない場合は、サインインしてプロフィールを確認し、パスワードを変更してください。',
+    cta: 'サインイン',
+    fields: { fullname: '氏名', username: 'ユーザー名', avatarUrl: 'プロフィール画像', locale: '言語' }
   }
 };
 

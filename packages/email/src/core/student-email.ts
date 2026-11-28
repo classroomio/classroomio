@@ -139,6 +139,10 @@ const DUE_STATUS: Record<EmailLocale, { overdue: string; due: (relativeTime: str
   it: {
     overdue: 'Questo obiettivo è scaduto.',
     due: (relativeTime) => `Questo obiettivo scade ${relativeTime}.`
+  },
+  ja: {
+    overdue: 'この目標は期限を過ぎています。',
+    due: (relativeTime) => `この目標の期限は${relativeTime}です。`
   }
 };
 

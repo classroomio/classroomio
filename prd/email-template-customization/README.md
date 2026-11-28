@@ -59,7 +59,7 @@ From `packages/email/src/utils/constants.ts`:
 
 ## Goals
 1. Organization admins can configure logo, content, and send toggle for each existing email ID.
-2. Admins can manage localized content using supported locales (`en`, `hi`, `fr`, `pt`, `de`, `vi`, `ru`, `es`, `pl`, `da`).
+2. Admins can manage localized content using supported locales (`en`, `hi`, `fr`, `pt`, `de`, `vi`, `ru`, `es`, `pl`, `da`, `tr`, `it`, `ja`).
 3. Send pipeline resolves the best template by organization + locale with safe fallback.
 4. Template resolution should not break existing `sendEmail(...)` call sites.
 5. Keep type-safe Zod field validation already provided by `@cio/email`.

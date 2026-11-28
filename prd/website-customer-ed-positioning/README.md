@@ -57,7 +57,7 @@ todos:
     content: Move LearnerSection, QuestionTypes, and CertEditorSection off the homepage into feature deep-dive pages; keep linked but de-emphasized
     status: pending
   - id: language-claim-soften
-    content: Soften any "10 languages" claim to "Deliver lessons in 10 languages" since UI translation is incomplete
+    content: Soften any language-count claim to "Deliver lessons in 13 languages" since UI translation is incomplete
     status: pending
   - id: seo-target-mapping
     content: Map each new/updated page to a primary SEO target keyword and set page metaTags accordingly
@@ -192,7 +192,7 @@ Do NOT add an integration logo grid (no native integrations).
 | `/partner-training` | Rewrite around multi-workspace: "Spin up a dedicated partner workspace alongside your customer academy — separate brand, separate domain, one bill." |
 | `/compliance-training` | Soften "7-state compliance lifecycle" to "track compliant / expiring / non-compliant"; remove any "audit export" mention; module is basic status tracking only |
 | Homepage footer CTA | Replace "Stop chasing training completion manually" with customer-ed-specific copy (e.g. "Stop forwarding help articles to every new customer") |
-| Any page mentioning "10 languages" | Soften to "Deliver lessons in 10 languages" — UI translation is incomplete |
+| Any page mentioning a language count | Say "Deliver lessons in 13 languages" — UI translation is incomplete |
 
 ### Honest-claims rules (applies to every page)
 

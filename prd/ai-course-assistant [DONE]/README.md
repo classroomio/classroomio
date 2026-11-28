@@ -433,7 +433,7 @@ The system prompt includes an explicit list of what the agent CANNOT do. The age
 3. **For document uploads**, the agent does NOT auto-detect the document's language. The content is generated in the course's locale regardless of the source document language. If a teacher uploads a French textbook but the course is in English, the agent generates English content based on the French source material. This is a feature, not a bug — teachers often want to create courses in a different language than their source material.
 4. **The teacher can override.** If they say "Write the content in Spanish," the agent uses `es`. The system prompt instructs: "Default to the course's existing locale. If the teacher requests a specific language, use that locale instead."
 
-Supported locales match the existing `lesson_language.locale` enum: `en`, `hi`, `fr`, `pt`, `de`, `vi`, `ru`, `es`, `pl`, `da`.
+Supported locales match the existing `lesson_language.locale` enum: `en`, `hi`, `fr`, `pt`, `de`, `vi`, `ru`, `es`, `pl`, `da`, `tr`, `it`, `ja`.
 
 ---
 

@@ -1,7 +1,7 @@
 import { STUDENT_EMAIL_CATALOG } from './catalog';
 export { getStudentEmailSampleValues } from './sample-values';
 
-export const EMAIL_LOCALES = ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it'] as const;
+export const EMAIL_LOCALES = ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it', 'ja'] as const;
 
 export type EmailLocale = (typeof EMAIL_LOCALES)[number];
 
@@ -37,7 +37,8 @@ const STUDENT_EMAIL_SUBMISSION_STATUSES: Record<
   pl: { submitted: 'Wysłano', inProgress: 'W trakcie', graded: 'Oceniono', updated: 'Zaktualizowano' },
   da: { submitted: 'Indsendt', inProgress: 'I gang', graded: 'Bedømt', updated: 'Opdateret' },
   tr: { submitted: 'Gönderildi', inProgress: 'Devam ediyor', graded: 'Değerlendirildi', updated: 'Güncellendi' },
-  it: { submitted: 'Inviato', inProgress: 'In corso', graded: 'Valutato', updated: 'Aggiornato' }
+  it: { submitted: 'Inviato', inProgress: 'In corso', graded: 'Valutato', updated: 'Aggiornato' },
+  ja: { submitted: '提出済み', inProgress: '進行中', graded: '採点済み', updated: '更新済み' }
 };
 
 export function getStudentEmailSubmissionStatusLabel(statusId: number, locale: EmailLocale): string {

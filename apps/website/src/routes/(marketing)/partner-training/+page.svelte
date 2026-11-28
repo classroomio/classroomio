@@ -76,7 +76,7 @@
       Icon: Languages,
       title: 'Multilingual content',
       description:
-        'Deliver lessons in 10 languages. Author once and publish per-language variants for English, Spanish, Portuguese, German, French, Hindi, and more.'
+        'Deliver lessons in 13 languages. Author once and publish per-language variants for English, Spanish, Portuguese, German, French, Hindi, and more.'
     },
     {
       Icon: ChartNoAxesCombined,
@@ -178,6 +178,30 @@
       sample: 'Implementeringstjekliste',
       tone: 'from-red-100 to-rose-200',
       ring: 'ring-red-200'
+    },
+    {
+      code: 'tr',
+      native: 'Türkçe',
+      en: 'Turkish',
+      sample: 'Uygulama kontrol listesi',
+      tone: 'from-red-100 to-orange-200',
+      ring: 'ring-red-200'
+    },
+    {
+      code: 'it',
+      native: 'Italiano',
+      en: 'Italian',
+      sample: 'Checklist di implementazione',
+      tone: 'from-emerald-100 to-red-200',
+      ring: 'ring-emerald-200'
+    },
+    {
+      code: 'ja',
+      native: '日本語',
+      en: 'Japanese',
+      sample: '導入チェックリスト',
+      tone: 'from-rose-100 to-slate-200',
+      ring: 'ring-rose-200'
     }
   ];
 </script>
@@ -297,7 +321,7 @@
     eyebrow="Global partners"
     headlineLead="Train your network"
     headlineAccent="in their language."
-    description="Author once, publish in ten. Each lesson supports per-language variants. Learners pick the language they read in, certificates render in that language, and analytics roll up across regions."
+    description="Author once, publish in thirteen. Each lesson supports per-language variants. Learners pick the language they read in, and analytics roll up across regions."
     moduleLabel="Module 2 · Implementation"
     footerLabel="8 lessons"
   />

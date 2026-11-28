@@ -5,7 +5,7 @@ import { ZCourseType } from '../course/course-type';
 import { ZExerciseQuestionTypeId } from '../exercise/exercise';
 import { ZLessonVideoItem } from '../lesson/lesson';
 
-const ZSupportedLocale = z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it']);
+const ZSupportedLocale = z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it', 'ja']);
 const LESSON_BODY_HTML_DESCRIPTION =
   'Lesson body HTML, without the title. Start headings at h3; h1 and h2 are not allowed.';
 const TOP_LEVEL_ORDER_DESCRIPTION =

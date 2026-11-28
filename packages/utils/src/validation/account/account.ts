@@ -3,7 +3,7 @@ import * as z from 'zod';
 export const ZUpdateProfile = z.object({
   fullname: z.string().min(3).optional(),
   username: z.string().min(3).optional(),
-  locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it']).optional(),
+  locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it', 'ja']).optional(),
   avatarUrl: z.url().optional()
 });
 

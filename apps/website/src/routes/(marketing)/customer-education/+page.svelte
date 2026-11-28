@@ -148,9 +148,9 @@
     },
     {
       Icon: Languages,
-      title: 'Deliver lessons in 10 languages',
+      title: 'Deliver lessons in 13 languages',
       description:
-        'Per-language lesson variants for English, Spanish, Portuguese, German, French, Hindi, Vietnamese, Russian, Polish, and Danish.'
+        'Per-language lesson variants for English, Spanish, Portuguese, German, French, Hindi, Vietnamese, Russian, Polish, Danish, Turkish, Italian, and Japanese.'
     }
   ];
 
@@ -234,6 +234,30 @@
       sample: 'Kom godt i gang: Dit første område',
       tone: 'from-red-100 to-rose-200',
       ring: 'ring-red-200'
+    },
+    {
+      code: 'tr',
+      native: 'Türkçe',
+      en: 'Turkish',
+      sample: 'Başlarken: İlk çalışma alanınız',
+      tone: 'from-red-100 to-orange-200',
+      ring: 'ring-red-200'
+    },
+    {
+      code: 'it',
+      native: 'Italiano',
+      en: 'Italian',
+      sample: 'Per iniziare: il tuo primo spazio',
+      tone: 'from-emerald-100 to-red-200',
+      ring: 'ring-emerald-200'
+    },
+    {
+      code: 'ja',
+      native: '日本語',
+      en: 'Japanese',
+      sample: 'はじめに: 最初のワークスペース',
+      tone: 'from-rose-100 to-slate-200',
+      ring: 'ring-rose-200'
     }
   ];
 
@@ -347,7 +371,7 @@
     eyebrow="Global customers"
     headlineLead="Teach customers"
     headlineAccent="in the language they bought in."
-    description="Author once, publish in ten. Each lesson supports per-language variants. Customers pick the language they read in, certificates render in that language, and adoption analytics roll up across regions."
+    description="Author once, publish in thirteen. Each lesson supports per-language variants. Customers pick the language they read in, and adoption analytics roll up across regions."
     moduleLabel="Lesson 1 · Onboarding"
     footerLabel="6 lessons · 18 min"
     bgClass="bg-white"
