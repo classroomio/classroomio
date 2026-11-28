@@ -9,6 +9,7 @@ import * as schema from '@db/schema';
 
 import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { ROLE } from '@cio/utils/constants';
 
 export async function createOrganizationInvite(
   values: TNewOrganizationInvite,
@@ -118,6 +119,43 @@ export async function revokeActiveOrganizationInvitesByEmails(
     console.error('revokeExistingOrganizationInvites error:', error);
     throw new Error(
       `Failed to revoke existing organization invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Revokes every unaccepted, unrevoked STUDENT invite for `(organization, email)`, expired ones included, matching the
+ * email case-insensitively like `listLiveStudentOrgInvitesForEmail`. Staff invites are left alone.
+ */
+export async function revokeOpenStudentOrgInvitesForEmail(
+  organizationId: string,
+  email: string,
+  revokedByProfileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
+  const normalized = email.trim().toLowerCase();
+  if (!organizationId || !normalized) return [];
+
+  try {
+    const revokedAt = new Date().toISOString();
+
+    return await dbClient
+      .update(schema.organizationInvite)
+      .set({ isRevoked: true, revokedByProfileId, revokedAt, updatedAt: revokedAt })
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          eq(sql`lower(${schema.organizationInvite.email})`, normalized),
+          eq(schema.organizationInvite.roleId, ROLE.STUDENT),
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt)
+        )
+      )
+      .returning();
+  } catch (error) {
+    console.error('revokeOpenStudentOrgInvitesForEmail error:', error);
+    throw new Error(
+      `Failed to revoke student organization invites: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -248,7 +286,7 @@ export async function hasActiveOrganizationInviteForEmail(organizationId: string
       .where(
         and(
           eq(schema.organizationInvite.organizationId, organizationId),
-          eq(schema.organizationInvite.email, normalizedEmail),
+          eq(sql`lower(${schema.organizationInvite.email})`, normalizedEmail),
           eq(schema.organizationInvite.isRevoked, false),
           isNull(schema.organizationInvite.acceptedAt),
           gt(schema.organizationInvite.expiresAt, sql`NOW()`)
@@ -354,7 +392,7 @@ export async function getActivePendingOrgInvitesForEmail(email: string): Promise
       .innerJoin(schema.organization, eq(schema.organizationInvite.organizationId, schema.organization.id))
       .where(
         and(
-          eq(schema.organizationInvite.email, normalized),
+          eq(sql`lower(${schema.organizationInvite.email})`, normalized),
           eq(schema.organizationInvite.isRevoked, false),
           isNull(schema.organizationInvite.acceptedAt),
           gt(schema.organizationInvite.expiresAt, sql`NOW()`)
@@ -398,7 +436,7 @@ export async function getActivePendingOrgInviteForEmail(
       .where(
         and(
           eq(schema.organizationInvite.organizationId, organizationId),
-          eq(schema.organizationInvite.email, normalized),
+          eq(sql`lower(${schema.organizationInvite.email})`, normalized),
           eq(schema.organizationInvite.isRevoked, false),
           isNull(schema.organizationInvite.acceptedAt),
           gt(schema.organizationInvite.expiresAt, sql`NOW()`)
@@ -442,7 +480,7 @@ export async function getLatestOrganizationInviteRowByOrgAndEmail(
       .where(
         and(
           eq(schema.organizationInvite.organizationId, organizationId),
-          eq(schema.organizationInvite.email, normalized)
+          eq(sql`lower(${schema.organizationInvite.email})`, normalized)
         )
       )
       .orderBy(desc(schema.organizationInvite.createdAt))
@@ -568,6 +606,10 @@ export async function selectOrganizationInviteWithOrgByInviteId(
   }
 }
 
+/**
+ * The organization member whose email matches case-insensitively; a row linked to a profile wins over an unlinked
+ * case variant, so the caller sees an email that already belongs to another account.
+ */
 export async function selectOrganizationMemberByOrgAndNormalizedEmail(
   dbClient: DbOrTxClient,
   organizationId: string,
@@ -580,9 +622,10 @@ export async function selectOrganizationMemberByOrgAndNormalizedEmail(
       .where(
         and(
           eq(schema.organizationmember.organizationId, organizationId),
-          eq(schema.organizationmember.email, normalizedEmail)
+          eq(sql`lower(${schema.organizationmember.email})`, normalizedEmail.trim().toLowerCase())
         )
       )
+      .orderBy(sql`${schema.organizationmember.profileId} IS NULL`)
       .limit(1);
 
     return row ?? null;
@@ -622,7 +665,13 @@ export async function updateOrganizationMemberById(
   data: Partial<TNewOrganizationmember>
 ) {
   try {
-    await dbClient.update(schema.organizationmember).set(data).where(eq(schema.organizationmember.id, memberId));
+    const [updated] = await dbClient
+      .update(schema.organizationmember)
+      .set(data)
+      .where(eq(schema.organizationmember.id, memberId))
+      .returning();
+
+    return updated ?? null;
   } catch (error) {
     console.error('updateOrganizationMemberById error:', error);
     throw new Error(
@@ -648,7 +697,8 @@ export async function claimPendingOrganizationInvite(
         and(
           eq(schema.organizationInvite.id, inviteId),
           eq(schema.organizationInvite.isRevoked, false),
-          isNull(schema.organizationInvite.acceptedAt)
+          isNull(schema.organizationInvite.acceptedAt),
+          sql`(${schema.organizationInvite.expiresAt} IS NULL OR ${schema.organizationInvite.expiresAt} > clock_timestamp())`
         )
       )
       .returning({
@@ -660,6 +710,213 @@ export async function claimPendingOrganizationInvite(
     console.error('claimPendingOrganizationInvite error:', error);
     throw new Error(
       `Failed to finalize organization invite: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Live STUDENT org invites for an (org, email): not revoked, not accepted, not expired.
+ * Staff invites are never returned; fulfilment must not auto-accept privilege.
+ */
+export async function listLiveStudentOrgInvitesForEmail(
+  orgId: string,
+  email: string,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
+  const normalized = email.trim().toLowerCase();
+  if (!orgId || !normalized) return [];
+
+  try {
+    return await dbClient
+      .select()
+      .from(schema.organizationInvite)
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, orgId),
+          eq(sql`lower(${schema.organizationInvite.email})`, normalized),
+          eq(schema.organizationInvite.roleId, ROLE.STUDENT),
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt),
+          gt(schema.organizationInvite.expiresAt, sql`NOW()`)
+        )
+      )
+      .orderBy(desc(schema.organizationInvite.createdAt));
+  } catch (error) {
+    console.error('listLiveStudentOrgInvitesForEmail error:', error);
+    throw new Error(
+      `Failed to list live student org invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Serializes membership and invitation writes for one (organization, email) until the transaction ends.
+ */
+export async function lockOrganizationMemberEmail(
+  dbClient: DbOrTxClient,
+  organizationId: string,
+  normalizedEmail: string
+): Promise<void> {
+  try {
+    await dbClient.execute(
+      sql`select pg_advisory_xact_lock(hashtextextended(${`${organizationId}:${normalizedEmail}`}, 0))`
+    );
+  } catch (error) {
+    console.error('lockOrganizationMemberEmail error:', error);
+    throw new Error(
+      `Failed to lock organization member email: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function deleteOrganizationMemberById(dbClient: DbOrTxClient, memberId: number): Promise<void> {
+  try {
+    await dbClient.delete(schema.organizationmember).where(eq(schema.organizationmember.id, memberId));
+  } catch (error) {
+    console.error('deleteOrganizationMemberById error:', error);
+    throw new Error(
+      `Failed to delete organization member: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Emails among `normalizedEmails` that belong to an ADMIN/TUTOR member of the organization or hold a live staff
+ * invite there.
+ */
+export async function getStaffEmailsInOrganization(
+  organizationId: string,
+  normalizedEmails: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Set<string>> {
+  if (normalizedEmails.length === 0) return new Set();
+
+  try {
+    const [staffMembers, staffInvites] = await Promise.all([
+      dbClient
+        .select({ email: schema.organizationmember.email })
+        .from(schema.organizationmember)
+        .where(
+          and(
+            eq(schema.organizationmember.organizationId, organizationId),
+            inArray(sql`lower(${schema.organizationmember.email})`, normalizedEmails),
+            inArray(schema.organizationmember.roleId, [ROLE.ADMIN, ROLE.TUTOR])
+          )
+        ),
+      dbClient
+        .select({ email: schema.organizationInvite.email })
+        .from(schema.organizationInvite)
+        .where(
+          and(
+            eq(schema.organizationInvite.organizationId, organizationId),
+            inArray(sql`lower(${schema.organizationInvite.email})`, normalizedEmails),
+            inArray(schema.organizationInvite.roleId, [ROLE.ADMIN, ROLE.TUTOR]),
+            eq(schema.organizationInvite.isRevoked, false),
+            isNull(schema.organizationInvite.acceptedAt),
+            gt(schema.organizationInvite.expiresAt, sql`NOW()`)
+          )
+        )
+    ]);
+
+    return new Set(
+      [...staffMembers, ...staffInvites].flatMap((row) => (row.email ? [row.email.trim().toLowerCase()] : []))
+    );
+  } catch (error) {
+    console.error('getStaffEmailsInOrganization error:', error);
+    throw new Error(`Failed to resolve staff emails: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Records that `inviteIds` were replaced by `supersededBy`, so their tokens can resolve to the live successor.
+ */
+export async function markOrganizationInvitesSuperseded(
+  dbClient: DbOrTxClient,
+  inviteIds: string[],
+  supersededBy: string
+): Promise<void> {
+  if (inviteIds.length === 0) return;
+
+  try {
+    await dbClient
+      .update(schema.organizationInvite)
+      .set({
+        metadata: sql`coalesce(${schema.organizationInvite.metadata}, '{}'::jsonb) || ${JSON.stringify({ supersededBy })}::jsonb`
+      })
+      .where(inArray(schema.organizationInvite.id, inviteIds));
+  } catch (error) {
+    console.error('markOrganizationInvitesSuperseded error:', error);
+    throw new Error(
+      `Failed to mark organization invites superseded: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * The newest live STUDENT invite for (organization, email), or null.
+ */
+export async function getLiveStudentOrgInviteForEmail(
+  organizationId: string,
+  normalizedEmail: string,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite | null> {
+  const [invite] = await listLiveStudentOrgInvitesForEmail(organizationId, normalizedEmail, dbClient);
+
+  return invite ?? null;
+}
+
+/**
+ * The latest invite for each email in the organization, whatever its status, with the fields needed to tell a
+ * renewal (expired) from an admin revocation.
+ */
+export async function getLatestOrganizationInviteRowsByEmails(
+  organizationId: string,
+  normalizedEmails: string[],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
+  if (normalizedEmails.length === 0) return [];
+
+  const emailKey = sql`lower(${schema.organizationInvite.email})`;
+  const lowerEmails = normalizedEmails.map((email) => email.trim().toLowerCase());
+
+  try {
+    return await dbClient
+      .selectDistinctOn([emailKey])
+      .from(schema.organizationInvite)
+      .where(and(eq(schema.organizationInvite.organizationId, organizationId), inArray(emailKey, lowerEmails)))
+      .orderBy(emailKey, desc(schema.organizationInvite.createdAt));
+  } catch (error) {
+    console.error('getLatestOrganizationInviteRowsByEmails error:', error);
+    throw new Error(
+      `Failed to get latest organization invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * True when an `EMAIL_SENT` audit row exists for the organization invite.
+ */
+export async function hasOrganizationInviteEmailBeenSent(
+  inviteId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.organizationInviteAudit.id })
+      .from(schema.organizationInviteAudit)
+      .where(
+        and(
+          eq(schema.organizationInviteAudit.inviteId, inviteId),
+          eq(schema.organizationInviteAudit.eventType, 'EMAIL_SENT')
+        )
+      )
+      .limit(1);
+
+    return !!row;
+  } catch (error) {
+    console.error('hasOrganizationInviteEmailBeenSent error:', error);
+    throw new Error(
+      `Failed to check organization invite email: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

@@ -223,7 +223,7 @@ export const ZAPIER_ACTIONS = [
     key: 'revoke_course_invite',
     noun: 'Invite',
     label: 'Revoke Course Invite',
-    description: 'Cancels a pending course invite so its link stops working.',
+    description: 'Removes this course from a pending invite, or cancels a course invite link so it stops working.',
     prefill: null
   },
   {

@@ -1,6 +1,8 @@
 import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import { getInvitedPersonStatus, type TInvitedPersonStatus } from '@cio/utils/functions/invite-metadata';
 import type { TOrganizationmember } from '@cio/db/types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { pageJoinedThenInvited } from '@api/utils/joined-then-invited-page';
 import {
   type TCreateCohort,
   type TUpdateCohort,
@@ -12,6 +14,7 @@ import {
   type TUpdateCohortReaction,
   type TCreateCohortNewsfeedComment
 } from '@cio/utils/validation/cohort';
+import type { TCohortPeopleMembership } from '@cio/utils/validation/cohort';
 import {
   addCourseToCohort,
   addCohortMember,
@@ -50,19 +53,23 @@ import {
   updateCohortNewsfeed as updateCohortNewsfeedQuery,
   updateCohortNewsfeedReaction,
   getPaginatedCohortPeople,
+  getPaginatedInvitedCohortPeople,
   type PaginatedCohortPeopleOptions,
+  type TInvitedCohortPersonRow,
   type TCohortListFilters,
   type TCohortListPage
 } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
-import { getProfileByEmail } from '@cio/db/queries/auth';
+import { getProfileById } from '@cio/db/queries/auth';
 import {
   getOrgMembersByProfileIds,
-  getOrganizationMemberIdByOrgAndProfile,
+  getOrganizationMembersByNormalizedEmails,
   insertOrganizationMembersOnConflictDoNothing,
   listActiveOrganizationRoles
 } from '@cio/db/queries/organization';
+import type { AudienceImportRowResult } from '@cio/utils/validation/organization';
+import { importAudienceMembers } from '../organization/audience';
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
@@ -316,9 +323,93 @@ export async function listCohortMembers(cohortId: string) {
   }
 }
 
+type TCohortPersonInvitation = {
+  kind: TInvitedCohortPersonRow['kind'];
+  status: TInvitedPersonStatus;
+  cohortMemberId: string | null;
+  orgInviteId: string | null;
+  expiresAt: string | null;
+  courseIds: string[];
+  cohortIds: string[];
+};
+
+function toInvitedCohortPerson(row: TInvitedCohortPersonRow, cohortId: string) {
+  const createdAt = row.memberCreatedAt ?? row.inviteCreatedAt ?? '';
+  const status = getInvitedPersonStatus(row.inviteExpiresAt);
+  const invitation: TCohortPersonInvitation = {
+    kind: row.kind,
+    status,
+    cohortMemberId: row.cohortMemberId,
+    orgInviteId: row.orgInviteId,
+    expiresAt: row.inviteExpiresAt,
+    courseIds: row.courseIds,
+    cohortIds: row.cohortIds
+  };
+
+  return {
+    id: row.cohortMemberId ?? `invited:${row.kind}:${(row.email ?? '').toLowerCase()}`,
+    cohortId,
+    profileId: null,
+    roleId: row.roleId ?? ROLE.STUDENT,
+    email: row.email,
+    createdAt,
+    profile: null,
+    lastLoginAt: null,
+    membership: 'invited' as TCohortPeopleMembership,
+    invitation: invitation as TCohortPersonInvitation | null
+  };
+}
+
+function toJoinedCohortPeople(items: Awaited<ReturnType<typeof getPaginatedCohortPeople>>['items']) {
+  return items.map((person) => ({
+    ...person,
+    membership: (person.profileId ? 'joined' : 'invited') as TCohortPeopleMembership,
+    invitation: null as TCohortPersonInvitation | null
+  }));
+}
+
+async function getCohortPeoplePage(cohortId: string, query: PaginatedCohortPeopleOptions) {
+  if (query.membership === 'invited') {
+    const { items, total } = await getPaginatedInvitedCohortPeople(cohortId, query);
+
+    return { items: items.map((row) => toInvitedCohortPerson(row, cohortId)), total };
+  }
+
+  if (!query.membership && !query.lastLoginBefore) {
+    const page = await pageJoinedThenInvited({
+      page: query.page,
+      limit: query.limit,
+      fetchJoined: (offset, limit) =>
+        getPaginatedCohortPeople(cohortId, { ...query, membership: 'joined', offset, limit }),
+      fetchInvited: (offset, limit) =>
+        getPaginatedInvitedCohortPeople(cohortId, {
+          page: 1,
+          limit,
+          offset,
+          search: query.search,
+          roleId: query.roleId
+        })
+    });
+    const joinedPeople = toJoinedCohortPeople(page.joined);
+    const invitedPeople = page.invited.map((row) => toInvitedCohortPerson(row, cohortId));
+
+    return { items: [...joinedPeople, ...invitedPeople], total: page.total };
+  }
+
+  const { items, total } = await getPaginatedCohortPeople(cohortId, query);
+
+  return { items: toJoinedCohortPeople(items), total };
+}
+
+/**
+ * One page of cohort people. `membership: 'invited'` lists pending organization members whose invite carries the
+ * cohort plus legacy email-only rows, each with the invitation the row actions resend or revoke. With no membership
+ * filter, invited people follow the joined members unless `lastLoginBefore` is set. Scope the query with
+ * `scopeCohortPeopleQueryToViewer` before listing for someone who may not be on the cohort team.
+ */
 export async function listPaginatedCohortPeople(cohortId: string, query: PaginatedCohortPeopleOptions) {
   try {
-    const { items, total } = await getPaginatedCohortPeople(cohortId, query);
+    const { items, total } = await getCohortPeoplePage(cohortId, query);
 
     return {
       items,
@@ -345,15 +436,165 @@ export async function addCohortMembers(
   actorProfileId: string | null = null
 ) {
   const results = await addCohortMembersSettled(cohortId, data, 'dashboard', actorProfileId);
+  const outcomes = results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []));
+  const added = outcomes.flatMap((outcome) => (outcome.kind === 'added' ? [outcome.member] : []));
+  const invited = outcomes.flatMap((outcome) =>
+    outcome.kind === 'invited' ? [{ email: outcome.email, status: outcome.status, inviteId: outcome.inviteId }] : []
+  );
+  const errors = results.flatMap((result) =>
+    result.status === 'rejected' ? [result.reason?.message || 'Unknown error'] : []
+  );
 
-  const added = results
-    .filter((r) => r.status === 'fulfilled')
-    .map((r) => (r as PromiseFulfilledResult<unknown>).value);
-  const errors = results
-    .filter((r) => r.status === 'rejected')
-    .map((r) => (r as PromiseRejectedResult).reason?.message || 'Unknown error');
+  return { added, invited, errors };
+}
 
-  return { added, errors };
+type TCohortMemberInput = TAddCohortMembers['members'][number];
+
+type TCohortMemberPlan =
+  | { kind: 'direct'; profileId: string | null; email: string | null; roleId: number }
+  | { kind: 'invite'; email: string };
+
+export type TCohortInviteStatus = 'invited' | 'already_invited' | 'enrolled' | 'already_enrolled';
+
+export type TCohortMemberAddOutcome =
+  | { kind: 'added'; member: Awaited<ReturnType<typeof addCohortMember>> }
+  | { kind: 'invited'; email: string; status: TCohortInviteStatus; inviteId: string | null };
+
+/**
+ * Decides how one entry joins the cohort. Staff entries and students who already joined the organization are added
+ * directly; every other student is invited through their organization invite, so nobody joins the organization or
+ * gets an email-only student row without accepting. An entry whose `profileId` and `email` name different people, or
+ * a student entry for an organization admin or tutor, is refused.
+ */
+async function planCohortMember(
+  cohortId: string,
+  organizationId: string,
+  member: TCohortMemberInput
+): Promise<TCohortMemberPlan> {
+  const profileEmail = member.profileId ? ((await getProfileById(member.profileId))?.email ?? null) : null;
+  const normalizedEmail = (member.email ?? profileEmail)?.trim().toLowerCase() || null;
+  if (!member.profileId && !normalizedEmail) {
+    throw new AppError('Either profileId or email must be provided for each member', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  const normalizedProfileEmail = profileEmail?.trim().toLowerCase() ?? null;
+  if (member.profileId && member.email && normalizedProfileEmail && normalizedProfileEmail !== normalizedEmail) {
+    throw new AppError('profileId and email identify different people', ErrorCodes.VALIDATION_ERROR, 400, 'email');
+  }
+
+  const [organizationMember] = normalizedEmail
+    ? await getOrganizationMembersByNormalizedEmails(organizationId, [normalizedEmail])
+    : [];
+  const profileId = member.profileId ?? organizationMember?.profileId ?? null;
+  const existing = profileId
+    ? await getCohortMemberByProfileId(cohortId, profileId)
+    : await getCohortMemberByEmail(cohortId, normalizedEmail!);
+  if (existing) {
+    throw new AppError(
+      `${member.email ?? member.profileId} is already a member of this cohort`,
+      ErrorCodes.MEMBER_ALREADY_IN_COHORT,
+      409
+    );
+  }
+
+  if (member.roleId !== ROLE.STUDENT) {
+    return { kind: 'direct', profileId, email: normalizedEmail, roleId: member.roleId };
+  }
+
+  if (organizationMember?.status === 'ARCHIVED') {
+    throw new AppError(
+      'This email belongs to an archived organization member. Restore them before adding them',
+      ErrorCodes.ORG_MEMBER_ARCHIVED,
+      409
+    );
+  }
+
+  if (organizationMember && organizationMember.roleId !== ROLE.STUDENT) {
+    throw new AppError('This email belongs to an admin or tutor', ErrorCodes.STAFF_CANNOT_ENROLL, 409);
+  }
+
+  if (organizationMember?.profileId) {
+    return { kind: 'direct', profileId: organizationMember.profileId, email: normalizedEmail, roleId: ROLE.STUDENT };
+  }
+
+  if (!normalizedEmail) {
+    throw new AppError('This profile has no email to invite', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  return { kind: 'invite', email: normalizedEmail };
+}
+
+async function addDirectCohortMember(
+  cohortId: string,
+  organizationId: string,
+  courseGroupIds: string[],
+  plan: Extract<TCohortMemberPlan, { kind: 'direct' }>,
+  source: TEventSource,
+  actorProfileId: string | null
+) {
+  const { member, enrolledMembers } = await db.transaction(async (tx) => {
+    let enrolledMembers: TGroupmember[] = [];
+    const member = await addCohortMember(
+      { cohortId, profileId: plan.profileId, roleId: plan.roleId, email: plan.email ?? undefined },
+      tx
+    );
+
+    if (member?.profileId && member.roleId === ROLE.STUDENT && courseGroupIds.length > 0) {
+      enrolledMembers = await insertGroupMembersOnConflictDoNothing(
+        courseGroupIds.map((groupId) => ({
+          groupId,
+          roleId: ROLE.STUDENT,
+          profileId: member.profileId,
+          email: plan.email ?? undefined
+        })),
+        tx
+      );
+    }
+
+    if (member?.profileId && (member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR)) {
+      await enrollCohortStaffInCourseGroups(
+        organizationId,
+        courseGroupIds,
+        [{ profileId: member.profileId, email: plan.email, roleId: member.roleId }],
+        tx
+      );
+    }
+
+    return { member, enrolledMembers };
+  });
+
+  captureLearnersEnrolled(enrolledMembers, 'cohort', source);
+
+  if (member) {
+    await emitCohortMemberWebhookEvent('cohort.member.added', organizationId, cohortId, member, actorProfileId);
+  }
+
+  return member;
+}
+
+function toCohortInviteOutcome(email: string, row: AudienceImportRowResult | undefined): TCohortMemberAddOutcome {
+  switch (row?.status) {
+    case 'ready':
+    case 'invite_resent':
+      return { kind: 'invited', email, status: 'invited', inviteId: row.inviteId ?? null };
+    case 'already_invited':
+      return { kind: 'invited', email, status: 'already_invited', inviteId: row.inviteId ?? null };
+    case 'already_member':
+      return {
+        kind: 'invited',
+        email,
+        status: row.enrollment === 'already_enrolled' ? 'already_enrolled' : 'enrolled',
+        inviteId: null
+      };
+    case 'is_staff':
+      throw new AppError('This email belongs to an admin or tutor', ErrorCodes.STAFF_CANNOT_ENROLL, 409);
+    case 'archived':
+      throw new AppError('This email belongs to an archived organization member', ErrorCodes.ORG_MEMBER_ARCHIVED, 409);
+    case 'over_seat_limit':
+      throw new AppError('Your plan has no student seats left', ErrorCodes.UPGRADE_REQUIRED, 403);
+    default:
+      throw new AppError('Failed to invite this person', ErrorCodes.VALIDATION_ERROR, 400);
+  }
 }
 
 /** One settled result per `data.members` entry, in request order. */
@@ -362,7 +603,7 @@ export async function addCohortMembersSettled(
   data: TAddCohortMembers,
   source: TEventSource = 'dashboard',
   actorProfileId: string | null = null
-) {
+): Promise<PromiseSettledResult<TCohortMemberAddOutcome>[]> {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -370,135 +611,65 @@ export async function addCohortMembersSettled(
     }
 
     const courseGroups = await listCohortCourseGroups(cohortId);
-    const courseGroupIds = courseGroups.map((courseGroup) => courseGroup.groupId);
+    const courseGroupIds = courseGroups
+      .map((courseGroup) => courseGroup.groupId)
+      .filter((groupId): groupId is string => Boolean(groupId));
+
+    const plans = await Promise.allSettled(
+      data.members.map((member) => planCohortMember(cohortId, cohort.organizationId, member))
+    );
+    const inviteEmails = [
+      ...new Set(
+        plans.flatMap((plan) => (plan.status === 'fulfilled' && plan.value.kind === 'invite' ? [plan.value.email] : []))
+      )
+    ];
+
+    let inviteRows = new Map<string, AudienceImportRowResult>();
+    let inviteError: unknown = null;
+    if (inviteEmails.length > 0 && actorProfileId) {
+      try {
+        const imported = await importAudienceMembers(
+          cohort.organizationId,
+          {
+            recipients: inviteEmails.map((email) => ({ email })),
+            cohortIds: [cohortId],
+            allCourses: false,
+            allCohorts: false,
+            sendEmail: true
+          },
+          actorProfileId,
+          source,
+          { reissue: 'when-changed', inviteSource: 'COHORT_ADD' }
+        );
+        inviteRows = new Map(imported.rows.map((row) => [row.email, row]));
+      } catch (error) {
+        inviteError = error;
+      }
+    }
 
     return await Promise.allSettled(
-      data.members.map(async ({ profileId: providedProfileId, email, roleId }) => {
-        const profile = !providedProfileId && email ? await getProfileByEmail(email) : null;
-        const profileId = providedProfileId ?? profile?.id ?? null;
-        const normalizedEmail = email?.toLowerCase().trim() ?? profile?.email ?? null;
+      plans.map(async (plan): Promise<TCohortMemberAddOutcome> => {
+        if (plan.status === 'rejected') throw plan.reason;
 
-        if (profileId || normalizedEmail) {
-          const existing = profileId
-            ? await getCohortMemberByProfileId(cohortId, profileId)
-            : await getCohortMemberByEmail(cohortId, normalizedEmail!);
-          if (existing) {
-            throw new AppError(
-              `${email ?? profileId} is already a member of this cohort`,
-              ErrorCodes.MEMBER_ALREADY_IN_COHORT,
-              409
-            );
+        if (plan.value.kind === 'invite') {
+          if (!actorProfileId) {
+            throw new AppError('Only a signed-in user can invite new students', ErrorCodes.VALIDATION_ERROR, 400);
           }
+          if (inviteError) throw inviteError;
+
+          return toCohortInviteOutcome(plan.value.email, inviteRows.get(plan.value.email));
         }
 
-        if (!profileId && !email) {
-          throw new AppError(
-            'Either profileId or email must be provided for each member',
-            ErrorCodes.VALIDATION_ERROR,
-            400
-          );
-        }
+        const member = await addDirectCohortMember(
+          cohortId,
+          cohort.organizationId,
+          courseGroupIds,
+          plan.value,
+          source,
+          actorProfileId
+        );
 
-        const transactionResult = await db.transaction(async (tx) => {
-          let studentMilestoneNotification: StudentMilestoneNotification | null = null;
-          let enrolledMembers: TGroupmember[] = [];
-          let createdOrgMembers: TOrganizationmember[] = [];
-          const member = await addCohortMember(
-            {
-              cohortId,
-              profileId,
-              roleId,
-              email: normalizedEmail ?? undefined
-            },
-            tx
-          );
-
-          if (member && member.roleId === ROLE.STUDENT && member.profileId && courseGroupIds.length > 0) {
-            const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
-
-            const existingOrgMemberId = await getOrganizationMemberIdByOrgAndProfile(
-              cohort.organizationId,
-              member.profileId,
-              tx
-            );
-            if (!existingOrgMemberId) {
-              studentMilestoneNotification = await assertStudentCapacityOrThrow(cohort.organizationId, 1, tx, {
-                deferNotification: true
-              });
-            }
-
-            createdOrgMembers = await insertOrganizationMembersOnConflictDoNothing(
-              [
-                {
-                  organizationId: cohort.organizationId,
-                  roleId: ROLE.STUDENT,
-                  profileId: member.profileId,
-                  email: normalizedEmail ?? undefined,
-                  verified: true
-                }
-              ],
-              tx
-            );
-
-            enrolledMembers = await insertGroupMembersOnConflictDoNothing(
-              validCourseGroupIds.map((groupId) => ({
-                groupId,
-                roleId: ROLE.STUDENT,
-                profileId: member.profileId,
-                email: normalizedEmail ?? undefined
-              })),
-              tx
-            );
-          }
-
-          if (member?.profileId && (member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR)) {
-            const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
-
-            await enrollCohortStaffInCourseGroups(
-              cohort.organizationId,
-              validCourseGroupIds,
-              [
-                {
-                  profileId: member.profileId,
-                  email: normalizedEmail,
-                  roleId: member.roleId
-                }
-              ],
-              tx
-            );
-          }
-
-          return { member, studentMilestoneNotification, enrolledMembers, createdOrgMembers };
-        });
-
-        captureLearnersEnrolled(transactionResult.enrolledMembers, 'cohort', source);
-
-        if (transactionResult.studentMilestoneNotification) {
-          notifyStudentMilestone(transactionResult.studentMilestoneNotification).catch((error) => {
-            console.error('notifyStudentMilestone error:', error);
-          });
-        }
-
-        for (const createdOrgMember of transactionResult.createdOrgMembers) {
-          await emitOrganizationMemberWebhookEvent(
-            'organization.member.added',
-            cohort.organizationId,
-            createdOrgMember,
-            actorProfileId
-          );
-        }
-
-        if (transactionResult.member) {
-          await emitCohortMemberWebhookEvent(
-            'cohort.member.added',
-            cohort.organizationId,
-            cohortId,
-            transactionResult.member,
-            actorProfileId
-          );
-        }
-
-        return transactionResult.member;
+        return { kind: 'added', member };
       })
     );
   } catch (error) {

@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { CoursePeopleProgress } from '../course';
+import { invitationFields, peopleListItemId, peopleListMembership } from './invited-person-responses';
 
 // Response shapes for OpenAPI docs only; handlers don't validate against them. Timestamps are Postgres text, not strict ISO.
 const timestamp = z.string();
@@ -33,6 +34,16 @@ export const ZPublicApiCourseMemberDetailResponse = ZPublicApiCourseMemberRespon
 });
 
 export const ZPublicApiCourseMemberListItemResponse = ZPublicApiCourseMemberDetailResponse.extend({
+  id: peopleListItemId,
+  membership: peopleListMembership,
+  invitation: z
+    .object({
+      ...invitationFields,
+      groupMemberId: z.string().uuid().nullable(),
+      courseInviteId: z.string().uuid().nullable()
+    })
+    .nullable()
+    .describe('Null for joined members'),
   progressPercent: z.number().optional().describe('Students only'),
   progressBucket: CoursePeopleProgress.nullable(),
   stage: z
@@ -146,14 +157,43 @@ export const ZPublicApiCourseInviteListItemResponse = ZPublicApiCourseInviteBase
   })
 });
 
+export const ZPublicApiCourseInviteRecipientResponse = z.object({
+  email: z.string(),
+  status: z
+    .enum([
+      'invited',
+      'already_invited',
+      'enrolled',
+      'already_enrolled',
+      'is_staff',
+      'archived',
+      'over_seat_limit',
+      'invalid_email',
+      'duplicate'
+    ])
+    .describe(
+      'invited: the course is on their organization invite; already_invited: it already was; enrolled / already_enrolled: they had joined; other values: skipped'
+    ),
+  inviteId: z.string().uuid().nullable().describe('The organization invite that carries the course'),
+  inviteKind: z.enum(['organization']).nullable(),
+  inviteLink: z.string().nullable().describe('Accept URL for an invite this call issued; null otherwise')
+});
+
 export const ZPublicApiCreateCourseInviteResponse = z.object({
-  mode: z.enum(['single', 'bulk']).describe('single = one shareable link, bulk = one invite per recipient email'),
-  invites: z.array(
-    ZPublicApiCourseInviteBase.extend({
-      inviteLink: z.string().describe('Enroll URL containing the invite token; only returned at creation')
-    })
-  ),
-  inviteLink: z.string().nullable(),
+  mode: z
+    .enum(['single', 'bulk'])
+    .describe('single = one shareable link; bulk = recipients invited through their organization invites'),
+  invites: z
+    .array(
+      ZPublicApiCourseInviteBase.extend({
+        inviteLink: z.string().describe('Enroll URL containing the invite token; only returned at creation')
+      })
+    )
+    .describe('The shareable course invite in single mode; empty in bulk mode'),
+  inviteLink: z.string().nullable().describe('The shareable link in single mode; null in bulk mode'),
+  recipients: z
+    .array(ZPublicApiCourseInviteRecipientResponse)
+    .describe('One entry per recipient in bulk mode, in the order given'),
   duplicatesSkipped: z.array(z.string()),
   delivery: z.object({
     requested: z.number(),

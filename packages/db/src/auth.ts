@@ -11,6 +11,7 @@ import {
 
 import { betterAuth } from 'better-auth/minimal';
 import { createProfileHook } from './auth/hooks/create-profile';
+import { getSsoProviderIdFromContext } from './auth/hooks/sso-provisioning';
 import { customSession } from 'better-auth/plugins/custom-session';
 import { db } from '@db/drizzle';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
@@ -27,6 +28,8 @@ import { trackLoginHook } from './auth/hooks/track-login';
 import { syncProfileEmailVerificationFromAuthUser } from './queries/auth/profile';
 
 export { mintLoginLinkToken } from './auth/login-link';
+export { getInviteBindingHandler, setInviteBindingHandler } from './auth/invite-binding-handler';
+export type { TInviteBindingHandler, TInviteBindingParams, TInviteBindingResult } from './auth/invite-binding-handler';
 
 /**
  * Cloud (multi-tenant) only. Routes OAuth/SSO callbacks to the canonical
@@ -110,9 +113,10 @@ const authInstance = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        after: async (user) => {
+        after: async (user, context) => {
           console.log('[auth] databaseHooks.user.create.after: running', { userId: user.id });
-          await createProfileHook(user);
+          const ssoProviderId = getSsoProviderIdFromContext(context);
+          await createProfileHook(user, ssoProviderId);
         }
       },
       update: {

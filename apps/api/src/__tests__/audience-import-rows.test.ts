@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/core/services/webhook/emit', () => ({
   emitWebhookEvent: vi.fn().mockResolvedValue(undefined),
+  emitCohortMemberWebhookEvent: vi.fn().mockResolvedValue(undefined),
+  emitCourseWebhookEvent: vi.fn().mockResolvedValue(undefined),
   emitOrganizationMemberWebhookEvent: vi.fn().mockResolvedValue(undefined)
 }));
 
@@ -36,6 +38,7 @@ vi.mock('@cio/db/queries/course', () => ({
 
 vi.mock('@cio/db/queries/cohort', () => ({
   addCohortMember: vi.fn(),
+  claimEmailOnlyCohortMembersForCohorts: vi.fn().mockResolvedValue({ claimed: 0, removedDuplicates: 0 }),
   getCohortsByOrg: vi.fn().mockResolvedValue([]),
   getCourseIdsByCohortIds: vi.fn().mockResolvedValue([]),
   getExistingCohortMembers: vi.fn().mockResolvedValue([])
@@ -43,6 +46,7 @@ vi.mock('@cio/db/queries/cohort', () => ({
 
 vi.mock('@cio/db/queries/group', () => ({
   addGroupMembers: vi.fn(),
+  claimEmailOnlyGroupMembersForGroups: vi.fn().mockResolvedValue({ claimed: 0, removedDuplicates: 0 }),
   enrollUsersInCourseGroups: vi.fn().mockResolvedValue(undefined),
   getExistingGroupMembers: vi.fn().mockResolvedValue([])
 }));
@@ -56,7 +60,7 @@ vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
 }));
 
 vi.mock('@api/services/jobs', () => ({
-  enqueueTransactionalEmail: vi.fn().mockResolvedValue(undefined)
+  enqueueTransactionalEmail: vi.fn().mockResolvedValue({ jobIds: ['job-1'] })
 }));
 
 vi.mock('@api/services/organization/student-limit', () => ({
@@ -65,11 +69,102 @@ vi.mock('@api/services/organization/student-limit', () => ({
   notifyStudentMilestone: vi.fn().mockResolvedValue(undefined)
 }));
 
-const TX = { tx: true };
-vi.mock('@cio/db/drizzle', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@cio/db/drizzle')>()),
-  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
+// The audience service merges student invites through the shared supersede
+// helper. These row-level tests mock the query layer, so emulate the merge with
+// those same mocks instead of touching a database.
+vi.mock('@cio/core/services/organization/supersede-invites', () => ({
+  getStaffInvitedEmails: vi.fn().mockResolvedValue(new Set()),
+  supersedeStudentOrgInvites: vi.fn(
+    async (
+      _dbClient: unknown,
+      params: {
+        orgId: string;
+        emails: string[];
+        courseIds?: string[];
+        cohortIds?: string[];
+        pathIds?: string[];
+        fullnamesByEmail?: Map<string, string>;
+      }
+    ) => {
+      const {
+        revokeActiveOrganizationInvitesByEmails,
+        createOrganizationInvites,
+        getLatestOrganizationInviteMetadataByEmails
+      } = await import('@cio/db/queries/organization');
+      const invitedByProfileId = (params as { invitedByProfileId?: string }).invitedByProfileId ?? 'actor-1';
+      const courseIds = [...new Set((params.courseIds ?? []).filter(Boolean))];
+      const cohortIds = [...new Set((params.cohortIds ?? []).filter(Boolean))];
+      const pathIds = [...new Set((params.pathIds ?? []).filter(Boolean))];
+      const nameless = params.emails.filter((email) => !params.fullnamesByEmail?.get(email));
+      const previous = await getLatestOrganizationInviteMetadataByEmails(
+        params.orgId,
+        nameless,
+        _dbClient as never
+      ).catch(() => []);
+      const previousFullnameByEmail = new Map<string, string>();
+      for (const row of previous as { email: string; metadata: unknown }[]) {
+        const metadata = (row.metadata ?? {}) as { fullname?: unknown };
+        if (typeof metadata.fullname === 'string' && metadata.fullname.trim()) {
+          previousFullnameByEmail.set(row.email.toLowerCase(), metadata.fullname.trim());
+        }
+      }
+      const revoked = await revokeActiveOrganizationInvitesByEmails(
+        params.orgId,
+        params.emails,
+        invitedByProfileId,
+        _dbClient as never
+      );
+      const created = await createOrganizationInvites(
+        params.emails.map((email: string) => ({
+          organizationId: params.orgId,
+          roleId: 3,
+          email,
+          tokenHash: `mock-hash-${email}`,
+          createdByProfileId: invitedByProfileId,
+          expiresAt: new Date().toISOString(),
+          isRevoked: false,
+          metadata: {
+            courseIds: courseIds.length > 0 ? courseIds : undefined,
+            cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
+            pathIds: pathIds.length > 0 ? pathIds : undefined,
+            fullname: params.fullnamesByEmail?.get(email) ?? previousFullnameByEmail.get(email.toLowerCase())
+          }
+        })) as never,
+        _dbClient as never
+      );
+      return {
+        revoked,
+        created,
+        inviteByEmail: new Map(
+          (created as { id: string; email: string }[]).map((invite) => [(invite.email ?? '').toLowerCase(), invite])
+        ),
+        tokenByEmail: new Map(params.emails.map((email: string) => [email.toLowerCase(), `mock-token-${email}`])),
+        unchanged: [],
+        addedCourseIdsByEmail: new Map(params.emails.map((email: string) => [email.toLowerCase(), courseIds])),
+        removedCourseIdsByEmail: new Map(),
+        skippedStaff: [] as string[]
+      };
+    }
+  )
 }));
+
+vi.mock('@api/services/course/compliance', () => ({
+  ensureComplianceEnrollmentRecordsForProfiles: vi.fn().mockResolvedValue({ createdRecords: [] })
+}));
+
+vi.mock('@api/services/course/session-invite', () => ({
+  getWelcomeSessionIcs: vi.fn().mockResolvedValue(undefined)
+}));
+
+const TX = { tx: true };
+vi.mock('@cio/db/drizzle', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/db/drizzle')>();
+
+  return {
+    ...original,
+    db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
+  };
+});
 
 import {
   createOrganizationInvite,
@@ -85,7 +180,10 @@ import {
   revokeActiveOrganizationInvitesByEmails,
   updateOrganizationAudienceMember
 } from '@cio/db/queries/organization';
-import { getCohortsByOrg } from '@cio/db/queries/cohort';
+import { addCohortMember, getCohortsByOrg } from '@cio/db/queries/cohort';
+import { getOrgCourseGroups, getOrgCourses } from '@cio/db/queries/course';
+import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } from '@cio/db/queries/group';
+import { getOrgMembersByProfileIds } from '@cio/db/queries/organization';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import {
   assertStudentCapacityOrThrow,
@@ -97,6 +195,7 @@ import {
   resendAudienceInvite,
   updatePendingAudienceMemberEmail
 } from '@api/services/organization/audience';
+import { supersedeStudentOrgInvites } from '@cio/core/services/organization/supersede-invites';
 import { ROLE } from '@cio/utils/constants';
 
 const ORG = 'org-1';
@@ -121,6 +220,17 @@ describe('importAudienceMembers — one bad row does not fail the batch', () => 
     expect(result.imported).toBe(2);
   });
 
+  it('reports a linked-account conflict when a concurrent import wins the email', async () => {
+    vi.mocked(createOrganizationMembers).mockRejectedValueOnce({
+      cause: { code: '23505', constraint_name: 'organizationmember_org_email_unique' }
+    } as never);
+
+    await expect(importAudienceMembers(ORG, csv('email', 'race@test.dev'), ACTOR)).rejects.toMatchObject({
+      statusCode: 409,
+      code: 'ORG_MEMBER_EMAIL_LINKED_TO_OTHER_ACCOUNT'
+    });
+  });
+
   it('reports a staff address rather than rejecting the file', async () => {
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
       { normalizedEmail: 'admin@test.dev', profileId: 'p-admin', roleId: ROLE.ADMIN }
@@ -129,7 +239,7 @@ describe('importAudienceMembers — one bad row does not fail the batch', () => 
     const result = await importAudienceMembers(ORG, csv('email', 'ada@test.dev', 'admin@test.dev'), ACTOR);
 
     expect(result.rows).toEqual([
-      { email: 'ada@test.dev', name: undefined, status: 'ready' },
+      { email: 'ada@test.dev', name: undefined, status: 'ready', inviteId: 'invite-0' },
       { email: 'admin@test.dev', name: undefined, status: 'is_staff' }
     ]);
     expect(result.imported).toBe(1);
@@ -185,6 +295,7 @@ describe('importAudienceMembers — one bad row does not fail the batch', () => 
       enrolled: 0,
       emailsSent: 0,
       emailsFailed: 0,
+      emailFailures: [],
       rows: [{ email: 'broken', name: undefined, status: 'invalid_email' }],
       assigned: 0,
       alreadyEnrolledInCourses: 0,
@@ -233,19 +344,45 @@ describe('importAudienceMembers — seat limit', () => {
     expect(result.rows.filter((row) => row.status === 'over_seat_limit')).toHaveLength(980);
   });
 
-  it('does not re-invite an address another request added first', async () => {
+  function raceOn(email: string, racedMember: { profileId: string | null; roleId: number; status: string }) {
     vi.mocked(createOrganizationMembers).mockImplementationOnce(
-      async (rows) => rows.filter((row) => row.email !== 'b@test.dev') as never
+      async (rows) => rows.filter((row) => row.email !== email) as never
     );
+    vi.mocked(getOrganizationMembersByNormalizedEmails)
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ normalizedEmail: email, ...racedMember }] as never);
+  }
+
+  it('still records the requested access for a pending address another request added first', async () => {
+    raceOn('b@test.dev', { profileId: null, roleId: ROLE.STUDENT, status: 'ACTIVE' });
+
+    const result = await importAudienceMembers(ORG, csv('email', 'a@test.dev', 'b@test.dev'), ACTOR);
+
+    expect(result.rows.map((row) => row.status)).toEqual(['ready', 'ready']);
+    expect(createOrganizationInvites).toHaveBeenCalledWith(
+      [expect.objectContaining({ email: 'a@test.dev' }), expect.objectContaining({ email: 'b@test.dev' })],
+      expect.anything()
+    );
+  });
+
+  it('does not invite an address that joined or became staff while the import ran', async () => {
+    raceOn('b@test.dev', { profileId: 'profile-b', roleId: ROLE.STUDENT, status: 'ACTIVE' });
 
     const result = await importAudienceMembers(ORG, csv('email', 'a@test.dev', 'b@test.dev'), ACTOR);
 
     expect(result.rows.map((row) => row.status)).toEqual(['ready', 'already_member']);
-    expect(result.imported).toBe(1);
     expect(createOrganizationInvites).toHaveBeenCalledWith(
       [expect.objectContaining({ email: 'a@test.dev' })],
       expect.anything()
     );
+  });
+
+  it('reports a raced staff address as staff', async () => {
+    raceOn('b@test.dev', { profileId: 'profile-b', roleId: ROLE.TUTOR, status: 'ACTIVE' });
+
+    const result = await importAudienceMembers(ORG, csv('email', 'a@test.dev', 'b@test.dev'), ACTOR);
+
+    expect(result.rows.map((row) => row.status)).toEqual(['ready', 'is_staff']);
   });
 
   it('checks capacity and inserts members in the same transaction', async () => {
@@ -372,7 +509,6 @@ describe('resendAudienceInvite — seat limit', () => {
       email: 'ada@test.dev'
     });
     vi.mocked(getLatestOrganizationInviteRowByOrgAndEmail).mockResolvedValue(null as never);
-    vi.mocked(createOrganizationInvite).mockResolvedValue({ id: 'invite-new' } as never);
   });
 
   it('does not need a free seat to resend a still-pending invite', async () => {
@@ -381,7 +517,11 @@ describe('resendAudienceInvite — seat limit', () => {
     await resendAudienceInvite(ORG, { email: 'ada@test.dev' } as never, ACTOR);
 
     expect(assertStudentCapacityOrThrow).not.toHaveBeenCalled();
-    expect(createOrganizationInvite).toHaveBeenCalledWith(expect.objectContaining({ email: 'ada@test.dev' }), TX);
+    expect(supersedeStudentOrgInvites).toHaveBeenCalledWith(
+      TX,
+      expect.objectContaining({ orgId: ORG, emails: ['ada@test.dev'] })
+    );
+    expect(createOrganizationInvites).toHaveBeenCalledWith([expect.objectContaining({ email: 'ada@test.dev' })], TX);
   });
 
   it('checks for a free seat in the same transaction when the invite was revoked or expired', async () => {
@@ -392,7 +532,7 @@ describe('resendAudienceInvite — seat limit', () => {
     expect(hasLapsedStudentInvite).toHaveBeenCalledWith(ORG, 7, TX);
     expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, TX, { deferNotification: true });
     expect(revokeActiveOrganizationInvitesByEmails).toHaveBeenCalledWith(ORG, ['ada@test.dev'], ACTOR, TX);
-    expect(createOrganizationInvite).toHaveBeenCalledWith(expect.anything(), TX);
+    expect(createOrganizationInvites).toHaveBeenCalledWith([expect.objectContaining({ email: 'ada@test.dev' })], TX);
   });
 
   it('sends no new invite when the plan is full', async () => {
@@ -402,7 +542,7 @@ describe('resendAudienceInvite — seat limit', () => {
     await expect(resendAudienceInvite(ORG, { email: 'ada@test.dev' } as never, ACTOR)).rejects.toThrow(
       'UPGRADE_REQUIRED'
     );
-    expect(createOrganizationInvite).not.toHaveBeenCalled();
+    expect(createOrganizationInvites).not.toHaveBeenCalled();
     expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
   });
 });
@@ -479,7 +619,7 @@ describe('importAudienceMembers — structured recipients', () => {
     );
 
     expect(result.rows).toEqual([
-      { email: 'ada@test.dev', name: 'Ada Lovelace', status: 'ready' },
+      { email: 'ada@test.dev', name: 'Ada Lovelace', status: 'ready', inviteId: 'invite-0' },
       { email: 'nope', name: 'Broken', status: 'invalid_email' }
     ]);
   });
@@ -578,5 +718,125 @@ describe('updatePendingAudienceMemberEmail — seat limit', () => {
     expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, TX, { deferNotification: true });
     expect(revokeActiveOrganizationInvitesByEmails).not.toHaveBeenCalled();
     expect(updateOrganizationAudienceMember).not.toHaveBeenCalled();
+  });
+});
+
+describe('importAudienceMembers — row outcomes for course invites', () => {
+  function courseInvite(...emails: string[]) {
+    return {
+      recipients: emails.map((email) => ({ email })),
+      courseIds: ['course-1'],
+      allCourses: false,
+      allCohorts: false,
+      sendEmail: false
+    } as never;
+  }
+
+  beforeEach(() => {
+    vi.mocked(getOrgCourses).mockResolvedValue({ items: [{ id: 'course-1', title: 'Course 1' }] } as never);
+    vi.mocked(getOrgCourseGroups).mockResolvedValue([
+      { courseId: 'course-1', groupId: 'group-1', courseTitle: 'Course 1' }
+    ] as never);
+  });
+
+  it('reports an archived student as archived and sends them no invite', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'gone@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT, status: 'ARCHIVED' }
+    ] as never);
+
+    const result = await importAudienceMembers(ORG, courseInvite('gone@test.dev'), ACTOR);
+
+    expect(result.rows).toEqual([{ email: 'gone@test.dev', name: undefined, status: 'archived' }]);
+    expect(createOrganizationInvites).not.toHaveBeenCalled();
+    expect(addGroupMembers).not.toHaveBeenCalled();
+  });
+
+  it('reports already_invited when the live invite already covers the course', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: null, roleId: ROLE.STUDENT }
+    ] as never);
+    const merge = vi.mocked(supersedeStudentOrgInvites).getMockImplementation()!;
+    vi.mocked(supersedeStudentOrgInvites).mockImplementationOnce(async (...args) => {
+      const merged = await merge(...args);
+      return { ...merged, unchanged: merged.created, tokenByEmail: new Map() } as never;
+    });
+
+    const result = await importAudienceMembers(ORG, courseInvite('ada@test.dev'), ACTOR, 'dashboard', {
+      reissue: 'when-changed'
+    });
+
+    expect(supersedeStudentOrgInvites).toHaveBeenCalledWith(
+      TX,
+      expect.objectContaining({ emails: ['ada@test.dev'], courseIds: ['course-1'] })
+    );
+    expect(result.rows).toEqual([
+      { email: 'ada@test.dev', name: undefined, status: 'already_invited', inviteId: 'invite-0' }
+    ]);
+  });
+
+  it('returns the invite id and accept link for each invite it issues', async () => {
+    const result = await importAudienceMembers(ORG, courseInvite('new@test.dev'), ACTOR, 'dashboard', {
+      includeInviteLinks: true
+    });
+
+    expect(result.rows[0]).toMatchObject({ status: 'ready', inviteId: 'invite-0' });
+    expect(result.rows[0].inviteLink).toContain('mock-token-new%40test.dev');
+  });
+
+  it('does not enrol a new email in the course before they accept', async () => {
+    const result = await importAudienceMembers(ORG, courseInvite('new@test.dev'), ACTOR);
+
+    expect(createOrganizationInvites).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({
+          email: 'new@test.dev',
+          metadata: expect.objectContaining({ courseIds: ['course-1'] })
+        })
+      ],
+      expect.anything()
+    );
+    expect(addGroupMembers).not.toHaveBeenCalled();
+    expect(enrollUsersInCourseGroups).not.toHaveBeenCalled();
+    expect(addCohortMember).not.toHaveBeenCalled();
+    expect(result.rows[0].enrollment).toBeUndefined();
+    expect(result.enrolled).toBe(0);
+  });
+
+  it('enrols a joined student directly and marks the row enrolled', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' }
+    ] as never);
+    vi.mocked(getExistingGroupMembers).mockResolvedValue(new Set());
+    vi.mocked(addGroupMembers).mockResolvedValue([{ id: 'gm-1', profileId: 'p-1', groupId: 'group-1' }] as never);
+
+    const result = await importAudienceMembers(ORG, courseInvite('ada@test.dev'), ACTOR);
+
+    expect(addGroupMembers).toHaveBeenCalledWith([
+      expect.objectContaining({ groupId: 'group-1', profileId: 'p-1', roleId: ROLE.STUDENT })
+    ]);
+    expect(createOrganizationInvites).not.toHaveBeenCalled();
+    expect(result.rows).toEqual([
+      { email: 'ada@test.dev', name: undefined, status: 'already_member', enrollment: 'enrolled' }
+    ]);
+    expect(result.enrolled).toBe(1);
+  });
+
+  it('marks a joined student already in the course as already_enrolled', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' }
+    ] as never);
+    vi.mocked(getExistingGroupMembers).mockResolvedValue(new Set(['group-1:p-1']));
+
+    const result = await importAudienceMembers(ORG, courseInvite('ada@test.dev'), ACTOR);
+
+    expect(addGroupMembers).not.toHaveBeenCalled();
+    expect(result.rows[0]).toMatchObject({ status: 'already_member', enrollment: 'already_enrolled' });
+    expect(result.alreadyEnrolledInCourses).toBe(1);
   });
 });

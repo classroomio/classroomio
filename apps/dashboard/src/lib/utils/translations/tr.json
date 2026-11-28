@@ -4117,7 +4117,16 @@
           "snackbar_failed_load_audit": "Davet denetimi yüklenemedi",
           "snackbar_metadata_copied": "Davet meta veriler kopyalandı",
           "snackbar_email_invites_success": "{count} davet(ler)i oluşturuldu. {sent} gönderildi, {failed} başarısız oldu. {duplicates} kopyalar atlandı.",
-          "select_at_least_one_student": "En az bir mevcut öğrenciyi seçin"
+          "select_at_least_one_student": "En az bir mevcut öğrenciyi seçin",
+          "revoke_course_access": "Bu kursa erişimi kaldır",
+          "outcomes": {
+            "title": "Sonuçlar",
+            "enrolled": "Kursa eklendi",
+            "already_enrolled": "Zaten bu kursta",
+            "invited": "Davetli",
+            "archived": "Arşivlenmiş üye",
+            "not_found": "Eşleşen üye yok"
+          }
         },
         "delete_confirmation": {
           "title": "Sil",
@@ -4192,7 +4201,11 @@
           "earned": "Kazanıldı",
           "not_earned": "Kazanılmadı",
           "no_login_since": "Giriş yapmadığı süre",
-          "joined_within": "Katıldığı süre"
+          "joined_within": "Katıldığı süre",
+          "status": "Durum",
+          "all_statuses": "Tümü",
+          "joined": "Katıldı",
+          "invited": "Davetli"
         },
         "window": {
           "7d": "7 gün",
@@ -4413,7 +4426,8 @@
           "members_only": "Yalnızca bu kuruluşun üyeleri kaydolabilir. Yöneticiden davetiye isteyin.",
           "invite_restricted_email": "Bu davet {inviteEmail} adresine gönderildi, ancak {currentEmail} olarak oturum açtınız. Oturumu kapatın ve davet edilen e-postayla devam edin.",
           "invite_restricted": "Bu davet farklı bir hesapla sınırlıdır. Oturumu kapatın ve davet edilen hesapla devam edin.",
-          "switch_account": "Oturumu kapat ve hesap değiştir"
+          "switch_account": "Oturumu kapat ve hesap değiştir",
+          "invite_replaced": "Bu davetiye değiştirildi. En son e-postanızı kontrol edin."
         },
         "course_content": "Kurs içeriği",
         "modules": "modules",
@@ -4834,7 +4848,9 @@
         "duplicate_in_file": "Dosyada kopyala",
         "is_staff": "Personel, öğrenci değil",
         "over_seat_limit": "Koltuk kalmadı",
-        "missing_email": "E-posta yok"
+        "missing_email": "E-posta yok",
+        "archived": "Arşivlenmiş üye",
+        "already_invited": "Zaten davet edildi"
       }
     },
     "assign": {
@@ -4855,7 +4871,8 @@
       "revoke": "Bekleyen daveti iptal et",
       "resend_snackbar_success": "Davetiye e-postası gönderildi",
       "resend_snackbar_email_failed": "Davet yenilendi ancak e-posta gönderilemedi",
-      "revoke_snackbar_success": "Bekleyen davetiye iptal edildi"
+      "revoke_snackbar_success": "Bekleyen davetiye iptal edildi",
+      "revoke_course_snackbar_success": "Kurs erişimi kaldırıldı"
     },
     "never": "Asla",
     "progress": "İlerleme",
@@ -5878,9 +5895,9 @@
     "any_course": "Tamamladığınız herhangi bir kurs burada görüntülenecektir",
     "find_courses": "Bul kurslar",
     "pending_invites": {
-      "title": "Bekleyen kurs davetlerin var",
       "description": "Öğrenmeye başlamak için onları kabul et.",
-      "review": "Davetleri incele"
+      "review": "Davetleri incele",
+      "title": "Bekleyen davetiyeleriniz var"
     }
   },
   "certificates": {
@@ -6319,17 +6336,28 @@
       "join_failed": "Kuruluşa katılılamadı",
       "joined": "Kuruluşa katılındı"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "Bir kursa davet edildin",
-        "description": "Kursu öğrenimine eklemek için bir daveti kabul et.",
-        "accept": "Kabul et",
-        "later": "Daha sonra"
+        "title": "Davet edildin",
+        "description": "Kurslarını ve gruplarını kabul etmek için bir akademiye katıl."
       },
+      "join_org": "{orgName} akademisine katıl",
+      "joined_button": "Katıldı",
+      "later": "Daha sonra",
+      "pending_courses": "{orgName} kurslarına davet edildin.",
+      "courses_count": "{count} kurs",
+      "untitled_course": "Başlıksız kurs",
+      "joined_title": "Katıldın! Öğrenmeye başla:",
       "messages": {
-        "joined": "Kursa katıldın.",
-        "join_failed": "Davet kabul edilemedi. Lütfen tekrar dene."
-      }
+        "joined": "Akademiye katıldın.",
+        "join_failed": "Akademiye katılınamadı. Lütfen tekrar dene.",
+        "refresh_failed": "Katıldınız, ancak bu sayfa güncellenemedi. Yeni akademinizi görmek için sayfayı yeniden yükleyin."
+      },
+      "invitation_team": "{orgName}'a {role} olarak davet edildiniz.",
+      "verify_to_accept": "Bu daveti kabul etmek için e-posta adresinizi doğrulayın.",
+      "send_verification": "Doğrulama e-postası gönder",
+      "verification_sent": "Doğrulama e-postası gönderildi",
+      "untitled_cohort": "İsimsiz grup"
     }
   },
   "content": {
@@ -6853,7 +6881,12 @@
         "students": "Öğrenciler",
         "pending_invites": "Bekleyen davetler",
         "never_logged_in": "Hiç giriş yapmadı"
-      }
+      },
+      "invite_revoked": "Grup davetiyeden kaldırıldı",
+      "resend_invite": "Daveti yeniden gönder",
+      "revoke_invite": "Davetiyeden kaldır",
+      "remove_member": "Gruptan çıkar",
+      "invite_new_students_description": "Davetlerinde bu grupla yeni kişileri kuruluşunuza davet edin. Bir hesap oluştururlar, daveti kabul ederler ve gruba ve kurslarına katılırlar."
     },
     "lms": {
       "empty_title": "Henüz grup yok",

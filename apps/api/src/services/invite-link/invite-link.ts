@@ -9,15 +9,19 @@ import {
   toInviteLinkColumns,
   type TInviteLinkTarget
 } from '@cio/db/queries/invite-link';
-import { createOrganizationMember, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
+import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 
 import { ROLE } from '@cio/utils/constants';
-import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import type { TOrganizationmember } from '@cio/db/types';
 import { db } from '@cio/db/drizzle';
 import { generateInviteToken, hashInviteToken } from '@api/utils/invite-token';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
-import { assertStudentCapacityOrThrow } from '@api/services/organization/student-limit';
+import {
+  bindProfileInOrg,
+  buildFulfilledSummary,
+  runBindingSideEffects
+} from '@api/services/organization/invite-binding';
+import { getProfileById } from '@cio/db/queries/auth';
 import { getInviteLinkHandler, type InviteLinkPreview } from './handlers';
 import type { TInviteLinkResourceType } from '@cio/utils/validation/invite-link';
 
@@ -226,7 +230,10 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
   const organizationId = inviteContext.organization.id;
   const inviteId = inviteContext.invite.id;
 
-  const { wasAlreadyOrgMember, createdOrgMember, enrollResult } = await db.transaction(async (tx) => {
+  const profile = await getProfileById(user.id);
+  const identityProven = profile?.isEmailVerified === true;
+
+  const { wasAlreadyOrgMember, enrollResult, bindResult } = await db.transaction(async (tx) => {
     // Re-read under lock: without this a revoke landing mid-request still grants access.
     const locked = await lockInviteLinkForAccept(tx, inviteId);
 
@@ -238,39 +245,31 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
       throw new AppError('This invite link has been disabled', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organizationId, user.id, tx);
+    const alreadyMemberId = await getOrganizationMemberIdByOrgAndProfile(organizationId, user.id, tx);
 
-    let createdOrgMember: TOrganizationmember | null = null;
-
-    if (!orgMemberId) {
-      await assertStudentCapacityOrThrow(organizationId, 1);
-
-      // `verified` is membership confirmation, not email ownership.
-      createdOrgMember = await createOrganizationMember(
-        {
-          organizationId,
-          roleId: inviteContext.invite.roleId,
-          profileId: user.id,
-          email: normalizedEmail,
-          verified: true
-        },
-        tx
-      );
-    }
-
-    // Unlike email invites, a share link proves nothing about the address, so the
-    // email is left unverified and the dashboard's verify-email modal prompts them.
+    const bindResult = await bindProfileInOrg(tx, {
+      orgId: organizationId,
+      profileId: user.id,
+      email: normalizedEmail,
+      trigger: 'invite-link',
+      identityProven,
+      roleForNewMember: inviteContext.invite.roleId
+    });
 
     const enrollResult = await handler.enrollMembership(tx, inviteContext, user.id, normalizedEmail);
 
     await incrementInviteLinkJoinCount(tx, inviteId);
 
-    return { wasAlreadyOrgMember: Boolean(orgMemberId), createdOrgMember, enrollResult };
+    return { wasAlreadyOrgMember: Boolean(alreadyMemberId), enrollResult, bindResult };
   });
 
-  if (createdOrgMember) {
-    await emitOrganizationMemberWebhookEvent('organization.member.added', organizationId, createdOrgMember, user.id);
-  }
+  await runBindingSideEffects(bindResult, {
+    orgId: organizationId,
+    profileId: user.id,
+    email: normalizedEmail,
+    trigger: 'invite-link',
+    context
+  });
 
   // Membership already committed at this point, so a failure here must never
   // surface as an accept failure — that would tell an already-joined user the
@@ -297,10 +296,13 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
     userAgent: context.userAgent ?? null
   });
 
+  const fulfilled = await buildFulfilledSummary(organizationId, bindResult);
+
   return {
     resourceType: preview.resourceType,
     resourceName: preview.resourceName,
     organizationId,
-    redirectTo: handler.redirectTo(inviteContext)
+    redirectTo: handler.redirectTo(inviteContext),
+    fulfilled
   };
 }

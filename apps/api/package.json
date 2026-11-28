@@ -21,6 +21,7 @@
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
     "upload:openapi": "tsx scripts/upload-openapi-spec.ts",
+    "claim:email-only-memberships": "tsx scripts/claim-email-only-memberships.ts",
     "test:db": "vitest run --config vitest.db.config.ts"
   },
   "repository": {

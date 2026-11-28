@@ -8,7 +8,7 @@
   import { ReportDialog } from '$features/report';
   import SaveAsTemplateDialog from '$features/course/components/save-as-template-dialog.svelte';
   import { MediaUploadHost } from '$features/media/components';
-  import PendingCourseInvitesHost from '$features/invite/components/pending-course-invites-host.svelte';
+  import PendingInvitationsHost from '$features/invite/components/pending-invitations-host.svelte';
   import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
   import { currentOrg } from '$lib/utils/store/org';
   import { authClient } from '$lib/utils/services/auth/client';
@@ -56,7 +56,7 @@
 <ReportDialog />
 <SaveAsTemplateDialog />
 <MediaUploadHost />
-<PendingCourseInvitesHost />
+<PendingInvitationsHost />
 
 {#if data.org?.isRestricted || $currentOrg.isRestricted}
   <PageRestricted />

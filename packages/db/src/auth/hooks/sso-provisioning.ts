@@ -7,19 +7,24 @@ import { db } from '@db/drizzle';
 import { enrollUsersInCourseGroups } from '@db/queries/group';
 import { getOrgCourseGroups } from '@db/queries/course';
 import { markUserAndProfileEmailVerified } from '@db/queries/auth';
+import { getInviteBindingHandler } from '@db/auth/invite-binding-handler';
 
 const DEFAULT_STUDENT_ROLE_ID = 3;
 
 /**
  * Ensure a user is a member of the given organization.
- * If membership exists, no-op. If there's a pending invite, accept it.
- * Otherwise create membership with the given roleId or org's default role.
+ * If membership exists, no-op. For a proven email, a pending membership is linked and its invite accepted, and the
+ * email is marked verified. Otherwise a new membership is created with the given roleId or the org's default role.
+ * @param identityProven True only when the caller has proof the user owns `email` (IdP assertion, signed token, or a
+ * verified email); pending access and the verified flag are never granted without it.
  */
 export async function ensureOrgMembership(
   userId: string,
   email: string,
   orgId: string,
-  roleId?: number
+  roleId: number | undefined,
+  trigger: 'sso' | 'token-auth',
+  identityProven: boolean
 ): Promise<void> {
   const emailLower = email.toLowerCase();
   console.log('ensureOrgMembership', {
@@ -28,6 +33,34 @@ export async function ensureOrgMembership(
     roleId,
     email
   });
+
+  const bindingHandler = getInviteBindingHandler();
+  if (bindingHandler) {
+    const sideEffects = await db.transaction(async (tx) => {
+      const result = await bindingHandler(tx, {
+        orgId,
+        profileId: userId,
+        email: emailLower,
+        trigger,
+        identityProven,
+        roleForNewMember: roleId
+      });
+      return result.sideEffects ?? [];
+    });
+    if (identityProven) {
+      await markUserAndProfileEmailVerified(userId).catch((error) => {
+        console.error('ensureOrgMembership mark verified error:', error);
+      });
+    }
+    for (const run of sideEffects) {
+      try {
+        await run();
+      } catch (error) {
+        console.error('ensureOrgMembership post-commit side effect error:', error);
+      }
+    }
+    return;
+  }
 
   const [existingByProfile] = await db
     .select()
@@ -51,6 +84,11 @@ export async function ensureOrgMembership(
     return;
   }
 
+  if (existingByEmail && !identityProven) {
+    console.error('ensureOrgMembership: refusing to link a pending membership to an unverified email');
+    return;
+  }
+
   const [invite] = await db
     .select()
     .from(schema.organizationInvite)
@@ -64,7 +102,7 @@ export async function ensureOrgMembership(
     )
     .limit(1);
 
-  if (invite) {
+  if (invite && identityProven) {
     await db.transaction(async (tx) => {
       if (existingByEmail) {
         await tx
@@ -159,10 +197,27 @@ export async function ensureOrgMembership(
 }
 
 /**
- * Handle JIT provisioning for SSO users
- * This runs after profile creation and creates organization membership
+ * The SSO provider that authenticated a sign-up, read from the better-auth endpoint context of an SSO callback
+ * (`/sso/callback/:providerId`, `/sso/saml2/sp/acs/:providerId`); null for any other sign-up path.
  */
-export const ssoProvisioningHook = async (user: User) => {
+export function getSsoProviderIdFromContext(
+  context: { path?: string; params?: Record<string, unknown> | null } | null | undefined
+): string | null {
+  if (!context?.path?.startsWith('/sso/')) return null;
+
+  const providerId = context.params?.providerId;
+  return typeof providerId === 'string' && providerId ? providerId : null;
+}
+
+/**
+ * Handle JIT provisioning for users whose email domain has an active organization SSO config. The email counts as
+ * proven when it is verified or when the sign-up came through that organization's own SSO provider; a password
+ * sign-up on the same domain with an unverified email gets no pending access.
+ */
+export const ssoProvisioningHook = async (
+  user: User,
+  proof: { emailVerified: boolean; ssoProviderId: string | null }
+) => {
   console.log('[auth] ssoProvisioningHook: running', { userId: user.id });
   if (!user.email) {
     console.debug('No email for user, skipping SSO provisioning');
@@ -194,5 +249,7 @@ export const ssoProvisioningHook = async (user: User) => {
   }
 
   const orgId = ssoConfig.config.organizationId;
-  await ensureOrgMembership(user.id, user.email, orgId);
+  const signedInWithOrgProvider = proof.ssoProviderId === ssoConfig.config.betterAuthProviderId;
+  const identityProven = proof.emailVerified || signedInWithOrgProvider;
+  await ensureOrgMembership(user.id, user.email, orgId, undefined, 'sso', identityProven);
 };

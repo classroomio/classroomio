@@ -76,7 +76,7 @@ const revokeCourseInviteShape = ZRevokeCourseInviteToolInput.shape as unknown as
 export function registerCourseMemberTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_course_members',
-    `List everyone with access to a course, students and tutors alike, with role and progress; ${COURSE_TEAM_RULE}.`,
+    `List a course's students and tutors with role and progress, then people invited who have not joined; ${COURSE_TEAM_RULE}.`,
     listCourseMembersShape,
     READ_ONLY,
     async (args) => {
@@ -88,7 +88,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'add_course_member',
-    `Give someone already in the organization access to a course, by profileId or email; ${COURSE_TEAM_RULE}. Fails with 409 if they are already a member; to onboard someone new, use enroll_course_student or create_course_invite.`,
+    `Give a joined organization member access to a course, by profileId or email; ${COURSE_TEAM_RULE}. Fails with 409 MEMBER_NOT_JOINED for a pending member (use enroll_course_student) and 409 COURSE_MEMBER_EXISTS if they are already a member.`,
     addCourseMemberShape,
     WRITE,
     async (args) => {
@@ -100,7 +100,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'enroll_course_student',
-    `Enroll a student by email, inviting them first when they are new, and change nothing on repeat calls; ${COURSE_TEAM_RULE}. Fails with 409 for an admin or tutor email; new invites count toward the create_course_invite hourly limit.`,
+    `Enroll a student by email — the idempotent grant for anyone, joined or pending; a repeat changes nothing except sending an invite email that was never sent; ${COURSE_TEAM_RULE}. Anyone who has not joined gets the course on their single organization invite (a new email becomes a pending member and uses a student seat) and joins the course when they accept. Fails with 409 for an admin, tutor or archived member email; new invites count toward the create_course_invite hourly limit.`,
     enrollCourseStudentShape,
     WRITE,
     async (args) => {
@@ -176,7 +176,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'list_course_invites',
-    `List a course's invites of any status (active, revoked, expired or used up); ${COURSE_TEAM_RULE}.`,
+    `List a course's invite links and older single-recipient course invites of any status (active, revoked, expired or used up); ${COURSE_TEAM_RULE}. People invited by email now hold an organization invite carrying the course, so they are not listed here; list_course_members with membership invited shows them.`,
     listCourseInvitesShape,
     READ_ONLY,
     async (args) => {
@@ -188,7 +188,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'create_course_invite',
-    `Invite one or more people to a course by email or CSV, including people not yet in the organization; ${COURSE_TEAM_RULE}. Requires recipientEmails or recipientCsv, and is limited to 60 requests per hour per key creator per course, shared with enroll_course_student.`,
+    `Invite one or more people to a course by email or CSV; ${COURSE_TEAM_RULE}. Each person who has not joined gets the course added to their single organization invite (a new email becomes a pending member and uses a student seat); students who already joined are enrolled, and admins and tutors come back as is_staff; recipients reports a status per email. Requires recipientEmails or recipientCsv and is limited to 60 requests per hour per key creator per course (shared with enroll_course_student). Re-inviting sends a fresh link; older links still open the newest invite.`,
     createCourseInviteShape,
     WRITE,
     async (args) => {
@@ -200,7 +200,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'revoke_course_invite',
-    `Revoke a pending course invite so its link stops working, which cannot be undone; ${COURSE_TEAM_RULE}.`,
+    `Revoke a pending course invite so its link stops working, or pass an organization invite id (from create_course_invite or enroll_course_student) to remove just this course from it; the organization invite is revoked only when nothing else is on it. Cannot be undone; ${COURSE_TEAM_RULE}.`,
     revokeCourseInviteShape,
     DESTRUCTIVE,
     async (args) => {

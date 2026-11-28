@@ -1,35 +1,31 @@
-import { pendingCourseInvitesApi } from '$features/invite/api/pending-course-invites.svelte';
-import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
-import { toCourseInviteNotifications, toInviteNotifications } from '$features/invite/utils/invite-notification-utils';
+import { pendingInvitationsApi } from '$features/invite/api/pending-invitations.svelte';
+import { toPendingInvitationNotifications } from '$features/invite/utils/invite-notification-utils';
 import { sortNewestFirst } from '../utils/notification-utils';
 
 /**
  * Single seam the bell badge and the panel list both read, so a new notification kind
- * cannot leave the badge under-counting.
+ * cannot leave the badge under-counting. Invitation notifications come from the unified
+ * pending-invitations surface, which groups org and course invitations per organization.
+ * (The legacy per-type invite apis stay for the org chooser and onboarding redirect.)
  */
 class NotificationsApi {
-  items = $derived(
-    sortNewestFirst([
-      ...toInviteNotifications(pendingInvitesApi.invites),
-      ...toCourseInviteNotifications(pendingCourseInvitesApi.invites)
-    ])
-  );
+  items = $derived(sortNewestFirst(toPendingInvitationNotifications(pendingInvitationsApi.groups)));
   unreadCount = $derived(this.items.filter((item) => item.unread).length);
 
   get isLoading() {
-    return pendingInvitesApi.isLoading || pendingCourseInvitesApi.isLoading;
+    return pendingInvitationsApi.isLoading;
   }
 
   get hasLoaded() {
-    return pendingInvitesApi.hasLoaded && pendingCourseInvitesApi.hasLoaded;
+    return pendingInvitationsApi.hasLoaded;
   }
 
   fetchOnce() {
-    return Promise.all([pendingInvitesApi.fetchOnce(), pendingCourseInvitesApi.fetchOnce()]);
+    return pendingInvitationsApi.fetchOnce();
   }
 
   refresh() {
-    return Promise.all([pendingInvitesApi.fetchPendingInvites(), pendingCourseInvitesApi.fetchPendingInvites()]);
+    return pendingInvitationsApi.fetchPendingInvitations();
   }
 }
 

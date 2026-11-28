@@ -1,7 +1,7 @@
 import {
   createSelfLoginLinkToken,
   getAccountData,
-  listPendingCourseInvitesForAccount,
+  listPendingInvitationsForAccount,
   listPendingInvitesForAccount,
   updateUser
 } from '@api/services/account';
@@ -140,14 +140,50 @@ export const accountRouter = new Hono()
     }
   })
   /**
+   * GET /account/invitations
+   * Pending invitations grouped by organization: at most one live org invitation
+   * plus live course invitations and cohort access, deduped per course.
+   */
+  .get('/invitations', authMiddleware, pendingInvitesRateLimit, async (c) => {
+    const user = c.get('user')!;
+
+    try {
+      const invitations = await listPendingInvitationsForAccount(user);
+
+      c.header('Cache-Control', 'no-store');
+
+      return c.json({ success: true, data: invitations }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load pending invitations');
+    }
+  })
+  /**
    * GET /account/course-invites
    * Student course invites awaiting this account, across all organizations.
+   * Kept as a thin alias of /account/invitations for one release; prefer it.
    */
   .get('/course-invites', authMiddleware, pendingInvitesRateLimit, async (c) => {
     const user = c.get('user')!;
 
     try {
-      const invites = await listPendingCourseInvitesForAccount(user);
+      const invitations = await listPendingInvitationsForAccount(user);
+
+      const invites = invitations.flatMap((group) =>
+        group.courses
+          .filter((course) => course.inviteId)
+          .map((course) => ({
+            id: course.inviteId!,
+            createdAt: course.createdAt,
+            expiresAt: course.expiresAt,
+            course: {
+              id: course.courseId,
+              title: course.title,
+              description: course.description,
+              slug: course.slug
+            },
+            organization: group.organization
+          }))
+      );
 
       c.header('Cache-Control', 'no-store');
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { SvelteSet } from 'svelte/reactivity';
   import { page } from '$app/state';
   import { afterNavigate, goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
@@ -7,6 +8,7 @@
   import CopyIcon from '@lucide/svelte/icons/copy';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import CheckIcon from '@lucide/svelte/icons/check';
+  import MailOpenIcon from '@lucide/svelte/icons/mail-open';
   import AwardIcon from '@lucide/svelte/icons/award';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import EyeIcon from '@lucide/svelte/icons/eye';
@@ -61,8 +63,9 @@
   } from '$features/course/utils/people-query-utils';
   import PeopleFilterPopover from '$features/course/components/people/people-filter-popover.svelte';
   import PeopleViewSwitcher from '$features/course/components/people/people-view-switcher.svelte';
+  import { canRevokeAudienceInvite, statusBadgeVariant, statusLabelKey } from '$features/audience/utils/audience-utils';
 
-  let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
+  let member: { id?: string; email?: string | null; profile?: { email: string | null } | null } = $state({});
   let copiedEmail = $state<string | null>(null);
   let memberRows = $state<CourseMembers>([]);
   let pagination = $state<CourseMembersPagination | null>(null);
@@ -86,7 +89,11 @@
     const nextSearch = searchParams.toString();
     if (nextSearch === page.url.searchParams.toString()) return;
 
-    await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    try {
+      await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    } catch (error) {
+      console.error('navigation failed:', error);
+    }
   }
 
   async function loadMembers(courseId: string, activeQuery: ListPeopleQuery) {
@@ -190,6 +197,54 @@
       const nextPage = memberRows.length === 0 && query.page > 1 ? query.page - 1 : query.page;
       await navigatePeople({ ...query, page: nextPage, search: search.takePending() || undefined });
     }
+  }
+
+  const resendingEmails = new SvelteSet<string>();
+
+  async function resendInvitation(person: CourseMember) {
+    const courseId = courseApi.course?.id;
+    const email = getEmail(person);
+    if (!courseId || !email || resendingEmails.has(email)) return;
+
+    resendingEmails.add(email);
+    try {
+      const resent = await peopleApi.resendCourseInvite(courseId, email);
+      if (resent) {
+        await loadMembers(courseId, query);
+      }
+    } finally {
+      resendingEmails.delete(email);
+    }
+  }
+
+  async function revokeInvitation(person: CourseMember) {
+    const courseId = courseApi.course?.id;
+    const inviteId = person.invitation?.orgInviteId ?? person.invitation?.courseInviteId;
+    if (!courseId || !inviteId) return;
+
+    const originCourseId = courseId;
+    const originQuery = { ...query };
+    const originRowCount = memberRows.length;
+
+    const revoked = await peopleApi.revokePersonInvitation(courseId, inviteId);
+    if (!revoked) return;
+
+    try {
+      const emptiedLastPage = originRowCount === 1 && originQuery.page > 1;
+      const isStillCurrent = courseApi.course?.id === originCourseId && query.page === originQuery.page;
+      if (emptiedLastPage && isStillCurrent) {
+        await navigatePeople({ ...originQuery, page: originQuery.page - 1, search: search.takePending() || undefined });
+        return;
+      }
+
+      await loadMembers(originCourseId, isStillCurrent ? query : originQuery);
+    } catch (error) {
+      console.error('Failed to refresh after revoking invitation:', error);
+    }
+  }
+
+  function getInvitedStatus(person: CourseMember) {
+    return person.invitation?.status ?? 'pending';
   }
 
   function getEmail(person: CourseMember) {
@@ -416,7 +471,9 @@
                           </Button>
                         </RoleBasedSecurity>
 
-                        <Chip value={$t('course.navItem.people.pending')} className="bg-yellow-200 text-yellow-700" />
+                        <Badge variant={statusBadgeVariant(getInvitedStatus(person))}>
+                          {$t(statusLabelKey(getInvitedStatus(person)))}
+                        </Badge>
                       </div>
                     </div>
                   {/if}
@@ -525,18 +582,63 @@
                               <EyeIcon class="mr-2 size-4" />
                               {$t('course.navItem.people.view')}
                             </DropdownMenu.Item>
+                            <DropdownMenu.Item
+                              class="text-red-600"
+                              onclick={(event) => {
+                                event.stopPropagation();
+                                member = person;
+                                $deleteMemberModal.open = true;
+                              }}
+                            >
+                              <TrashIcon class="mr-2 size-4" />
+                              {$t('course.navItem.people.delete_profile')}
+                            </DropdownMenu.Item>
+                          {:else}
+                            <DropdownMenu.Item
+                              disabled={resendingEmails.has(getEmail(person) ?? '')}
+                              onclick={(event) => {
+                                event.stopPropagation();
+                                void resendInvitation(person);
+                              }}
+                            >
+                              <MailOpenIcon class="mr-2 size-4" />
+                              {$t('audience.invite.resend')}
+                            </DropdownMenu.Item>
+                            {#if person.invitation?.kind === 'org_invite' && person.invitation.courseIds.includes(courseApi.course?.id ?? '') && canRevokeAudienceInvite(getInvitedStatus(person))}
+                              <DropdownMenu.Item
+                                onclick={(event) => {
+                                  event.stopPropagation();
+                                  void revokeInvitation(person);
+                                }}
+                              >
+                                <TrashIcon class="mr-2 size-4" />
+                                {$t('course.navItem.people.invite_modal.revoke_course_access')}
+                              </DropdownMenu.Item>
+                            {:else if person.invitation?.kind === 'course_invite' && canRevokeAudienceInvite(getInvitedStatus(person))}
+                              <DropdownMenu.Item
+                                class="text-red-600"
+                                onclick={(event) => {
+                                  event.stopPropagation();
+                                  void revokeInvitation(person);
+                                }}
+                              >
+                                <TrashIcon class="mr-2 size-4" />
+                                {$t('audience.invite.revoke')}
+                              </DropdownMenu.Item>
+                            {:else if person.invitation?.kind !== 'org_invite' && person.invitation?.kind !== 'course_invite'}
+                              <DropdownMenu.Item
+                                class="text-red-600"
+                                onclick={(event) => {
+                                  event.stopPropagation();
+                                  member = person;
+                                  $deleteMemberModal.open = true;
+                                }}
+                              >
+                                <TrashIcon class="mr-2 size-4" />
+                                {$t('course.navItem.people.delete_profile')}
+                              </DropdownMenu.Item>
+                            {/if}
                           {/if}
-                          <DropdownMenu.Item
-                            class="text-red-600"
-                            onclick={(event) => {
-                              event.stopPropagation();
-                              member = person;
-                              $deleteMemberModal.open = true;
-                            }}
-                          >
-                            <TrashIcon class="mr-2 size-4" />
-                            {$t('course.navItem.people.delete_profile')}
-                          </DropdownMenu.Item>
                         </DropdownMenu.Content>
                       </DropdownMenu.Root>
                     {/if}

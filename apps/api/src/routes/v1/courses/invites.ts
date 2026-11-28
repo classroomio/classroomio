@@ -88,7 +88,7 @@ export const v1CourseInvitesRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Invite one or more people to a course by email or CSV, including people not yet in your organization; ${COURSE_TEAM_RULE}.`,
+      description: `Invite by email or CSV: joined students are enrolled, staff come back as is_staff, others get the course on their organization invite; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Invites'],
       responses: {
         201: jsonResponse('Course invite created successfully', itemResponse(ZPublicApiCreateCourseInviteResponse)),
@@ -130,7 +130,7 @@ export const v1CourseInvitesRouter = new Hono()
   .post(
     '/:inviteId/revoke',
     describeRoute({
-      description: `Revoke a pending course invite so its link stops working, which cannot be undone; ${COURSE_TEAM_RULE}.`,
+      description: `Revoke a course invite, or remove this course from an organization invite (revoked once nothing is left on it); ${COURSE_TEAM_RULE}.`,
       tags: ['Course Invites'],
       responses: {
         200: jsonResponse('Course invite revoked successfully', itemResponse(ZPublicApiRevokeCourseInviteResponse)),

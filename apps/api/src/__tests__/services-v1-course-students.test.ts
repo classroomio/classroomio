@@ -62,7 +62,8 @@ describe('listCourseStudentsService', () => {
     expect(listPaginatedCourseMembers).toHaveBeenCalledWith(COURSE_ID, {
       page: 1,
       limit: 20,
-      roleId: ROLE.STUDENT
+      roleId: ROLE.STUDENT,
+      membership: 'joined'
     });
     expect(result).toEqual(studentPage);
   });
@@ -79,7 +80,8 @@ describe('listCourseStudentsService', () => {
     expect(listPaginatedCourseMembers).toHaveBeenCalledWith(COURSE_ID, {
       page: 3,
       limit: 5,
-      roleId: ROLE.STUDENT
+      roleId: ROLE.STUDENT,
+      membership: 'joined'
     });
     expect(result.page).toBe(3);
     expect(result.limit).toBe(5);

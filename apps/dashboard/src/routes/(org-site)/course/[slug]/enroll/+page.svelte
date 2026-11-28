@@ -85,6 +85,9 @@
     if (data.requiresPaymentOrInvite) {
       return t.get('course.navItem.landing_page.enroll_page.requires_payment_or_invite');
     }
+    if (data.invite?.replaced) {
+      return t.get('course.navItem.landing_page.enroll_page.invite_replaced');
+    }
     if (data.course?.allowSelfEnrollment === false && !hasActiveInvite) {
       return t.get('course.navItem.landing_page.pricing_section.not_accepting');
     }

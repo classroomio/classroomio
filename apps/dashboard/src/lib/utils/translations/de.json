@@ -592,9 +592,9 @@
     "any_course": "Alle von Ihnen abgeschlossenen Kurse werden hier angezeigt",
     "find_courses": "Kurse finden",
     "pending_invites": {
-      "title": "Du hast offene Kurseinladungen",
       "description": "Nimm sie an, um mit dem Lernen zu beginnen.",
-      "review": "Einladungen ansehen"
+      "review": "Einladungen ansehen",
+      "title": "Sie haben ausstehende Einladungen"
     }
   },
   "certificates": {
@@ -700,7 +700,8 @@
       "revoke": "Ausstehende Einladung widerrufen",
       "resend_snackbar_success": "Einladungs-E-Mail gesendet",
       "resend_snackbar_email_failed": "Die Einladung wurde erneuert, die E-Mail konnte jedoch nicht gesendet werden",
-      "revoke_snackbar_success": "Ausstehende Einladung widerrufen"
+      "revoke_snackbar_success": "Ausstehende Einladung widerrufen",
+      "revoke_course_snackbar_success": "Kurszugriff entzogen"
     },
     "assign": {
       "title": "Zu Kursen zuweisen",
@@ -759,7 +760,9 @@
         "duplicate_in_file": "Duplikat in der Datei",
         "over_seat_limit": "Alle Plätze belegt",
         "missing_email": "Keine E-Mail-Adresse",
-        "is_staff": "Mitarbeiter/in (keine/r Studierende/r)"
+        "is_staff": "Mitarbeiter/in (keine/r Studierende/r)",
+        "archived": "Archiviertes Mitglied",
+        "already_invited": "Bereits eingeladen"
       },
       "submit_count": "{count} Studierende importieren",
       "result_heading": "{count} Studierende importiert",
@@ -1218,7 +1221,8 @@
           "members_only": "Nur Mitglieder dieser Organisation können sich einschreiben. Bitten Sie einen Administrator um eine Einladung.",
           "invite_restricted_email": "Diese Einladung wurde an {inviteEmail} gesendet, Sie sind jedoch als {currentEmail} angemeldet. Melden Sie sich ab und fahren Sie mit der eingeladenen E-Mail-Adresse fort.",
           "invite_restricted": "Diese Einladung ist auf ein anderes Konto beschränkt. Melden Sie sich ab und fahren Sie mit dem eingeladenen Konto fort.",
-          "switch_account": "Abmelden und Konto wechseln"
+          "switch_account": "Abmelden und Konto wechseln",
+          "invite_replaced": "Diese Einladung wurde ersetzt. Überprüfen Sie Ihre letzte E-Mail."
         },
         "pricing_section": {
           "free": "Kostenlos",
@@ -1580,7 +1584,16 @@
             "multi_use_30d": "Mehrfachnutzung (30 Tage)",
             "custom": "Benutzerdefiniert"
           },
-          "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen."
+          "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen.",
+          "revoke_course_access": "Zugriff auf diesen Kurs entziehen",
+          "outcomes": {
+            "title": "Ergebnisse",
+            "enrolled": "Zum Kurs hinzugefügt",
+            "already_enrolled": "Bereits in diesem Kurs",
+            "invited": "Eingeladen",
+            "archived": "Archiviertes Mitglied",
+            "not_found": "Kein passendes Mitglied"
+          }
         },
         "learner": "Studierende/r",
         "views": {
@@ -1608,12 +1621,14 @@
           "completed": "Abgeschlossen",
           "membership": "Mitgliedschaft",
           "joined": "Beigetreten",
-          "invited": "Eingeladen, noch kein Konto",
+          "invited": "Eingeladen",
           "certificate": "Zertifikat",
           "earned": "Verdient",
           "not_earned": "Nicht verdient",
           "no_login_since": "Seitdem kein Login mehr",
-          "joined_within": "Innerlich verbunden"
+          "joined_within": "Innerlich verbunden",
+          "status": "Status",
+          "all_statuses": "Alle"
         }
       },
       "marks": {
@@ -5097,17 +5112,28 @@
       "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
       "joined": "Der Organisation beigetreten"
     },
-    "course": {
+    "invitations": {
       "modal": {
-        "title": "Du wurdest zu einem Kurs eingeladen",
-        "description": "Nimm eine Einladung an, um den Kurs zu deinem Lernbereich hinzuzufügen.",
-        "accept": "Annehmen",
-        "later": "Später"
+        "title": "Du wurdest eingeladen",
+        "description": "Tritt einer Akademie bei, um ihre Kurse und Kohorten anzunehmen."
       },
+      "join_org": "{orgName} beitreten",
+      "joined_button": "Beigetreten",
+      "later": "Später",
+      "pending_courses": "Du wurdest zu Kursen bei {orgName} eingeladen.",
+      "courses_count": "{count, plural, one {# Kurs} other {# Kurse}}",
+      "untitled_course": "Kurs ohne Titel",
+      "joined_title": "Du bist dabei! Lege mit dem Lernen los:",
       "messages": {
-        "joined": "Du bist dem Kurs beigetreten.",
-        "join_failed": "Die Einladung konnte nicht angenommen werden. Bitte versuche es erneut."
-      }
+        "joined": "Du bist der Akademie beigetreten.",
+        "join_failed": "Der Akademie konnte nicht beigetreten werden. Bitte versuche es erneut.",
+        "refresh_failed": "Du bist beigetreten, aber diese Seite konnte nicht aktualisiert werden. Lade sie neu, um deine neue Akademie zu sehen."
+      },
+      "invitation_team": "Sie wurden als {role} zu {orgName} eingeladen.",
+      "verify_to_accept": "Bestätigen Sie Ihre E-Mail-Adresse, um diese Einladung anzunehmen.",
+      "send_verification": "Verifizierungs-E-Mail senden",
+      "verification_sent": "Bestätigungs-E-Mail gesendet",
+      "untitled_cohort": "Kohorte ohne Titel"
     }
   },
   "automation": {
@@ -6771,7 +6797,12 @@
         "students": "Studenten",
         "pending_invites": "Ausstehende Einladungen",
         "never_logged_in": "Nie eingeloggt"
-      }
+      },
+      "invite_revoked": "Kohorte aus der Einladung entfernt",
+      "resend_invite": "Einladung erneut senden",
+      "revoke_invite": "Aus Einladung entfernen",
+      "remove_member": "Aus Kohorte entfernen",
+      "invite_new_students_description": "Laden Sie neue Personen mit dieser Kohorte auf ihrer Einladung in Ihre Organisation ein. Sie erstellen ein Konto, nehmen die Einladung an und treten der Kohorte und ihren Kursen bei."
     },
     "courses": {
       "add": "Kurs hinzufügen",

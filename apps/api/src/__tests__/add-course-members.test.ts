@@ -39,6 +39,8 @@ import { addCourseMember, getCourseMember, updateCourseMember } from '@cio/db/qu
 import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { emitCourseMemberAddedWebhookEvent } from '@cio/core/services/webhook/emit';
+import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { addMembers, updateMember } from '@api/services/course/people';
 
 const uniqueViolation = new Error('Failed to add course member: duplicate key', {
@@ -67,7 +69,7 @@ describe('changing a member email to one already in the course', () => {
 
     await expect(updateMember('course-1', 'member-1', { email: 'taken@example.com' })).rejects.toMatchObject({
       statusCode: 409,
-      code: 'CONFLICT'
+      code: 'COURSE_MEMBER_EXISTS'
     });
   });
 });
@@ -81,8 +83,87 @@ describe('adding a course member who is already in the course', () => {
 
   it('addMembers returns 409 instead of a 500', async () => {
     await expect(
+      addMembers('course-1', [{ roleId: ROLE.TUTOR, email: 'tutor@example.com', name: 'Tutor' }])
+    ).rejects.toMatchObject({ statusCode: 409, code: 'COURSE_MEMBER_EXISTS' });
+  });
+
+  it('addMembers rejects a student without a profileId instead of writing an email-only row', async () => {
+    await expect(
       addMembers('course-1', [{ roleId: ROLE.STUDENT, email: 'student@example.com' }])
-    ).rejects.toMatchObject({ statusCode: 409, code: 'CONFLICT' });
+    ).rejects.toMatchObject({ statusCode: 400, code: 'VALIDATION_ERROR' });
+    expect(addCourseMember).not.toHaveBeenCalled();
+  });
+});
+
+describe('adding a course member who already has a different role', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockCourseOrgData();
+    vi.mocked(addCourseMember).mockResolvedValue({
+      member: { id: 'member-1', groupId: 'group-1', roleId: ROLE.TUTOR },
+      created: false
+    } as never);
+  });
+
+  it('addMembers returns 409 instead of keeping the old role silently', async () => {
+    await expect(
+      addMembers('course-1', [{ roleId: ROLE.STUDENT, profileId: 'profile-1', email: 'student@example.com' }])
+    ).rejects.toMatchObject({ statusCode: 409, code: 'COURSE_MEMBER_EXISTS' });
+    expect(emitCourseMemberAddedWebhookEvent).not.toHaveBeenCalled();
+  });
+});
+
+describe('adding a course member who is already in the course with the same role', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockCourseOrgData();
+    vi.mocked(addCourseMember).mockImplementation(
+      async (_courseId, member) =>
+        ({ member: { id: 'member-1', groupId: 'group-1', ...member }, created: false }) as never
+    );
+    vi.mocked(enqueueTransactionalEmail).mockResolvedValue([] as never);
+  });
+
+  it('addMembers skips the existing membership without a webhook or welcome email but still ensures compliance', async () => {
+    const addedMembers = await addMembers('course-1', [
+      { roleId: ROLE.STUDENT, profileId: 'profile-1', email: 'student@example.com' }
+    ]);
+
+    expect(addedMembers).toEqual([]);
+    expect(emitCourseMemberAddedWebhookEvent).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+    expect(ensureComplianceEnrollmentRecordsForProfiles).toHaveBeenCalledWith(['course-1'], ['profile-1']);
+  });
+
+  it('addMembers with rejectExisting returns 409 COURSE_MEMBER_EXISTS', async () => {
+    await expect(
+      addMembers(
+        'course-1',
+        [{ roleId: ROLE.STUDENT, profileId: 'profile-1', email: 'student@example.com' }],
+        'public_api',
+        {},
+        { rejectExisting: true }
+      )
+    ).rejects.toMatchObject({ statusCode: 409, code: 'COURSE_MEMBER_EXISTS' });
+    expect(emitCourseMemberAddedWebhookEvent).not.toHaveBeenCalled();
+  });
+
+  it('addMembers with rejectExisting still adds a new member', async () => {
+    vi.mocked(addCourseMember).mockImplementation(
+      async (_courseId, member) =>
+        ({ member: { id: 'member-2', groupId: 'group-1', ...member }, created: true }) as never
+    );
+
+    const addedMembers = await addMembers(
+      'course-1',
+      [{ roleId: ROLE.STUDENT, profileId: 'profile-2' }],
+      'public_api',
+      {},
+      { rejectExisting: true, sendEmail: false }
+    );
+
+    expect(addedMembers.map((member) => member.id)).toEqual(['member-2']);
+    expect(emitCourseMemberAddedWebhookEvent).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -91,7 +172,8 @@ describe('welcome emails when adding course members', () => {
     vi.clearAllMocks();
     mockCourseOrgData();
     vi.mocked(addCourseMember).mockImplementation(
-      async (_courseId, member) => ({ id: 'member-1', groupId: 'group-1', ...member }) as never
+      async (_courseId, member) =>
+        ({ member: { id: 'member-1', groupId: 'group-1', ...member }, created: true }) as never
     );
     vi.mocked(enqueueTransactionalEmail).mockResolvedValue([] as never);
     vi.mocked(getProfileById).mockResolvedValue({ email: 'ada@example.com', fullname: 'Ada' } as never);
@@ -117,16 +199,16 @@ describe('welcome emails when adding course members', () => {
     expect(sentEmails()).toEqual([expect.objectContaining({ to: 'ada@example.com' })]);
   });
 
-  it('sends to the given email when there is no profile yet', async () => {
-    await addMembers('course-1', [{ roleId: ROLE.STUDENT, email: 'pending@example.com' }]);
+  it('rejects the whole batch before inserting anything when a student has no profile', async () => {
+    await expect(
+      addMembers('course-1', [
+        { roleId: ROLE.STUDENT, profileId: 'profile-1' },
+        { roleId: ROLE.STUDENT, email: 'pending@example.com' }
+      ])
+    ).rejects.toMatchObject({ statusCode: 400, code: 'VALIDATION_ERROR' });
 
-    expect(getProfileById).not.toHaveBeenCalled();
-    expect(sentEmails()).toEqual([
-      expect.objectContaining({
-        to: 'pending@example.com',
-        idempotencyKey: 'course-people-student-welcome:course-1:pending@example.com'
-      })
-    ]);
+    expect(addCourseMember).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
   });
 
   it('sends no email when sendEmail is false', async () => {

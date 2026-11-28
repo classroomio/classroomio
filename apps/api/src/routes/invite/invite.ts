@@ -150,7 +150,7 @@ export const inviteRouter = new Hono()
         const user = c.get('user')!;
         const result = await acceptOrganizationInviteById(
           inviteId,
-          { id: user.id, email: user.email },
+          { id: user.id, email: user.email, emailVerified: user.emailVerified },
           { ipAddress: extractClientIp(c), userAgent: c.req.header('user-agent') || null }
         );
 

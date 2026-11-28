@@ -4,7 +4,7 @@
 
   import { Snackbar } from '$features/ui';
   import { appInitApi } from '$features/app/init.svelte';
-  import PendingInviteModal from '$features/invite/components/pending-invite-modal.svelte';
+  import PendingInvitationsModal from '$features/invite/components/pending-invitations-modal.svelte';
   import { resolveAppOrgParams } from '$features/app/resolve-app-org-params';
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
@@ -131,13 +131,11 @@
   <Snackbar />
   <AppVersionNotifier />
 
-  {#if appInitApi.pendingOrgInvite}
-    <PendingInviteModal
-      bind:open={appInitApi.showPendingInviteModal}
-      invite={appInitApi.pendingOrgInvite}
-      onAccepted={(redirectTo) => appInitApi.handlePendingInviteAccepted(redirectTo)}
-    />
-  {/if}
+  <PendingInvitationsModal
+    onJoinedOrg={async () => {
+      await appInitApi.refreshAfterJoin(appOrgParams);
+    }}
+  />
 
   {@render children?.()}
 </div>

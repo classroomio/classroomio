@@ -11,6 +11,14 @@
   import { courseApi } from '$features/course/api';
   import { currentOrg, isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
   import { peopleApi } from '$features/course/api';
+  import InviteOutcomeList from '$features/course/components/people/invite-outcome-list.svelte';
+  import {
+    ASSIGN_OUTCOME_LABEL_KEYS,
+    COURSE_INVITE_OUTCOME_LABEL_KEYS,
+    getCourseInviteOutcomeLabelKey,
+    getFailedDeliveryEmails,
+    type InviteOutcomeRow
+  } from '$features/course/components/people/invite-utils';
   import { orgApi } from '$features/org/api/org.svelte';
   import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
   import { profile } from '$lib/utils/store/user';
@@ -43,6 +51,8 @@
 
   let isLoadingStudents = $state(false);
   let activeTab = $state<'tutors' | 'students' | 'link'>('students');
+  let assignOutcomes = $state<InviteOutcomeRow[]>([]);
+  let inviteOutcomes = $state<InviteOutcomeRow[]>([]);
   const availableStudents = $derived.by(() => getAvailableStudents(orgApi.audience, courseApi.group.people));
   const inviteLink = $derived(buildResourceInviteLink(peopleApi.inviteLink?.token, $currentOrg));
 
@@ -123,33 +133,50 @@
   }
 
   async function assignExistingStudents(profileIds: string[], sendEmail: boolean) {
-    const result = await orgApi.assignAudienceToCourses({
+    assignOutcomes = [];
+    const response = await orgApi.assignAudienceToCourses({
       profileIds,
       courseIds: [courseId],
       sendEmail
     });
 
-    if (!result) {
+    if (!response?.data) {
       return;
     }
+
+    const emailByProfileId = new Map(availableStudents.map((student) => [student.profileId, student.email]));
+    assignOutcomes = (response.data.details ?? []).map((detail) => ({
+      email: detail.email ?? emailByProfileId.get(detail.profileId ?? '') ?? '',
+      labelKey: ASSIGN_OUTCOME_LABEL_KEYS[detail.status] ?? 'course.navItem.people.invite_modal.outcomes.invited'
+    }));
 
     await courseApi.refreshCourse(courseId, $profile.id);
     onMembersChanged?.();
   }
 
   async function inviteNewStudents(recipientCsv: string, sendEmail: boolean) {
-    const response = await orgApi.importAudienceMembers({
-      recipientCsv,
-      courseIds: [courseId],
-      sendEmail
-    });
+    inviteOutcomes = [];
+    const invite = await peopleApi.createStudentInvite(courseId, { recipientCsv, sendEmail });
 
-    if (!response) {
-      return;
+    if (!invite) {
+      return false;
     }
+
+    const failedEmails = getFailedDeliveryEmails(invite.delivery);
+    const recipientOutcomes = invite.recipients.map((recipient) => ({
+      email: recipient.email,
+      labelKey: getCourseInviteOutcomeLabelKey(recipient, failedEmails)
+    }));
+    const duplicateOutcomes = invite.duplicatesSkipped.map((email) => ({
+      email,
+      labelKey: COURSE_INVITE_OUTCOME_LABEL_KEYS.duplicate
+    }));
+    inviteOutcomes = [...recipientOutcomes, ...duplicateOutcomes];
 
     await courseApi.refreshCourse(courseId, $profile.id);
     onMembersChanged?.();
+
+    return true;
   }
 
   async function generateInviteLink() {
@@ -179,6 +206,8 @@
   }
 
   function closeModal() {
+    assignOutcomes = [];
+    inviteOutcomes = [];
     goto(resolve(page.url.pathname, {}));
   }
 
@@ -250,6 +279,7 @@
               onSearchValueChange={handleStudentSearch}
               onAssign={assignExistingStudents}
             />
+            <InviteOutcomeList titleKey="course.navItem.people.invite_modal.outcomes.title" items={assignOutcomes} />
           {/if}
 
           {#if $isStudentLimitReached}
@@ -257,6 +287,7 @@
           {/if}
 
           <BulkEmailSection onInvite={inviteNewStudents} disabled={$isStudentLimitReached} />
+          <InviteOutcomeList titleKey="course.navItem.people.invite_modal.outcomes.title" items={inviteOutcomes} />
         </div>
       </UnderlineTabs.Content>
 

@@ -57,7 +57,23 @@ vi.mock('@cio/db/queries/cohort', () => ({
   getExistingCohortMembers: vi.fn()
 }));
 vi.mock('@cio/core/config/dashboard-url', () => ({ getAppBaseUrl: vi.fn(() => 'https://app.test') }));
-vi.mock('@api/services/organization/student-limit', () => ({ assertStudentCapacityOrThrow: vi.fn() }));
+vi.mock('@api/services/organization/student-limit', () => ({
+  assertStudentCapacityOrThrow: vi.fn(),
+  buildStudentMilestoneNotification: vi.fn(() => null),
+  notifyStudentMilestone: vi.fn()
+}));
+vi.mock('@cio/core/services/organization/identity-binding', () => ({
+  bindProfileToOrgEmail: vi.fn(async (_tx: unknown, params: { orgId: string; profileId: string; email: string }) => ({
+    member: { id: 10, roleId: 3, email: params.email, profileId: params.profileId },
+    createdMember: false,
+    linkedPendingMember: false,
+    claimed: { groups: 0, cohorts: 0, programs: 0, removedDuplicates: 0, courseIds: [], cohortIds: [] },
+    claimEnrollment: { enrolledMembers: [], complianceRecords: [], cohortMembers: [] },
+    fulfilled: { orgInvites: [], courseInvites: [], courseIds: [], cohortIds: [], skippedCourseInviteIds: [] },
+    enrollment: { enrolledMembers: [], complianceRecords: [], cohortMembers: [] },
+    seatCheck: null
+  }))
+}));
 vi.mock('@api/utils/org', () => ({
   parseCourseIdsFromInviteMetadata: vi.fn(() => []),
   parseCohortIdsFromInviteMetadata: vi.fn(() => []),
@@ -95,6 +111,7 @@ import {
   toggleOrgLinkInvite
 } from '@api/services/organization/invite';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
+import { bindProfileToOrgEmail } from '@cio/core/services/organization/identity-binding';
 import {
   claimPendingOrganizationInvite,
   createLinkInvite,
@@ -147,6 +164,17 @@ describe('acceptLinkInvite course-role reconciliation', () => {
     expect(callOrder).toEqual(['transaction:committed', 'reconcile:scheduled']);
   });
 
+  it.each([
+    [true, true],
+    [false, false],
+    [undefined, false]
+  ])('treats the identity as proven only for a verified email (emailVerified=%s)', async (emailVerified, proven) => {
+    await acceptLinkInvite('token-1', { ...USER, emailVerified } as never);
+
+    expect(bindProfileToOrgEmail).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(bindProfileToOrgEmail).mock.calls[0][1]).toMatchObject({ identityProven: proven });
+  });
+
   it('does not schedule reconciliation from inside the transaction', async () => {
     await acceptLinkInvite('token-1', USER as never);
 
@@ -183,10 +211,10 @@ describe('acceptLinkInvite course-role reconciliation', () => {
     await acceptOrganizationInvite('token-1', USER as never);
 
     expect(lockOrganizationForUpdate).toHaveBeenCalledWith(ORG_ID, expect.anything());
-    expect(updateOrganizationMemberById).toHaveBeenCalledWith(
+    expect(bindProfileToOrgEmail).toHaveBeenCalledWith(
       expect.anything(),
-      10,
-      expect.objectContaining({ roleId: ROLE.TUTOR })
+      expect.objectContaining({ inviteRoleId: ROLE.TUTOR, roleForNewMember: ROLE.TUTOR }),
+      expect.anything()
     );
   });
 });
@@ -232,7 +260,7 @@ describe('accepting an imported invite that carries a name', () => {
       importedInvite({ source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' }) as never
     );
 
-    await acceptOrganizationInviteById('invite-1', USER as never);
+    await acceptOrganizationInviteById('invite-1', { ...USER, emailVerified: true } as never);
 
     expect(setProfileFullnameIfUnset).toHaveBeenCalledWith(USER.id, 'Ada Lovelace', expect.anything());
   });
@@ -249,42 +277,42 @@ describe('accepting an imported invite that carries a name', () => {
 });
 
 describe('accepting student promotions', () => {
-  it.each([ROLE.TUTOR, ROLE.ADMIN])('updates the existing student to role %s only on acceptance', async (roleId) => {
-    vi.clearAllMocks();
-    vi.mocked(selectOrganizationInviteWithOrgByTokenHash).mockResolvedValue({
-      invite: {
-        id: 'promotion-invite',
-        organizationId: ORG_ID,
-        roleId,
-        email: USER.email.toLowerCase(),
-        acceptedAt: null,
-        isRevoked: false,
-        expiresAt: '2099-01-01T00:00:00.000Z',
-        metadata: {}
-      },
-      organization: { id: ORG_ID, siteName: 'acme' }
-    } as never);
-    vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue({
-      id: 10,
-      profileId: USER.id,
-      roleId: ROLE.STUDENT
-    } as never);
-    vi.mocked(claimPendingOrganizationInvite).mockResolvedValue({ id: 'promotion-invite' } as never);
-
-    const result = await acceptOrganizationInvite('promotion-token', USER);
-
-    expect(result.roleId).toBe(roleId);
-    expect(updateOrganizationMemberById).toHaveBeenCalledWith(
-      expect.anything(),
-      10,
-      expect.objectContaining({
-        roleId,
+  it.each([ROLE.TUTOR, ROLE.ADMIN])(
+    'applies role %s to the existing student through the binding only on acceptance',
+    async (roleId) => {
+      vi.clearAllMocks();
+      vi.mocked(selectOrganizationInviteWithOrgByTokenHash).mockResolvedValue({
+        invite: {
+          id: 'promotion-invite',
+          organizationId: ORG_ID,
+          roleId,
+          email: USER.email.toLowerCase(),
+          acceptedAt: null,
+          isRevoked: false,
+          expiresAt: '2099-01-01T00:00:00.000Z',
+          metadata: {}
+        },
+        organization: { id: ORG_ID, siteName: 'acme' }
+      } as never);
+      vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue({
+        id: 10,
         profileId: USER.id,
-        verified: true
-      })
-    );
-    expect(scheduleCourseRoleReconcile).toHaveBeenCalledWith(ORG_ID, USER.id);
-  });
+        roleId: ROLE.STUDENT
+      } as never);
+      vi.mocked(claimPendingOrganizationInvite).mockResolvedValue({ id: 'promotion-invite' } as never);
+
+      const result = await acceptOrganizationInvite('promotion-token', USER);
+
+      expect(result.roleId).toBe(roleId);
+      expect(bindProfileToOrgEmail).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ profileId: USER.id, inviteRoleId: roleId, identityProven: true }),
+        expect.anything()
+      );
+      expect(updateOrganizationMemberById).not.toHaveBeenCalled();
+      expect(scheduleCourseRoleReconcile).toHaveBeenCalledWith(ORG_ID, USER.id);
+    }
+  );
 });
 
 describe('team link invite roles', () => {

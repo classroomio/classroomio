@@ -7,7 +7,8 @@
   import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
-    onInvite: (recipientCsv: string, sendEmail: boolean) => void | Promise<void>;
+    /** Return `false` when nothing was sent, to keep the addresses in the box for correcting. */
+    onInvite: (recipientCsv: string, sendEmail: boolean) => boolean | void | Promise<boolean | void>;
     titleKey?: string;
     descriptionKey?: string;
     submitKey?: string;
@@ -37,8 +38,10 @@
     isSubmitting = true;
 
     try {
-      await onInvite(recipientCsv, sendInviteEmails);
-      recipientCsv = '';
+      const outcome = await onInvite(recipientCsv, sendInviteEmails);
+      if (outcome !== false) {
+        recipientCsv = '';
+      }
     } finally {
       isSubmitting = false;
     }

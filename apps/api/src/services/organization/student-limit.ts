@@ -112,6 +112,28 @@ export async function assertStudentCapacityOrThrow(
 
   if (!check) return null;
 
+  const notification = buildStudentMilestoneNotification(orgId, check);
+
+  if (notification && !options.deferNotification) {
+    notifyStudentMilestone(notification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
+  }
+
+  return notification;
+}
+
+/**
+ * Converts a seat check into the deferred admin milestone email, if a 50%-of-limit
+ * or at-limit milestone was crossed. Lets identity-binding accept paths build the
+ * same notification from the check the binding already ran.
+ */
+export function buildStudentMilestoneNotification(
+  orgId: string,
+  check: StudentCapacityCheck | null
+): StudentMilestoneNotification | null {
+  if (!check) return null;
+
   const { planName, limit, currentCount, newCount } = check;
   const halfway = Math.ceil(limit / 2);
   const crossedReached = currentCount < limit && newCount >= limit;
@@ -128,18 +150,11 @@ export async function assertStudentCapacityOrThrow(
     });
   }
 
-  if (crossedReached || crossedHalf) {
-    const milestone: StudentMilestone = crossedReached ? 'reached' : 'half';
-    const notification = { orgId, milestone, studentCount: newCount, studentLimit: limit };
-
-    if (!options.deferNotification) {
-      notifyStudentMilestone(notification).catch((error) => {
-        console.error('notifyStudentMilestone error:', error);
-      });
-    }
-
-    return notification;
+  if (!crossedReached && !crossedHalf) {
+    return null;
   }
 
-  return null;
+  const milestone: StudentMilestone = crossedReached ? 'reached' : 'half';
+
+  return { orgId, milestone, studentCount: newCount, studentLimit: limit };
 }

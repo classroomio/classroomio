@@ -1,12 +1,16 @@
 import { ROLE } from '@cio/utils/constants';
-import { AppError, ErrorCodes } from '@api/utils/errors';
+import { getInvitedPersonStatus } from '@cio/utils/functions/invite-metadata';
+import { AppError, ErrorCodes, membershipConflictError } from '@api/utils/errors';
 import { isUniqueConstraintViolation } from '@cio/utils/errors';
 import {
   addCourseMember,
   deleteCourseMember,
+  getCourseGroupId,
   getCourseMember,
   getPaginatedCourseMembers,
-  updateCourseMember
+  getPaginatedInvitedCourseMembers,
+  updateCourseMember,
+  type TInvitedCourseMemberRow
 } from '@cio/db/queries/course/people';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 
@@ -25,6 +29,7 @@ import {
 import { getCourseProgress } from '@cio/db/queries/course/course';
 import { getWebhookLastActiveAt } from '@cio/db/queries/webhook';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
+import { pageJoinedThenInvited } from '@api/utils/joined-then-invited-page';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
@@ -69,12 +74,22 @@ async function addMemberStages(courseId: string, members: PaginatedCourseMember[
 /**
  * Gets one filtered, sorted page of course members for a course.
  * @param courseId Course ID
- * @param query Page, page size, search term, filters and sort
+ * @param query Page, page size, search term, filters and sort. With no membership filter, invited people follow the
+ * joined members, unless a filter only joined members can match is set, which lists joined members only.
  * @returns One page of course members with profile, progress and stage data, plus pagination totals
  */
 export async function listPaginatedCourseMembers(courseId: string, query: PaginatedCourseMembersOptions) {
   try {
-    const result = await getPaginatedCourseMembers(courseId, query);
+    if (query.membership === 'invited') {
+      return listInvitedCourseMembers(courseId, query);
+    }
+
+    if (!query.membership && !hasJoinedOnlyFilter(query)) {
+      return listJoinedThenInvitedCourseMembers(courseId, query);
+    }
+
+    const joinedQuery = { ...query, membership: query.membership ?? ('joined' as const) };
+    const result = await getPaginatedCourseMembers(courseId, joinedQuery);
     const items = await addMemberStages(courseId, result.items);
 
     return {
@@ -92,6 +107,104 @@ export async function listPaginatedCourseMembers(courseId: string, query: Pagina
       500
     );
   }
+}
+
+function hasJoinedOnlyFilter(query: PaginatedCourseMembersOptions): boolean {
+  return Boolean(
+    query.progress ||
+      query.enrolledWithin ||
+      query.lastLoginBefore ||
+      query.email ||
+      query.certificateEarned !== undefined
+  );
+}
+
+async function listJoinedThenInvitedCourseMembers(courseId: string, query: PaginatedCourseMembersOptions) {
+  const groupId = await getCourseGroupId(courseId);
+  const page = await pageJoinedThenInvited({
+    page: query.page,
+    limit: query.limit,
+    fetchJoined: (offset, limit) =>
+      getPaginatedCourseMembers(courseId, { ...query, membership: 'joined', offset, limit }),
+    fetchInvited: (offset, limit) =>
+      getPaginatedInvitedCourseMembers(courseId, {
+        page: 1,
+        limit,
+        offset,
+        search: query.search,
+        roleId: query.roleId
+      })
+  });
+  const invitedMembers = page.invited.map((row) => toInvitedCourseMember(row, groupId));
+  const items = await addMemberStages(courseId, [...page.joined, ...invitedMembers]);
+
+  return {
+    items,
+    page: query.page,
+    limit: query.limit,
+    total: page.total,
+    totalPages: page.total === 0 ? 0 : Math.ceil(page.total / query.limit)
+  };
+}
+
+/**
+ * Maps an invited union row onto the roster item shape so the People table can
+ * render it with the same cells: no profile, no progress, and an `invitation`
+ * payload that tells the row actions which invite to resend or revoke.
+ */
+function toInvitedCourseMember(row: TInvitedCourseMemberRow, groupId: string | null): PaginatedCourseMember {
+  const createdAt = row.memberCreatedAt ?? row.inviteCreatedAt;
+  const status = getInvitedPersonStatus(row.inviteExpiresAt);
+
+  return {
+    id: row.groupMemberId ?? `invited:${row.kind}:${(row.email ?? '').toLowerCase()}`,
+    groupId: groupId ?? '',
+    profileId: null,
+    roleId: row.roleId ?? ROLE.STUDENT,
+    email: row.email,
+    createdAt,
+    assignedStudentId: null,
+    completedAt: null,
+    certificateEarnedAt: null,
+    certificationEmailSentAt: null,
+    profile: null,
+    progressPercent: 0,
+    progressBucket: null,
+    lastLoginAt: null,
+    enrolledAt: createdAt,
+    membership: 'invited',
+    invitation: {
+      kind: row.kind,
+      status,
+      groupMemberId: row.groupMemberId,
+      orgInviteId: row.orgInviteId,
+      courseInviteId: row.courseInviteId,
+      expiresAt: row.inviteExpiresAt,
+      courseIds: row.courseIds,
+      cohortIds: row.cohortIds
+    }
+  };
+}
+
+async function listInvitedCourseMembers(courseId: string, query: PaginatedCourseMembersOptions) {
+  const [groupId, result] = await Promise.all([
+    getCourseGroupId(courseId),
+    getPaginatedInvitedCourseMembers(courseId, {
+      page: query.page,
+      limit: query.limit,
+      search: query.search,
+      roleId: query.roleId
+    })
+  ]);
+  const items = await addMemberStages(
+    courseId,
+    result.items.map((row) => toInvitedCourseMember(row, groupId))
+  );
+
+  return {
+    ...result,
+    items
+  };
 }
 
 export type TMemberWebhookContext = { source?: TWebhookMemberSource; actorProfileId?: string | null };
@@ -173,9 +286,9 @@ export async function addMembers(
   members: TAddCourseMembers,
   source: TEventSource = 'dashboard',
   context: TMemberWebhookContext = {},
-  options: { sendEmail?: boolean } = {}
+  options: { sendEmail?: boolean; rejectExisting?: boolean } = {}
 ) {
-  const { sendEmail = true } = options;
+  const { sendEmail = true, rejectExisting = false } = options;
 
   try {
     if (members.length === 0) {
@@ -189,6 +302,14 @@ export async function addMembers(
           'Either profileId or email must be provided for each member',
           ErrorCodes.VALIDATION_ERROR,
           400
+        );
+      }
+      if (member.roleId === ROLE.STUDENT && !member.profileId) {
+        throw new AppError(
+          'Students must be added with a profileId. Invite them by email so they join first',
+          ErrorCodes.VALIDATION_ERROR,
+          400,
+          'profileId'
         );
       }
     }
@@ -210,13 +331,28 @@ export async function addMembers(
     });
 
     // Add members sequentially so partial failures still invalidate stats for successful inserts.
-    const addedMembers = [];
+    const addedMembers: TGroupmember[] = [];
+    const addedInputs: TAddCourseMembers = [];
+    const existingStudentProfileIds: string[] = [];
     let addedStudentMember = false;
 
     try {
       for (const member of members) {
-        const addedMember = await addCourseMember(courseId, member);
+        const { member: addedMember, created } = await addCourseMember(courseId, member);
+
+        if (!created) {
+          if (rejectExisting || Number(addedMember.roleId) !== Number(member.roleId)) {
+            throw new AppError('Already a member of this course', ErrorCodes.COURSE_MEMBER_EXISTS, 409);
+          }
+
+          if (member.roleId === ROLE.STUDENT && addedMember.profileId) {
+            existingStudentProfileIds.push(addedMember.profileId);
+          }
+          continue;
+        }
+
         addedMembers.push(addedMember);
+        addedInputs.push(member);
         await emitCourseMemberAddedWebhookEvent(courseId, addedMember, {
           source: context.source ?? buildMemberSource('admin'),
           actorProfileId: context.actorProfileId
@@ -234,9 +370,10 @@ export async function addMembers(
       captureLearnersEnrolled(addedMembers, 'admin', source);
     }
 
-    const studentProfileIds = members
+    const addedStudentProfileIds = addedInputs
       .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
       .map((member) => member.profileId!);
+    const studentProfileIds = [...new Set([...addedStudentProfileIds, ...existingStudentProfileIds])];
 
     if (studentProfileIds.length > 0) {
       await ensureComplianceEnrollmentRecordsForProfiles([courseId], studentProfileIds);
@@ -254,7 +391,7 @@ export async function addMembers(
     const inviteLink = `${baseUrl}/org/${orgSiteName}/courses`;
 
     const emailPromises: Promise<unknown>[] = [];
-    const addedStudents = members.filter((member) => member.roleId === ROLE.STUDENT);
+    const addedStudents = addedInputs.filter((member) => member.roleId === ROLE.STUDENT);
     const welcomeIcs = addedStudents.length > 0 ? await getWelcomeSessionIcs(courseId) : undefined;
 
     for (const student of addedStudents) {
@@ -267,8 +404,7 @@ export async function addMembers(
       );
     }
 
-    addedMembers.forEach((member, index) => {
-      const memberData = members[index];
+    addedInputs.forEach((memberData) => {
       const roleId = memberData.roleId;
       const email = memberData.email;
       const name = memberData.name;
@@ -307,6 +443,10 @@ export async function addMembers(
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
+    }
+    const conflict = membershipConflictError(error);
+    if (conflict) {
+      throw conflict;
     }
     if (isUniqueConstraintViolation(error)) {
       throw new AppError('Already a member of this course', ErrorCodes.CONFLICT, 409);
@@ -352,6 +492,10 @@ export async function updateMember(courseId: string, memberId: string, data: Par
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
+    }
+    const conflict = membershipConflictError(error);
+    if (conflict) {
+      throw conflict;
     }
     if (isUniqueConstraintViolation(error)) {
       throw new AppError('Another member of this course already uses that email', ErrorCodes.CONFLICT, 409);

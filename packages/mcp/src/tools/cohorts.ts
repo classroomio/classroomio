@@ -144,7 +144,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'list_cohort_members',
-    `List the members of a cohort; ${COHORT_MEMBER_RULE}.`,
+    `List a cohort's members, then people invited who have not joined (cohort team only); ${COHORT_MEMBER_RULE}.`,
     listCohortMembersShape,
     READ_ONLY,
     async (args) => {
@@ -156,7 +156,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'add_cohort_members',
-    `Add people to a cohort directly, each with a role and without an invitation email (invite_students_to_cohort sends one); ${COHORT_TEAM_RULE}. Returns { added, errors }, and retrying is safe because existing members fail with code MEMBER_ALREADY_IN_COHORT.`,
+    `Add people to a cohort, each with a role; ${COHORT_TEAM_RULE}. Tutors and students who already joined the organization are added directly; any other student is sent an organization invite carrying the cohort and joins on accepting. A student entry for an admin or tutor fails with STAFF_CANNOT_ENROLL. Returns { added, invited, errors }, and retrying is safe because existing members fail with code MEMBER_ALREADY_IN_COHORT and repeated invites report already_invited.`,
     addCohortMembersShape,
     WRITE,
     async (args) => {

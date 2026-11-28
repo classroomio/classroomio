@@ -120,9 +120,9 @@ Status `503`, with `code` `RATE_LIMIT_UNAVAILABLE`. Creating course invites is r
 
 ### Staff can't be enrolled
 
-Status `409`, with `code` `STAFF_CANNOT_ENROLL`, from `POST /courses/{courseId}/enrollments` when the email belongs to an admin or tutor in your organization.
+Status `409`, with `code` `STAFF_CANNOT_ENROLL`, from `POST /courses/{courseId}/enrollments` when the email belongs to an admin or tutor in your organization. `POST /cohorts/{cohortId}/members` reports the same code for that entry in its `errors[]` list when a student entry's email or profile belongs to an admin or tutor.
 
-**Fix:** Add admins and tutors to the course from the dashboard.
+**Fix:** Add admins and tutors to the course from the dashboard, or to the cohort with the tutor role.
 
 ### Rate limit unavailable
 
@@ -130,9 +130,33 @@ Status `503` with `code` `RATE_LIMIT_UNAVAILABLE`. The Academy analytics query, 
 
 ### Organization member is archived
 
-Status `409`, with `code` `ORG_MEMBER_ARCHIVED`, from `POST /courses/{courseId}/enrollments` and `POST /courses/{courseId}/members` when the email belongs to an archived organization member. Archived members cannot gain a course seat until they are restored.
+Status `409`, with `code` `ORG_MEMBER_ARCHIVED`, from `POST /courses/{courseId}/enrollments` and `POST /courses/{courseId}/members` when the email belongs to an archived organization member. Archived members cannot gain a course seat until they are restored. `POST /cohorts/{cohortId}/members` reports the same code for that person in its `errors[]` list instead of failing the whole request.
 
 **Fix:** Restore the member from **Audience** with the **Archived** status filter, then call the endpoint again.
+
+### Member has not joined
+
+Status `409`, with `code` `MEMBER_NOT_JOINED`, from `POST /courses/{courseId}/members` when the email belongs to a pending organization member who has not accepted their invite yet.
+
+**Fix:** Call `POST /courses/{courseId}/enrollments` instead. It adds the course to the member's organization invite, and they join the course when they accept. This works for students only; a pending admin or tutor must accept their team invite first.
+
+### Already in the course
+
+Status `409`, with `code` `COURSE_MEMBER_EXISTS`, from `POST /courses/{courseId}/members` when the person is already a member of the course.
+
+**Fix:** No action is needed. Look the member up with `GET /courses/{courseId}/members` if you need their id.
+
+### Email linked to another account
+
+Status `409`, with `code` `ORG_MEMBER_EMAIL_LINKED_TO_OTHER_ACCOUNT` and `field: 'email'`, when the email already belongs to a different account in your organization. It can happen when two requests add the same person at the same time.
+
+**Fix:** Retry the request. If it fails again, check the person in **Audience**.
+
+### No student seats left
+
+Status `403`, with `code` `UPGRADE_REQUIRED`, from `POST /courses/{courseId}/enrollments` when inviting a new student would pass your plan's student limit. `POST /cohorts/{cohortId}/members` reports the same code for that person in its `errors[]` list instead of failing the whole request.
+
+**Fix:** Free a seat by revoking unused invitations or archiving students, or upgrade the plan. See [Understand usage and plan limits](https://classroomio.com/help/get-started/understand-usage-and-plan-limits).
 
 ## Next steps
 

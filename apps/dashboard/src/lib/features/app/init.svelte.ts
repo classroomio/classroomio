@@ -1,12 +1,5 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
-import {
-  currentOrg,
-  getAppOrigin,
-  getOrgPublicUrl,
-  isOrgManagerRole,
-  mergeAccountOrgFromServer,
-  orgs
-} from '$lib/utils/store/org';
+import { currentOrg, getOrgPublicUrl, isOrgManagerRole, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
 import type { AccountResponse, AccountSuccess } from './types';
@@ -17,12 +10,14 @@ import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { TUser } from '@cio/db/types';
 import { authClient } from '$lib/utils/services/auth/client';
 import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
+import { pendingInvitationsApi } from '$features/invite/api/pending-invitations.svelte';
+import { snackbar } from '$features/ui/snackbar/store';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { activateLocale, handleLocaleChange } from '$lib/utils/functions/translations';
 import { identifyPosthogUser } from '$lib/utils/services/posthog';
 import { identifyUserJotUser } from '$lib/utils/services/userjot';
-import { isOrgStudent, globalStore } from '$lib/utils/store/app';
+import { isOrgStudent } from '$lib/utils/store/app';
 import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { isOnboardingIncomplete } from '$features/onboarding/utils/completeness';
 import { licenseApi } from '$features/license/api/license.svelte';
@@ -57,7 +52,6 @@ class AppInitApi extends BaseApi {
   data = $state<AccountResponse>(null);
   session = $state<App.Locals | null>(null);
   pendingOrgInvite = $state<PendingOrgInvite | null>(null);
-  showPendingInviteModal = $state(false);
   private syncedTenantKey: string | null = null;
 
   get loading() {
@@ -97,11 +91,8 @@ class AppInitApi extends BaseApi {
           return false;
         }
 
-        if (pendingInvite) {
-          this.showPendingOrgInvite(pendingInvite);
-        }
-
         this.applyAccountData(accountData, params);
+        await this.showTenantInvitations(orgId, pendingInvite);
         return;
       }
 
@@ -163,11 +154,6 @@ class AppInitApi extends BaseApi {
     }
   }
 
-  private showPendingOrgInvite(pendingInvite: PendingOrgInvite) {
-    this.pendingOrgInvite = pendingInvite;
-    this.showPendingInviteModal = true;
-  }
-
   private async fetchPendingOrgInvite(orgId: string): Promise<PendingOrgInvite | null> {
     try {
       const response = await classroomio.invite.organization.pending.$get({}, { headers: { 'cio-org-id': orgId } });
@@ -181,6 +167,11 @@ class AppInitApi extends BaseApi {
     }
 
     return null;
+  }
+
+  private async showTenantInvitations(orgId: string, pendingInvite: PendingOrgInvite | null) {
+    this.pendingOrgInvite = pendingInvite;
+    await pendingInvitationsApi.openForTenant(orgId, pendingInvite);
   }
 
   /**
@@ -203,9 +194,7 @@ class AppInitApi extends BaseApi {
     const isMember = this.data.organizations.some((org) => org.siteName === params.orgSiteName);
     if (params.isOrgSite && params.orgId && !isMember) {
       const pendingInvite = await this.fetchPendingOrgInvite(params.orgId);
-      if (pendingInvite) {
-        this.showPendingOrgInvite(pendingInvite);
-      }
+      await this.showTenantInvitations(params.orgId, pendingInvite);
     }
 
     this.setOrgStore(params);
@@ -491,31 +480,32 @@ class AppInitApi extends BaseApi {
     this.setupStores();
   }
 
-  async handlePendingInviteAccepted(redirectTo?: string): Promise<void> {
-    this.showPendingInviteModal = false;
+  /**
+   * Refreshes the session and account after a join from the invitations modal, keeping the URL's tenant as the
+   * current org. Joins do not reload the page, so the session's org roles and the org list are stale until refetched.
+   * Returns false, after telling the user to reload, when the account could not be refetched.
+   */
+  async refreshAfterJoin(params: AppSetupParams): Promise<boolean> {
     this.pendingOrgInvite = null;
 
-    await authClient.getSession({ query: { disableCookieCache: true } });
+    try {
+      await authClient.getSession({ query: { disableCookieCache: true } });
 
-    const response = await classroomio.account.$get();
-    const accountData = (await response.json()) as AccountResponse;
-    if (accountData?.success) {
+      const response = await classroomio.account.$get();
+      const accountData = (await response.json()) as AccountResponse;
+      if (!accountData?.success) {
+        snackbar.error('invite.invitations.messages.refresh_failed');
+        return false;
+      }
+
       this.data = accountData;
-      this.setupStores();
+      this.setupStores(params);
+      return true;
+    } catch (error) {
+      console.error('refreshAfterJoin error:', error);
+      snackbar.error('invite.invitations.messages.refresh_failed');
+      return false;
     }
-
-    const isOnOrgSite = get(globalStore).isOrgSite;
-    if (redirectTo?.startsWith('/org/') && isOnOrgSite) {
-      window.location.href = `${getAppOrigin()}${redirectTo}`;
-      return;
-    }
-
-    if (redirectTo) {
-      window.location.href = redirectTo;
-      return;
-    }
-
-    window.location.reload();
   }
 
   reset() {
@@ -523,7 +513,6 @@ class AppInitApi extends BaseApi {
     this.data = null;
     this.syncedTenantKey = null;
     this.pendingOrgInvite = null;
-    this.showPendingInviteModal = false;
     licenseApi.reset();
 
     user.set(defaultUserState);

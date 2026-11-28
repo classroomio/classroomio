@@ -61,10 +61,16 @@ export async function addCourseMemberService(
   if (memberInput.profileId) {
     await assertProfileBelongsToOrganization(orgId, memberInput.profileId);
   } else if (memberInput.email) {
-    const profileId = await assertEmailBelongsToOrganization(orgId, memberInput.email);
-    if (profileId) {
-      member = { ...memberInput, profileId };
+    const membership = await assertEmailBelongsToOrganization(orgId, memberInput.email);
+    if (!membership.joined || !membership.profileId) {
+      throw new AppError(
+        'This email belongs to a pending organization member who has not joined yet. Use enroll_course_student to invite them to this course',
+        ErrorCodes.MEMBER_NOT_JOINED,
+        409,
+        'email'
+      );
     }
+    member = { ...memberInput, profileId: membership.profileId };
   }
 
   const [addedMember] = await addMembers(
@@ -75,7 +81,7 @@ export async function addCourseMemberService(
       source: buildMemberSource(apiKeyId ? 'api' : 'admin', { apiKeyId, oauthClientId }),
       actorProfileId: actorId
     },
-    { sendEmail }
+    { sendEmail, rejectExisting: true }
   );
 
   return addedMember;

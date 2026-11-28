@@ -20,14 +20,32 @@ exports[`public API team and audience update contract > ZPublicApiAssignAudience
       },
       "type": "array",
     },
+    "emails": {
+      "items": {
+        "format": "email",
+        "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+        "type": "string",
+      },
+      "maxItems": 500,
+      "type": "array",
+    },
+    "memberIds": {
+      "items": {
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991,
+        "type": "integer",
+      },
+      "maxItems": 500,
+      "type": "array",
+    },
     "profileIds": {
+      "default": [],
       "items": {
         "format": "uuid",
         "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
         "type": "string",
       },
       "maxItems": 500,
-      "minItems": 1,
       "type": "array",
     },
     "sendEmail": {
@@ -35,9 +53,6 @@ exports[`public API team and audience update contract > ZPublicApiAssignAudience
       "type": "boolean",
     },
   },
-  "required": [
-    "profileIds",
-  ],
   "type": "object",
 }
 `;

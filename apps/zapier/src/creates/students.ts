@@ -55,13 +55,15 @@ export const enrollStudent = defineCreate({
       status: 'invited',
       memberId: null,
       inviteId: '000000e1-0000-4000-8000-0000000000e1',
-      inviteLink: 'https://acme.myclassroomio.com/invites/token',
+      inviteKind: 'organization',
+      inviteLink: 'https://acme.myclassroomio.com/invite/token',
       email: 'student@example.com'
     },
     outputFields: [
       { key: 'status', label: 'Result' },
       { key: 'memberId', label: 'Course Member ID' },
       { key: 'inviteId', label: 'Invite ID' },
+      { key: 'inviteKind', label: 'Invite Kind' },
       { key: 'inviteLink', label: 'Invite Link' },
       { key: 'email', label: 'Email' }
     ]

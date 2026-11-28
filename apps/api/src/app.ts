@@ -68,6 +68,24 @@ import { upgradeRequiredEvent } from '@api/middlewares/upgrade-required-event';
 import { automationChangeLogMiddleware } from '@api/middlewares/automation-change-log';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
+import { setInviteBindingHandler } from '@cio/db/auth';
+import { bindProfileInOrg, runBindingSideEffects } from '@api/services/organization/invite-binding';
+
+setInviteBindingHandler(async (tx, params) => {
+  const result = await bindProfileInOrg(tx, params);
+  const sideEffectInput = {
+    orgId: params.orgId,
+    profileId: params.profileId,
+    email: params.email,
+    trigger: params.trigger
+  };
+
+  return {
+    member: result.member,
+    createdMember: result.createdMember,
+    sideEffects: [() => runBindingSideEffects(result, sideEffectInput)]
+  };
+});
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()

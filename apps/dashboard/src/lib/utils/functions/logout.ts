@@ -1,4 +1,5 @@
 import { appInitApi } from '$features/app/init.svelte';
+import { pendingInvitationsApi } from '$features/invite/api/pending-invitations.svelte';
 import { authClient } from '$lib/utils/services/auth/client';
 import { capturePosthogEvent } from '$lib/utils/services/posthog';
 import { clearSentryUser } from '$lib/utils/services/sentry';
@@ -15,6 +16,7 @@ export async function logout(redirect = true) {
   }
 
   appInitApi.reset();
+  pendingInvitationsApi.reset();
 
   capturePosthogEvent('user_logged_out');
   posthog.reset();

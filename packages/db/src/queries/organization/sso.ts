@@ -2,7 +2,7 @@ import * as schema from '@db/schema';
 
 import { and, eq } from 'drizzle-orm';
 
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 import type {
   TNewOrganizationAuthPolicy,
   TNewOrganizationSsoConfig,
@@ -12,8 +12,11 @@ import type {
 
 // Organization Auth Policy Queries
 
-export const getOrganizationAuthPolicy = async (orgId: string): Promise<TOrganizationAuthPolicy | null> => {
-  const [policy] = await db
+export const getOrganizationAuthPolicy = async (
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationAuthPolicy | null> => {
+  const [policy] = await dbClient
     .select()
     .from(schema.organizationAuthPolicy)
     .where(eq(schema.organizationAuthPolicy.organizationId, orgId))

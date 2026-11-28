@@ -139,7 +139,9 @@ export type TUndoBulkAudienceAction = z.infer<typeof ZUndoBulkAudienceAction>;
 
 export const ZAssignAudienceCourses = z
   .object({
-    profileIds: z.array(z.uuid()).min(1).max(500),
+    profileIds: z.array(z.uuid()).max(500).default([]),
+    memberIds: z.array(z.number().int().positive()).max(500).optional(),
+    emails: z.array(z.email()).max(500).optional(),
     courseIds: z.array(z.uuid()).optional(),
     cohortIds: z.array(z.uuid()).optional(),
     sendEmail: z.boolean().default(true)
@@ -147,6 +149,10 @@ export const ZAssignAudienceCourses = z
   .refine((data) => (data.courseIds?.length ?? 0) > 0 || (data.cohortIds?.length ?? 0) > 0, {
     message: 'At least one course or cohort must be selected',
     path: ['courseIds']
+  })
+  .refine((data) => (data.profileIds?.length ?? 0) + (data.memberIds?.length ?? 0) + (data.emails?.length ?? 0) > 0, {
+    message: 'At least one learner must be selected',
+    path: ['profileIds']
   });
 
 export type TAssignAudienceCourses = z.infer<typeof ZAssignAudienceCourses>;

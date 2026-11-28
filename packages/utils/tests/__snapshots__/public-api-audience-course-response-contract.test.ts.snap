@@ -11,14 +11,77 @@ exports[`public API audience and course response contract > ZPublicApiAssignAudi
     "assigned": {
       "type": "number",
     },
+    "details": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "memberId": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "type": "integer",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "profileId": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "status": {
+            "enum": [
+              "enrolled",
+              "already_enrolled",
+              "invited",
+              "is_staff",
+              "archived",
+              "over_seat_limit",
+              "not_found",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "status",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
     "emailsSent": {
+      "type": "number",
+    },
+    "invited": {
       "type": "number",
     },
   },
   "required": [
     "assigned",
     "alreadyEnrolled",
+    "invited",
     "emailsSent",
+    "details",
   ],
   "type": "object",
 }
@@ -4105,6 +4168,8 @@ exports[`public API audience and course response contract > ZPublicApiCreateAudi
               "is_staff",
               "over_seat_limit",
               "missing_email",
+              "archived",
+              "already_invited",
             ],
             "type": "string",
           },

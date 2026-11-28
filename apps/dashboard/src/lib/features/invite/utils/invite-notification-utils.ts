@@ -1,7 +1,7 @@
 import { ROLE } from '@cio/utils/constants';
 
 import type { NotificationItem } from '$features/notifications/utils/types';
-import type { PendingCourseInviteItem, PendingOrgInviteItem } from './types';
+import type { PendingInvitationGroup } from './types';
 
 /**
  * The API's `roleLabel` is built server-side in English. Map the id to a translation key
@@ -14,40 +14,51 @@ const ROLE_LABEL_KEYS: Record<number, string> = {
 };
 
 /**
- * Adapts pending org invites into the generic notification model. Lives in the invite
- * feature so the notification panel never depends on a source domain.
+ * Flattens grouped invitations into notification items: one per org invitation
+ * plus one per directly emailed course invitation. Org-carried courses resolve
+ * through the Join flow, so they do not get their own rows.
  */
-export function toInviteNotifications(invites: PendingOrgInviteItem[]): NotificationItem[] {
-  return invites.map((invite) => ({
-    id: `org_invite:${invite.id}`,
-    kind: 'org_invite' as const,
-    createdAt: invite.createdAt,
-    title: { key: 'notifications.pending_invite.heading' },
-    body: {
-      key: 'notifications.pending_invite.body',
-      params: { orgName: invite.organization.name },
-      keyParams: { role: ROLE_LABEL_KEYS[invite.roleId] ?? 'course.navItem.people.roles.student' }
-    },
-    avatarUrl: invite.organization.avatarUrl,
-    avatarName: invite.organization.name,
-    unread: true,
-    sourceId: invite.id
-  }));
-}
+export function toPendingInvitationNotifications(groups: PendingInvitationGroup[]): NotificationItem[] {
+  return groups.flatMap((group) => {
+    const items: NotificationItem[] = [];
 
-export function toCourseInviteNotifications(invites: PendingCourseInviteItem[]): NotificationItem[] {
-  return invites.map((invite) => ({
-    id: `course_invite:${invite.id}`,
-    kind: 'course_invite' as const,
-    createdAt: invite.createdAt,
-    title: { key: 'notifications.pending_course_invite.heading' },
-    body: {
-      key: 'notifications.pending_course_invite.body',
-      params: { orgName: invite.organization.name, courseTitle: invite.course.title }
-    },
-    avatarUrl: invite.organization.avatarUrl,
-    avatarName: invite.organization.name,
-    unread: true,
-    sourceId: invite.id
-  }));
+    if (group.orgInvite) {
+      items.push({
+        id: `org_invite:${group.orgInvite.id}`,
+        kind: 'org_invite' as const,
+        createdAt: group.orgInvite.createdAt,
+        title: { key: 'notifications.pending_invite.heading' },
+        body: {
+          key: 'notifications.pending_invite.body',
+          params: { orgName: group.organization.name },
+          keyParams: { role: ROLE_LABEL_KEYS[group.orgInvite.roleId] ?? 'course.navItem.people.roles.student' }
+        },
+        avatarUrl: group.organization.avatarUrl,
+        avatarName: group.organization.name,
+        unread: true,
+        sourceId: group.orgInvite.id
+      });
+    }
+
+    for (const course of group.courses) {
+      if (!course.inviteId) continue;
+
+      items.push({
+        id: `course_invite:${course.inviteId}`,
+        kind: 'course_invite' as const,
+        createdAt: course.createdAt,
+        title: { key: 'notifications.pending_course_invite.heading' },
+        body: {
+          key: 'notifications.pending_course_invite.body',
+          params: { orgName: group.organization.name, courseTitle: course.title ?? '' }
+        },
+        avatarUrl: group.organization.avatarUrl,
+        avatarName: group.organization.name,
+        unread: true,
+        sourceId: course.inviteId
+      });
+    }
+
+    return items;
+  });
 }

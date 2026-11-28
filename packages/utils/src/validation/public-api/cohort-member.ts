@@ -24,7 +24,9 @@ export const ZPublicApiCohortMembersQuery = ZPublicApiPaginationQuery.extend({
   roleId: z.coerce.number().int().min(ROLE.TUTOR).max(ROLE.STUDENT).optional().describe('2 = tutor, 3 = student'),
   sortBy: CohortPeopleSortBy.default('joined').describe('joined = when they were added. Default: joined.'),
   sortOrder: CohortPeopleSortOrder.default('asc').describe('Default: asc.'),
-  membership: CohortPeopleMembership.optional().describe('invited = the invite has not been accepted yet.'),
+  membership: CohortPeopleMembership.optional().describe(
+    'Omit to list joined members, then invited people (cohort team only). invited = the invite has not been accepted yet.'
+  ),
   lastLoginBefore: CohortPeopleActivityWindow.optional().describe(
     'Not logged in for N days or more (including never); never = no login recorded.'
   )
@@ -41,7 +43,7 @@ export const ZPublicApiAddCohortMembers = z.object({
           .email()
           .optional()
           .describe(
-            'Linked to its existing profile if there is one; otherwise the membership is stored against the email alone.'
+            'Joined students are added directly; others get an org invite. Staff emails fail for student requests but are added for admin or tutor requests.'
           ),
         name: z.string().optional(),
         roleId: ZPublicApiCohortMemberRole
@@ -59,7 +61,7 @@ export const ZPublicApiAddCohortMembers = z.object({
       { message: 'Each profileId or email may appear only once per request' }
     )
     .describe(
-      'People to add by profileId or email, each once. No invite email is sent; use POST /cohorts/{cohortId}/invite for that.'
+      'People to add by profileId or email, each once. Students who have not joined are emailed an organization invite; tutors are added directly.'
     )
 });
 export type TPublicApiAddCohortMembers = z.infer<typeof ZPublicApiAddCohortMembers>;

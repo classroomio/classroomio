@@ -26,10 +26,10 @@ Leave the secret blank to have ClassroomIO generate one. Every delivery is signe
 | --- | --- |
 | `organization.invite.created` | A team or student invite is created |
 | `organization.invite.accepted` | A team or student invite is accepted |
-| `organization.invite.revoked` | A team or student invite is revoked, or a team invite is replaced |
-| `course.invite.created` | A student invite is created |
-| `course.invite.accepted` | A student accepts a course invite or joins through a course invite link |
-| `course.invite.revoked` | A student invite is revoked |
+| `organization.invite.revoked` | A team or student invite is revoked, a team invite is replaced, or a course or cohort is removed from a student invite |
+| `course.invite.created` | A student is invited to a course: a course is added to their organization invite, or a course invite is created |
+| `course.invite.accepted` | A student accepts a course invite, accepts an organization invite that carries the course, or joins through a course invite link |
+| `course.invite.revoked` | A student invite is revoked, or the course is removed from a student's organization invite |
 | `course.member.added` | A member is added to a course |
 | `course.member.removed` | A member is removed from a course |
 | `course.completed` | A student completes a course. Sent whether or not certificates are enabled for the organization |
@@ -98,7 +98,7 @@ Every event uses the envelope shown above. This section lists the `data` object 
 
 #### `organization.invite.created`
 
-A team or student invite is created. It doesn't confirm that an email was sent. Student invites come from Audience import, `POST /public-api/v1/audience` and cohort invites, with `roleId` 3. Renewing a student's invite replaces the old one without an `organization.invite.revoked` event.
+A team or student invite is created. It doesn't confirm that an email was sent. Student invites come from Audience import, `POST /public-api/v1/audience`, cohort invites and `POST /public-api/v1/cohorts/{id}/members`, course email invites (the dashboard, `POST /public-api/v1/courses/{id}/invites` and `/enrollments`, MCP and Zapier), and assigning courses to pending members, with `roleId` 3. Removing a course or cohort from a student invite issues a replacement invite and fires this event, and so does **Resend invite** on a course or cohort **People** page. Renewing a student's invite replaces the old one without an `organization.invite.revoked` event.
 
 ```json
 {
@@ -161,7 +161,7 @@ A team or student invite is accepted.
 
 #### `organization.invite.revoked`
 
-A team or student invite is revoked, or a team invite is replaced.
+A team or student invite is revoked, or a team invite is replaced. Removing a course or cohort from a student invite also revokes that invite: `reason` is `superseded` when a replacement invite keeps the student's other access, and `revoked_for_access` when nothing is left on it. The replacement fires `organization.invite.created`.
 
 ```json
 {
@@ -191,7 +191,7 @@ A team or student invite is revoked, or a team invite is replaced.
 
 #### `course.invite.created`
 
-A student invite is created.
+A student is invited to a course: a course is added to their organization invite (Audience import with courses, course email invites, enrollments, or assigning courses to pending members), or a course invite is created. For email invitations `inviteId` is the organization invite id, and `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount` and `allowedDomains` are `null`.
 
 ```json
 {
@@ -218,14 +218,12 @@ A student invite is created.
     "email": "sam@example.com",
     "externalId": null
   },
-  "roleId": 3,
-  "role": "student",
-  "expiresAt": "2026-11-01T00:00:00.000Z",
-  "maxUses": 10,
-  "usedCount": 0,
-  "allowedDomains": [
-    "example.com"
-  ],
+  "roleId": null,
+  "role": null,
+  "expiresAt": null,
+  "maxUses": null,
+  "usedCount": null,
+  "allowedDomains": null,
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
     "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
@@ -234,13 +232,13 @@ A student invite is created.
 }
 ```
 
-`inviteId` identifies the email invite. `inviteLinkId` is always `null` for this event.
+`inviteId` identifies the invite: the organization invite for email invitations. `inviteLinkId` is always `null` for this event.
 
 #### `course.invite.accepted`
 
 A student accepts an email invite or joins through a course invite link, and enrolls.
 
-`inviteId` is set when an email invite is accepted, and `inviteLinkId` is set when someone joins through a course invite link. Exactly one of them is non-null.
+`inviteId` is set when an email invite is accepted, and `inviteLinkId` is set when someone joins through a course invite link. Exactly one of them is non-null. The event also fires once for each course on an organization invite when that invite is accepted, including when SSO or token sign-in, joining the academy, self-enrolling or a reusable invite link fulfils it automatically. `inviteId` is then the organization invite id, and `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount` and `allowedDomains` are `null`. Those paths fulfil invites only when they prove the person owns the email: a verified address, a sign-in through the organization's own SSO provider, or a signed token.
 
 ```json
 {
@@ -267,14 +265,12 @@ A student accepts an email invite or joins through a course invite link, and enr
     "email": "student@example.com",
     "externalId": null
   },
-  "roleId": 3,
-  "role": "student",
-  "expiresAt": "2026-11-01T00:00:00.000Z",
-  "maxUses": 10,
-  "usedCount": 1,
-  "allowedDomains": [
-    "example.com"
-  ],
+  "roleId": null,
+  "role": null,
+  "expiresAt": null,
+  "maxUses": null,
+  "usedCount": null,
+  "allowedDomains": null,
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
     "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
@@ -287,7 +283,7 @@ A student accepts an email invite or joins through a course invite link, and enr
 
 #### `course.invite.revoked`
 
-A student invite is revoked.
+A student invite is revoked. It also fires when the course is removed from a student's organization invite, from the course **People** page or `POST /public-api/v1/courses/{id}/invites/{inviteId}/revoke` with an organization invite id. `inviteId` is then the organization invite that carried the course. When the student keeps other access, that invite is replaced and the replacement fires `organization.invite.created`.
 
 ```json
 {
@@ -382,7 +378,7 @@ A member is added to a course, by an admin or by accepting an invite.
 }
 ```
 
-`memberId` is the course membership id. `profileId` is `null` until a pending member signs up. `enrolledAt` is when the membership was created. `source.method` is `invite`, `invite_link`, `self_enroll`, `import`, `api`, `sso`, `payment`, `admin` or `cohort`, and the other `source` fields hold the matching id or `null`. `source.oauthClientId` holds the OAuth client ID when the enrollment was created by a connected application (such as Zapier), or `null` otherwise. `actor` is the admin or tutor who added the member, or `null` when the student joined by themselves. `roleId` is `1` for admin, `2` for tutor, `3` for student.
+`memberId` is the course membership id. `profileId` is `null` only for a staff member added by email who has not signed up; students are added to a course only after they join. When a student joins by accepting an organization invite, `source.inviteId` is the organization invite id. `enrolledAt` is when the membership was created. `source.method` is `invite`, `invite_link`, `self_enroll`, `import`, `api`, `sso`, `payment`, `admin` or `cohort`, and the other `source` fields hold the matching id or `null`. `source.oauthClientId` holds the OAuth client ID when the enrollment was created by a connected application (such as Zapier), or `null` otherwise. `actor` is the admin or tutor who added the member, or `null` when the student joined by themselves. `roleId` is `1` for admin, `2` for tutor, `3` for student.
 
 #### `course.member.removed`
 
