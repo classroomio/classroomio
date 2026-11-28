@@ -1,20 +1,12 @@
 import { Context, Next } from 'hono';
-import { z } from 'zod';
 import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidUuid } from '@cio/utils/validation';
 import { describeMissingScopes, organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { courseTeamMemberMiddleware } from './course-team-member';
-
-// Course ids are Postgres uuids. This runs before the route's own validator, so a malformed
-// id has to be refused here, or the lookup throws and the caller gets a 500. `guid` rather
-// than `uuid`: it takes any 8-4-4-4-12 hex id, which is what Postgres accepts, whereas
-// `uuid` also demands RFC version bits and would refuse ids the database holds.
-const ZCourseId = z.guid();
-
-const invalidCourseId = (c: Context) =>
-  c.json({ success: false, error: 'Invalid course ID', code: ErrorCodes.VALIDATION_ERROR }, 400);
 
 export const courseTeamMemberOrAutomationKeyMiddleware =
   (requiredScopes: readonly TOrganizationApiKeyScope[] = []) =>
@@ -24,8 +16,8 @@ export const courseTeamMemberOrAutomationKeyMiddleware =
       const courseId = c.req.param('courseId') || c.req.query('courseId');
 
       if (!automationKey) {
-        if (courseId && !ZCourseId.safeParse(courseId).success) {
-          return invalidCourseId(c);
+        if (courseId && !isValidUuid(courseId)) {
+          return invalidIdResponse(c, 'course');
         }
 
         return courseTeamMemberMiddleware(c, async () => {
@@ -61,8 +53,8 @@ export const courseTeamMemberOrAutomationKeyMiddleware =
         );
       }
 
-      if (!ZCourseId.safeParse(courseId).success) {
-        return invalidCourseId(c);
+      if (!isValidUuid(courseId)) {
+        return invalidIdResponse(c, 'course');
       }
 
       const courseOrgId = await getCourseOrganizationId(courseId);

@@ -2,6 +2,8 @@ import { Context, Next } from 'hono';
 import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidNumericId } from '@cio/utils/validation';
 import { getNewsfeedCommentAuthorAndCourse } from '@cio/db/queries/newsfeed';
 
 /**
@@ -33,6 +35,10 @@ export const newsfeedCommentAuthorOnlyMiddleware = async (c: Context, next: Next
         },
         400
       );
+    }
+
+    if (!isValidNumericId(commentId)) {
+      return invalidIdResponse(c, 'comment');
     }
 
     const commentInfo = await getNewsfeedCommentAuthorAndCourse(Number(commentId));

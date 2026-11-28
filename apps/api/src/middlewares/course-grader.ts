@@ -2,6 +2,8 @@ import { Context, Next } from 'hono';
 import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidUuid } from '@cio/utils/validation';
 import { canAccessCourseSubmissions, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 import { courseMemberOrAutomationKeyMiddleware } from './course-member-or-automation-key';
@@ -34,6 +36,10 @@ export const courseGraderMiddleware = async (c: Context, next: Next) => {
         },
         400
       );
+    }
+
+    if (!isValidUuid(courseId)) {
+      return invalidIdResponse(c, 'course');
     }
 
     const isAllowed = await canAccessCourseSubmissions(courseId, user.id);
@@ -90,6 +96,10 @@ export const courseMemberOrGraderMiddleware = async (c: Context, next: Next) => 
         },
         400
       );
+    }
+
+    if (!isValidUuid(courseId)) {
+      return invalidIdResponse(c, 'course');
     }
 
     const isMember = await isUserCourseMemberOrOrgAdmin(courseId, user.id);

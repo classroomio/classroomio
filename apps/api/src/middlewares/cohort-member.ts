@@ -1,6 +1,8 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidUuid } from '@cio/utils/validation';
 import { isOrgAdminByCohortId, isCohortMember } from '@cio/db/queries/cohort';
 
 /**
@@ -31,6 +33,10 @@ export const cohortMemberMiddleware = async (c: Context, next: Next) => {
         },
         400
       );
+    }
+
+    if (!isValidUuid(cohortId)) {
+      return invalidIdResponse(c, 'cohort');
     }
 
     const [member, isOrgAdmin] = await Promise.all([

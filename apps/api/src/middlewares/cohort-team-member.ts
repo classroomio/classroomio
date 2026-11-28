@@ -1,6 +1,8 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { invalidIdResponse } from '@api/utils/id-validation';
+import { isValidUuid } from '@cio/utils/validation';
 import { getCohortMemberRole, isOrgAdminByCohortId } from '@cio/db/queries/cohort';
 import { ROLE } from '@cio/utils/constants';
 
@@ -32,6 +34,10 @@ export const cohortTeamMemberMiddleware = async (c: Context, next: Next) => {
         },
         400
       );
+    }
+
+    if (!isValidUuid(cohortId)) {
+      return invalidIdResponse(c, 'cohort');
     }
 
     const [roleId, isOrgAdmin] = await Promise.all([

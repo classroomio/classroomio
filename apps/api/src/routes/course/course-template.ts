@@ -11,6 +11,7 @@ import { ROLE } from '@cio/utils/constants';
 
 import { Hono } from '@api/utils/hono';
 import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
+import { invalidCourseIdHook } from '@api/utils/id-validation';
 import { authMiddleware } from '@api/middlewares/auth';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
@@ -125,7 +126,7 @@ export const courseTemplateActionsRouter = new Hono()
     '/',
     authMiddleware,
     orgAdminMiddleware,
-    zValidator('param', ZCourseTemplateParam),
+    zValidator('param', ZCourseTemplateParam, invalidCourseIdHook),
     zValidator('json', ZSaveCourseTemplate),
     async (c) => {
       try {
@@ -140,33 +141,45 @@ export const courseTemplateActionsRouter = new Hono()
       }
     }
   )
-  .post('/convert', authMiddleware, orgAdminMiddleware, zValidator('param', ZCourseTemplateParam), async (c) => {
-    try {
-      const orgId = orgIdFromHeader(c.req.header('cio-org-id'));
-      const { courseId } = c.req.valid('param');
-      const data = await convertCourseToTemplate(courseId, orgId);
-      return c.json({ success: true, data });
-    } catch (error) {
-      return handleError(c, error, 'Failed to convert course');
+  .post(
+    '/convert',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZCourseTemplateParam, invalidCourseIdHook),
+    async (c) => {
+      try {
+        const orgId = orgIdFromHeader(c.req.header('cio-org-id'));
+        const { courseId } = c.req.valid('param');
+        const data = await convertCourseToTemplate(courseId, orgId);
+        return c.json({ success: true, data });
+      } catch (error) {
+        return handleError(c, error, 'Failed to convert course');
+      }
     }
-  });
+  );
 
 export const courseTemplateUpdatesRouter = new Hono()
-  .get('/', authMiddleware, orgAdminMiddleware, zValidator('param', ZCourseTemplateParam), async (c) => {
-    try {
-      const orgId = orgIdFromHeader(c.req.header('cio-org-id'));
-      const { courseId } = c.req.valid('param');
-      const data = await getCourseTemplateUpdates(courseId, orgId);
-      return c.json({ success: true, data });
-    } catch (error) {
-      return handleError(c, error, 'Failed to load template updates');
+  .get(
+    '/',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZCourseTemplateParam, invalidCourseIdHook),
+    async (c) => {
+      try {
+        const orgId = orgIdFromHeader(c.req.header('cio-org-id'));
+        const { courseId } = c.req.valid('param');
+        const data = await getCourseTemplateUpdates(courseId, orgId);
+        return c.json({ success: true, data });
+      } catch (error) {
+        return handleError(c, error, 'Failed to load template updates');
+      }
     }
-  })
+  )
   .post(
     '/pull',
     authMiddleware,
     orgAdminMiddleware,
-    zValidator('param', ZCourseTemplateParam),
+    zValidator('param', ZCourseTemplateParam, invalidCourseIdHook),
     zValidator('json', ZPullTemplateUpdates),
     async (c) => {
       try {

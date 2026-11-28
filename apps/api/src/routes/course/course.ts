@@ -62,6 +62,7 @@ import { generateCoursePdf } from '@api/utils/course';
 import { getCourseById, getCourseOrganizationId } from '@db/queries';
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
+import { invalidCourseIdHook } from '@api/utils/id-validation';
 import { invitesRouter } from '@api/routes/course/invite';
 import { katexRouter } from '@api/routes/course/katex';
 import { blockLibraryRouter } from '@api/routes/course/block-library';
@@ -169,7 +170,7 @@ export const courseRouter = new Hono()
     '/:courseId/enroll',
     authMiddleware,
     enrollRateLimit,
-    zValidator('param', ZCourseEnrollParam),
+    zValidator('param', ZCourseEnrollParam, invalidCourseIdHook),
     zValidator('json', ZCourseEnrollBody),
     async (c) => {
       try {
@@ -610,7 +611,7 @@ export const courseRouter = new Hono()
     '/:courseId/clone',
     authMiddleware,
     orgTeamMemberMiddleware,
-    zValidator('param', ZCourseCloneParam),
+    zValidator('param', ZCourseCloneParam, invalidCourseIdHook),
     zValidator('json', ZCourseClone),
     async (c) => {
       try {
