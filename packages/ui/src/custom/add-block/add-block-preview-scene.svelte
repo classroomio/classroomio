@@ -816,13 +816,13 @@
       transform: translate(148px, 72px);
     }
     64% {
-      transform: translate(176px, 132px);
+      transform: translate(193px, 130px);
     }
     69% {
-      transform: translate(176px, 132px) scale(0.8);
+      transform: translate(193px, 130px) scale(0.8);
     }
     72% {
-      transform: translate(176px, 132px);
+      transform: translate(193px, 130px);
       opacity: 1;
     }
     86%,

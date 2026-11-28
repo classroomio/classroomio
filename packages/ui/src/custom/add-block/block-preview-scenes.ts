@@ -271,16 +271,18 @@ export const BLOCK_PREVIEW_SCENES: Record<string, () => BlockPreviewScene> = {
       ${rect(84, 54, 64, 9, 'kf')}${bar(84, 72, 110)}${bar(84, 82, 92)}
     </g>
     <g class="s" style="animation-name:fbtn">
-      <rect class="ln" x="78" y="124" width="58" height="18" rx="9"/>
-      <text class="tx" x="107" y="136" text-anchor="middle">AGAIN</text>
-      <rect class="ln" x="144" y="124" width="58" height="18" rx="9"/>
-      <text class="tx" x="173" y="136" text-anchor="middle">GOT IT</text>
+      <circle class="ln" cx="84" cy="133" r="9"/>
+      <path class="lo" d="M85.6 129.5 l-3.2 3.5 3.2 3.5"/>
+      <rect class="fl" x="100" y="131.5" width="80" height="3" rx="1.5"/>
+      <rect class="kf" x="100" y="131.5" width="20" height="3" rx="1.5"/>
+      <circle class="ln" cx="196" cy="133" r="9"/>
+      <path class="lo" d="M194.4 129.5 l3.2 3.5 -3.2 3.5"/>
     </g>
     <g class="s" style="animation-name:fpress">
-      <rect class="kf" x="144" y="124" width="58" height="18" rx="9"/>
-      <text class="tw" x="173" y="136" text-anchor="middle">GOT IT</text>
+      <rect class="kf" x="100" y="131.5" width="27" height="3" rx="1.5"/>
+      <circle class="kf" cx="196" cy="133" r="9"/>
+      <path class="kw" d="M194.4 129.5 l3.2 3.5 -3.2 3.5"/>
     </g>
-    <text class="tx" x="140" y="160" text-anchor="middle" style="font-size:6.5px">CARD 3 / 12</text>
     ${cursor('fcur')}`
     ),
 
