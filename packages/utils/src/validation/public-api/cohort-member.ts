@@ -43,7 +43,7 @@ export const ZPublicApiAddCohortMembers = z.object({
           .email()
           .optional()
           .describe(
-            'A joined student is added directly; one who has not joined is emailed an organization invite carrying this cohort. A student request for an admin or tutor email fails with STAFF_CANNOT_ENROLL. An admin or tutor request adds that person directly.'
+            'Joined students are added directly; others get an org invite. Staff emails fail for student requests but are added for admin or tutor requests.'
           ),
         name: z.string().optional(),
         roleId: ZPublicApiCohortMemberRole
