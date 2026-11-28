@@ -248,6 +248,8 @@ describe.skipIf(!shouldRun)('invite primitives and identity binding (database)',
       .select({ id: schema.courseInvite.id, isRevoked: schema.courseInvite.isRevoked })
       .from(schema.courseInvite)
       .where(inArray(schema.courseInvite.id, [multi.id, link.id]));
+    expect(untouched.map((row) => row.id).sort()).toEqual([link.id, multi.id].sort());
+    expect(untouched).toHaveLength(2);
     expect(untouched.every((row) => row.isRevoked === false)).toBe(true);
   });
 
@@ -380,10 +382,14 @@ describe.skipIf(!shouldRun)('invite primitives and identity binding (database)',
 
     expect(result.fulfilled.orgInvites).toHaveLength(0);
     expect(Number(result.member.roleId)).toBe(ROLE.TUTOR);
-    const { listLiveStudentOrgInvitesForEmail } = await import('@cio/db/queries/organization');
-    void staffInvite;
-    const studentLive = await listLiveStudentOrgInvitesForEmail(organizationId, email);
-    expect(studentLive).toHaveLength(0);
+    const staffRow = await db
+      .select()
+      .from(schema.organizationInvite)
+      .where(eq(schema.organizationInvite.id, staffInvite.id))
+      .limit(1);
+    expect(staffRow).toHaveLength(1);
+    expect(staffRow[0].acceptedAt).toBeNull();
+    expect(staffRow[0].isRevoked).toBe(false);
   });
 
   it('fulfils other same-org invitations together while skipping the trigger', async () => {
