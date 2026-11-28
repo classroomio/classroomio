@@ -97,6 +97,8 @@ Open the **dashboard** service → **Settings** and set its domain, including th
 
 The dashboard proxies API calls server-side, so you normally only expose the dashboard publicly. The `api` service stays internal.
 
+HTML lesson blocks are the exception: the browser loads their pages straight from the API, which the dashboard doesn't proxy. To use them, also give the **api** service a domain with its internal port, ideally on a separate registrable domain (e.g. `https://content.yourotherdomain.com:3081`), and set `HTML_CONTENT_ORIGIN` to that URL without the port. Without it, HTML blocks don't load.
+
 ![Setting the dashboard service domain in Coolify](/docs/coolify-05-dashboard-domain.webp)
 
 ### 6. Deploy
@@ -177,6 +179,7 @@ CSP_STYLE_SRC_DOMAINS=
 CSP_CONNECT_SRC_DOMAINS=
 CSP_FRAME_SRC_DOMAINS=
 CSP_FONT_SRC_DOMAINS=
+HTML_CONTENT_ORIGIN=        # public api URL; required for HTML lesson blocks (see step 5)
 TRUSTED_ORIGINS=            # only for direct browser-to-API calls (proxy is same-origin)
 OBJECT_STORAGE_REGION=      # only for some external S3 providers
 SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
@@ -223,7 +226,7 @@ won't work correctly without them. Set them all.
 | `LICENSE_KEY` | Enterprise features — SSO requires a license ([book a call](http://cal.com/classroomio/enterprise)). |
 | `ALLOWED_EXTERNAL_DOMAINS` | Overrides all `CSP_*_DOMAINS` vars with one comma-separated allowlist. |
 | `CSP_SCRIPT_SRC_DOMAINS`, `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS` | Per-directive CSP allowlists for extra CDN/font/frame domains. |
-| `HTML_CONTENT_ORIGIN` | Public URL of the API (ideally a separate registrable domain) that serves HTML lesson block pages. Unset, pages load from `PUBLIC_SERVER_URL`, which the dashboard doesn't proxy for these pages. |
+| `HTML_CONTENT_ORIGIN` | **Required for HTML lesson blocks.** Public URL of the api service (ideally a separate registrable domain) that serves their pages; see [step 5](#5-set-the-dashboard-domain). Unset, pages load from `PUBLIC_SERVER_URL`, the dashboard domain, which doesn't proxy them, so HTML blocks don't load. |
 | `TRUSTED_ORIGINS` | Extra origins allowed to call the API directly (normal dashboard traffic is same-origin via the proxy). |
 | `OBJECT_STORAGE_REGION` | Region for some external S3 providers (not needed for the bundled store). |
 | `SKIP_DB_SETUP` | Skips first-boot database setup — leave blank so it runs. |

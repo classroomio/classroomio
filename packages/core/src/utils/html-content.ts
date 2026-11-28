@@ -41,10 +41,16 @@ export function isHtmlContentHost(host: string | undefined): boolean {
 }
 
 /**
- * True when `host` is the dedicated HTML content host, which serves HTML pages and nothing else.
+ * True when `host` is the dedicated HTML content host, which serves HTML pages and nothing else. A content origin
+ * on the API's own host is not dedicated, so the API keeps serving its routes there.
  */
 export function isDedicatedHtmlContentHost(host: string | undefined): boolean {
-  return !!process.env.HTML_CONTENT_ORIGIN && isHtmlContentHost(host);
+  const contentOrigin = process.env.HTML_CONTENT_ORIGIN;
+  const serverUrl = process.env.PUBLIC_SERVER_URL;
+  if (!contentOrigin) return false;
+  if (serverUrl && new URL(serverUrl).host === new URL(contentOrigin).host) return false;
+
+  return isHtmlContentHost(host);
 }
 
 /**

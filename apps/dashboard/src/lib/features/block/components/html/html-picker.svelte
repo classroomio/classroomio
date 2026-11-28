@@ -1,10 +1,10 @@
 <script lang="ts">
   import * as Block from '@cio/ui/custom/block';
-  import { HTML_BLOCK_NAME_MAX_LENGTH, HTML_PAGE_MAX_BYTES, type THtmlPage } from '@cio/utils/validation/block';
+  import { HTML_BLOCK_NAME_MAX_LENGTH, HTML_PAGE_MAX_BYTES } from '@cio/utils/validation/block';
   import { snackbar } from '$features/ui/snackbar/store';
   import { HtmlPageApi } from '../../api/html-page.svelte';
   import { getBlockEditHost } from '../../utils/block-host';
-  import type { BlockPickerProps } from '../../utils/types';
+  import type { BlockPickerProps, HtmlPage } from '../../utils/types';
   import { getHtmlSourceDialogLabels } from './html-labels';
   import { getHtmlTemplates } from './html-utils';
 
@@ -12,9 +12,10 @@
 
   const host = getBlockEditHost();
   const htmlPageApi = new HtmlPageApi();
+  let dismissed = false;
 
-  function pick(page: THtmlPage | null) {
-    if (!page) return;
+  function pick(page: HtmlPage | null) {
+    if (!page || dismissed) return;
 
     onPick([page]);
     onClose();
@@ -44,7 +45,10 @@
   }
 
   function handleOpenChange(isOpen: boolean) {
-    if (!isOpen) onClose();
+    if (isOpen) return;
+
+    dismissed = true;
+    onClose();
   }
 </script>
 

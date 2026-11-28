@@ -74,7 +74,7 @@
       isEditMode
       changeLabel={blockChangeLabel('video')}
       onChange={onAddVideo}
-      onThumbnailSaved={(thumbnailUrl) => updateVideo({ thumbnailUrl })}
+      onThumbnailSaved={(thumbnailUrl, sourceAssetId) => updateVideo({ thumbnailUrl }, sourceAssetId)}
       onMetadataUpdated={updateVideo}
     />
     <Button

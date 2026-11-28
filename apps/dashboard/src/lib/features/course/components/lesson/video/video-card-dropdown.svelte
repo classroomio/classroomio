@@ -32,7 +32,8 @@
   interface Props {
     video: LessonVideo;
     onRemove?: () => void;
-    onThumbnailSaved?: (thumbnailUrl: string) => void;
+    /** Receives the asset the thumbnail belongs to, which can differ from `video` once the video is replaced. */
+    onThumbnailSaved?: (thumbnailUrl: string, sourceAssetId: string) => void;
     /** Receives the asset the metadata belongs to, which can differ from `video` once the video is replaced. */
     onHlsMetadataUpdated?: (metadata: Record<string, unknown>, sourceAssetId: string) => void;
     onTranscribingChange?: (value: boolean) => void;
@@ -306,7 +307,7 @@
       snackbar.success('snackbar.media_manager.update_success');
 
       if (updated.thumbnailUrl && updated.thumbnailUrl !== previousThumbnailUrl) {
-        onThumbnailSaved?.(updated.thumbnailUrl);
+        onThumbnailSaved?.(updated.thumbnailUrl, updated.id);
       }
     } finally {
       isSavingAsset = false;
@@ -316,7 +317,7 @@
   function handleThumbnailSaved(asset: OrganizationAsset) {
     manageThumbsAsset = asset;
     if (asset.thumbnailUrl) {
-      onThumbnailSaved?.(asset.thumbnailUrl);
+      onThumbnailSaved?.(asset.thumbnailUrl, asset.id);
     }
   }
 

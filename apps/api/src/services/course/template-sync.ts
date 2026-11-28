@@ -624,9 +624,8 @@ export async function pullCourseTemplateUpdates(
           transform: (value) => remapContentAssets(value, templateOrgId, courseOrgId, userId, tx),
           dbClient: tx
         });
-        const pulledLessonIds = [...pulledLessons.values()].map((lesson) => lesson.id);
-        const pulledLessonAssets = await listLessonAssetRefs(pulledLessonIds, tx);
-        await syncLessonAssetUsages(pulledLessonAssets, courseOrgId, userId, tx);
+        const courseLessonAssets = await listLessonAssetRefs(courseLessonIds, tx);
+        await syncLessonAssetUsages(courseLessonAssets, courseOrgId, userId, tx);
       }
 
       const templateExercises = templateGraph.exercises.slice().sort((left, right) => left.order - right.order);

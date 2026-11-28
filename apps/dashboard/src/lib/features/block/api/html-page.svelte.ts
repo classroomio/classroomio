@@ -1,8 +1,8 @@
-import type { THtmlPage, THtmlPageCreate, THtmlPageGenerate } from '@cio/utils/validation/block';
+import type { THtmlPageCreate, THtmlPageGenerate } from '@cio/utils/validation/block';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type { RequestConfig } from '$lib/utils/services/api/types';
 import { snackbar } from '$features/ui/snackbar/store';
-import type { BlockEditHost, CreateHtmlPageRequest, GenerateHtmlPageRequest } from '../utils/types';
+import type { BlockEditHost, CreateHtmlPageRequest, GenerateHtmlPageRequest, HtmlPage } from '../utils/types';
 
 const GENERATE_REQUEST: RequestConfig = { timeout: 240_000, retries: 0 };
 
@@ -11,8 +11,8 @@ export class HtmlPageApi extends BaseApiWithErrors {
    * Stores an uploaded or pasted page.
    * @returns the stored page, or null after showing an error.
    */
-  async create(host: BlockEditHost, input: THtmlPageCreate): Promise<THtmlPage | null> {
-    let page: THtmlPage | null = null;
+  async create(host: BlockEditHost, input: THtmlPageCreate): Promise<HtmlPage | null> {
+    let page: HtmlPage | null = null;
 
     await this.execute<CreateHtmlPageRequest>({
       requestFn: () =>
@@ -36,8 +36,8 @@ export class HtmlPageApi extends BaseApiWithErrors {
    * Generates a page with AI, or rewrites the page `input.assetId` points at.
    * @returns the new page, or null after showing an error.
    */
-  async generate(host: BlockEditHost, input: THtmlPageGenerate): Promise<THtmlPage | null> {
-    let page: THtmlPage | null = null;
+  async generate(host: BlockEditHost, input: THtmlPageGenerate): Promise<HtmlPage | null> {
+    let page: HtmlPage | null = null;
 
     await this.execute<GenerateHtmlPageRequest>({
       requestFn: () =>

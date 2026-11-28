@@ -4,7 +4,11 @@ vi.mock('@cio/core/services/block/html-page', () => ({
   readHtmlPage: vi.fn(async () => '<!doctype html><h1>Hi</h1>')
 }));
 
-import { signHtmlContentUrl, verifyHtmlContentSignature } from '@cio/core/utils/html-content';
+import {
+  isDedicatedHtmlContentHost,
+  signHtmlContentUrl,
+  verifyHtmlContentSignature
+} from '@cio/core/utils/html-content';
 import { htmlContentRouter } from '@api/routes/usercontent/html';
 
 const ASSET_ID = '7f3c6c2e-3a7b-4d5e-9f10-1a2b3c4d5e6f';
@@ -50,6 +54,7 @@ describe('html content urls', () => {
   it('returns no url in production when signing is not configured', () => {
     vi.stubEnv('HTML_CONTENT_SIGNING_SECRET', '');
     vi.stubEnv('HLS_SIGNING_SECRET', '');
+    vi.stubEnv('BETTER_AUTH_SECRET', '');
     vi.stubEnv('NODE_ENV', 'production');
 
     expect(signHtmlContentUrl(ASSET_ID)).toBeNull();
@@ -79,5 +84,16 @@ describe('html content urls', () => {
 
     expect(tampered.status).toBe(403);
     expect(wrongHost.status).toBe(404);
+  });
+
+  it('treats only a content host separate from the API as dedicated to HTML pages', () => {
+    vi.stubEnv('PUBLIC_SERVER_URL', 'https://api.example.com');
+
+    expect(isDedicatedHtmlContentHost('content.example.com')).toBe(true);
+    expect(isDedicatedHtmlContentHost('api.example.com')).toBe(false);
+
+    vi.stubEnv('HTML_CONTENT_ORIGIN', 'https://api.example.com/');
+
+    expect(isDedicatedHtmlContentHost('api.example.com')).toBe(false);
   });
 });

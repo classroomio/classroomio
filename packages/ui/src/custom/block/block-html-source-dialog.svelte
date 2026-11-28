@@ -83,7 +83,7 @@
 
   function submitCode() {
     const trimmed = code.trim();
-    if (!trimmed) return;
+    if (!trimmed || generating) return;
 
     onCode(trimmed);
   }
@@ -253,7 +253,7 @@
               spellcheck="false"
               class="ui:font-mono ui:text-xs"
             />
-            <Button type="button" class="ui:self-start" disabled={!code.trim()} onclick={submitCode}
+            <Button type="button" class="ui:self-start" disabled={!code.trim() || generating} onclick={submitCode}
               >{labels.insert}</Button
             >
           </div>

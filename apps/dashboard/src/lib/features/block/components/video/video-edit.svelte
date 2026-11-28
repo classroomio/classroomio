@@ -21,6 +21,6 @@
   isEditMode
   changeLabel={blockChangeLabel('video')}
   onChange={onRequestSource}
-  onThumbnailSaved={(thumbnailUrl) => handleMetadataUpdated({ thumbnailUrl })}
+  onThumbnailSaved={(thumbnailUrl, sourceAssetId) => handleMetadataUpdated({ thumbnailUrl }, sourceAssetId)}
   onMetadataUpdated={handleMetadataUpdated}
 />

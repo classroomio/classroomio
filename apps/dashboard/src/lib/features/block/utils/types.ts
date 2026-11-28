@@ -14,6 +14,7 @@ type BlocksRoute = (typeof classroomio.course)[':courseId']['lesson'][':lessonId
 
 export type CreateHtmlPageRequest = BlocksRoute['html-pages']['$post'];
 export type GenerateHtmlPageRequest = BlocksRoute['html-pages']['generate']['$post'];
+export type HtmlPage = Extract<InferResponseType<CreateHtmlPageRequest>, { success: true }>['data'];
 
 export type BlockRecord = Extract<InferResponseType<BlocksRoute['$get']>, { success: true }>['data'][number];
 

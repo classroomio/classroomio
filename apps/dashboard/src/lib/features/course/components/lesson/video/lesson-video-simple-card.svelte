@@ -24,7 +24,7 @@
     changeLabel?: string;
     onChange?: () => void;
     onRemove?: () => void;
-    onThumbnailSaved?: (thumbnailUrl: string) => void;
+    onThumbnailSaved?: (thumbnailUrl: string, sourceAssetId: string) => void;
     onMetadataUpdated?: (metadata: Record<string, unknown>, sourceAssetId: string) => void;
   }
 

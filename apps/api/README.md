@@ -57,6 +57,10 @@ HTML_CONTENT_SIGNING_SECRET=
 ```bash
 # Already required by the existing API client — used as the HLS base URL too.
 PUBLIC_SERVER_URL=http://localhost:3000
+
+# Set to the same value as the API's HTML_CONTENT_ORIGIN when it is set. The dashboard reads only its own
+# environment to allow HTML lesson block frames; unset, it allows PUBLIC_SERVER_URL.
+HTML_CONTENT_ORIGIN=
 ```
 
 ### Run

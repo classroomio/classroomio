@@ -6,7 +6,7 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { HTML_BLOCK_NAME_MAX_LENGTH, HTML_PAGE_MAX_BYTES, type THtmlPage } from '@cio/utils/validation/block';
 
 import { getStorageConfig } from '../../config/storage';
-import { getFromS3, uploadToS3 } from '../../utils/s3';
+import { deleteFromS3, getFromS3, uploadToS3 } from '../../utils/s3';
 
 const HTML_PAGE_SOURCE = 'html_block';
 const HTML_PAGE_MIME_TYPE = 'text/html';
@@ -40,8 +40,8 @@ export interface HtmlPageInput {
 }
 
 /**
- * Stores an HTML page in the documents bucket and records it as an organization asset.
- * Throws HTML_TOO_LARGE past {@link HTML_PAGE_MAX_BYTES}.
+ * Stores an HTML page in the documents bucket and records it as an organization asset. Removes the stored file when
+ * the asset record cannot be created. Throws HTML_TOO_LARGE past {@link HTML_PAGE_MAX_BYTES}.
  */
 export async function createHtmlPage({ organizationId, profileId, name, html }: HtmlPageInput): Promise<THtmlPage> {
   const body = Buffer.from(html, 'utf8');
@@ -62,19 +62,25 @@ export async function createHtmlPage({ organizationId, profileId, name, html }: 
     throw new AppError('Failed to store the HTML page', ErrorCodes.INTERNAL_ERROR, 502);
   }
 
-  const asset = await createAsset({
-    organizationId,
-    kind: 'document',
-    provider: 'upload',
-    storageProvider: 's3',
-    storageKey,
-    mimeType: HTML_PAGE_MIME_TYPE,
-    byteSize: body.byteLength,
-    title: name,
-    status: 'active',
-    metadata: { source: HTML_PAGE_SOURCE },
-    createdByProfileId: profileId
-  });
+  let asset: TAsset;
+  try {
+    asset = await createAsset({
+      organizationId,
+      kind: 'document',
+      provider: 'upload',
+      storageProvider: 's3',
+      storageKey,
+      mimeType: HTML_PAGE_MIME_TYPE,
+      byteSize: body.byteLength,
+      title: name,
+      status: 'active',
+      metadata: { source: HTML_PAGE_SOURCE },
+      createdByProfileId: profileId
+    });
+  } catch (error) {
+    await deleteFromS3({ Bucket: config.bucketDocuments, Key: storageKey });
+    throw error;
+  }
 
   return { name, assetId: asset.id, size: body.byteLength };
 }

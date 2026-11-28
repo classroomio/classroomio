@@ -42,7 +42,7 @@ function notFound() {
 }
 
 /**
- * Serves stored HTML pages behind a signed URL, with a CSP that sandboxes the page and blocks network access,
+ * Serves stored HTML pages behind a signed URL, with a CSP that sandboxes the page and blocks script network requests,
  * form posts and framing outside https pages.
  */
 export const htmlContentRouter = new Hono().get(

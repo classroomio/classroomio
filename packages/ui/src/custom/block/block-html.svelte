@@ -53,6 +53,14 @@
 
   type ResizeEdge = 'left' | 'right' | 'bottom';
 
+  const KEY_WIDTH_STEP = 5;
+  const KEY_HEIGHT_STEP = 20;
+  const RESIZE_KEYS: Record<ResizeEdge, { grow: string; shrink: string }> = {
+    left: { grow: 'ArrowLeft', shrink: 'ArrowRight' },
+    right: { grow: 'ArrowRight', shrink: 'ArrowLeft' },
+    bottom: { grow: 'ArrowDown', shrink: 'ArrowUp' }
+  };
+
   interface ResizeDrag {
     edge: ResizeEdge;
     startX: number;
@@ -127,6 +135,21 @@
     const size = { width: shownWidth, height: shownHeight };
     draftWidth = null;
     draftHeight = null;
+    if (size.width === width && size.height === height) return;
+
+    onResize?.(size);
+  }
+
+  function resizeWithKeyboard(event: KeyboardEvent, edge: ResizeEdge) {
+    const keys = RESIZE_KEYS[edge];
+    if (event.key !== keys.grow && event.key !== keys.shrink) return;
+
+    event.preventDefault();
+    const direction = event.key === keys.grow ? 1 : -1;
+    const size =
+      edge === 'bottom'
+        ? { width, height: clamp(height + direction * KEY_HEIGHT_STEP, minHeight, maxHeight) }
+        : { width: clamp(width + direction * KEY_WIDTH_STEP, minWidth, 100), height };
     if (size.width === width && size.height === height) return;
 
     onResize?.(size);
@@ -222,7 +245,7 @@
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end">
             {#if onChange}
-              <DropdownMenu.Item onSelect={onChange}>
+              <DropdownMenu.Item disabled={generating} onSelect={onChange}>
                 <PencilLineIcon size={14} />
                 {labels.change}
               </DropdownMenu.Item>
@@ -284,8 +307,12 @@
           role="separator"
           aria-orientation="vertical"
           aria-label={labels.resizeWidth}
+          aria-valuenow={shownWidth}
+          aria-valuemin={minWidth}
+          aria-valuemax={100}
+          tabindex="0"
           class={cn(
-            'ui:absolute ui:bottom-1 ui:z-10 ui:size-4 ui:touch-none ui:opacity-0 ui:transition ui:group-hover/html:opacity-100',
+            'ui:absolute ui:bottom-1 ui:z-10 ui:size-4 ui:touch-none ui:opacity-0 ui:transition ui:group-hover/html:opacity-100 ui:focus-visible:opacity-100',
             edge === 'left'
               ? 'ui:left-1 ui:cursor-nesw-resize ui:border-b-[3px] ui:border-l-[3px]'
               : 'ui:right-1 ui:cursor-nwse-resize ui:border-r-[3px] ui:border-b-[3px]',
@@ -296,20 +323,26 @@
           onpointermove={moveResize}
           onpointerup={endResize}
           onpointercancel={endResize}
+          onkeydown={(event) => resizeWithKeyboard(event, edge)}
         ></div>
       {/each}
       <div
         role="separator"
         aria-orientation="horizontal"
         aria-label={labels.resizeHeight}
+        aria-valuenow={shownHeight}
+        aria-valuemin={minHeight}
+        aria-valuemax={maxHeight}
+        tabindex="0"
         class={cn(
-          'ui:absolute ui:bottom-1 ui:left-1/2 ui:z-10 ui:flex ui:h-3 ui:w-12 ui:-translate-x-1/2 ui:cursor-ns-resize ui:touch-none ui:items-center ui:justify-center ui:opacity-0 ui:transition ui:group-hover/html:opacity-100',
+          'ui:absolute ui:bottom-1 ui:left-1/2 ui:z-10 ui:flex ui:h-3 ui:w-12 ui:-translate-x-1/2 ui:cursor-ns-resize ui:touch-none ui:items-center ui:justify-center ui:opacity-0 ui:transition ui:group-hover/html:opacity-100 ui:focus-visible:opacity-100',
           drag?.edge === 'bottom' && 'ui:opacity-100'
         )}
         onpointerdown={(event) => startResize(event, 'bottom')}
         onpointermove={moveResize}
         onpointerup={endResize}
         onpointercancel={endResize}
+        onkeydown={(event) => resizeWithKeyboard(event, 'bottom')}
       >
         <span class="ui:h-1 ui:w-10 ui:rounded-full ui:bg-neutral-700/80"></span>
       </div>

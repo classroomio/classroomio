@@ -9,7 +9,7 @@
 
   interface Props {
     choices: AddBlockChoice[];
-    /** Every block type, shown in the All blocks popover. The button is hidden when this is empty. */
+    /** Every block type, shown in the All blocks drawer. The button is hidden when this is empty. */
     moreChoices?: AddBlockChoice[];
     addLabel: string;
     moreLabel?: string;
