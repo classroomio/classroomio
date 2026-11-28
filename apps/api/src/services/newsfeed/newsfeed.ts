@@ -15,7 +15,6 @@ import {
   getNewsfeedCommentById,
   getNewsfeedCommentDepth,
   getNewsfeedCommentThread,
-  getNewsfeedCommentsByFeedId,
   getNewsfeedForEmail,
   updateNewsfeed,
   updateNewsfeedComment
@@ -67,13 +66,14 @@ export async function listNewsfeedPaginated(courseId: string, options: { cursor?
 }
 
 /**
- * Gets a newsfeed item by ID
+ * Gets a newsfeed item of a course
+ * @param courseId Course ID
  * @param feedId Newsfeed ID
  * @returns Newsfeed item
  */
-export async function getNewsfeedItem(feedId: string): Promise<TCourseNewsfeed> {
+export async function getNewsfeedItem(courseId: string, feedId: string): Promise<TCourseNewsfeed> {
   try {
-    const feed = await getNewsfeedById(feedId);
+    const feed = await getNewsfeedById(courseId, feedId);
     if (!feed) {
       throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
     }
@@ -132,14 +132,19 @@ export async function createNewsfeedService(
 }
 
 /**
- * Updates a newsfeed item (content and isPinned only)
+ * Updates a newsfeed item of a course (content and isPinned only)
+ * @param courseId Course ID
  * @param feedId Newsfeed ID
  * @param data Partial newsfeed update data
  * @returns Updated newsfeed item
  */
-export async function updateNewsfeedService(feedId: string, data: TNewsfeedUpdate): Promise<TCourseNewsfeed> {
+export async function updateNewsfeedService(
+  courseId: string,
+  feedId: string,
+  data: TNewsfeedUpdate
+): Promise<TCourseNewsfeed> {
   try {
-    const updated = await updateNewsfeed(feedId, {
+    const updated = await updateNewsfeed(courseId, feedId, {
       ...data,
       content: data.content === undefined ? undefined : sanitizeHtml(data.content)
     });
@@ -163,17 +168,19 @@ export async function updateNewsfeedService(feedId: string, data: TNewsfeedUpdat
 }
 
 /**
- * Updates a newsfeed item's reaction
+ * Updates the reaction of a newsfeed item of a course
+ * @param courseId Course ID
  * @param feedId Newsfeed ID
  * @param reaction Reaction data
  * @returns Updated newsfeed item
  */
 export async function updateNewsfeedReactionService(
+  courseId: string,
   feedId: string,
   reaction: TCourseNewsfeed['reaction']
 ): Promise<TCourseNewsfeed> {
   try {
-    const updated = await updateNewsfeed(feedId, { reaction });
+    const updated = await updateNewsfeed(courseId, feedId, { reaction });
     if (!updated) {
       // If no row was updated, it usually means the feed doesn't exist.
       throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
@@ -194,13 +201,14 @@ export async function updateNewsfeedReactionService(
 }
 
 /**
- * Deletes a newsfeed item
+ * Deletes a newsfeed item of a course
+ * @param courseId Course ID
  * @param feedId Newsfeed ID
  * @returns Deleted newsfeed item
  */
-export async function deleteNewsfeedService(feedId: string): Promise<TCourseNewsfeed> {
+export async function deleteNewsfeedService(courseId: string, feedId: string): Promise<TCourseNewsfeed> {
   try {
-    const deleted = await deleteNewsfeed(feedId);
+    const deleted = await deleteNewsfeed(courseId, feedId);
     if (!deleted) {
       // If no row was deleted, it usually means the feed doesn't exist.
       throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
@@ -221,29 +229,14 @@ export async function deleteNewsfeedService(feedId: string): Promise<TCourseNews
 }
 
 /**
- * Gets comments for a newsfeed item
- * @param feedId Newsfeed ID
- * @returns Array of comments
- */
-export async function getNewsfeedComments(feedId: string) {
-  try {
-    return await getNewsfeedCommentsByFeedId(feedId);
-  } catch (error) {
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get newsfeed comments',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Gets a comment subtree for a newsfeed item
+ * Gets a comment subtree for a newsfeed item of a course
+ * @param courseId Course ID
  * @param feedId Newsfeed ID
  * @param options rootId, cursor, childCursor, rootLimit, childLimit, maxDepth
  * @returns The subtree with pagination metadata
  */
 export async function getNewsfeedCommentThreadService(
+  courseId: string,
   feedId: string,
   options: {
     rootId?: number;
@@ -255,7 +248,7 @@ export async function getNewsfeedCommentThreadService(
   }
 ) {
   try {
-    const feed = await getNewsfeedById(feedId);
+    const feed = await getNewsfeedById(courseId, feedId);
     if (!feed) {
       throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
     }
@@ -286,7 +279,8 @@ export async function getNewsfeedCommentThreadService(
 }
 
 /**
- * Creates a newsfeed comment
+ * Creates a comment on a newsfeed item of a course
+ * @param courseId Course ID
  * @param feedId Newsfeed ID
  * @param authorId Group member ID (author)
  * @param content Comment content
@@ -294,12 +288,18 @@ export async function getNewsfeedCommentThreadService(
  * @returns Created comment
  */
 export async function createNewsfeedCommentService(
+  courseId: string,
   feedId: string,
   authorId: string,
   content: string,
   parentId?: number
 ) {
   try {
+    const feed = await getNewsfeedById(courseId, feedId);
+    if (!feed) {
+      throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
+    }
+
     // Validate parentId when provided
     if (parentId !== undefined) {
       const parentComment = await getNewsfeedCommentById(parentId);
