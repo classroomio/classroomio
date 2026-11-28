@@ -217,12 +217,11 @@ When a lesson has no blocks, the canvas shows:
 
 * A heading: **"What goes in this lesson?"**
 * A line under it: "Pick a block to begin. You can add more at any time."
-* A **grid of tiles**, each with an icon and a label: Note, Document, Video, Image, HTML and **All blocks**. All blocks opens the same grouped, searchable drawer from the right as the floating bar's All blocks button. On narrow screens the grid shows 3 columns.
-* An **Ask AI** button under the grid (shortcut Cmd/Ctrl + I) that opens the same Ask AI prompt as the floating bar.
+* The same **add bar** as a lesson with blocks: **Ask AI** (shortcut Cmd/Ctrl + I), Note, Document, Video, Image, HTML and **All blocks**, which opens the grouped, searchable drawer from the right.
 
-Clicking a tile adds that block's ready-made example and the empty state disappears. If the admin later removes every block, the empty state comes back.
+Choosing a block adds that block's ready-made example and the empty state disappears. If the admin later removes every block, the empty state comes back.
 
-The add-content empty state is only visible in Edit. In Preview, an empty lesson shows "Nothing to preview yet" with a prompt to switch to Edit. Learners see "This lesson isn't ready yet" and "Your instructor hasn't added any content to this lesson. Check back soon." Each empty state shows the `MachineBlankLesson` animation.
+The add-content empty state is only visible in Edit. In Preview, an empty lesson shows teachers "Nothing to preview yet" with an **Edit** button that switches to Edit. Learners see "This lesson isn't ready yet" and "Your instructor hasn't added any content to this lesson. Check back soon." Each empty state shows the `MachineBlankLesson` animation.
 
 ## Add content menu
 
@@ -348,9 +347,9 @@ The AI assistant can create and edit all five new blocks, the same way it writes
 
 ### Empty state and Add content menu
 
-- [ ] A lesson with no blocks shows "What goes in this lesson?", the supporting line, the five-tile grid with All blocks, and Ask AI, in Edit only.
-- [ ] Clicking a tile adds that example and removes the empty state; deleting every block brings it back.
-- [ ] The grid shows 3 columns on narrow screens.
+- [ ] A lesson with no blocks shows "What goes in this lesson?", the supporting line and the add bar (Ask AI, five blocks, All blocks), in Edit only.
+- [ ] Choosing a block adds that example and removes the empty state; deleting every block brings it back.
+- [ ] In Preview, an empty lesson shows teachers an Edit button that switches to Edit; learners don't see it.
 - [ ] The "+" between blocks opens an eleven-tile menu plus "Ask AI instead", and inserts at that exact position.
 - [ ] The menu closes on pick, Escape, outside click, or when another menu opens.
 - [ ] The floating bar adds to the end of the lesson, never into a tab.

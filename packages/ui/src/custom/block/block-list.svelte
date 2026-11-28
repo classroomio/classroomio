@@ -322,7 +322,7 @@
       class="ui:bg-card/60 ui:mx-[5px] ui:w-auto ui:max-w-[640px]! ui:border-solid ui:text-center"
       contentClass="ui:max-w-none!"
     >
-      {#if editable && emptyAction}
+      {#if emptyAction}
         {@render emptyAction()}
       {/if}
     </Empty>

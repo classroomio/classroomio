@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Component } from 'svelte';
+  import type { Component, Snippet } from 'svelte';
   import * as Block from '@cio/ui/custom/block';
   import type { TBlockType } from '@cio/utils/validation/block';
   import { t } from '$lib/utils/functions/translations';
@@ -15,9 +15,10 @@
     emptyDescription: string;
     spacingClass?: string;
     showRail?: boolean;
+    emptyAction?: Snippet;
   }
 
-  let { blocks, host, emptyTitle, emptyDescription, spacingClass, showRail = true }: Props = $props();
+  let { blocks, host, emptyTitle, emptyDescription, spacingClass, showRail = true, emptyAction }: Props = $props();
 
   setBlockViewHost(() => host);
 </script>
@@ -28,6 +29,7 @@
   {showRail}
   {emptyTitle}
   {emptyDescription}
+  {emptyAction}
   emptyMachineHeading={t.get('course.navItem.lessons.add_content_options.lesson_title').toLocaleUpperCase()}
   scrollRailLabel={t.get('course.navItem.lessons.materials.blocks.scroll_rail')}
   goToBlockLabel={(index) => t.get('course.navItem.lessons.materials.blocks.go_to_block', { index })}

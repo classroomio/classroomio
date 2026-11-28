@@ -24,7 +24,6 @@
   import { browser } from '$app/environment';
   import { isAiPromptShortcut, getAiShortcut, requestAiPrompt } from '../utils/ai-prompt-request';
   import BlockAddRow from './block-add-row.svelte';
-  import BlockEmptyAdd from './block-empty-add.svelte';
   import ImagePicker from './image/image-picker.svelte';
   import VideoPicker from './video/video-picker.svelte';
 
@@ -188,7 +187,7 @@
   onReorder={(blocks) => void api.reorder(blocks)}
 >
   {#snippet emptyAction()}
-    <BlockEmptyAdd onSelect={(type) => add(type, 0)} />
+    <BlockAddRow onSelect={(type) => add(type, 0)} />
     <div class="mt-6 w-full">
       <VideoGuideCard
         videoId={VIDEO_GUIDES.lessonBlocks.videoId}

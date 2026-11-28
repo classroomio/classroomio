@@ -227,7 +227,7 @@
             data-testid={moreTestId}
           >
             <LayoutGridIcon size={14} class="custom" />
-            <span class="ui:hidden ui:sm:inline">{moreLabel}</span>
+            <span class="ui:hidden ui:whitespace-nowrap ui:sm:inline">{moreLabel}</span>
           </button>
         {/snippet}
       </CatalogSheet>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PencilIcon from '@lucide/svelte/icons/pencil';
+  import { Button } from '@cio/ui/base/button';
   import MODES from '$lib/utils/constants/mode';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
@@ -19,9 +21,10 @@
     courseId: string;
     lessonId: string;
     learnerView?: boolean;
+    onEdit?: () => void;
   }
 
-  let { mode, courseId, lessonId, learnerView = false }: Props = $props();
+  let { mode, courseId, lessonId, learnerView = false, onEdit }: Props = $props();
 
   const POLL_INTERVAL_MS = 10_000;
 
@@ -86,8 +89,22 @@
   <LessonBlockVideoPlayer {...props} />
 {/snippet}
 
+{#snippet editAction()}
+  <Button onclick={onEdit} testId="lesson-empty-edit">
+    <PencilIcon />
+    {$t('course.navItem.lessons.header.mode_edit')}
+  </Button>
+{/snippet}
+
 {#if isEditing}
   <BlockEditor api={lessonBlockList} {locale} host={editHost} {spacingClass} />
 {:else}
-  <BlockReader blocks={viewBlocks} host={viewHost} {emptyTitle} {emptyDescription} {spacingClass} />
+  <BlockReader
+    blocks={viewBlocks}
+    host={viewHost}
+    {emptyTitle}
+    {emptyDescription}
+    {spacingClass}
+    emptyAction={!learnerView && onEdit ? editAction : undefined}
+  />
 {/if}
