@@ -157,10 +157,14 @@ vi.mock('@api/services/course/session-invite', () => ({
 }));
 
 const TX = { tx: true };
-vi.mock('@cio/db/drizzle', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@cio/db/drizzle')>()),
-  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
-}));
+vi.mock('@cio/db/drizzle', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/db/drizzle')>();
+
+  return {
+    ...original,
+    db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
+  };
+});
 
 import {
   createOrganizationInvite,
